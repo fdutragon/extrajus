@@ -65,7 +65,7 @@ export function ToneSelector({
   onToneChange,
 }: {
   tone: Tone | null
-  onToneChange: (tone: Tone) => void
+  onToneChange: (tone: string) => void
 }) {
   return (
     <DropdownMenu modal={false}>
@@ -90,7 +90,7 @@ export function ToneSelector({
               <Button
                 variant="ghost"
                 data-active-state={tone === supportedTone.value ? "on" : "off"}
-                onClick={() => onToneChange(supportedTone.value as Tone)}
+                onClick={() => onToneChange(supportedTone.value)}
               >
                 <span className="tiptap-button-text">
                   {supportedTone.label}
@@ -112,14 +112,14 @@ export function AiPromptInputToolbar({
 }: {
   showPlaceholder?: boolean
   onInputSubmit: (prompt: string) => void
-  onToneChange?: (tone: Tone) => void
+  onToneChange?: (tone: string) => void
   isEmpty?: boolean
 }) {
   const [tone, setTone] = useState<Tone | null>(null)
   const [promptValue] = useComboboxValueState()
 
   const handleToneChange = useCallback(
-    (newTone: Tone) => {
+    (newTone: string) => {
       setTone(newTone)
       onToneChange?.(newTone)
     },
@@ -166,7 +166,7 @@ export function AiMenuInputTextarea({
   onEmptyBlur,
   onPlaceholderClick,
   showPlaceholder = false,
-  placeholder = "Invoque o poder da IA Lilith...",
+  placeholder = "Ask AI what you want...",
   ...props
 }: AiMenuInputTextareaProps) {
   const [promptValue, setPromptValue] = useComboboxValueState()

@@ -31,19 +31,19 @@ export function AiMenuActions({
 
   const handleRegenerate = useCallback(() => {
     if (!editor) return
-    ;(editor.chain().focus() as any).aiRegenerate(options).run()
+    editor.chain().focus().aiRegenerate(options).run()
     onRegenerate?.()
   }, [editor, onRegenerate, options])
 
   const handleDiscard = useCallback(() => {
     if (!editor) return
-    ;(editor.chain().focus() as any).aiReject().run()
+    editor.chain().focus().aiReject().run()
     onReject?.()
   }, [editor, onReject])
 
   const handleApply = useCallback(() => {
     if (!editor) return
-    ;(editor.chain().focus() as any).aiAccept().run()
+    editor.chain().focus().aiAccept().run()
     onAccept?.()
   }, [editor, onAccept])
 

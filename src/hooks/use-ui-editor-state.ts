@@ -13,7 +13,16 @@ export function useUiEditorState(editor: Editor | null): UiState {
       editor,
       selector: ({ editor }) => {
         if (!editor) return defaultUiState
-        return editor.storage.uiState || defaultUiState
+
+        const state = editor.storage.uiState
+        if (!state) {
+          console.warn(
+            "Editor storage uiState is not initialized. Ensure you have the uiState extension added to your editor."
+          )
+          return defaultUiState
+        }
+
+        return { ...defaultUiState, ...state }
       },
     }) ?? defaultUiState
   )

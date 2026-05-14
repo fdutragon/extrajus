@@ -17,9 +17,6 @@ import { useIsBreakpoint } from "../../../hooks/use-is-breakpoint"
 // --- Icons ---
 import { AiSparklesIcon } from "../../../components/tiptap-icons/ai-sparkles-icon"
 
-// --- Tiptap UI ---
-import { useAiMenuState } from "../../../components/tiptap-ui/ai-menu"
-
 export interface UseAiAskConfig {
   /**
    * The Tiptap editor instance.
@@ -124,18 +121,16 @@ export function useAiAsk(config: UseAiAskConfig = {}) {
   const isMobile = useIsBreakpoint()
   const [isVisible, setIsVisible] = useState<boolean>(true)
   const canAiAsk = canPerformAiAsk(editor)
-  const { updateState } = useAiMenuState()
 
   const handleAiAsk = useCallback((): boolean => {
     if (!editor || !canAiAsk) return false
 
-    const success = (editor.chain().focus() as any).aiGenerationShow().run()
+    const success = editor.chain().focus().aiGenerationShow().run()
     if (success) {
-      updateState({ isOpen: true })
       onAiAsked?.()
     }
     return success
-  }, [canAiAsk, editor, onAiAsked, updateState])
+  }, [canAiAsk, editor, onAiAsked])
 
   useEffect(() => {
     if (!editor) {

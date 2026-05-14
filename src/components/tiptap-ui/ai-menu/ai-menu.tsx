@@ -81,7 +81,8 @@ export function AiMenuContent({
   const closeAiMenu = useCallback(() => {
     if (!editor) return
     reset()
-    ;(editor.commands as any).resetUiState()
+    store?.hideAll()
+    editor.commands.resetUiState()
   }, [editor, reset, store])
 
   const handlePromptSubmit = useCallback(
@@ -117,7 +118,8 @@ export function AiMenuContent({
         }
       }
 
-      ;(editor.chain() as any)
+      editor
+        .chain()
         .aiTextPrompt({
           text: promptWithContext,
           insert: true,
@@ -153,22 +155,22 @@ export function AiMenuContent({
 
   const handleOnReject = useCallback(() => {
     if (!editor) return
-    ;(editor.commands as any).aiReject()
+    editor.commands.aiReject()
     closeAiMenu()
   }, [closeAiMenu, editor])
 
   const handleOnAccept = useCallback(() => {
     if (!editor) return
-    ;(editor.commands as any).aiAccept()
+    editor.commands.aiAccept()
     closeAiMenu()
   }, [closeAiMenu, editor])
 
   const handleInputOnClose = useCallback(() => {
     if (!editor) return
     if (aiGenerationIsLoading) {
-      ;(editor.commands as any).aiReject({ type: "reset" })
+      editor.commands.aiReject({ type: "reset" })
     } else {
-      ;(editor.commands as any).aiAccept()
+      editor.commands.aiAccept()
     }
     closeAiMenu()
   }, [aiGenerationIsLoading, closeAiMenu, editor])
@@ -178,7 +180,7 @@ export function AiMenuContent({
       closeAiMenu()
 
       if (!editor) return
-      ;(editor.commands as any).aiAccept()
+      editor.commands.aiAccept()
     }
   }, [aiGenerationIsLoading, closeAiMenu, editor])
 
@@ -225,19 +227,19 @@ export function AiMenuContent({
   }
 
   const shouldShowList =
-    (aiGenerationHasMessage && state.shouldShowInput && state.inputIsFocused) ||
-    (state.inputIsFocused && (store.getState().value?.length ?? 0) > 0)
+    selectionHasText(editor) ||
+    (aiGenerationHasMessage && state.shouldShowInput && state.inputIsFocused)
 
   if (!editor || !state.isOpen || !aiGenerationActive) {
     return null
   }
 
   return (
-    <Menu open={state.isOpen} placement="bottom-start" store={store} flip>
+    <Menu open={state.isOpen} placement="bottom-start" store={store}>
       <MenuContent
         onClickOutside={handleClickOutside}
         className="tiptap-ai-menu"
-        flip={true}
+        flip={false}
       >
         <Card>
           {aiGenerationIsLoading && <AiMenuProgress editor={editor} />}
@@ -301,9 +303,9 @@ export function AiMenuProgress({ editor }: { editor: Editor }) {
   const handleStop = useCallback(() => {
     if (!editor) return
 
-    ;(editor.chain() as any).aiReject({ type: "reset" }).run()
+    editor.chain().aiReject({ type: "reset" }).run()
     reset()
-    ;(editor.commands as any).resetUiState()
+    editor.commands.resetUiState()
   }, [editor, reset])
 
   return (

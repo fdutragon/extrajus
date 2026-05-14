@@ -2,7 +2,7 @@
 
 import { useContext, useEffect } from "react"
 import { EditorContent, EditorContext, useEditor } from "@tiptap/react"
-// import type { Doc as YDoc } from "yjs"
+import type { Doc as YDoc } from "yjs"
 import { createPortal } from "react-dom"
 import { SupabaseYjsProvider } from "../../../lib/supabase-yjs-provider"
 import { Gemini } from "../../../components/tiptap-extension/gemini-ai-extension"
@@ -81,7 +81,6 @@ import "../../../components/tiptap-templates/notion-like/notion-like-editor.scss
 
 // --- Content ---
 import { NotionEditorHeader } from "../../../components/tiptap-templates/notion-like/notion-like-editor-header"
-import { FixedAiAskBar } from "../../../components/tiptap-ui/fixed-ai-ask-bar"
 import { MobileToolbar } from "../../../components/tiptap-templates/notion-like/notion-like-editor-mobile-toolbar"
 import { NotionToolbarFloating } from "../../../components/tiptap-templates/notion-like/notion-like-editor-toolbar-floating"
 import { SetupErrorMessage } from "../../../components/tiptap-templates/notion-like/setup-error-message"
@@ -99,8 +98,8 @@ export interface NotionEditorProps {
 }
 
 export interface EditorProviderProps {
-  provider: any
-  ydoc: any
+  provider: SupabaseYjsProvider
+  ydoc: YDoc
   placeholder?: string
   geminiKey: string | null
 }
@@ -123,9 +122,10 @@ export function LoadingSpinner({ text = "Connecting..." }: { text?: string }) {
 }
 
 /**
- * A separate component for UI overlays to prevent re-rendering the main EditorContentArea
+ * EditorContent component that renders the actual editor
  */
-export function EditorOverlays({ editor }: { editor: any }) {
+export function EditorContentArea() {
+  const { editor } = useContext(EditorContext)!
   const {
     aiGenerationIsLoading,
     aiGenerationIsSelection,
@@ -142,8 +142,8 @@ export function EditorOverlays({ editor }: { editor: any }) {
       aiGenerationIsSelection &&
       aiGenerationHasMessage
     ) {
-      ;(editor.chain().focus() as any).aiAccept().run()
-      ;(editor.commands as any).resetUiState()
+      editor.chain().focus().aiAccept().run()
+      editor.commands.resetUiState()
     }
   }, [
     aiGenerationHasMessage,
@@ -152,25 +152,6 @@ export function EditorOverlays({ editor }: { editor: any }) {
     editor,
   ])
 
-  return (
-    <>
-      <DragContextMenu />
-      <AiMenu anchorToSelection={true} />
-      <EmojiDropdownMenu />
-      <MentionDropdownMenu />
-      <SlashDropdownMenu />
-      <NotionToolbarFloating />
-      {createPortal(<MobileToolbar />, document.body)}
-    </>
-  )
-}
-
-/**
- * EditorContent component that renders the actual editor
- */
-export function EditorContentArea() {
-  const { editor } = useContext(EditorContext)!
-  
   useScrollToHash()
 
   if (!editor) {
@@ -178,11 +159,22 @@ export function EditorContentArea() {
   }
 
   return (
-    <div className="notion-like-editor-content">
-      <EditorContent editor={editor} role="presentation">
-        <EditorOverlays editor={editor} />
-      </EditorContent>
-    </div>
+    <EditorContent
+      editor={editor}
+      role="presentation"
+      className="notion-like-editor-content"
+      style={{
+        cursor: isDragging ? "grabbing" : "auto",
+      }}
+    >
+      <DragContextMenu />
+      <AiMenu />
+      <EmojiDropdownMenu />
+      <MentionDropdownMenu />
+      <SlashDropdownMenu />
+      <NotionToolbarFloating />
+      {createPortal(<MobileToolbar />, document.body)}
+    </EditorContent>
   )
 }
 
@@ -204,7 +196,7 @@ export function EditorProvider(props: EditorProviderProps) {
     },
     extensions: [
       StarterKit.configure({
-        undoRedo: true,
+        undoRedo: false,
         horizontalRule: false,
         dropcursor: {
           width: 2,
@@ -213,11 +205,11 @@ export function EditorProvider(props: EditorProviderProps) {
       }),
       HorizontalRule,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
-      // Collaboration.configure({ document: ydoc }),
-      // CollaborationCaret.configure({
-      //   provider,
-      //   user: { id: user.id, name: user.name, color: user.color },
-      // }),
+      Collaboration.configure({ document: ydoc }),
+      CollaborationCaret.configure({
+        provider,
+        user: { id: user.id, name: user.name, color: user.color },
+      }),
       Placeholder.configure({
         placeholder,
         emptyNodeClass: "is-empty with-slash",
@@ -307,6 +299,7 @@ export function EditorProvider(props: EditorProviderProps) {
   return (
     <div className="notion-like-editor-wrapper">
       <EditorContext.Provider value={{ editor }}>
+        <NotionEditorHeader />
         <div className="notion-like-editor-layout">
           <EditorContentArea />
           <TocSidebar topOffset={48} />
@@ -323,8 +316,9 @@ export function EditorProvider(props: EditorProviderProps) {
             />
           )}
         />
-        <FixedAiAskBar />
       </EditorContext.Provider>
+
+      
     </div>
   )
 }
@@ -353,7 +347,7 @@ export function NotionEditor({
  * Internal component that handles the editor loading state
  */
 export function NotionEditorContent({ placeholder }: { placeholder?: string }) {
-  const { provider, ydoc, hasCollab, setupError: collabSetupError } = useCollab()
+  const { provider, ydoc, setupError: collabSetupError } = useCollab()
   const { geminiKey, setupError: aiSetupError } = useAi()
 
   // Show setup error if either collab or AI setup failed
@@ -366,7 +360,7 @@ export function NotionEditorContent({ placeholder }: { placeholder?: string }) {
     )
   }
 
-  if ((hasCollab && !provider) || !geminiKey) {
+  if (!provider || !geminiKey) {
     return <LoadingSpinner />
   }
 

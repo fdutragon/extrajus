@@ -14,7 +14,6 @@ import {
   AI_ASK_SHORTCUT_KEY,
   useAiAsk,
 } from "../../../components/tiptap-ui/ai-ask-button"
-import { AiMenuStateProvider } from "../../../components/tiptap-ui/ai-menu"
 
 // --- UI Primitives ---
 import type { ButtonProps } from "../../../components/tiptap-ui-primitive/button"
@@ -48,17 +47,7 @@ export function AskAiShortcutBadge({
  * Button component for triggering AI ask functionality on selected content in a Tiptap editor.
  */
 export const AiAskButton = forwardRef<HTMLButtonElement, AiAskButtonProps>(
-  function AiAskButton(props, ref) {
-    return (
-      <AiMenuStateProvider>
-        <AiAskButtonInner {...props} ref={ref} />
-      </AiMenuStateProvider>
-    )
-  }
-)
-
-const AiAskButtonInner = forwardRef<HTMLButtonElement, AiAskButtonProps>(
-  function AiAskButtonInner(
+  function AiAskButton(
     {
       editor: providedEditor,
       text,

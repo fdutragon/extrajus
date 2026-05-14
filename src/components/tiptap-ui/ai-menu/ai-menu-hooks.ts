@@ -205,9 +205,6 @@ export function useAiContentTracker({
       }
     }
 
-    // Initialize immediately
-    handleTransaction({ editor })
-
     editor.on("transaction", handleTransaction)
 
     return () => {
@@ -291,13 +288,6 @@ export function useTextSelectionTracker({
 
       if (anchorToSelection && handleSelectionAnchored(editor)) return
 
-      handleSelectionDefault(editor)
-    }
-
-    // Initialize immediately
-    if (anchorToSelection) {
-      handleSelectionAnchored(editor)
-    } else {
       handleSelectionDefault(editor)
     }
 

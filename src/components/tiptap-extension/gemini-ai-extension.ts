@@ -13,11 +13,6 @@ export type Tone =
 export interface TextOptions {
   tone?: Tone
   language?: Language
-  insertAt?: { from: number; to: number } | number | null
-  regenerate?: boolean
-  text?: string
-  stream?: boolean
-  format?: "rich-text" | "text"
 }
 
 export interface GeminiOptions {
@@ -26,6 +21,7 @@ export interface GeminiOptions {
 }
 
 export interface AiTextPromptOptions extends TextOptions {
+  text: string
   insert?: boolean
   stream?: boolean
   format?: "rich-text" | "text"
@@ -45,13 +41,6 @@ declare module "@tiptap/core" {
     aiComplete: (options?: TextOptions) => ReturnType
     aiTranslate: (language: Language, options?: TextOptions) => ReturnType
     aiAdjustTone: (tone: Tone, options?: TextOptions) => ReturnType
-    aiRegenerate: (options?: TextOptions) => ReturnType
-    aiRephrase: (options?: TextOptions) => ReturnType
-  }
-
-  interface Storage {
-    ai: any
-    aiAdvanced: any
   }
 }
 
@@ -86,19 +75,25 @@ export const Gemini = Extension.create<GeminiOptions>({
         const result = await model.generateContentStream(prompt)
         
         let accumulatedText = ""
+        let lastInsertedLength = 0
 
+        // We'll track the start position to replace content as it streams
         const { from } = editor.state.selection
+        let currentPos = from
 
         for await (const chunk of result.stream) {
           let chunkText = chunk.text()
           accumulatedText += chunkText
 
+          // Clean up markdown code blocks if the model ignores instructions
           let cleanedContent = accumulatedText
             .replace(/^```html\n?/, "")
             .replace(/\n?```$/, "")
             .trim()
 
           if (cleanedContent) {
+            // Use a command that replaces the content from the start point 
+            // to avoid duplicating text and handle HTML properly
             editor.commands.insertContentAt({ from, to: editor.state.selection.to }, cleanedContent)
             editor.commands.aiGenerationHasMessage(true)
           }
@@ -111,103 +106,88 @@ export const Gemini = Extension.create<GeminiOptions>({
     }
 
     return {
-      aiTextPrompt: (options: string | AiTextPromptOptions) => ({ editor }: { editor: any }) => {
+      aiTextPrompt: (options) => ({ editor }) => {
         const promptText = typeof options === "string" ? options : options.text
-        runGemini(editor, promptText || "")
+        runGemini(editor, promptText)
         return true
       },
 
-      aiExtend: (options?: TextOptions) => ({ editor }: { editor: any }) => {
+      aiExtend: (options) => ({ editor }) => {
         const text = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
         const prompt = `Extend the following text, maintaining the tone and professional formatting: "${text}"`
         runGemini(editor, prompt)
         return true
       },
 
-      aiShorten: (options?: TextOptions) => ({ editor }: { editor: any }) => {
+      aiShorten: (options) => ({ editor }) => {
         const text = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
         const prompt = `Shorten the following text, making it concise but well-formatted: "${text}"`
         runGemini(editor, prompt)
         return true
       },
 
-      aiSimplify: (options?: TextOptions) => ({ editor }: { editor: any }) => {
+      aiSimplify: (options) => ({ editor }) => {
         const text = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
         const prompt = `Simplify the following text to make it easier to understand, using clear HTML structure: "${text}"`
         runGemini(editor, prompt)
         return true
       },
 
-      aiSummarize: (options?: TextOptions) => ({ editor }: { editor: any }) => {
+      aiSummarize: (options) => ({ editor }) => {
         const text = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
         const prompt = `Summarize the following text using bullet points (<ul>/<li>) if appropriate: "${text}"`
         runGemini(editor, prompt)
         return true
       },
 
-      aiFixSpellingAndGrammar: (options?: TextOptions) => ({ editor }: { editor: any }) => {
+      aiFixSpellingAndGrammar: (options) => ({ editor }) => {
         const text = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
         const prompt = `Fix spelling and grammar in the following text, preserving all HTML formatting. Return ONLY the corrected HTML fragment: "${text}"`
         runGemini(editor, prompt)
         return true
       },
 
-      aiEmojify: (options?: TextOptions) => ({ editor }: { editor: any }) => {
+      aiEmojify: (options) => ({ editor }) => {
         const text = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
         const prompt = `Add relevant emojis to the following text while keeping the HTML structure intact: "${text}"`
         runGemini(editor, prompt)
         return true
       },
 
-      aiComplete: (options?: TextOptions) => ({ editor }: { editor: any }) => {
+      aiComplete: (options) => ({ editor }) => {
         const text = editor.state.doc.textBetween(0, editor.state.selection.to)
         const prompt = `Based on the preceding content, complete the next sentence or paragraph using proper HTML formatting: "${text}"`
         runGemini(editor, prompt)
         return true
       },
 
-      aiTranslate: (language: Language, options?: TextOptions) => ({ editor }: { editor: any }) => {
+      aiTranslate: (language, options) => ({ editor }) => {
         const text = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
         const prompt = `Translate the following text to ${language}, preserving all HTML tags exactly as they are: "${text}"`
         runGemini(editor, prompt)
         return true
       },
 
-      aiAdjustTone: (tone: Tone, options?: TextOptions) => ({ editor }: { editor: any }) => {
+      aiAdjustTone: (tone, options) => ({ editor }) => {
         const text = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
         const prompt = `Rewrite the following text using a ${tone} tone and structured HTML: "${text}"`
-        runGemini(editor, prompt)
-        return true
-      },
-      
-      aiRegenerate: (options?: TextOptions) => ({ editor }: { editor: any }) => {
-        // For now, let's just use a default prompt or the last one if we had it
-        // Since we don't store the last prompt, let's try to infer or just extend
-        const text = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
-        runGemini(editor, `Regenerate or improve this text: ${text}`)
-        return true
-      },
-
-      aiRephrase: (options?: TextOptions) => ({ editor }: { editor: any }) => {
-        const text = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
-        const prompt = `Rephrase the following text to make it more professional and clear, while maintaining the same meaning and HTML structure: "${text}"`
         runGemini(editor, prompt)
         return true
       },
 
       aiAccept:
         () =>
-        ({ editor }: { editor: any }) => {
+        ({ editor }) => {
           editor.commands.resetUiState()
           return true
         },
 
       aiReject:
         () =>
-        ({ editor }: { editor: any }) => {
+        ({ editor }) => {
           editor.commands.resetUiState()
           return true
         },
-    } as any
+    }
   },
 })

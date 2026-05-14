@@ -390,8 +390,8 @@ export const DragContextMenu: React.FC<DragContextMenuProps> = ({
 
   useEffect(() => {
     if (!editor) return
-    ;(editor.commands as any).setLockDragHandle(open)
-    ;(editor.commands as any).setMeta("lockDragHandle", open)
+    editor.commands.setLockDragHandle(open)
+    editor.commands.setMeta("lockDragHandle", open)
   }, [editor, open])
 
   const mainAxisOffset = 16
@@ -418,18 +418,18 @@ export const DragContextMenu: React.FC<DragContextMenuProps> = ({
 
   const handleOnMenuClose = useCallback(() => {
     if (editor) {
-      ;(editor.commands as any).setMeta("hideDragHandle", true)
+      editor.commands.setMeta("hideDragHandle", true)
     }
   }, [editor])
 
   const onElementDragStart = useCallback(() => {
     if (!editor) return
-    ;(editor.commands as any).setIsDragging(true)
+    editor.commands.setIsDragging(true)
   }, [editor])
 
   const onElementDragEnd = useCallback(() => {
     if (!editor) return
-    ;(editor.commands as any).setIsDragging(false)
+    editor.commands.setIsDragging(false)
 
     setTimeout(() => {
       editor.view.dom.blur()

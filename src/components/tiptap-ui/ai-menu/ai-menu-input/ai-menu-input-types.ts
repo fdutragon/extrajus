@@ -1,8 +1,6 @@
-import type { Tone } from "../../../../components/tiptap-extension/gemini-ai-extension"
-
 export interface BaseAiMenuInputProps {
   onInputSubmit: (value: string) => void
-  onToneChange?: (tone: Tone) => void
+  onToneChange?: (tone: string) => void
   onClose?: () => void
   onInputFocus?: () => void
   onInputBlur?: () => void

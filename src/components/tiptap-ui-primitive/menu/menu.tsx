@@ -76,6 +76,7 @@ export function Menu({
       open={open}
       setOpen={handleOpenChange}
       setValues={onValuesChange}
+      showTimeout={100}
       {...props}
     >
       {trigger}

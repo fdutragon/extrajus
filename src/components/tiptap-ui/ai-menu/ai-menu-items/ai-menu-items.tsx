@@ -2,7 +2,7 @@
 
 import { Fragment, useCallback, useMemo } from "react"
 import { type Editor } from "@tiptap/react"
-import type { TextOptions, Language, Tone } from "../../../../components/tiptap-extension/gemini-ai-extension"
+import type { TextOptions, Language } from "../../../../components/tiptap-extension/gemini-ai-extension"
 
 // -- Hooks --
 import { useTiptapEditor } from "../../../../hooks/use-tiptap-editor"
@@ -88,7 +88,7 @@ function initializeEditorMenuActions(): Record<
           newOptions.text = context
         }
 
-        ;(editor.chain() as any).aiFixSpellingAndGrammar(newOptions).run()
+        editor.chain().aiFixSpellingAndGrammar(newOptions).run()
       },
     },
     aiExtend: {
@@ -110,7 +110,7 @@ function initializeEditorMenuActions(): Record<
           newOptions.text = context
         }
 
-        ;(editor.chain() as any).aiExtend(newOptions).run()
+        editor.chain().aiExtend(newOptions).run()
       },
     },
     aiShorten: {
@@ -132,7 +132,7 @@ function initializeEditorMenuActions(): Record<
           newOptions.text = context
         }
 
-        ;(editor.chain() as any).aiShorten(newOptions).run()
+        editor.chain().aiShorten(newOptions).run()
       },
     },
     simplifyLanguage: {
@@ -154,7 +154,7 @@ function initializeEditorMenuActions(): Record<
           newOptions.text = context
         }
 
-        ;(editor.chain() as any).aiSimplify(newOptions).run()
+        editor.chain().aiSimplify(newOptions).run()
       },
     },
     improveWriting: {
@@ -176,7 +176,7 @@ function initializeEditorMenuActions(): Record<
           newOptions.text = context
         }
 
-        ;(editor.chain() as any).aiRephrase(newOptions).run()
+        editor.chain().aiRephrase(newOptions).run()
       },
     },
     emojify: {
@@ -198,7 +198,7 @@ function initializeEditorMenuActions(): Record<
           newOptions.text = context
         }
 
-        ;(editor.chain() as any).aiEmojify(newOptions).run()
+        editor.chain().aiEmojify(newOptions).run()
       },
     },
     continueWriting: {
@@ -220,7 +220,7 @@ function initializeEditorMenuActions(): Record<
           newOptions.text = context
         }
 
-        ;(editor.chain() as any).aiComplete(newOptions).run()
+        editor.chain().aiComplete(newOptions).run()
       },
     },
     summarize: {
@@ -242,7 +242,7 @@ function initializeEditorMenuActions(): Record<
           newOptions.text = context
         }
 
-        ;(editor.chain() as any).aiSummarize(newOptions).run()
+        editor.chain().aiSummarize(newOptions).run()
       },
     },
     translateTo: {
@@ -341,7 +341,7 @@ export function LanguageSelectionSubmenu({
         langOptions.text = context
       }
 
-      ;(editor.chain() as any).aiTranslate(selectedLanguageCode, langOptions).run()
+      editor.chain().aiTranslate(selectedLanguageCode, langOptions).run()
     },
     [editor, state.tone, updateState]
   )
@@ -413,7 +413,7 @@ export function ToneSelectionSubmenu({ editor }: { editor: Editor | null }) {
   }, [searchValue])
 
   const handleToneSelection = useCallback(
-    (selectedTone: Tone) => {
+    (selectedTone: string) => {
       if (!editor) return
 
       const { insertAt, isSelection, context } = getContextAndInsertAt(editor)
@@ -437,7 +437,7 @@ export function ToneSelectionSubmenu({ editor }: { editor: Editor | null }) {
         toneOptions.text = context
       }
 
-      ;(editor.chain() as any).aiAdjustTone(selectedTone, toneOptions).run()
+      editor.chain().aiAdjustTone(selectedTone, toneOptions).run()
     },
     [editor, state.language, state.tone, updateState]
   )
@@ -445,7 +445,7 @@ export function ToneSelectionSubmenu({ editor }: { editor: Editor | null }) {
   const toneMenuItems = availableTones.map((tone) => (
     <MenuItem
       key={tone.value}
-      onClick={() => handleToneSelection(tone.value as Tone)}
+      onClick={() => handleToneSelection(tone.value || "")}
       render={
         <Button variant="ghost">
           <span className="tiptap-button-text">{tone.label}</span>

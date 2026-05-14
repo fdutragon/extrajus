@@ -12,19 +12,21 @@ export interface UiState {
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
-    aiGenerationSetIsSelection: (value: boolean) => ReturnType
-    aiGenerationSetIsLoading: (value: boolean) => ReturnType
-    aiGenerationShow: () => ReturnType
-    aiGenerationHide: () => ReturnType
-    aiGenerationHasMessage: (value: boolean) => ReturnType
+    uiState: {
+      aiGenerationSetIsSelection: (value: boolean) => ReturnType
+      aiGenerationSetIsLoading: (value: boolean) => ReturnType
+      aiGenerationShow: () => ReturnType
+      aiGenerationHide: () => ReturnType
+      aiGenerationHasMessage: (value: boolean) => ReturnType
 
-    commentInputShow: () => ReturnType
-    commentInputHide: () => ReturnType
+      commentInputShow: () => ReturnType
+      commentInputHide: () => ReturnType
 
-    setLockDragHandle: (value: boolean) => ReturnType
+      setLockDragHandle: (value: boolean) => ReturnType
 
-    resetUiState: () => ReturnType
-    setIsDragging: (value: boolean) => ReturnType
+      resetUiState: () => ReturnType
+      setIsDragging: (value: boolean) => ReturnType
+    }
   }
 
   interface Storage {
@@ -52,68 +54,44 @@ export const UiState = Extension.create<UiState>({
   },
 
   addCommands() {
-    const triggerUpdate = () => {
-      this.editor.view.dispatch(this.editor.state.tr.setMeta("uiStateUpdate", true))
+    const createBooleanSetter =
+      (key: keyof UiState) => (value: boolean) => () => {
+        this.storage[key] = value
+        return true
+      }
+
+    const createToggle = (key: keyof UiState, value: boolean) => () => () => {
+      this.storage[key] = value
+      return true
     }
 
     return {
       // AI Generation commands
-      aiGenerationSetIsSelection: (value: boolean) => () => {
-        this.storage.uiState.aiGenerationIsSelection = value
-        triggerUpdate()
-        return true
-      },
-      aiGenerationSetIsLoading: (value: boolean) => () => {
-        this.storage.uiState.aiGenerationIsLoading = value
-        triggerUpdate()
-        return true
-      },
-      aiGenerationHasMessage: (value: boolean) => () => {
-        this.storage.uiState.aiGenerationHasMessage = value
-        triggerUpdate()
-        return true
-      },
-      aiGenerationShow: () => () => {
-        this.storage.uiState.aiGenerationActive = true
-        triggerUpdate()
-        return true
-      },
-      aiGenerationHide: () => () => {
-        this.storage.uiState.aiGenerationActive = false
-        triggerUpdate()
-        return true
-      },
+      aiGenerationSetIsSelection: createBooleanSetter(
+        "aiGenerationIsSelection"
+      ),
+      aiGenerationSetIsLoading: createBooleanSetter("aiGenerationIsLoading"),
+      aiGenerationHasMessage: createBooleanSetter("aiGenerationHasMessage"),
+      aiGenerationShow: createToggle("aiGenerationActive", true),
+      aiGenerationHide: createToggle("aiGenerationActive", false),
 
       // Comment input commands
-      commentInputShow: () => () => {
-        this.storage.uiState.commentInputVisible = true
-        triggerUpdate()
-        return true
-      },
-      commentInputHide: () => () => {
-        this.storage.uiState.commentInputVisible = false
-        triggerUpdate()
-        return true
-      },
+      commentInputShow: createToggle("commentInputVisible", true),
+      commentInputHide: createToggle("commentInputVisible", false),
 
       // Drag handle commands
-      setLockDragHandle: (value: boolean) => () => {
-        this.storage.uiState.lockDragHandle = value
-        triggerUpdate()
-        return true
-      },
-      setIsDragging: (value: boolean) => () => {
-        this.storage.uiState.isDragging = value
-        triggerUpdate()
-        return true
-      },
+      setLockDragHandle: createBooleanSetter("lockDragHandle"),
+      setIsDragging: createBooleanSetter("isDragging"),
 
       // Reset command
       resetUiState: () => () => {
-        this.storage.uiState = { ...defaultUiState }
-        triggerUpdate()
+        Object.assign(this.storage, { ...defaultUiState })
         return true
       },
-    } as any
+    }
+  },
+
+  onCreate() {
+    this.storage = { ...defaultUiState }
   },
 })

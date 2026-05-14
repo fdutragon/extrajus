@@ -1,4 +1,4 @@
-import type { Language, Tone } from "../../../../components/tiptap-extension/gemini-ai-extension"
+import type { Language } from "../../../../components/tiptap-extension/gemini-ai-extension"
 
 export const SUPPORTED_LANGUAGES: Array<{
   label: string
@@ -21,7 +21,7 @@ export const SUPPORTED_LANGUAGES: Array<{
   { label: "Arabic", value: "ar" },
 ]
 
-export const SUPPORTED_TONES: Array<{ label: string; value: Tone }> = [
+export const SUPPORTED_TONES: Array<{ label: string; value: string }> = [
   { label: "Academic", value: "academic" },
   { label: "Business", value: "business" },
   { label: "Casual", value: "casual" },

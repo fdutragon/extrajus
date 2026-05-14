@@ -187,30 +187,30 @@ export function useImproveDropdown(config?: UseImproveDropdownConfig) {
     (command: AICommand) => {
       if (!editor) return
 
-      ;(editor.chain().focus() as any).aiGenerationShow().run()
+      editor.chain().focus().aiGenerationShow().run()
 
       setTimeout(() => {
         switch (command) {
           case "fixSpellingAndGrammar":
-            ;(editor.commands as any).aiFixSpellingAndGrammar(defaultOptions)
+            editor.commands.aiFixSpellingAndGrammar(defaultOptions)
             break
           case "extend":
-            ;(editor.commands as any).aiExtend(defaultOptions)
+            editor.commands.aiExtend(defaultOptions)
             break
           case "shorten":
-            ;(editor.commands as any).aiShorten(defaultOptions)
+            editor.commands.aiShorten(defaultOptions)
             break
           case "simplify":
-            ;(editor.commands as any).aiSimplify(defaultOptions)
+            editor.commands.aiSimplify(defaultOptions)
             break
           case "emojify":
-            ;(editor.commands as any).aiEmojify(defaultOptions)
+            editor.commands.aiEmojify(defaultOptions)
             break
           case "complete":
-            ;(editor.commands as any).aiComplete(defaultOptions)
+            editor.commands.aiComplete(defaultOptions)
             break
           case "summarize":
-            ;(editor.commands as any).aiSummarize(defaultOptions)
+            editor.commands.aiSummarize(defaultOptions)
             break
         }
       }, 0)
@@ -221,10 +221,10 @@ export function useImproveDropdown(config?: UseImproveDropdownConfig) {
   const adjustTone = useCallback(
     (tone: Tone) => {
       if (!editor) return
-      ;(editor.chain().focus() as any).aiGenerationShow().run()
+      editor.chain().focus().aiGenerationShow().run()
 
       setTimeout(() => {
-        ;(editor.commands as any).aiAdjustTone(tone, defaultOptions)
+        editor.commands.aiAdjustTone(tone, defaultOptions)
       }, 0)
     },
     [editor, defaultOptions]
@@ -233,10 +233,10 @@ export function useImproveDropdown(config?: UseImproveDropdownConfig) {
   const translate = useCallback(
     (language: Language) => {
       if (!editor) return
-      ;(editor.chain().focus() as any).aiGenerationShow().run()
+      editor.chain().focus().aiGenerationShow().run()
 
       setTimeout(() => {
-        ;(editor.commands as any).aiTranslate(language, defaultOptions)
+        editor.commands.aiTranslate(language, defaultOptions)
       }, 0)
     },
     [editor, defaultOptions]
