@@ -36,6 +36,7 @@ import { NodeBackground } from "../../../components/tiptap-extension/node-backgr
 import { NodeAlignment } from "../../../components/tiptap-extension/node-alignment-extension"
 import { TocNode } from "../../../components/tiptap-node/toc-node/extensions/toc-node-extension"
 import { LegalNode } from "../../../components/tiptap-node/legal-node/legal-node-extension"
+import { VariableNode } from "../../../components/tiptap-node/variable-node/variable-extension"
 
 // --- Tiptap Node ---
 import { ImageUploadNode } from "../../../components/tiptap-node/image-upload-node/image-upload-node-extension"
@@ -58,6 +59,7 @@ import "../../../components/tiptap-node/image-node/image-node.scss"
 import "../../../components/tiptap-node/heading-node/heading-node.scss"
 import "../../../components/tiptap-node/paragraph-node/paragraph-node.scss"
 import "../../../components/tiptap-node/legal-node/legal-node.scss"
+import "../../../components/tiptap-node/variable-node/variable-node.scss"
 
 // --- Tiptap UI ---
 import { SlashDropdownMenu } from "../../../components/tiptap-ui/slash-dropdown-menu"
@@ -241,6 +243,7 @@ export function EditorProvider(props: EditorProviderProps) {
       TableHandleExtension,
       ListNormalizationExtension,
       LegalNode,
+      VariableNode,
       ImageUploadNode.configure({
         accept: "image/*",
         maxSize: MAX_FILE_SIZE,

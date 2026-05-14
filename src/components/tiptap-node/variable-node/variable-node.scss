@@ -1,0 +1,19 @@
+.notion-like-editor-content {
+  .contract-variable {
+    background-color: theme('colors.orange.500' / 20%);
+    color: theme('colors.orange.700');
+    border: 1px solid theme('colors.orange.500' / 40%);
+    border-radius: 4px;
+    padding: 0 4px;
+    font-weight: 600;
+    font-size: 0.9em;
+    cursor: default;
+    user-select: all;
+
+    .dark & {
+      background-color: theme('colors.orange.500' / 15%);
+      color: theme('colors.orange.400');
+      border-color: theme('colors.orange.500' / 30%);
+    }
+  }
+}

@@ -16,6 +16,7 @@ import { MinusIcon } from "../../../components/tiptap-icons/minus-icon"
 import { TypeIcon } from "../../../components/tiptap-icons/type-icon"
 import { TableIcon } from "../../../components/tiptap-icons/table-icon"
 import { ListIndentedIcon } from "../../../components/tiptap-icons/list-indented-icon"
+import { AtSignIcon } from "../../../components/tiptap-icons/at-sign-icon"
 
 // --- Lib ---
 import {
@@ -136,6 +137,13 @@ const texts = {
   },
 
   // Insert
+  variable: {
+    title: "Variável",
+    subtext: "Inserir tag dinâmica (ex: {{NOME}})",
+    keywords: ["variavel", "tag", "dinamica"],
+    badge: AtSignIcon,
+    group: "Automação",
+  },
   table: {
     title: "Tabela",
     subtext: "Inserir tabela estruturada",
@@ -308,6 +316,13 @@ const getItemImplementations = () => {
     },
 
     // Insert
+    variable: {
+      check: (editor: Editor) => isNodeInSchema("variable", editor),
+      action: ({ editor }: { editor: Editor }) => {
+        const name = prompt("Nome da Variável (ex: CONTRATANTE):") || "VARIAVEL"
+        ;(editor.chain() as any).focus().insertVariable(name.toUpperCase()).run()
+      },
+    },
     divider: {
       check: (editor: Editor) => isNodeInSchema("horizontalRule", editor),
       action: ({ editor }: { editor: Editor }) => {
