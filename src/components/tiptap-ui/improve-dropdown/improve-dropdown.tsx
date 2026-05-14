@@ -148,33 +148,27 @@ export function ImproveDropdown({
     () => [
       {
         icon: CheckAiIcon,
-        label: "Fix spelling & grammar",
+        label: "Corrigir ortografia e gramática",
         command: "fixSpellingAndGrammar",
         onClick: () => executeAICommand("fixSpellingAndGrammar"),
       },
       {
         icon: TextExtendIcon,
-        label: "Extend text",
+        label: "Expandir texto",
         command: "extend",
         onClick: () => executeAICommand("extend"),
       },
       {
         icon: TextReduceIcon,
-        label: "Reduce text",
+        label: "Reduzir texto",
         command: "shorten",
         onClick: () => executeAICommand("shorten"),
       },
       {
         icon: Simplify2Icon,
-        label: "Simplify text",
+        label: "Simplificar texto",
         command: "simplify",
         onClick: () => executeAICommand("simplify"),
-      },
-      {
-        icon: SmileAiIcon,
-        label: "Emojify",
-        command: "emojify",
-        onClick: () => executeAICommand("emojify"),
       },
     ],
     [executeAICommand]
@@ -184,13 +178,13 @@ export function ImproveDropdown({
     () => [
       {
         icon: CompleteSentenceIcon,
-        label: "Complete sentence",
+        label: "Completar frase",
         command: "complete",
         onClick: () => executeAICommand("complete"),
       },
       {
         icon: SummarizeTextIcon,
-        label: "Summarize",
+        label: "Resumir",
         command: "summarize",
         onClick: () => executeAICommand("summarize"),
       },
@@ -202,7 +196,7 @@ export function ImproveDropdown({
     () => [
       {
         icon: MicAiIcon,
-        label: "Adjust tone",
+        label: "Ajustar tom",
         items: SUPPORTED_TONES.map((option) => ({
           label: option.label,
           value: option.value,
@@ -216,7 +210,7 @@ export function ImproveDropdown({
   const translateSubMenu: SubMenuAction = useMemo(
     () => ({
       icon: LanguagesIcon,
-      label: "Translate",
+      label: "Traduzir",
       items: SUPPORTED_LANGUAGES.map((option) => ({
         label: option.label,
         value: option.value,
@@ -241,12 +235,12 @@ export function ImproveDropdown({
           data-disabled={isDisabled}
           role="button"
           tabIndex={-1}
-          aria-label="Improve"
-          tooltip="Improve"
+          aria-label="Melhorar com IA"
+          tooltip="Melhorar com IA"
           {...props}
         >
           <AiSparklesIcon className="tiptap-button-icon" />
-          <span className="tiptap-button-text">Improve</span>
+          <span className="tiptap-button-text">IA</span>
         </Button>
       </DropdownMenuTrigger>
 

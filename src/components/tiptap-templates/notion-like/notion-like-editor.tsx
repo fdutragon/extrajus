@@ -9,20 +9,16 @@ import { Gemini } from "../../../components/tiptap-extension/gemini-ai-extension
 
 // --- Tiptap Core Extensions ---
 import { StarterKit } from "@tiptap/starter-kit"
-import { Mention } from "@tiptap/extension-mention"
-import { TaskList, TaskItem } from "@tiptap/extension-list"
 import { Color, TextStyle } from "@tiptap/extension-text-style"
+import { Highlight } from "@tiptap/extension-highlight"
 import { Placeholder, Selection } from "@tiptap/extensions"
 import { Collaboration, isChangeOrigin } from "@tiptap/extension-collaboration"
 import { CollaborationCaret } from "@tiptap/extension-collaboration-caret"
 import { Typography } from "@tiptap/extension-typography"
-import { Highlight } from "@tiptap/extension-highlight"
 import { Superscript } from "@tiptap/extension-superscript"
 import { Subscript } from "@tiptap/extension-subscript"
 import { TextAlign } from "@tiptap/extension-text-align"
-import { Mathematics } from "@tiptap/extension-mathematics"
 import { UniqueID } from "@tiptap/extension-unique-id"
-import { Emoji, gitHubEmojis } from "@tiptap/extension-emoji"
 import {
   getHierarchicalIndexes,
   TableOfContents,
@@ -62,8 +58,6 @@ import "../../../components/tiptap-node/heading-node/heading-node.scss"
 import "../../../components/tiptap-node/paragraph-node/paragraph-node.scss"
 
 // --- Tiptap UI ---
-import { EmojiDropdownMenu } from "../../../components/tiptap-ui/emoji-dropdown-menu"
-import { MentionDropdownMenu } from "../../../components/tiptap-ui/mention-dropdown-menu"
 import { SlashDropdownMenu } from "../../../components/tiptap-ui/slash-dropdown-menu"
 import { DragContextMenu } from "../../../components/tiptap-ui/drag-context-menu"
 import { AiMenu } from "../../../components/tiptap-ui/ai-menu"
@@ -82,7 +76,6 @@ import "../../../components/tiptap-templates/notion-like/notion-like-editor.scss
 // --- Content ---
 import { NotionEditorHeader } from "../../../components/tiptap-templates/notion-like/notion-like-editor-header"
 import { MobileToolbar } from "../../../components/tiptap-templates/notion-like/notion-like-editor-mobile-toolbar"
-import { NotionToolbarFloating } from "../../../components/tiptap-templates/notion-like/notion-like-editor-toolbar-floating"
 import { SetupErrorMessage } from "../../../components/tiptap-templates/notion-like/setup-error-message"
 import { TocSidebar } from "../../../components/tiptap-node/toc-node"
 import {
@@ -107,7 +100,7 @@ export interface EditorProviderProps {
 /**
  * Loading spinner component shown while connecting to the notion server
  */
-export function LoadingSpinner({ text = "Connecting..." }: { text?: string }) {
+export function LoadingSpinner({ text = "Conectando..." }: { text?: string }) {
   return (
     <div className="spinner-container">
       <div className="spinner-content">
@@ -169,10 +162,7 @@ export function EditorContentArea() {
     >
       <DragContextMenu />
       <AiMenu />
-      <EmojiDropdownMenu />
-      <MentionDropdownMenu />
       <SlashDropdownMenu />
-      <NotionToolbarFloating />
       {createPortal(<MobileToolbar />, document.body)}
     </EditorContent>
   )
@@ -182,7 +172,7 @@ export function EditorContentArea() {
  * Component that creates and provides the editor instance
  */
 export function EditorProvider(props: EditorProviderProps) {
-  const { provider, ydoc, placeholder = "Start writing...", geminiKey } = props
+  const { provider, ydoc, placeholder = "Comece a redigir a cláusula...", geminiKey } = props
 
   const { user } = useUser()
   const { setTocContent } = useToc()
@@ -214,13 +204,6 @@ export function EditorProvider(props: EditorProviderProps) {
         placeholder,
         emptyNodeClass: "is-empty with-slash",
       }),
-      Mention,
-      Emoji.configure({
-        emojis: gitHubEmojis.filter(
-          (emoji) => !emoji.name.includes("regional")
-        ),
-        forceFallbackImages: true,
-      }),
       TableKit.configure({
         table: {
           resizable: true,
@@ -232,23 +215,17 @@ export function EditorProvider(props: EditorProviderProps) {
           "paragraph",
           "heading",
           "blockquote",
-          "taskList",
-          "bulletList",
-          "orderedList",
           "tableCell",
           "tableHeader",
           "tocNode",
         ],
       }),
       NodeAlignment,
-      TextStyle,
-      Mathematics,
       Superscript,
       Subscript,
       Indent,
+      TextStyle,
       Color,
-      TaskList,
-      TaskItem.configure({ nested: true }),
       Highlight.configure({ multicolor: true }),
       Selection,
       Image,
@@ -273,7 +250,6 @@ export function EditorProvider(props: EditorProviderProps) {
           "paragraph",
           "bulletList",
           "orderedList",
-          "taskList",
           "heading",
           "blockquote",
           "codeBlock",

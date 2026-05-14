@@ -4,7 +4,6 @@ import { useCallback } from "react"
 import type { Editor } from "@tiptap/react"
 
 // --- Icons ---
-import { CodeBlockIcon } from "../../../components/tiptap-icons/code-block-icon"
 import { HeadingOneIcon } from "../../../components/tiptap-icons/heading-one-icon"
 import { HeadingTwoIcon } from "../../../components/tiptap-icons/heading-two-icon"
 import { HeadingThreeIcon } from "../../../components/tiptap-icons/heading-three-icon"
@@ -12,12 +11,9 @@ import { ImageIcon } from "../../../components/tiptap-icons/image-icon"
 import { ListIcon } from "../../../components/tiptap-icons/list-icon"
 import { ListOrderedIcon } from "../../../components/tiptap-icons/list-ordered-icon"
 import { BlockquoteIcon } from "../../../components/tiptap-icons/blockquote-icon"
-import { ListTodoIcon } from "../../../components/tiptap-icons/list-todo-icon"
 import { AiSparklesIcon } from "../../../components/tiptap-icons/ai-sparkles-icon"
 import { MinusIcon } from "../../../components/tiptap-icons/minus-icon"
 import { TypeIcon } from "../../../components/tiptap-icons/type-icon"
-import { AtSignIcon } from "../../../components/tiptap-icons/at-sign-icon"
-import { SmilePlusIcon } from "../../../components/tiptap-icons/smile-plus-icon"
 import { TableIcon } from "../../../components/tiptap-icons/table-icon"
 import { ListIndentedIcon } from "../../../components/tiptap-icons/list-indented-icon"
 
@@ -33,8 +29,6 @@ import {
 
 // --- Tiptap UI ---
 import type { SuggestionItem } from "../../../components/tiptap-ui-utils/suggestion-menu"
-import { addEmojiTrigger } from "../../../components/tiptap-ui/emoji-trigger-button"
-import { addMentionTrigger } from "../../../components/tiptap-ui/mention-trigger-button"
 
 export interface SlashMenuConfig {
   enabledItems?: SlashMenuItemType[]
@@ -48,137 +42,106 @@ export interface SlashMenuConfig {
 const texts = {
   // AI
   continue_writing: {
-    title: "Continue Writing",
-    subtext: "Continue writing from the current position",
-    keywords: ["continue", "write", "continue writing", "ai"],
+    title: "Continuar Redigindo",
+    subtext: "Continuar a redação a partir da posição atual",
+    keywords: ["continuar", "escrever", "redigir", "ai"],
     badge: AiSparklesIcon,
-    group: "AI",
+    group: "IA Jurídica",
   },
   ai_ask_button: {
-    title: "Ask AI",
-    subtext: "Ask AI to generate content",
-    keywords: ["ai", "ask", "generate"],
+    title: "Consultar Lilith",
+    subtext: "Gerar conteúdo ou cláusula com Inteligência Artificial",
+    keywords: ["ia", "lilith", "gerar", "cláusula"],
     badge: AiSparklesIcon,
-    group: "AI",
+    group: "IA Jurídica",
   },
 
   // Style
   text: {
-    title: "Text",
-    subtext: "Regular text paragraph",
-    keywords: ["p", "paragraph", "text"],
+    title: "Texto Padrão",
+    subtext: "Parágrafo de texto regular",
+    keywords: ["p", "paragrafo", "texto"],
     badge: TypeIcon,
-    group: "Style",
+    group: "Estrutura",
   },
   heading_1: {
-    title: "Heading 1",
-    subtext: "Top-level heading",
-    keywords: ["h", "heading1", "h1"],
+    title: "Título 1",
+    subtext: "Título de seção principal",
+    keywords: ["h", "titulo1", "h1"],
     badge: HeadingOneIcon,
-    group: "Style",
+    group: "Estrutura",
   },
   heading_2: {
-    title: "Heading 2",
-    subtext: "Key section heading",
-    keywords: ["h2", "heading2", "subheading"],
+    title: "Título 2",
+    subtext: "Título de subseção",
+    keywords: ["h2", "titulo2"],
     badge: HeadingTwoIcon,
-    group: "Style",
+    group: "Estrutura",
   },
   heading_3: {
-    title: "Heading 3",
-    subtext: "Subsection and group heading",
-    keywords: ["h3", "heading3", "subheading"],
+    title: "Título 3",
+    subtext: "Título de grupo menor",
+    keywords: ["h3", "titulo3"],
     badge: HeadingThreeIcon,
-    group: "Style",
+    group: "Estrutura",
   },
   bullet_list: {
-    title: "Bullet List",
-    subtext: "List with unordered items",
-    keywords: ["ul", "li", "list", "bulletlist", "bullet list"],
+    title: "Lista de Marcadores",
+    subtext: "Lista não ordenada",
+    keywords: ["ul", "li", "lista", "marcadores"],
     badge: ListIcon,
-    group: "Style",
+    group: "Estrutura",
   },
   ordered_list: {
-    title: "Numbered List",
-    subtext: "List with ordered items",
-    keywords: ["ol", "li", "list", "numberedlist", "numbered list"],
+    title: "Lista Numerada",
+    subtext: "Lista com itens ordenados",
+    keywords: ["ol", "li", "lista", "numerada"],
     badge: ListOrderedIcon,
-    group: "Style",
-  },
-  task_list: {
-    title: "To-do list",
-    subtext: "List with tasks",
-    keywords: ["tasklist", "task list", "todo", "checklist"],
-    badge: ListTodoIcon,
-    group: "Style",
+    group: "Estrutura",
   },
   quote: {
-    title: "Blockquote",
-    subtext: "Blockquote block",
-    keywords: ["quote", "blockquote"],
+    title: "Citação",
+    subtext: "Bloco de citação destacada",
+    keywords: ["citacao", "quote", "blockquote"],
     badge: BlockquoteIcon,
-    group: "Style",
-  },
-  code_block: {
-    title: "Code Block",
-    subtext: "Code block with syntax highlighting",
-    keywords: ["code", "pre"],
-    badge: CodeBlockIcon,
-    group: "Style",
+    group: "Estrutura",
   },
 
   // Insert
-  mention: {
-    title: "Mention",
-    subtext: "Mention a user or item",
-    keywords: ["mention", "user", "item", "tag"],
-    badge: AtSignIcon,
-    group: "Insert",
-  },
-  emoji: {
-    title: "Emoji",
-    subtext: "Insert an emoji",
-    keywords: ["emoji", "emoticon", "smiley"],
-    badge: SmilePlusIcon,
-    group: "Insert",
-  },
   table: {
-    title: "Table",
-    subtext: "Insert a table",
-    aliases: ["table", "insertTable"],
+    title: "Tabela",
+    subtext: "Inserir tabela estruturada",
+    aliases: ["tabela", "inserirTabela"],
     badge: TableIcon,
-    group: "Insert",
+    group: "Inserir",
   },
   divider: {
-    title: "Separator",
-    subtext: "Horizontal line to separate content",
-    keywords: ["hr", "horizontalRule", "line", "separator"],
+    title: "Separador",
+    subtext: "Linha horizontal para separar conteúdo",
+    keywords: ["hr", "linha", "separador"],
     badge: MinusIcon,
-    group: "Insert",
+    group: "Inserir",
   },
   toc: {
-    title: "Table of contents",
-    subtext: "Insert a table of contents",
-    keywords: ["toc", "tableofcontents", "table of contents"],
+    title: "Índice",
+    subtext: "Inserir sumário dinâmico",
+    keywords: ["indice", "sumario", "toc"],
     badge: ListIndentedIcon,
-    group: "Insert",
+    group: "Inserir",
   },
 
   // Upload
   image: {
-    title: "Image",
-    subtext: "Resizable image with caption",
+    title: "Imagem",
+    subtext: "Anexar imagem ao documento",
     keywords: [
-      "image",
-      "imageUpload",
+      "imagem",
       "upload",
       "img",
-      "picture",
-      "media",
-      "url",
+      "foto",
     ],
     badge: ImageIcon,
-    group: "Upload",
+    group: "Anexos",
   },
 }
 
@@ -285,36 +248,14 @@ const getItemImplementations = () => {
         editor.chain().focus().toggleOrderedList().run()
       },
     },
-    task_list: {
-      check: (editor: Editor) => isNodeInSchema("taskList", editor),
-      action: ({ editor }: { editor: Editor }) => {
-        editor.chain().focus().toggleTaskList().run()
-      },
-    },
     quote: {
       check: (editor: Editor) => isNodeInSchema("blockquote", editor),
       action: ({ editor }: { editor: Editor }) => {
         editor.chain().focus().toggleBlockquote().run()
       },
     },
-    code_block: {
-      check: (editor: Editor) => isNodeInSchema("codeBlock", editor),
-      action: ({ editor }: { editor: Editor }) => {
-        editor.chain().focus().toggleNode("codeBlock", "paragraph").run()
-      },
-    },
 
     // Insert
-    mention: {
-      check: (editor: Editor) =>
-        isExtensionAvailable(editor, ["mention", "mentionAdvanced"]),
-      action: ({ editor }: { editor: Editor }) => addMentionTrigger(editor),
-    },
-    emoji: {
-      check: (editor: Editor) =>
-        isExtensionAvailable(editor, ["emoji", "emojiPicker"]),
-      action: ({ editor }: { editor: Editor }) => addEmojiTrigger(editor),
-    },
     divider: {
       check: (editor: Editor) => isNodeInSchema("horizontalRule", editor),
       action: ({ editor }: { editor: Editor }) => {

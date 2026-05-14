@@ -87,6 +87,7 @@ export const AiAskButton = forwardRef<HTMLButtonElement, AiAskButtonProps>(
         variant="ghost"
         disabled={!canAiAsk}
         data-disabled={!canAiAsk}
+        data-ai="true"
         role="button"
         tabIndex={-1}
         aria-label={label}

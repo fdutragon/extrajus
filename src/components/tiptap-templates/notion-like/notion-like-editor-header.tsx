@@ -15,10 +15,17 @@ import "../../../components/tiptap-templates/notion-like/notion-like-editor-head
 
 import { CollaborationUsers } from "../../../components/tiptap-templates/notion-like/notion-like-editor-collaboration-users"
 
+import { NotionToolbar } from "../../../components/tiptap-templates/notion-like/notion-like-editor-toolbar"
+
 export function NotionEditorHeader() {
   return (
     <header className="notion-like-editor-header">
+      <div className="notion-like-editor-header-toolbar">
+        <NotionToolbar />
+      </div>
+      
       <Spacer />
+
       <div className="notion-like-editor-header-actions">
         <ButtonGroup>
           <ButtonGroup>
@@ -29,11 +36,11 @@ export function NotionEditorHeader() {
           </ButtonGroup>
         </ButtonGroup>
 
-        <Separator />
+        <Separator orientation="vertical" className="h-4" />
 
         <ThemeToggle />
 
-        <Separator />
+        <Separator orientation="vertical" className="h-4" />
 
         <CollaborationUsers />
       </div>
