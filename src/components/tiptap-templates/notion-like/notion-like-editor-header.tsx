@@ -16,6 +16,7 @@ import "../../../components/tiptap-templates/notion-like/notion-like-editor-head
 import { CollaborationUsers } from "../../../components/tiptap-templates/notion-like/notion-like-editor-collaboration-users"
 
 import { NotionToolbar } from "../../../components/tiptap-templates/notion-like/notion-like-editor-toolbar"
+import { SignModal } from "../../../components/tiptap-ui/sign-modal/sign-modal"
 
 export function NotionEditorHeader() {
   return (
@@ -27,6 +28,10 @@ export function NotionEditorHeader() {
       <Spacer />
 
       <div className="notion-like-editor-header-actions">
+        <SignModal />
+        
+        <Separator orientation="vertical" className="h-4" />
+
         <ButtonGroup>
           <ButtonGroup>
             <UndoRedoButton action="undo" />
