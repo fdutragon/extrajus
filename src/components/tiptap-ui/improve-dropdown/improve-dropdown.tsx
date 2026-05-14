@@ -206,7 +206,7 @@ export function ImproveDropdown({
         items: SUPPORTED_TONES.map((option) => ({
           label: option.label,
           value: option.value,
-          onClick: () => adjustTone(option.value),
+          onClick: () => adjustTone(option.value as any),
         })),
       },
     ],

@@ -11,30 +11,6 @@ import {
   updateNodesAttr,
 } from "../../lib/tiptap-utils"
 
-declare module "@tiptap/core" {
-  interface Commands<ReturnType> {
-    indent: {
-      /**
-       * Increase the indent level of the selected blocks by 1.
-       * In lists, nests the list item under the previous sibling.
-       */
-      indent: () => ReturnType
-      /**
-       * Decrease the indent level of the selected blocks by 1.
-       * In lists, lifts the list item out of its parent.
-       */
-      outdent: () => ReturnType
-      /**
-       * Set the indent level of the selected blocks to a specific value.
-       */
-      setIndent: (level: number) => ReturnType
-      /**
-       * Remove indentation from the selected blocks.
-       */
-      unsetIndent: () => ReturnType
-    }
-  }
-}
 export interface IndentOptions {
   /**
    * Block node types that support indentation.
@@ -234,7 +210,7 @@ export const Indent = Extension.create<IndentOptions>({
     ]
   },
 
-  addCommands() {
+  addCommands(): any {
     const listItemTypesSet = new Set(this.options.listItemTypes)
 
     /**
@@ -267,7 +243,7 @@ export const Indent = Extension.create<IndentOptions>({
     }
 
     return {
-      indent: () => (props) => {
+      indent: () => (props: any) => {
         // Lists use their own nesting mechanism (sink)
         const listItemName = getListItemName(props.state, listItemTypesSet)
         if (listItemName && "sinkListItem" in props.commands) {
@@ -277,7 +253,7 @@ export const Indent = Extension.create<IndentOptions>({
         return applyIndent(props, (current) => current + 1)
       },
 
-      outdent: () => (props) => {
+      outdent: () => (props: any) => {
         // Lists use their own nesting mechanism (lift)
         const listItemName = getListItemName(props.state, listItemTypesSet)
         if (listItemName && "liftListItem" in props.commands) {
@@ -287,11 +263,11 @@ export const Indent = Extension.create<IndentOptions>({
         return applyIndent(props, (current) => current - 1)
       },
 
-      setIndent: (level: number) => (props) => {
+      setIndent: (level: number) => (props: any) => {
         return applyIndent(props, () => level)
       },
 
-      unsetIndent: () => (props) => {
+      unsetIndent: () => (props: any) => {
         return applyIndent(props, () => 0)
       },
     }
@@ -401,12 +377,12 @@ export const Indent = Extension.create<IndentOptions>({
       // otherwise let other extensions handle it (e.g. codeBlock inserts a tab)
       Tab: () => {
         if (!isIndentableContext()) return false
-        this.editor.commands.indent()
+        ;(this.editor.commands as any).indent()
         return true
       },
       "Shift-Tab": () => {
         if (!isIndentableContext()) return false
-        this.editor.commands.outdent()
+        ;(this.editor.commands as any).outdent()
         return true
       },
 
@@ -424,7 +400,7 @@ export const Indent = Extension.create<IndentOptions>({
         ) {
           return false
         }
-        return editor.commands.outdent()
+        return (editor.commands as any).outdent()
       },
 
       // Backspace at the start of an indented block → outdent
@@ -441,7 +417,7 @@ export const Indent = Extension.create<IndentOptions>({
         ) {
           return false
         }
-        return editor.commands.outdent()
+        return (editor.commands as any).outdent()
       },
     }
   },

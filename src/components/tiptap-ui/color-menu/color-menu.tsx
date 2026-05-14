@@ -140,7 +140,7 @@ export const ColorMenu: React.FC<ColorMenuProps> = ({
   const hasColorActions: boolean =
     !!editor?.can().setMark("textStyle") ||
     !!editor?.can().setMark("highlight") ||
-    !!editor?.can().toggleNodeBackgroundColor("yellow") ||
+    !!(editor?.can() as any).toggleNodeBackgroundColor("yellow") ||
     false
 
   if (!editor || !hasColorActions) {

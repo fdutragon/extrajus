@@ -4,24 +4,6 @@ import type { EditorState, Transaction } from "@tiptap/pm/state"
 import { getSelectedNodesOfType } from "../../lib/tiptap-utils"
 import { updateNodesAttr } from "../../lib/tiptap-utils"
 
-declare module "@tiptap/core" {
-  interface Commands<ReturnType> {
-    nodeAlignment: {
-      setNodeTextAlign: (textAlign: string) => ReturnType
-      unsetNodeTextAlign: () => ReturnType
-      toggleNodeTextAlign: (textAlign: string) => ReturnType
-      setNodeVAlign: (verticalAlign: string) => ReturnType
-      unsetNodeVAlign: () => ReturnType
-      toggleNodeVAlign: (verticalAlign: string) => ReturnType
-      setNodeAlignment: (
-        textAlign?: string,
-        verticalAlign?: string
-      ) => ReturnType
-      unsetNodeAlignment: () => ReturnType
-    }
-  }
-}
-
 export interface NodeAlignmentOptions {
   /**
    * Node types that should support alignment
@@ -153,7 +135,7 @@ export const NodeAlignment = Extension.create<NodeAlignmentOptions>({
     ]
   },
 
-  addCommands() {
+  addCommands(): any {
     const executeAlignmentCommand = (
       attributeName: "nodeTextAlign" | "nodeVerticalAlign",
       getTargetValue: (

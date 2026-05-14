@@ -125,7 +125,7 @@ export function useAiAsk(config: UseAiAskConfig = {}) {
   const handleAiAsk = useCallback((): boolean => {
     if (!editor || !canAiAsk) return false
 
-    const success = editor.chain().focus().aiGenerationShow().run()
+    const success = (editor.chain() as any).focus().aiGenerationShow().run()
     if (success) {
       onAiAsked?.()
     }

@@ -4,16 +4,6 @@ import type { EditorState, Transaction } from "@tiptap/pm/state"
 import { getSelectedNodesOfType } from "../../lib/tiptap-utils"
 import { updateNodesAttr } from "../../lib/tiptap-utils"
 
-declare module "@tiptap/core" {
-  interface Commands<ReturnType> {
-    nodeBackground: {
-      setNodeBackgroundColor: (backgroundColor: string) => ReturnType
-      unsetNodeBackgroundColor: () => ReturnType
-      toggleNodeBackgroundColor: (backgroundColor: string) => ReturnType
-    }
-  }
-}
-
 export interface NodeBackgroundOptions {
   /**
    * Node types that should support background colors
@@ -101,7 +91,7 @@ export const NodeBackground = Extension.create<NodeBackgroundOptions>({
     ]
   },
 
-  addCommands() {
+  addCommands(): any {
     /**
      * Generic command executor for background color operations
      */

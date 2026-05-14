@@ -47,6 +47,7 @@ import {
 
 // -- Icons --
 import { StopCircle2Icon } from "../../../components/tiptap-icons/stop-circle-2-icon"
+import type { Tone } from "../../tiptap-extension/gemini-ai-extension"
 
 import "../../../components/tiptap-ui/ai-menu/ai-menu.scss"
 
@@ -82,7 +83,7 @@ export function AiMenuContent({
     if (!editor) return
     reset()
     store?.hideAll()
-    editor.commands.resetUiState()
+    ;(editor.commands as any).resetUiState()
   }, [editor, reset, store])
 
   const handlePromptSubmit = useCallback(
@@ -118,8 +119,8 @@ export function AiMenuContent({
         }
       }
 
-      editor
-        .chain()
+      ;(editor
+        .chain() as any)
         .aiTextPrompt({
           text: promptWithContext,
           insert: true,
@@ -155,22 +156,22 @@ export function AiMenuContent({
 
   const handleOnReject = useCallback(() => {
     if (!editor) return
-    editor.commands.aiReject()
+    ;(editor.commands as any).aiReject()
     closeAiMenu()
   }, [closeAiMenu, editor])
 
   const handleOnAccept = useCallback(() => {
     if (!editor) return
-    editor.commands.aiAccept()
+    ;(editor.commands as any).aiAccept()
     closeAiMenu()
   }, [closeAiMenu, editor])
 
   const handleInputOnClose = useCallback(() => {
     if (!editor) return
     if (aiGenerationIsLoading) {
-      editor.commands.aiReject({ type: "reset" })
+      ;(editor.commands as any).aiReject({ type: "reset" })
     } else {
-      editor.commands.aiAccept()
+      ;(editor.commands as any).aiAccept()
     }
     closeAiMenu()
   }, [aiGenerationIsLoading, closeAiMenu, editor])
@@ -180,7 +181,7 @@ export function AiMenuContent({
       closeAiMenu()
 
       if (!editor) return
-      editor.commands.aiAccept()
+      ;(editor.commands as any).aiAccept()
     }
   }, [aiGenerationIsLoading, closeAiMenu, editor])
 
@@ -257,7 +258,7 @@ export function AiMenuContent({
               onClose={handleInputOnClose}
               onPlaceholderClick={() => updateState({ shouldShowInput: true })}
               onInputSubmit={(value) => handlePromptSubmit(value)}
-              onToneChange={(tone) => updateState({ tone })}
+              onToneChange={(tone: any) => updateState({ tone })}
             />
           )}
 
@@ -303,9 +304,9 @@ export function AiMenuProgress({ editor }: { editor: Editor }) {
   const handleStop = useCallback(() => {
     if (!editor) return
 
-    editor.chain().aiReject({ type: "reset" }).run()
+    ;(editor.chain() as any).aiReject({ type: "reset" }).run()
     reset()
-    editor.commands.resetUiState()
+    ;(editor.commands as any).resetUiState()
   }, [editor, reset])
 
   return (

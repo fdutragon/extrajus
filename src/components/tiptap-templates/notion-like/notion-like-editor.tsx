@@ -142,8 +142,8 @@ export function EditorContentArea() {
       aiGenerationIsSelection &&
       aiGenerationHasMessage
     ) {
-      editor.chain().focus().aiAccept().run()
-      editor.commands.resetUiState()
+      ;(editor.chain() as any).focus().aiAccept().run()
+      ;(editor.commands as any).resetUiState()
     }
   }, [
     aiGenerationHasMessage,

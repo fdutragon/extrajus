@@ -12,21 +12,19 @@ export interface UiState {
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
-    uiState: {
-      aiGenerationSetIsSelection: (value: boolean) => ReturnType
-      aiGenerationSetIsLoading: (value: boolean) => ReturnType
-      aiGenerationShow: () => ReturnType
-      aiGenerationHide: () => ReturnType
-      aiGenerationHasMessage: (value: boolean) => ReturnType
+    aiGenerationSetIsSelection: (value: boolean) => ReturnType
+    aiGenerationSetIsLoading: (value: boolean) => ReturnType
+    aiGenerationShow: () => ReturnType
+    aiGenerationHide: () => ReturnType
+    aiGenerationHasMessage: (value: boolean) => ReturnType
 
-      commentInputShow: () => ReturnType
-      commentInputHide: () => ReturnType
+    commentInputShow: () => ReturnType
+    commentInputHide: () => ReturnType
 
-      setLockDragHandle: (value: boolean) => ReturnType
+    setLockDragHandle: (value: boolean) => ReturnType
 
-      resetUiState: () => ReturnType
-      setIsDragging: (value: boolean) => ReturnType
-    }
+    resetUiState: () => ReturnType
+    setIsDragging: (value: boolean) => ReturnType
   }
 
   interface Storage {
@@ -53,7 +51,7 @@ export const UiState = Extension.create<UiState>({
     }
   },
 
-  addCommands() {
+  addCommands(): any {
     const createBooleanSetter =
       (key: keyof UiState) => (value: boolean) => () => {
         this.storage[key] = value

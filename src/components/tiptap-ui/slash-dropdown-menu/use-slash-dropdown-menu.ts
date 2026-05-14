@@ -207,7 +207,7 @@ const getItemImplementations = () => {
 
         editorChain.run()
 
-        editor.chain().focus().aiGenerationShow().run()
+        ;(editor.chain() as any).focus().aiGenerationShow().run()
 
         requestAnimationFrame(() => {
           const { hasContent, content } = hasContentAbove(editor)
@@ -219,8 +219,7 @@ const getItemImplementations = () => {
             ? `Context: ${snippet}\n\nContinue writing from where the text above ends. Write ONLY ONE SENTENCE. DONT REPEAT THE TEXT.`
             : "Start writing a new paragraph. Write ONLY ONE SENTENCE."
 
-          editor
-            .chain()
+          ;(editor.chain() as any)
             .focus()
             .aiTextPrompt({
               stream: true,
@@ -245,7 +244,7 @@ const getItemImplementations = () => {
 
         editorChain.run()
 
-        editor.chain().focus().aiGenerationShow().run()
+        ;(editor.chain() as any).focus().aiGenerationShow().run()
       },
     },
 

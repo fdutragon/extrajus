@@ -120,7 +120,7 @@ export function AiPromptInputToolbar({
 
   const handleToneChange = useCallback(
     (newTone: string) => {
-      setTone(newTone)
+      setTone(newTone as Tone)
       onToneChange?.(newTone)
     },
     [onToneChange]

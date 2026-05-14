@@ -390,7 +390,7 @@ export const DragContextMenu: React.FC<DragContextMenuProps> = ({
 
   useEffect(() => {
     if (!editor) return
-    editor.commands.setLockDragHandle(open)
+    ;(editor.commands as any).setLockDragHandle(open)
     editor.commands.setMeta("lockDragHandle", open)
   }, [editor, open])
 
@@ -424,12 +424,12 @@ export const DragContextMenu: React.FC<DragContextMenuProps> = ({
 
   const onElementDragStart = useCallback(() => {
     if (!editor) return
-    editor.commands.setIsDragging(true)
+    ;(editor.commands as any).setIsDragging(true)
   }, [editor])
 
   const onElementDragEnd = useCallback(() => {
     if (!editor) return
-    editor.commands.setIsDragging(false)
+    ;(editor.commands as any).setIsDragging(false)
 
     setTimeout(() => {
       editor.view.dom.blur()

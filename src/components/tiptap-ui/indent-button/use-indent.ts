@@ -64,10 +64,10 @@ export function canPerformIndent(
   if (!isExtensionAvailable(editor, "indent")) return false
 
   if (action === "indent") {
-    return editor.can().indent()
+    return (editor.can() as any).indent()
   }
 
-  return editor.can().outdent()
+  return (editor.can() as any).outdent()
 }
 
 /**
@@ -81,10 +81,10 @@ export function performIndent(
   if (!canPerformIndent(editor, action)) return false
 
   if (action === "indent") {
-    return editor.chain().focus().indent().run()
+    return (editor.chain() as any).focus().indent().run()
   }
 
-  return editor.chain().focus().outdent().run()
+  return (editor.chain() as any).focus().outdent().run()
 }
 
 /**
