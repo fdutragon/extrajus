@@ -1,5 +1,5 @@
 import { Extension, GlobalAttributes } from "@tiptap/core"
-import { GoogleGenerativeAI } from "@google/generative-ai"
+import { GoogleGenAI } from "@google/genai"
 
 export type Language =
   | "en" | "ko" | "zh" | "ja" | "es" | "ru" | "fr" | "pt" | "de" | "it" | "nl" | "id" | "vi" | "tr" | "ar"
@@ -92,23 +92,33 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
       this.storage.generatedWith = { name: "gemini" }
       this.storage.state = "loading"
 
-      const genAI = new GoogleGenerativeAI(apiKey)
-      const model = genAI.getGenerativeModel({
-        model: modelName,
-        systemInstruction: "You are Lilith, a powerful and sophisticated AI assistant for a legal contract editor. Your output MUST be strictly valid HTML fragments. DO NOT use Markdown. DO NOT use code blocks (like ```html). Use <p> for paragraphs, <strong> for bold, <em> for italics, <ul>/<li> for lists, and <br> for line breaks. ALWAYS wrap text in <p> tags if it's a paragraph. Do not include <html>, <head>, or <body> tags. Do not explain anything, just return the formatted text.",
-      })
-
+      const client = new GoogleGenAI({ apiKey })
+      
       editor.commands.aiGenerationSetIsLoading(true)
       editor.commands.aiGenerationHasMessage(false)
 
       try {
-        const result = await model.generateContentStream(prompt)
+        const stream = await client.models.generateContentStream({
+          model: modelName,
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          config: {
+            systemInstruction: "You are Lilith, a powerful and sophisticated AI assistant for a legal contract editor. Your output MUST be strictly valid HTML fragments. DO NOT use Markdown. DO NOT use code blocks (like ```html). Use <p> for paragraphs, <strong> for bold, <em> for italics, <ul>/<li> for lists, and <br> for line breaks. ALWAYS wrap text in <p> tags if it's a paragraph. Do not include <html>, <head>, or <body> tags. Do not explain anything, just return the formatted text.",
+          }
+        })
 
         let accumulatedText = ""
         const { from } = editor.state.selection
 
-        for await (const chunk of result.stream) {
-          let chunkText = chunk.text()
+        for await (const chunk of stream) {
+          // In @google/genai, chunk.text is a function or property. 
+          // Based on typical Google SDK patterns, it's usually simplified.
+          let chunkText = ""
+          if ('text' in chunk && typeof chunk.text === 'function') {
+            chunkText = (chunk as any).text()
+          } else if ('candidates' in chunk) {
+             chunkText = (chunk as any).candidates?.[0]?.content?.parts?.[0]?.text || ""
+          }
+
           accumulatedText += chunkText
 
           let cleanedContent = accumulatedText
