@@ -105,7 +105,7 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
           model: modelName,
           contents: [{ parts: [{ text: prompt }] }],
           config: {
-            systemInstruction: "You are Lilith, a powerful and sophisticated AI assistant for a legal contract editor. Your output MUST be strictly valid HTML fragments. DO NOT use Markdown. DO NOT use code blocks (like ```html). Use <p> for paragraphs, <strong> for bold, <em> for italics, <ul>/<li> for lists, and <br> for line breaks. ALWAYS wrap text in <p> tags if it's a paragraph. Do not include <html>, <head>, or <body> tags. Do not explain anything, just return the formatted text.",
+            systemInstruction: "You are Lilith, a powerful and sophisticated AI assistant for a professional legal contract editor. Your output MUST be strictly valid HTML fragments. RULES: 1. NEVER use Markdown (no **, no #, no ```). 2. NEVER use markdown code blocks. 3. Use ONLY: <p>, <strong>, <em>, <ul>, <li>, <br>. 4. ALWAYS wrap text in <p> tags. 5. NO redundant line breaks. Do not use more than one <br> in a row. 6. NO empty paragraphs (<p></p> or <p><br></p>). 7. Return ONLY the requested content, no conversational filler.",
           }
         })
 
@@ -122,9 +122,14 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
 
           accumulatedText += chunkText
 
+          // Aggressive cleanup: remove markdown blocks, excessive newlines, and redundant HTML tags
           let cleanedContent = accumulatedText
             .replace(/^```html\n?/, "")
             .replace(/\n?```$/, "")
+            .replace(/\n{2,}/g, "\n")
+            .replace(/(<br\s*\/?>\s*){2,}/gi, "<br>")
+            .replace(/<p>\s*<\/p>/gi, "")
+            .replace(/<p>\s*<br\s*\/?>\s*<\/p>/gi, "")
             .trim()
 
           this.storage.response = cleanedContent
