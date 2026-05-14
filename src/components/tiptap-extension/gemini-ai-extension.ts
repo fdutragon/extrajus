@@ -67,7 +67,7 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
   addOptions() {
     return {
       apiKey: "",
-      model: "gemini-3.1-flash-lite",
+      model: "gemini-3.1-flash",
     }
   },
 
@@ -92,7 +92,10 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
       this.storage.generatedWith = { name: "gemini" }
       this.storage.state = "loading"
 
-      const client = new GoogleGenAI({ apiKey })
+      const client = new GoogleGenAI({ 
+        apiKey,
+        apiVersion: "v1"
+      })
       
       editor.commands.aiGenerationSetIsLoading(true)
       editor.commands.aiGenerationHasMessage(false)
@@ -100,7 +103,7 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
       try {
         const stream = await client.models.generateContentStream({
           model: modelName,
-          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          contents: [{ parts: [{ text: prompt }] }],
           config: {
             systemInstruction: "You are Lilith, a powerful and sophisticated AI assistant for a legal contract editor. Your output MUST be strictly valid HTML fragments. DO NOT use Markdown. DO NOT use code blocks (like ```html). Use <p> for paragraphs, <strong> for bold, <em> for italics, <ul>/<li> for lists, and <br> for line breaks. ALWAYS wrap text in <p> tags if it's a paragraph. Do not include <html>, <head>, or <body> tags. Do not explain anything, just return the formatted text.",
           }
@@ -110,10 +113,8 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
         const { from } = editor.state.selection
 
         for await (const chunk of stream) {
-          // In @google/genai, chunk.text is a function or property. 
-          // Based on typical Google SDK patterns, it's usually simplified.
           let chunkText = ""
-          if ('text' in chunk && typeof chunk.text === 'function') {
+          if (typeof chunk.text === 'function') {
             chunkText = (chunk as any).text()
           } else if ('candidates' in chunk) {
              chunkText = (chunk as any).candidates?.[0]?.content?.parts?.[0]?.text || ""
