@@ -1,5 +1,5 @@
 import { Extension, GlobalAttributes } from "@tiptap/core"
-import { GoogleGenAI } from "@google/genai"
+import { GoogleGenerativeAI } from "@google/generative-ai"
 
 export type Language =
   | "en" | "ko" | "zh" | "ja" | "es" | "ru" | "fr" | "pt" | "de" | "it" | "nl" | "id" | "vi" | "tr" | "ar"
@@ -92,34 +92,23 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
       this.storage.generatedWith = { name: "gemini" }
       this.storage.state = "loading"
 
-      const client = new GoogleGenAI({ 
-        apiKey,
-        apiVersion: "v1"
-      })
+      const genAI = new GoogleGenerativeAI(apiKey)
+      const model = genAI.getGenerativeModel({
+        model: modelName,
+        systemInstruction: "You are Lilith, a powerful and sophisticated AI assistant for a professional legal contract editor. Your output MUST be strictly valid HTML fragments. RULES: 1. NEVER use Markdown (no **, no #, no ```). 2. NEVER use markdown code blocks. 3. Use ONLY: <p>, <strong>, <em>, <ul>, <li>, <br>. 4. ALWAYS wrap text in <p> tags. 5. NO redundant line breaks. Do not use more than one <br> in a row. 6. NO empty paragraphs (<p></p> or <p><br></p>). 7. Return ONLY the requested content, no conversational filler.",
+      }, { apiVersion: "v1" })
       
       editor.commands.aiGenerationSetIsLoading(true)
       editor.commands.aiGenerationHasMessage(false)
 
       try {
-        const stream = await client.models.generateContentStream({
-          model: modelName,
-          contents: [{ parts: [{ text: prompt }] }],
-          config: {
-            systemInstruction: "You are Lilith, a powerful and sophisticated AI assistant for a professional legal contract editor. Your output MUST be strictly valid HTML fragments. RULES: 1. NEVER use Markdown (no **, no #, no ```). 2. NEVER use markdown code blocks. 3. Use ONLY: <p>, <strong>, <em>, <ul>, <li>, <br>. 4. ALWAYS wrap text in <p> tags. 5. NO redundant line breaks. Do not use more than one <br> in a row. 6. NO empty paragraphs (<p></p> or <p><br></p>). 7. Return ONLY the requested content, no conversational filler.",
-          }
-        })
+        const result = await model.generateContentStream(prompt)
 
         let accumulatedText = ""
         const { from } = editor.state.selection
 
-        for await (const chunk of stream) {
-          let chunkText = ""
-          if (typeof chunk.text === 'function') {
-            chunkText = (chunk as any).text()
-          } else if ('candidates' in chunk) {
-             chunkText = (chunk as any).candidates?.[0]?.content?.parts?.[0]?.text || ""
-          }
-
+        for await (const chunk of result.stream) {
+          let chunkText = chunk.text()
           accumulatedText += chunkText
 
           // Aggressive cleanup: remove markdown blocks, excessive newlines, and redundant HTML tags
