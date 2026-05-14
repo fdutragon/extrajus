@@ -53,8 +53,6 @@ declare module "@tiptap/core" {
     aiAdjustTone: (tone: Tone, options?: TextOptions) => ReturnType
     aiRegenerate: (options?: TextOptions) => ReturnType
     aiRephrase: (options?: TextOptions) => ReturnType
-    aiGenerationShow: () => ReturnType
-    aiGenerationHide: () => ReturnType
   }
 
   interface Storage {
@@ -232,16 +230,6 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
 
       aiReject: (options: any) => ({ editor }: any) => {
         editor.commands.resetUiState()
-        return true
-      },
-
-      aiGenerationShow: () => ({ editor }: any) => {
-        editor.commands.aiGenerationShow()
-        return true
-      },
-
-      aiGenerationHide: () => ({ editor }: any) => {
-        editor.commands.aiGenerationHide()
         return true
       },
     }
