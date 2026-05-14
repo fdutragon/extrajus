@@ -1,0 +1,74 @@
+.notion-like-editor-content {
+  counter-reset: clausula;
+
+  .legal-node {
+    display: flex;
+    margin-bottom: 0.5rem;
+    position: relative;
+    
+    .legal-node-counter {
+      user-select: none;
+      font-weight: 700;
+      margin-right: 0.5rem;
+      white-space: nowrap;
+    }
+
+    .legal-node-content {
+      flex: 1;
+    }
+
+    &.legal-node-level-1 {
+      counter-increment: clausula;
+      counter-reset: paragrafo inciso;
+      margin-top: 1rem;
+      
+      .legal-node-counter::before {
+        content: "Cláusula " counter(clausula) "ª.";
+      }
+    }
+
+    &.legal-node-level-2 {
+      counter-increment: paragrafo;
+      counter-reset: inciso;
+      margin-left: 2rem;
+      
+      .legal-node-counter {
+        font-weight: 600;
+      }
+      
+      .legal-node-counter::before {
+        content: "§ " counter(paragrafo) "º";
+      }
+    }
+
+    &.legal-node-level-3 {
+      counter-increment: inciso;
+      counter-reset: alinea;
+      margin-left: 4rem;
+      
+      .legal-node-counter {
+        font-weight: 500;
+      }
+
+      .legal-node-counter::before {
+        content: counter(inciso, upper-roman) " -";
+      }
+    }
+
+    &.legal-node-level-4 {
+      counter-increment: alinea;
+      margin-left: 6rem;
+      
+      .legal-node-counter {
+        font-weight: 400;
+      }
+
+      .legal-node-counter::before {
+        content: counter(alinea, lower-alpha) ")";
+      }
+    }
+    
+    /* Handle singular paragraph rule (Parágrafo Único) using general sibling combinator logic 
+       if needed later, but standard numbering is better for simple CSS */
+  }
+}

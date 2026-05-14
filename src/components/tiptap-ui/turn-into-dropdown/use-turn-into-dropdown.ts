@@ -18,9 +18,8 @@ export const TURN_INTO_BLOCKS = [
   "heading",
   "bulletList",
   "orderedList",
-  "taskList",
   "blockquote",
-  "codeBlock",
+  "legalNode",
 ]
 
 /**
@@ -38,7 +37,7 @@ export interface UseTurnIntoDropdownConfig {
   hideWhenUnavailable?: boolean
   /**
    * Which block types to show in the dropdown
-   * @default ["paragraph", "heading", "bulletList", "orderedList", "taskList", "blockquote", "codeBlock"]
+   * @default ["paragraph", "heading", "bulletList", "orderedList", "blockquote", "legalNode"]
    */
   blockTypes?: string[]
   /**
@@ -56,7 +55,32 @@ export const blockTypeOptions = [
       !editor.isActive("heading") &&
       !editor.isActive("bulletList") &&
       !editor.isActive("orderedList") &&
-      !editor.isActive("blockquote"),
+      !editor.isActive("blockquote") &&
+      !editor.isActive("legalNode"),
+  },
+  {
+    type: "legalNode",
+    label: "Cláusula",
+    level: 1,
+    isActive: (editor: Editor) => editor.isActive("legalNode", { level: 1 }),
+  },
+  {
+    type: "legalNode",
+    label: "Parágrafo",
+    level: 2,
+    isActive: (editor: Editor) => editor.isActive("legalNode", { level: 2 }),
+  },
+  {
+    type: "legalNode",
+    label: "Inciso",
+    level: 3,
+    isActive: (editor: Editor) => editor.isActive("legalNode", { level: 3 }),
+  },
+  {
+    type: "legalNode",
+    label: "Alínea",
+    level: 4,
+    isActive: (editor: Editor) => editor.isActive("legalNode", { level: 4 }),
   },
   {
     type: "heading",

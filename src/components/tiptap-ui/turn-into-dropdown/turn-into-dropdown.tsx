@@ -45,7 +45,7 @@ export function TurnIntoDropdownContent({
 
   return (
     <DropdownMenuGroup>
-      <DropdownMenuLabel>Turn into</DropdownMenuLabel>
+      <DropdownMenuLabel>Transformar em</DropdownMenuLabel>
       {filteredOptions.map((option, index) =>
         renderBlockTypeButton(
           option,
@@ -63,6 +63,22 @@ function renderBlockTypeButton(
   editor?: Editor | null
 ) {
   switch (option.type) {
+    case "legalNode":
+      if (!option.level) return null
+      return (
+        <DropdownMenuItem key={key} asChild>
+          <Button
+            variant="ghost"
+            onClick={() =>
+              (editor?.chain().focus() as any)?.setLegalNode(option.level).run()
+            }
+            className="w-full justify-start font-normal"
+          >
+            {option.label}
+          </Button>
+        </DropdownMenuItem>
+      )
+
     case "paragraph":
       return (
         <DropdownMenuItem key={key} asChild>
@@ -76,7 +92,7 @@ function renderBlockTypeButton(
         <DropdownMenuItem key={key} asChild>
           <HeadingButton
             editor={editor}
-            level={option.level}
+            level={option.level as any}
             showTooltip={false}
             text={option.label}
           />

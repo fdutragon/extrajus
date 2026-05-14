@@ -57,6 +57,34 @@ const texts = {
   },
 
   // Style
+  clausula: {
+    title: "Cláusula",
+    subtext: "Nova cláusula contratual",
+    keywords: ["clausula", "legal"],
+    badge: HeadingOneIcon,
+    group: "Jurídico",
+  },
+  paragrafo_legal: {
+    title: "Parágrafo",
+    subtext: "Parágrafo de cláusula",
+    keywords: ["paragrafo", "legal", "$"],
+    badge: HeadingTwoIcon,
+    group: "Jurídico",
+  },
+  inciso: {
+    title: "Inciso",
+    subtext: "Inciso (I, II, III...)",
+    keywords: ["inciso", "legal"],
+    badge: HeadingThreeIcon,
+    group: "Jurídico",
+  },
+  alinea: {
+    title: "Alínea",
+    subtext: "Alínea (a, b, c...)",
+    keywords: ["alinea", "legal"],
+    badge: ListIcon,
+    group: "Jurídico",
+  },
   text: {
     title: "Texto Padrão",
     subtext: "Parágrafo de texto regular",
@@ -212,6 +240,30 @@ const getItemImplementations = () => {
     },
 
     // Style
+    clausula: {
+      check: (editor: Editor) => isNodeInSchema("legalNode", editor),
+      action: ({ editor }: { editor: Editor }) => {
+        ;(editor.chain() as any).focus().setLegalNode(1).run()
+      },
+    },
+    paragrafo_legal: {
+      check: (editor: Editor) => isNodeInSchema("legalNode", editor),
+      action: ({ editor }: { editor: Editor }) => {
+        ;(editor.chain() as any).focus().setLegalNode(2).run()
+      },
+    },
+    inciso: {
+      check: (editor: Editor) => isNodeInSchema("legalNode", editor),
+      action: ({ editor }: { editor: Editor }) => {
+        ;(editor.chain() as any).focus().setLegalNode(3).run()
+      },
+    },
+    alinea: {
+      check: (editor: Editor) => isNodeInSchema("legalNode", editor),
+      action: ({ editor }: { editor: Editor }) => {
+        ;(editor.chain() as any).focus().setLegalNode(4).run()
+      },
+    },
     text: {
       check: (editor: Editor) => isNodeInSchema("paragraph", editor),
       action: ({ editor }: { editor: Editor }) => {
