@@ -1,14 +1,11 @@
 "use client"
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react"
-import { createClient, SupabaseClient } from "@supabase/supabase-js"
 import { Doc as YDoc } from "yjs"
-import {
-  getUrlParam,
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY,
-} from "../lib/tiptap-collab-utils"
+import { getUrlParam } from "../lib/tiptap-collab-utils"
 import { SupabaseYjsProvider } from "../lib/supabase-yjs-provider"
+import { createClient } from "@/utils/supabase/client"
+import { SupabaseClient } from "@supabase/supabase-js"
 
 export type CollabContextValue = {
   provider: SupabaseYjsProvider | null
@@ -48,13 +45,12 @@ export const useCollaboration = (room: string) => {
   useEffect(() => {
     if (!hasCollab) return
 
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    try {
+      const client = createClient()
+      setSupabase(client)
+    } catch (e) {
       setSetupError(true)
-      return
     }
-
-    const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-    setSupabase(client)
   }, [hasCollab])
 
   useEffect(() => {

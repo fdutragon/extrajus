@@ -1,13 +1,18 @@
-"use client"
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import { ArrowRight, Globe } from "lucide-react";
+import { login } from "./actions";
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>
+}) {
+  const { error } = await searchParams;
+
   return (
     <div className="space-y-6">
       <div className="space-y-2">
@@ -15,13 +20,20 @@ export default function LoginPage() {
         <p className="text-zinc-500 dark:text-zinc-400">Insira suas credenciais para acessar o comando central.</p>
       </div>
 
-      <div className="space-y-4">
+      <form className="space-y-4" action={login}>
+        {error && (
+          <div className="p-3 text-sm text-white bg-red-600 font-bold border border-red-800">
+            {error}
+          </div>
+        )}
         <div className="space-y-2">
           <Label htmlFor="email">E-mail de Guerra</Label>
           <Input 
             id="email" 
+            name="email"
             placeholder="cadelo@imperio.com" 
             type="email" 
+            required
             className="rounded-none border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 focus:border-orange-500 transition-all"
           />
         </div>
@@ -37,12 +49,14 @@ export default function LoginPage() {
           </div>
           <Input 
             id="password" 
+            name="password"
             type="password" 
+            required
             className="rounded-none border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 focus:border-orange-500 transition-all"
           />
         </div>
         <div className="flex items-center space-x-2">
-          <Checkbox id="remember" className="border-zinc-300 dark:border-zinc-700 data-[state=checked]:bg-orange-600 data-[state=checked]:border-orange-600" />
+          <Checkbox id="remember" name="remember" className="border-zinc-300 dark:border-zinc-700 data-[state=checked]:bg-orange-600 data-[state=checked]:border-orange-600" />
           <label
             htmlFor="remember"
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-zinc-500"
@@ -50,10 +64,10 @@ export default function LoginPage() {
             Manter sessão ativa
           </label>
         </div>
-        <Button className="w-full bg-zinc-900 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 font-black h-12 rounded-none group transition-all" render={<Link href="/dashboard" />} nativeButton={false}>
+        <Button type="submit" className="w-full bg-zinc-900 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 font-black h-12 rounded-none group transition-all">
           ACESSAR COMANDO <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
         </Button>
-      </div>
+      </form>
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">

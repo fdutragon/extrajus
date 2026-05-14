@@ -18,8 +18,10 @@ export const UserContext = createContext<UserContextValue>({
   user: { color: "", id: "", name: "", avatar: "" },
 })
 
+import { createClient } from "@/utils/supabase/client"
+
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [user] = useState<User>({
+  const [user, setUser] = useState<User>({
     color: getColorFromLocalStorage(),
     name: getUsernameFromLocalStorage(),
     id: getUserIdFromLocalStorage(),
@@ -27,10 +29,32 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   })
 
   useEffect(() => {
-    window.localStorage.setItem("_tiptap_username", user.name)
-    window.localStorage.setItem("_tiptap_color", user.color)
-    window.localStorage.setItem("_tiptap_user_id", user.id)
-  }, [user])
+    const fetchUser = async () => {
+      const supabase = createClient()
+      const { data: { user: supabaseUser } } = await supabase.auth.getUser()
+
+      if (supabaseUser) {
+        const fullName = `${supabaseUser.user_metadata?.first_name || 'Cadelo'} ${supabaseUser.user_metadata?.last_name || 'Imperial'}`
+        
+        const authenticatedUser = {
+          color: getColorFromLocalStorage(), // Keep color random per session or fetch from profile table later
+          name: fullName,
+          id: supabaseUser.id,
+          avatar: getAvatar(fullName),
+        }
+        
+        setUser(authenticatedUser)
+        window.localStorage.setItem("_tiptap_username", authenticatedUser.name)
+        window.localStorage.setItem("_tiptap_user_id", authenticatedUser.id)
+      } else {
+        window.localStorage.setItem("_tiptap_username", user.name)
+        window.localStorage.setItem("_tiptap_color", user.color)
+        window.localStorage.setItem("_tiptap_user_id", user.id)
+      }
+    }
+
+    fetchUser()
+  }, [])
 
   return (
     <UserContext.Provider value={{ user }}>{children}</UserContext.Provider>
