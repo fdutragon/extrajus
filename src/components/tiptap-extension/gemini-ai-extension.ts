@@ -67,7 +67,7 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
   addOptions() {
     return {
       apiKey: "",
-      model: "gemini-1.5-flash-latest",
+      model: "gemini-2.0-flash",
     }
   },
 
