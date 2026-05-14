@@ -89,6 +89,8 @@ import {
 import { ListNormalizationExtension } from "../../../components/tiptap-extension/list-normalization-extension"
 import { Indent } from "../../../components/tiptap-extension/indent-extension"
 
+import { RiskAuditSidebar } from "../../../components/tiptap-ui/risk-audit-sidebar"
+
 export interface NotionEditorProps {
   room: string
   placeholder?: string
@@ -286,6 +288,7 @@ export function EditorProvider(props: EditorProviderProps) {
         <NotionEditorHeader />
         <div className="notion-like-editor-layout">
           <EditorContentArea />
+          <RiskAuditSidebar />
           <TocSidebar topOffset={48} />
         </div>
 

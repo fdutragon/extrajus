@@ -30,11 +30,19 @@ export interface AiTextPromptOptions extends TextOptions {
   insert?: boolean
 }
 
+export interface AuditResult {
+  originalText: string
+  suggestion: string
+  reason: string
+  id: string
+}
+
 export interface GeminiStorage {
   lastPrompt: string
   generatedWith: any
   response: string
   state: "idle" | "loading" | "error"
+  auditResults: AuditResult[]
 }
 
 declare module "@tiptap/core" {
@@ -53,6 +61,7 @@ declare module "@tiptap/core" {
     aiAdjustTone: (tone: Tone, options?: TextOptions) => ReturnType
     aiRegenerate: (options?: TextOptions) => ReturnType
     aiRephrase: (options?: TextOptions) => ReturnType
+    aiAuditRisk: () => ReturnType
   }
 
   interface Storage {
@@ -77,6 +86,7 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
       generatedWith: null,
       response: "",
       state: "idle",
+      auditResults: [],
     }
   },
 
@@ -235,6 +245,52 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
 
       aiReject: (options: any) => ({ editor }: any) => {
         editor.commands.resetUiState()
+        return true
+      },
+      aiAuditRisk: () => ({ editor }: any) => {
+        const text = editor.state.doc.textContent
+
+        const runAudit = async () => {
+          const { apiKey, model: modelName } = this.options
+          if (!apiKey) {
+            console.error("Gemini API Key is missing")
+            return
+          }
+
+          this.storage.state = "loading"
+
+          const genAI = new GoogleGenerativeAI(apiKey)
+          const model = genAI.getGenerativeModel({
+            model: modelName,
+            systemInstruction: "Você é Lilith, uma IA auditora de contratos implacável. Analise o texto e retorne um JSON com uma lista de riscos. Regras:\n1. Identifique cláusulas leoninas, termos ambíguos ou perigosos.\n2. Retorne estritamente um array JSON de objetos.\n3. Formato: [{\"originalText\": \"texto exato encontrado\", \"suggestion\": \"nova redação proposta\", \"reason\": \"explicação do risco\"}]",
+          }, { apiVersion: "v1" })
+
+          try {
+            const prompt = `Analise este contrato e aponte os riscos:\n\n${text}`
+            const result = await model.generateContent(prompt)
+            const responseText = result.response.text()
+            
+            // Extract JSON from potential markdown blocks
+            const jsonMatch = responseText.match(/\[[\s\S]*\]/)
+            if (jsonMatch) {
+              const auditData = JSON.parse(jsonMatch[0])
+              this.storage.auditResults = auditData.map((item: any) => ({
+                ...item,
+                id: Math.random().toString(36).substring(7)
+              }))
+            } else {
+              this.storage.auditResults = []
+            }
+            this.storage.state = "idle"
+            // We need to trigger an update so UI reacts to storage change
+            editor.view.dispatch(editor.state.tr.setMeta('aiAuditCompleted', true))
+          } catch (error) {
+            console.error("Gemini audit failed:", error)
+            this.storage.state = "error"
+          }
+        }
+
+        runAudit()
         return true
       },
     }
