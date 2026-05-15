@@ -15,9 +15,13 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { FileSignature, Plus, Trash2, Send, ShieldCheck, UserPlus } from "lucide-react"
+import { useSearchParams } from "next/navigation"
 
 export function SignModal() {
   const { editor } = useTiptapEditor()
+  const searchParams = useSearchParams()
+  const contractId = searchParams.get("room")
+  
   const [signers, setSigners] = useState([{ name: "", email: "" }])
   const [isSending, setIsSending] = useState(false)
   const [open, setOpen] = useState(false)
@@ -47,6 +51,7 @@ export function SignModal() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          contractId,
           title: "Contrato de Guerra - ExtraJus",
           content: editor.getHTML(),
           signers: signers.filter((s) => s.email && s.name),

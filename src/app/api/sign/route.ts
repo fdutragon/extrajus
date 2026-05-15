@@ -9,24 +9,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { title, content, signers } = await request.json()
+  const { contractId, title, content, signers } = await request.json()
 
   const assinafyApiKey = process.env.ASSINAFY_API_KEY;
 
-  // --- MOCK LOGIC ---
   if (!assinafyApiKey) {
-    console.log("ASSINAFY_API_KEY não encontrada. Usando mock para simular sucesso.");
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Simula latência da rede
-    return NextResponse.json({ 
-      success: true, 
-      documentId: `mock_${new Date().getTime()}`,
-      signUrl: "https://assinafy.com.br/mock-url-assinado-com-sucesso"
-    });
+    return NextResponse.json({ error: 'ASSINAFY_API_KEY not configured' }, { status: 500 })
   }
-  // --- END MOCK LOGIC ---
-  
+
   try {
-    const response = await fetch('https://api.assinafy.com.br/v1/documents', {
+    // 1. Prepare payload for Assinafy
+    // Note: Assuming standard API structure based on previous mock
+    const assinafyResponse = await fetch('https://api.assinafy.com.br/v1/documents', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -34,7 +28,7 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         title: title || 'Contrato ExtraJus',
-        content_base64: Buffer.from(content).toString('base64'), // Mocking HTML to base64
+        content_base64: Buffer.from(content).toString('base64'),
         signers: signers.map((s: any) => ({
           name: s.name,
           email: s.email,
@@ -44,18 +38,42 @@ export async function POST(request: Request) {
       })
     })
 
-    const result = await response.json()
+    const result = await assinafyResponse.json()
 
-    if (!response.ok) {
+    if (!assinafyResponse.ok) {
       throw new Error(result.message || 'Erro na Assinafy')
+    }
+
+    const documentId = result.id;
+    const signUrl = result.sign_url;
+
+    // 2. Persist in Supabase 'signatures' table
+    if (contractId) {
+      const { error: sigError } = await supabase.from('signatures').insert({
+        contract_id: contractId,
+        external_id: documentId,
+        status: 'pending',
+        signers: signers
+      })
+
+      if (sigError) {
+        console.error("Error saving signature to DB:", sigError);
+      }
+
+      // 3. Update contract status
+      await supabase
+        .from('contracts')
+        .update({ status: 'pending', updated_at: new Date().toISOString() })
+        .eq('id', contractId)
     }
 
     return NextResponse.json({ 
       success: true, 
-      documentId: result.id,
-      signUrl: result.sign_url 
+      documentId: documentId,
+      signUrl: signUrl 
     })
   } catch (error: any) {
+    console.error("Signature Ritual Failure:", error);
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }

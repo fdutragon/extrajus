@@ -1,8 +1,8 @@
 "use client"
 
 import type { Editor } from "@tiptap/react"
-import { useCurrentEditor, useEditorState } from "@tiptap/react"
-import { useEffect, useState } from "react"
+import { useCurrentEditor } from "@tiptap/react"
+import { useEffect, useState, useCallback } from "react"
 
 function getActivePageEditor(editor: Editor): Editor | null {
   const storage = editor.storage as unknown as Record<string, unknown>
@@ -21,14 +21,17 @@ export function useTiptapEditor(providedEditor?: Editor | null): {
 
   const [storageEditor, setStorageEditor] = useState<Editor | null>(null)
 
+  const updateHandler = useCallback(() => {
+    if (!mainEditor) return
+    const activeEditor = getActivePageEditor(mainEditor)
+    setStorageEditor(prev => prev === activeEditor ? prev : activeEditor)
+  }, [mainEditor])
+
   useEffect(() => {
     if (!mainEditor) {
       setStorageEditor(null)
       return
     }
-
-    const updateHandler = () =>
-      setStorageEditor(getActivePageEditor(mainEditor))
 
     updateHandler()
 
@@ -39,7 +42,7 @@ export function useTiptapEditor(providedEditor?: Editor | null): {
       mainEditor.off("update", updateHandler)
       mainEditor.off("selectionUpdate", updateHandler)
     }
-  }, [mainEditor])
+  }, [mainEditor, updateHandler])
 
   useEffect(() => {
     if (!storageEditor) return

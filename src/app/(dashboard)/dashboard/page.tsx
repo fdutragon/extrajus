@@ -10,7 +10,9 @@ import {
   ChevronRight,
   ArrowUpRight,
   Sparkles,
-  Zap
+  Zap,
+  ShieldCheck,
+  Package
 } from "lucide-react";
 import {
   Table,
@@ -28,18 +30,43 @@ export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: recentContracts, error } = await supabase
+  if (!user) return null;
+
+  // 1. Fetch Recent Contracts
+  const { data: recentContracts } = await supabase
     .from('contracts')
-    .select('id, title, updated_at')
-    .eq('user_id', user?.id)
+    .select('id, title, updated_at, status')
+    .eq('user_id', user.id)
     .order('updated_at', { ascending: false })
-    .limit(4);
+    .limit(5);
+
+  // 2. Fetch Stats
+  const { count: activeCount } = await supabase
+    .from('contracts')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', user.id)
+    .neq('status', 'signed');
+
+  const { count: pendingSigs } = await supabase
+    .from('signatures')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'pending');
+
+  const { count: templateCount } = await supabase
+    .from('templates')
+    .select('*', { count: 'exact', head: true });
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('credits, full_name')
+    .eq('id', user.id)
+    .single();
 
   const stats = [
-    { title: "Contratos Ativos", value: "24", icon: FileText, trend: "+3", color: "text-blue-500", bg: "bg-blue-500/10" },
-    { title: "Horas de Redação", value: "142h", icon: Clock, trend: "+12h", color: "text-purple-500", bg: "bg-purple-500/10" },
-    { title: "Taxa de Vitória", value: "98%", icon: TrendingUp, trend: "+2%", color: "text-emerald-500", bg: "bg-emerald-500/10" },
-    { title: "Riscos Detectados", value: "12", icon: AlertTriangle, trend: "-4", color: "text-orange-500", bg: "bg-orange-500/10" },
+    { title: "Contratos Ativos", value: activeCount || 0, trend: "+2", icon: FileText, color: "text-blue-500" },
+    { title: "Sinais Pendentes", value: pendingSigs || 0, trend: "Ação Nec.", icon: ShieldCheck, color: "text-orange-500" },
+    { title: "Modelos Arsenal", value: templateCount || 0, trend: "Elite", icon: Package, color: "text-purple-500" },
+    { title: "Créditos Poder", value: profile?.credits || 0, trend: "Ativo", icon: Zap, color: "text-emerald-500" },
   ];
 
   return (
@@ -51,12 +78,13 @@ export default async function DashboardPage() {
             <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-orange-500/50 text-orange-500 bg-orange-500/5 px-2 py-0">War Room</Badge>
             <span className="text-[10px] text-zinc-500 font-mono tracking-widest uppercase">System Operational</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Comando Central</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Comando de {profile?.full_name?.split(' ')[0] || 'Guerra'}</h1>
         </div>
         <Button
+          asChild
           className="bg-zinc-900 dark:bg-white text-white dark:text-black hover:opacity-90 font-bold tracking-tight rounded-lg px-5 py-2 group transition-all duration-300 shadow-lg shadow-black/10 dark:shadow-white/5"
         >
-          <Link href="/editor" className="flex items-center">
+          <Link href="/editor">
             <PlusCircle size={16} className="mr-2" />
             Novo Contrato
           </Link>
@@ -65,12 +93,7 @@ export default async function DashboardPage() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { title: "Contratos Ativos", value: "24", trend: "+3", icon: FileText, color: "text-blue-500" },
-          { title: "Horas de Redação", value: "142h", trend: "+12h", icon: Clock, color: "text-purple-500" },
-          { title: "Taxa de Vitória", value: "98%", trend: "+2%", icon: TrendingUp, color: "text-emerald-500" },
-          { title: "Riscos Detectados", value: "12", trend: "-4", icon: AlertTriangle, color: "text-orange-500" },
-        ].map((stat, i) => (
+        {stats.map((stat, i) => (
           <Card key={i} className="bg-white dark:bg-[#09090b] border-zinc-200/50 dark:border-white/5 rounded-xl overflow-hidden relative group transition-all duration-500 hover:border-zinc-300 dark:hover:border-white/20 shadow-sm">
             <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
 
@@ -81,7 +104,7 @@ export default async function DashboardPage() {
                 </div>
                 <div className={cn(
                   "flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border",
-                  stat.trend.startsWith('+') ? "bg-emerald-500/5 text-emerald-500 border-emerald-500/10" : "bg-blue-500/5 text-blue-500 border-blue-500/10"
+                  stat.trend.startsWith('+') || stat.trend === 'Ativo' ? "bg-emerald-500/5 text-emerald-500 border-emerald-500/10" : "bg-orange-500/5 text-orange-500 border-orange-500/10"
                 )}>
                   {stat.trend.startsWith('+') ? <ArrowUpRight size={10} /> : <Zap size={10} />} {stat.trend}
                 </div>
@@ -109,41 +132,47 @@ export default async function DashboardPage() {
           </div>
 
           <div className="bg-white dark:bg-[#0c0c0e] border border-zinc-200/50 dark:border-white/5 rounded-xl overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-zinc-100 dark:border-white/5 hover:bg-transparent bg-zinc-50/50 dark:bg-white/[0.02]">
-                  <TableHead className="text-[10px] uppercase font-bold tracking-widest h-10">Documento</TableHead>
-                  <TableHead className="text-[10px] uppercase font-bold tracking-widest h-10">Status</TableHead>
-                  <TableHead className="text-[10px] uppercase font-bold tracking-widest h-10 text-right">Data</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {recentContracts?.map((contract) => (
-                  <TableRow key={contract.id} className="border-zinc-100 dark:border-white/5 group hover:bg-zinc-50 dark:hover:bg-white/[0.02] transition-colors cursor-pointer">
-                    <TableCell className="py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-white/5 flex items-center justify-center text-zinc-400 group-hover:text-orange-500 transition-colors">
-                          <FileText size={14} />
-                        </div>
-                        <div className="flex flex-col">
-                          <Link href={`/editor?room=${contract.id}`} className="text-[13px] font-bold tracking-tight hover:underline">{contract.title}</Link>
-                          <span className="text-[10px] text-zinc-500 font-medium uppercase tracking-tighter">ID: {contract.id.slice(0,8)}...</span>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={cn(
-                        "rounded-full text-[9px] uppercase font-black px-2.5 py-0.5 border-none",
-                        "bg-zinc-500/10 text-zinc-500"
-                      )}>
-                        Em Edição
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-[11px] text-zinc-500 text-right font-mono">{new Date(contract.updated_at).toLocaleDateString('pt-BR')}</TableCell>
+            {!recentContracts || recentContracts.length === 0 ? (
+              <div className="p-20 text-center text-zinc-500 uppercase font-black text-[10px] tracking-widest">Aguardando início das hostilidades...</div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-zinc-100 dark:border-white/5 hover:bg-transparent bg-zinc-50/50 dark:bg-white/[0.02]">
+                    <TableHead className="text-[10px] uppercase font-bold tracking-widest h-10">Documento</TableHead>
+                    <TableHead className="text-[10px] uppercase font-bold tracking-widest h-10">Status</TableHead>
+                    <TableHead className="text-[10px] uppercase font-bold tracking-widest h-10 text-right">Data</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {recentContracts.map((contract) => (
+                    <TableRow key={contract.id} className="border-zinc-100 dark:border-white/5 group hover:bg-zinc-50 dark:hover:bg-white/[0.02] transition-colors cursor-pointer">
+                      <TableCell className="py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-white/5 flex items-center justify-center text-zinc-400 group-hover:text-orange-500 transition-colors">
+                            <FileText size={14} />
+                          </div>
+                          <div className="flex flex-col">
+                            <Link href={`/editor?room=${contract.id}`} className="text-[13px] font-bold tracking-tight hover:underline">{contract.title}</Link>
+                            <span className="text-[10px] text-zinc-500 font-medium uppercase tracking-tighter">ID: {contract.id.slice(0,8)}...</span>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={cn(
+                          "rounded-full text-[9px] uppercase font-black px-2.5 py-0.5 border-none",
+                          contract.status === 'signed' ? "bg-emerald-500/10 text-emerald-500" :
+                          contract.status === 'pending' ? "bg-orange-500/10 text-orange-500" : "bg-zinc-500/10 text-zinc-500"
+                        )}>
+                          {contract.status === 'draft' ? 'Em Edição' : 
+                           contract.status === 'pending' ? 'Assinatura' : 'Selado'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-[11px] text-zinc-500 text-right font-mono">{new Date(contract.updated_at).toLocaleDateString('pt-BR')}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </div>
         </div>
 
@@ -171,20 +200,20 @@ export default async function DashboardPage() {
                   <div className="p-3 rounded-lg bg-white/5 border border-white/5 hover:border-orange-500/30 transition-all cursor-help group/item">
                     <div className="flex items-center gap-2 mb-1">
                       <Zap size={12} className="text-orange-500" />
-                      <span className="text-[10px] font-black uppercase text-orange-500">Otimização</span>
+                      <span className="text-[10px] font-black uppercase text-orange-500">Capacidade</span>
                     </div>
                     <p className="text-[12px] text-zinc-400 leading-relaxed group-hover/item:text-zinc-200 transition-colors">
-                      Detectamos 3 pontos de atrito no <span className="text-white font-bold">Projeto Fênix</span> que podem ser resolvidos com uma cláusula de arbitragem customizada.
+                      Você ainda possui <span className="text-white font-bold">{profile?.credits || 0} créditos</span> de ritual. Tempo de resposta médio: <span className="text-white font-bold">4.2s</span>.
                     </p>
                   </div>
 
                   <div className="p-3 rounded-lg bg-white/5 border border-white/5 hover:border-purple-500/30 transition-all cursor-help group/item">
                     <div className="flex items-center gap-2 mb-1">
                       <TrendingUp size={12} className="text-purple-500" />
-                      <span className="text-[10px] font-black uppercase text-purple-500">Tendência</span>
+                      <span className="text-[10px] font-black uppercase text-purple-500">Expansão</span>
                     </div>
                     <p className="text-[12px] text-zinc-400 leading-relaxed group-hover/item:text-zinc-200 transition-colors">
-                      Sua taxa de fechamento em contratos de <span className="text-white font-bold">M&A</span> subiu 12% após o uso do arsenal de cláusulas agressivas.
+                      O seu arsenal conta com <span className="text-white font-bold">{templateCount || 0} modelos</span> de alta performance prontos para forja imediata.
                     </p>
                   </div>
                 </div>

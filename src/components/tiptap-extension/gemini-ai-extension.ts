@@ -116,12 +116,12 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
 
         let accumulatedText = ""
         const { from } = editor.state.selection
+        let hasTriggeredMessage = false
 
         for await (const chunk of result.stream) {
           const chunkText = chunk.text()
           accumulatedText += chunkText
 
-          // Aggressive cleanup: remove markdown blocks, excessive newlines, and redundant HTML tags
           const cleanedContent = accumulatedText
             .replace(/^```html\n?/, "")
             .replace(/\n?```$/, "")
@@ -139,9 +139,12 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
                 .insertContentAt({ from, to: editor.state.selection.to }, cleanedContent)
                 .run()
 
-              editor.commands.aiGenerationHasMessage(true)
+              if (!hasTriggeredMessage) {
+                editor.commands.aiGenerationHasMessage(true)
+                hasTriggeredMessage = true
+              }
             } catch (schemaError) {
-              console.warn("Incomplete HTML fragment, skipping update...", schemaError)
+              // Ignore incomplete HTML fragments during streaming
             }
           }
         }
@@ -270,19 +273,22 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
             const result = await model.generateContent(prompt)
             const responseText = result.response.text()
             
-            // Extract JSON from potential markdown blocks
             const jsonMatch = responseText.match(/\[[\s\S]*\]/)
             if (jsonMatch) {
-              const auditData = JSON.parse(jsonMatch[0])
-              this.storage.auditResults = auditData.map((item: any) => ({
-                ...item,
-                id: Math.random().toString(36).substring(7)
-              }))
+              try {
+                const auditData = JSON.parse(jsonMatch[0])
+                this.storage.auditResults = Array.isArray(auditData) ? auditData.map((item: any) => ({
+                  ...item,
+                  id: Math.random().toString(36).substring(7)
+                })) : []
+              } catch (e) {
+                console.error("Audit JSON parse error:", e)
+                this.storage.auditResults = []
+              }
             } else {
               this.storage.auditResults = []
             }
             this.storage.state = "idle"
-            // We need to trigger an update so UI reacts to storage change
             editor.view.dispatch(editor.state.tr.setMeta('aiAuditCompleted', true))
           } catch (error) {
             console.error("Gemini audit failed:", error)

@@ -7,28 +7,21 @@ import * as decoding from "lib0/decoding"
 import { Observable } from "lib0/observable"
 
 /**
- * Utility to convert Uint8Array to Base64 in a browser-safe way
+ * Optimized utility to convert Uint8Array to Base64
  */
 function toBase64(uint8Array: Uint8Array): string {
-  const chunks: string[] = []
-  const chunkSize = 0x8000 // 32k chunks to avoid stack overflow
-  for (let i = 0; i < uint8Array.length; i += chunkSize) {
-    chunks.push(String.fromCharCode.apply(null, Array.from(uint8Array.subarray(i, i + chunkSize))))
-  }
-  return btoa(chunks.join(""))
+  const binString = Array.from(uint8Array, (byte) =>
+    String.fromCharCode(byte)
+  ).join("")
+  return btoa(binString)
 }
 
 /**
- * Utility to convert Base64 to Uint8Array in a browser-safe way
+ * Optimized utility to convert Base64 to Uint8Array
  */
 function fromBase64(base64: string): Uint8Array {
-  const binaryString = atob(base64)
-  const len = binaryString.length
-  const bytes = new Uint8Array(len)
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binaryString.charCodeAt(i)
-  }
-  return bytes
+  const binString = atob(base64)
+  return Uint8Array.from(binString, (m) => m.charCodeAt(0))
 }
 
 export const messageSync = 0
@@ -40,6 +33,8 @@ export class SupabaseYjsProvider extends Observable<string> {
   private doc: Y.Doc
   private isSubscribed: boolean = false
   private channelName: string
+  private supabase: SupabaseClient
+  private contractId: string | null = null
 
   constructor(
     supabase: SupabaseClient,
@@ -50,7 +45,16 @@ export class SupabaseYjsProvider extends Observable<string> {
     super()
     this.doc = doc
     this.channelName = channelName
+    this.supabase = supabase
     this.awareness = options.awareness || new awarenessProtocol.Awareness(doc)
+
+    // Extract contractId from channelName (format: room:ID)
+    if (channelName.startsWith("room:")) {
+      const id = channelName.split(":")[1]
+      if (id && id !== "default") {
+        this.contractId = id
+      }
+    }
 
     this.channel = supabase.channel(channelName, {
       config: {
@@ -65,12 +69,28 @@ export class SupabaseYjsProvider extends Observable<string> {
     })
 
     // 2. Handle Yjs updates
-    this.doc.on("update", (update, origin) => {
+    this.doc.on("update", async (update, origin) => {
       if (origin !== this) {
         const encoder = encoding.createEncoder()
         encoding.writeVarUint(encoder, messageSync)
         syncProtocol.writeUpdate(encoder, update)
         this.broadcast(encoding.toUint8Array(encoder))
+
+        // PERSISTENCE: Save to database if it's a valid UUID
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(this.contractId || "")
+        
+        if (this.contractId && isUuid) {
+          try {
+            // Convert Uint8Array to hex string for Supabase bytea
+            const hex = Array.from(update).map(b => b.toString(16).padStart(2, '0')).join('')
+            await this.supabase.from("yjs_updates").insert({
+              contract_id: this.contractId,
+              update: `\\x${hex}`
+            })
+          } catch (e) {
+            console.error("[SupabaseYjsProvider] Error saving update:", e)
+          }
+        }
       }
     })
 
@@ -85,23 +105,76 @@ export class SupabaseYjsProvider extends Observable<string> {
 
     // 4. Handle Presence sync
     this.channel.on("presence", { event: "sync" }, () => {
-      // Presence is used for tracking connected users, but we use Broadcast for Yjs data
-      // We can also trigger a sync here if needed
+      // Presence tracking
     })
 
-    // 5. Connect and initial sync
+    // 5. Load initial data and connect
+    this.init()
+  }
+
+  private async init() {
+    // Load initial state from database if contractId exists and is a valid UUID
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(this.contractId)
+
+    if (this.contractId && isUuid) {
+      try {
+        console.log(`[SupabaseYjsProvider] Loading initial data for ${this.contractId}`)
+        const { data, error } = await this.supabase
+          .from("yjs_updates")
+          .select("update")
+          .eq("contract_id", this.contractId)
+          .order("id", { ascending: true })
+
+        if (error) throw error
+
+        if (data && data.length > 0) {
+          Y.transact(this.doc, () => {
+            data.forEach((row: any) => {
+              // Row.update is returned as a hex string or Buffer depending on client
+              // If it's a string, we might need to convert it.
+              let updateData: Uint8Array
+              if (typeof row.update === 'string') {
+                const hex = row.update.startsWith('\\x') ? row.update.slice(2) : row.update
+                updateData = new Uint8Array(hex.length / 2)
+                for (let i = 0; i < hex.length; i += 2) {
+                  updateData[i / 2] = parseInt(hex.slice(i, i + 2), 16)
+                }
+
+                // Check if the data was accidentally stringified as JSON (e.g. starting with '{')
+                if (updateData[0] === 0x7b) {
+                  try {
+                    const str = new TextDecoder().decode(updateData)
+                    const obj = JSON.parse(str)
+                    updateData = new Uint8Array(Object.values(obj) as number[])
+                  } catch (e) {
+                    // Not JSON or failed to parse, continue with raw bytes
+                  }
+                }
+              } else {
+                updateData = new Uint8Array(row.update)
+              }
+              
+              Y.applyUpdate(this.doc, updateData, this)
+            })
+          }, this)
+          console.log(`[SupabaseYjsProvider] Loaded ${data.length} updates`)
+        }
+      } catch (e: any) {
+        console.error("[SupabaseYjsProvider] Error loading initial data:", e.message || e)
+      }
+    }
+
+    // Connect and initial sync
     this.channel.subscribe((status) => {
       if (status === "SUBSCRIBED") {
         this.isSubscribed = true
         console.log(`[SupabaseYjsProvider] Connected to ${this.channelName}`)
         
-        // Initial Sync Step 1: Send our state vector to others
         const encoder = encoding.createEncoder()
         encoding.writeVarUint(encoder, messageSync)
         syncProtocol.writeSyncStep1(encoder, this.doc)
         this.broadcast(encoding.toUint8Array(encoder))
 
-        // Also broadcast our awareness state
         const awarenessEncoder = encoding.createEncoder()
         encoding.writeVarUint(awarenessEncoder, messageAwareness)
         encoding.writeVarUint8Array(awarenessEncoder, awarenessProtocol.encodeAwarenessUpdate(this.awareness, [this.awareness.clientID]))
@@ -110,7 +183,6 @@ export class SupabaseYjsProvider extends Observable<string> {
         this.emit("status", [{ status: "connected" }])
       } else if (status === "CLOSED" || status === "CHANNEL_ERROR") {
         this.isSubscribed = false
-        console.error(`[SupabaseYjsProvider] Connection error for ${this.channelName}: ${status}`)
         this.emit("status", [{ status: "disconnected" }])
       }
     })
@@ -136,7 +208,6 @@ export class SupabaseYjsProvider extends Observable<string> {
         encoding.writeVarUint(encoder, messageSync)
         const syncType = syncProtocol.readSyncMessage(decoder, encoder, this.doc, this)
         if (syncType !== syncProtocol.messageYjsSyncStep2 && syncType !== syncProtocol.messageYjsUpdate) {
-          // If it was a step 1, we need to send back the response (step 2)
           this.broadcast(encoding.toUint8Array(encoder))
         }
         break
@@ -152,3 +223,4 @@ export class SupabaseYjsProvider extends Observable<string> {
     super.destroy()
   }
 }
+

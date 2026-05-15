@@ -26,20 +26,49 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
 
 export default function SignaturesPage() {
-  const pendingSignatures = [
-    { id: "S-001", name: "Contrato de M&A - Projeto Fênix", client: "Omega Group", deadline: "Hoje", progress: 66, status: "2/3 assinaturas" },
-    { id: "S-002", name: "NDA - Parceria Estratégica", client: "Beta S.A.", deadline: "Amanhã", progress: 0, status: "Pendente" },
-    { id: "S-003", name: "Termo de Rescisão - Alpha", client: "Alpha Corp", deadline: "2 dias", progress: 50, status: "1/2 assinaturas" },
-    { id: "S-004", name: "Contrato de Locação Comercial", client: "Delta Properties", deadline: "5 dias", progress: 0, status: "Pendente" },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [signatures, setSignatures] = useState<any[]>([]);
+  const [profile, setProfile] = useState<any>(null);
+  const supabase = createClient();
 
-  const signedDocuments = [
-    { id: "X-088", name: "Acordo de Acionistas - V3", client: "Holding Imperial", date: "14/05/2026", method: "Blockchain" },
-    { id: "X-087", name: "Contrato Social Atualizado", client: "Holding Imperial", date: "12/05/2026", method: "Certificado A1" },
-    { id: "X-086", name: "Aditivo Contratual - Serviços Cloud", client: "Tech Solutions", date: "10/05/2026", method: "Certificado A1" },
-  ];
+  useEffect(() => {
+    async function fetchData() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Fetch Profile for credits
+      const { data: profData } = await supabase
+        .from('profiles')
+        .select('credits')
+        .eq('id', user.id)
+        .single();
+      
+      setProfile(profData);
+
+      // Fetch Signatures joined with Contracts
+      const { data: sigData, error } = await supabase
+        .from('signatures')
+        .select(`
+          *,
+          contracts (
+            title
+          )
+        `)
+        .order('created_at', { ascending: false });
+
+      if (sigData) setSignatures(sigData);
+      setLoading(false);
+    }
+
+    fetchData();
+  }, []);
+
+  const pendingSignatures = signatures.filter(s => s.status === 'pending');
+  const signedDocuments = signatures.filter(s => s.status === 'signed');
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700">
@@ -80,82 +109,91 @@ export default function SignaturesPage() {
           </div>
 
           <TabsContent value="pending" className="mt-0">
-            <Table>
-              <TableBody>
-                {pendingSignatures.map((doc) => (
-                  <TableRow key={doc.id} className="border-zinc-100 dark:border-white/5 group hover:bg-zinc-50 dark:hover:bg-white/[0.01] transition-all cursor-pointer">
-                    <TableCell className="w-16 pl-8">
-                      <div className="w-10 h-10 rounded-xl bg-orange-500/5 flex items-center justify-center text-orange-500 group-hover:bg-orange-500/10 transition-colors">
-                        <Clock size={18} className="animate-pulse" />
-                      </div>
-                    </TableCell>
-                    <TableCell className="py-6">
-                      <div className="text-[13px] font-bold tracking-tight">{doc.name}</div>
-                      <div className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1 font-bold">{doc.client}</div>
-                    </TableCell>
-                    <TableCell className="w-1/4">
-                      <div className="flex flex-col gap-2.5">
-                        <div className="flex justify-between items-end text-[10px] font-bold uppercase tracking-tighter">
-                          <span className="text-orange-500">{doc.status}</span>
-                          <span className="text-zinc-400">{doc.progress}% concluído</span>
+            {loading ? (
+              <div className="p-20 text-center text-zinc-500 text-xs font-bold uppercase tracking-widest animate-pulse">Sincronizando com os Oráculos...</div>
+            ) : pendingSignatures.length === 0 ? (
+              <div className="p-20 text-center text-zinc-500 text-xs font-bold uppercase tracking-widest">Nenhum ritual pendente no momento.</div>
+            ) : (
+              <Table>
+                <TableBody>
+                  {pendingSignatures.map((doc) => (
+                    <TableRow key={doc.id} className="border-zinc-100 dark:border-white/5 group hover:bg-zinc-50 dark:hover:bg-white/[0.01] transition-all cursor-pointer">
+                      <TableCell className="w-16 pl-8">
+                        <div className="w-10 h-10 rounded-xl bg-orange-500/5 flex items-center justify-center text-orange-500 group-hover:bg-orange-500/10 transition-colors">
+                          <Clock size={18} className="animate-pulse" />
                         </div>
-                        <div className="h-1 w-full bg-zinc-100 dark:bg-white/5 overflow-hidden rounded-full">
-                          <div 
-                            className="h-full bg-orange-600 transition-all duration-1000 group-hover:shadow-[0_0_8px_rgba(234,88,12,0.5)]" 
-                            style={{ width: `${doc.progress}%` }} 
-                          />
+                      </TableCell>
+                      <TableCell className="py-6">
+                        <div className="text-[13px] font-bold tracking-tight">{doc.contracts?.title || 'Contrato sem Título'}</div>
+                        <div className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1 font-bold">
+                          {doc.signers?.length || 0} Signatários • Enviado em {new Date(doc.created_at).toLocaleDateString()}
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="w-48 text-right pr-8">
-                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button variant="ghost" size="sm" className="h-8 rounded-lg text-[11px] font-bold text-zinc-500">
-                          Detalhes
-                        </Button>
-                        <Button size="sm" className="h-8 rounded-lg bg-orange-500/10 text-orange-500 hover:bg-orange-500/20 font-bold text-[11px] px-4 border border-orange-500/20">
-                          <Send size={12} className="mr-1.5" /> Notificar
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                      </TableCell>
+                      <TableCell className="w-1/4">
+                        <div className="flex flex-col gap-2.5">
+                          <div className="flex justify-between items-end text-[10px] font-bold uppercase tracking-tighter">
+                            <span className="text-orange-500">Pendente</span>
+                            <span className="text-zinc-400">ID: {doc.external_id?.slice(0, 8)}...</span>
+                          </div>
+                          <div className="h-1 w-full bg-zinc-100 dark:bg-white/5 overflow-hidden rounded-full">
+                            <div className="h-full bg-orange-600 w-1/3 transition-all duration-1000 group-hover:shadow-[0_0_8px_rgba(234,88,12,0.5)]" />
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="w-48 text-right pr-8">
+                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button variant="ghost" size="sm" className="h-8 rounded-lg text-[11px] font-bold text-zinc-500">
+                            Detalhes
+                          </Button>
+                          <Button size="sm" className="h-8 rounded-lg bg-orange-500/10 text-orange-500 hover:bg-orange-500/20 font-bold text-[11px] px-4 border border-orange-500/20">
+                            <Send size={12} className="mr-1.5" /> Notificar
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </TabsContent>
 
           <TabsContent value="signed" className="mt-0">
-            <Table>
-              <TableBody>
-                {signedDocuments.map((doc) => (
-                  <TableRow key={doc.id} className="border-zinc-100 dark:border-white/5 group hover:bg-zinc-50 dark:hover:bg-white/[0.01] transition-all cursor-pointer">
-                    <TableCell className="w-16 pl-8">
-                      <div className="w-10 h-10 rounded-xl bg-emerald-500/5 flex items-center justify-center text-emerald-500">
-                        <CheckCircle2 size={18} />
-                      </div>
-                    </TableCell>
-                    <TableCell className="py-6">
-                      <div className="text-[13px] font-bold tracking-tight">{doc.name}</div>
-                      <div className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1 font-bold">Assinado em {doc.date} via {doc.method}</div>
-                    </TableCell>
-                    <TableCell className="w-1/4">
-                       <div className="text-[10px] text-zinc-400 font-mono flex items-center gap-2">
-                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Blockchain: {doc.id}
-                       </div>
-                    </TableCell>
-                    <TableCell className="w-48 text-right pr-8">
-                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
-                          <MoreVertical size={16} />
-                        </Button>
-                        <Button variant="outline" size="sm" className="h-8 rounded-lg border-emerald-500/20 text-emerald-600 hover:bg-emerald-500 hover:text-white text-[11px] font-bold gap-1.5 px-3 transition-all">
-                          <Download size={14} /> Download
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            {signedDocuments.length === 0 ? (
+              <div className="p-20 text-center text-zinc-500 text-xs font-bold uppercase tracking-widest">Ainda não há contratos selados.</div>
+            ) : (
+              <Table>
+                <TableBody>
+                  {signedDocuments.map((doc) => (
+                    <TableRow key={doc.id} className="border-zinc-100 dark:border-white/5 group hover:bg-zinc-50 dark:hover:bg-white/[0.01] transition-all cursor-pointer">
+                      <TableCell className="w-16 pl-8">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-500/5 flex items-center justify-center text-emerald-500">
+                          <CheckCircle2 size={18} />
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-6">
+                        <div className="text-[13px] font-bold tracking-tight">{doc.contracts?.title}</div>
+                        <div className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1 font-bold">Assinado em {new Date(doc.updated_at).toLocaleDateString()}</div>
+                      </TableCell>
+                      <TableCell className="w-1/4">
+                         <div className="text-[10px] text-zinc-400 font-mono flex items-center gap-2">
+                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Protocolo: {doc.external_id}
+                         </div>
+                      </TableCell>
+                      <TableCell className="w-48 text-right pr-8">
+                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
+                            <MoreVertical size={16} />
+                          </Button>
+                          <Button variant="outline" size="sm" className="h-8 rounded-lg border-emerald-500/20 text-emerald-600 hover:bg-emerald-500 hover:text-white text-[11px] font-bold gap-1.5 px-3 transition-all">
+                            <Download size={14} /> Download
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </TabsContent>
         </Tabs>
       </div>
@@ -168,7 +206,7 @@ export default function SignaturesPage() {
           </div>
           <div className="space-y-1">
             <div className="text-[13px] font-bold tracking-tight">Capacidade de Execução</div>
-            <div className="text-[11px] text-zinc-500 font-medium">Você possui <span className="text-zinc-900 dark:text-zinc-200 font-bold font-mono text-[12px]">1.250</span> créditos de assinatura restantes este mês.</div>
+            <div className="text-[11px] text-zinc-500 font-medium">Você possui <span className="text-zinc-900 dark:text-zinc-200 font-bold font-mono text-[12px]">{profile?.credits || 0}</span> créditos de assinatura restantes.</div>
           </div>
         </div>
         <Button variant="outline" className="h-10 px-6 border-orange-500/30 text-orange-600 hover:bg-orange-500 hover:text-white font-bold rounded-lg text-[12px] transition-all shadow-sm">
@@ -178,3 +216,4 @@ export default function SignaturesPage() {
     </div>
   );
 }
+

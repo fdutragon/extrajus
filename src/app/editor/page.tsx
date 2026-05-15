@@ -68,8 +68,9 @@ import { Suspense } from "react"
 function EditorContent() {
   const searchParams = useSearchParams()
   const room = searchParams.get("room") || "extrajus-draft-001"
+  const templateSlug = searchParams.get("template")
 
-  return <NotionEditor room={room} />
+  return <NotionEditor room={room} templateSlug={templateSlug} />
 }
 
 export default function EditorPage() {

@@ -13,9 +13,13 @@ import {
   Search, 
   Filter,
   Activity,
-  ChevronRight
+  ChevronRight,
+  FileText,
+  User as UserIcon,
+  Link as LinkIcon
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { createClient } from "@/utils/supabase/client";
 
 // Dynamic import to avoid SSR issues with ForceGraph
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
@@ -26,6 +30,30 @@ export default function BrainPage() {
   const [selectedNode, setSelectedNode] = useState<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<any>({ contracts: [], signatures: [], profile: null });
+  const supabase = createClient();
+
+  useEffect(() => {
+    async function fetchData() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const [contractsRes, sigsRes, profileRes] = await Promise.all([
+        supabase.from('contracts').select('id, title, status').eq('user_id', user.id),
+        supabase.from('signatures').select('id, contract_id, signer_name, status'),
+        supabase.from('profiles').select('full_name').eq('id', user.id).single()
+      ]);
+
+      setData({
+        contracts: contractsRes.data || [],
+        signatures: sigsRes.data || [],
+        profile: profileRes.data
+      });
+      setLoading(false);
+    }
+    fetchData();
+  }, []);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -49,36 +77,51 @@ export default function BrainPage() {
   }, []);
 
   const graphData = useMemo(() => {
-    return { 
-      nodes: [
-        { id: "core", name: "CENTRAL DE COMANDO", val: 30, group: "core", color: "#f97316" },
-        // Profissionais (O Sindicato)
-        { id: "p1", name: "Dr. Victor (M&A Elite)", val: 18, group: "pro", color: "#60a5fa" },
-        { id: "p2", name: "Dra. Elena (Tax Strategy)", val: 16, group: "pro", color: "#60a5fa" },
-        { id: "p3", name: "Marcus (Risk Analysis)", val: 14, group: "pro", color: "#60a5fa" },
-        // Oportunidades
-        { id: "o1", name: "Oportunidade: Fusão Giga", val: 22, group: "opportunity", color: "#fbbf24" },
-        { id: "o2", name: "Oportunidade: IPO Tech", val: 20, group: "opportunity", color: "#fbbf24" },
-        // Contratos / Projetos
-        { id: "ct1", name: "Holding Imperial", val: 10, group: "contract", color: "#a855f7" },
-        { id: "ct2", name: "Projeto Skynet", val: 10, group: "contract", color: "#a855f7" },
-        // Cláusulas de Conexão
-        { id: "cl1", name: "Arbitragem Internacional", val: 5, group: "clause", color: "#10b981" },
-      ], 
-      links: [
-        { source: "core", target: "p1" },
-        { source: "core", target: "p2" },
-        { source: "core", target: "p3" },
-        { source: "p1", target: "o1" },
-        { source: "p2", target: "o1" },
-        { source: "p3", target: "o2" },
-        { source: "o1", target: "ct1" },
-        { source: "o2", target: "ct2" },
-        { source: "ct1", target: "cl1" },
-        { source: "p1", target: "p2" }, // Colaboração entre pros
-      ] 
-    };
-  }, []);
+    const nodes: any[] = [];
+    const links: any[] = [];
+
+    // Core Node
+    nodes.push({ 
+      id: "core", 
+      name: data.profile?.full_name?.toUpperCase() || "LILITH CORE", 
+      val: 25, 
+      group: "core", 
+      color: "#f97316" 
+    });
+
+    // Contract Nodes
+    data.contracts.forEach((c: any) => {
+      nodes.push({
+        id: c.id,
+        name: c.title,
+        val: 15,
+        group: "contract",
+        color: "#a855f7",
+        status: c.status
+      });
+      links.push({ source: "core", target: c.id });
+    });
+
+    // Signatory Nodes
+    data.signatures.forEach((s: any) => {
+      const sigId = `sig-${s.id}`;
+      nodes.push({
+        id: sigId,
+        name: s.signer_name,
+        val: 10,
+        group: "signer",
+        color: "#60a5fa",
+        status: s.status
+      });
+      if (s.contract_id) {
+        links.push({ source: s.contract_id, target: sigId });
+      }
+    });
+
+    return { nodes, links };
+  }, [data]);
+
+  if (loading) return <div className="p-20 text-center text-zinc-500 uppercase font-black text-xs animate-pulse">Invocando Sinapses...</div>
 
   return (
     <div className="flex flex-col space-y-6 animate-in fade-in duration-700 min-h-[85vh]">
@@ -91,18 +134,15 @@ export default function BrainPage() {
           </div>
           <h1 className="text-3xl font-bold tracking-tight">O Sindicato</h1>
           <p className="text-[13px] text-zinc-500 dark:text-zinc-400 max-w-md leading-relaxed">
-            Mapeie o capital intelectual do império. Conecte-se com a elite e feche contratos diretamente pelo grafo.
+            Mapeie o capital intelectual do império. Visualize as conexões entre seus contratos e signatários em tempo real.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
            <div className="flex items-center gap-2 bg-zinc-100 dark:bg-white/5 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-white/5">
               <Activity size={12} className="text-orange-500 animate-pulse" />
-              <span className="text-[10px] font-mono font-bold uppercase tracking-tighter">Sincronização Ativa</span>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-tighter">Grafo Dinâmico Ativo</span>
            </div>
-           <Button className="h-10 bg-zinc-900 dark:bg-white text-white dark:text-black hover:opacity-90 font-bold rounded-lg px-5 text-[13px] shadow-lg shadow-black/10 dark:shadow-white/5">
-             Otimizar Conexões
-           </Button>
         </div>
       </div>
 
@@ -115,16 +155,13 @@ export default function BrainPage() {
           {/* Legend Overlay */}
           <div className="absolute top-6 left-6 z-10 space-y-2 p-4 bg-white/50 dark:bg-black/50 backdrop-blur-md rounded-xl border border-white/10">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
-               <div className="w-2 h-2 rounded-full bg-orange-500" /> Lilith Core
-            </div>
-            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
-               <div className="w-2 h-2 rounded-full bg-blue-500" /> Clientes
+               <div className="w-2 h-2 rounded-full bg-orange-500" /> Você (Core)
             </div>
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
                <div className="w-2 h-2 rounded-full bg-purple-500" /> Contratos
             </div>
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
-               <div className="w-2 h-2 rounded-full bg-emerald-500" /> Cláusulas
+               <div className="w-2 h-2 rounded-full bg-blue-500" /> Signatários
             </div>
           </div>
 
@@ -142,9 +179,7 @@ export default function BrainPage() {
               const label = node.name;
               const fontSize = 12 / globalScale;
               ctx.font = `${fontSize}px Inter`;
-              const textWidth = ctx.measureText(label).width;
-              const bckgDimensions = [textWidth, fontSize].map(n => n + fontSize * 0.5);
-
+              
               // Node Circle
               ctx.beginPath();
               ctx.arc(node.x, node.y, node.val / 2, 0, 2 * Math.PI, false);
@@ -156,7 +191,7 @@ export default function BrainPage() {
               ctx.shadowBlur = 15;
 
               // Label
-              if (globalScale > 2) {
+              if (globalScale > 1.5) {
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
@@ -178,28 +213,34 @@ export default function BrainPage() {
               <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg" style={{ backgroundColor: selectedNode.color }}>
-                     <Network size={24} />
+                     {selectedNode.group === 'contract' ? <FileText size={24} /> : <UserIcon size={24} />}
                   </div>
                   <div>
-                    <h4 className="text-lg font-bold tracking-tight">{selectedNode.name}</h4>
+                    <h4 className="text-sm font-bold tracking-tight">{selectedNode.name}</h4>
                     <p className="text-[10px] text-zinc-500 uppercase font-black">{selectedNode.group}</p>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div className="p-3 rounded-xl bg-zinc-50 dark:bg-white/5 border border-zinc-100 dark:border-white/5">
-                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-1">Conexões Ativas</span>
-                    <span className="text-xl font-bold font-mono">12</span>
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-1">Status de Conexão</span>
+                    <Badge variant="outline" className="text-[10px] uppercase border-orange-500/30 text-orange-500">{selectedNode.status || 'Ativo'}</Badge>
                   </div>
                   <div className="p-3 rounded-xl bg-zinc-50 dark:bg-white/5 border border-zinc-100 dark:border-white/5">
-                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-1">Impacto no Sistema</span>
-                    <span className="text-xl font-bold font-mono text-orange-500">84.2%</span>
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-1">Impacto Neural</span>
+                    <span className="text-xl font-bold font-mono text-orange-500">
+                      {selectedNode.group === 'core' ? '100%' : selectedNode.group === 'contract' ? '75%' : '40%'}
+                    </span>
                   </div>
                 </div>
 
-                <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl py-6 flex items-center justify-between px-6">
-                  Abrir Documento <ChevronRight size={16} />
-                </Button>
+                {selectedNode.group === 'contract' && (
+                  <Button asChild className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl py-6 flex items-center justify-between px-6">
+                    <a href={`/editor?room=${selectedNode.id}`}>
+                      Abrir Documento <ChevronRight size={16} />
+                    </a>
+                  </Button>
+                )}
               </div>
             ) : (
               <div className="h-64 flex flex-col items-center justify-center text-center space-y-4 opacity-40">
@@ -218,8 +259,8 @@ export default function BrainPage() {
                 <div className="space-y-6 flex-1">
                    <div className="space-y-2">
                       <div className="flex justify-between items-end">
-                        <span className="text-[10px] font-bold uppercase text-zinc-400">Saturação de Cláusulas</span>
-                        <span className="text-[10px] font-bold text-orange-500">92%</span>
+                        <span className="text-[10px] font-bold uppercase text-zinc-400">Total de Conexões</span>
+                        <span className="text-[10px] font-bold text-orange-500">{graphData.nodes.length}</span>
                       </div>
                       <div className="h-1 w-full bg-zinc-800 rounded-full overflow-hidden">
                         <div className="h-full bg-orange-500 w-[92%]" />
@@ -228,7 +269,7 @@ export default function BrainPage() {
                    <div className="space-y-2">
                       <div className="flex justify-between items-end">
                         <span className="text-[10px] font-bold uppercase text-zinc-400">Densidade da Rede</span>
-                        <span className="text-[10px] font-bold text-blue-500">64%</span>
+                        <span className="text-[10px] font-bold text-blue-500">{graphData.links.length}</span>
                       </div>
                       <div className="h-1 w-full bg-zinc-800 rounded-full overflow-hidden">
                         <div className="h-full bg-blue-500 w-[64%]" />
@@ -238,7 +279,7 @@ export default function BrainPage() {
                 <div className="pt-6 mt-auto">
                   <div className="flex items-center gap-2 p-3 bg-white/5 rounded-xl border border-white/5 italic text-[11px] text-zinc-500">
                     <Zap size={14} className="text-orange-500" />
-                    "O cérebro está se expandindo. 12 novas conexões detectadas hoje."
+                    "Sua rede neural mapeia {data.contracts.length} contratos e {data.signatures.length} signatários ativos."
                   </div>
                 </div>
              </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -26,9 +26,54 @@ import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
+import { createClient } from "@/utils/supabase/client";
+import { toast } from "sonner";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("perfil");
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<any>(null);
+  const [fullName, setFullName] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const supabase = createClient();
+
+  useEffect(() => {
+    async function fetchProfile() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      
+      if (data) {
+        setProfile(data);
+        setFullName(data.full_name || "");
+      }
+      setLoading(false);
+    }
+    fetchProfile();
+  }, []);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ full_name: fullName })
+      .eq('id', user.id);
+
+    if (error) {
+      toast.error("Erro ao atualizar perfil.");
+    } else {
+      toast.success("Protocolos atualizados com sucesso.");
+    }
+    setIsSaving(false);
+  };
 
   const menuItems = [
     { id: "perfil", name: "Perfil do Arquiteto", icon: User },
@@ -37,6 +82,8 @@ export default function SettingsPage() {
     { id: "visual", name: "Interface & Estética", icon: Monitor },
     { id: "faturamento", name: "Faturamento & Créditos", icon: CreditCard },
   ];
+
+  if (loading) return <div className="p-20 text-center text-zinc-500 uppercase font-black text-xs animate-pulse">Sincronizando Sistemas...</div>
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700">
@@ -91,11 +138,11 @@ export default function SettingsPage() {
                 <CardContent className="p-8 -mt-12 relative z-10">
                   <div className="flex flex-col md:flex-row items-end gap-6 mb-8">
                     <Avatar className="h-24 w-24 rounded-2xl border-4 border-white dark:border-[#0c0c0e] shadow-xl ring-1 ring-zinc-200 dark:ring-white/5">
-                      <AvatarImage src="https://github.com/shadcn.png" />
-                      <AvatarFallback>CI</AvatarFallback>
+                      <AvatarImage src={profile?.avatar_url || "https://github.com/shadcn.png"} />
+                      <AvatarFallback>{fullName?.slice(0,2).toUpperCase() || "AI"}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 space-y-1 pb-2">
-                      <h2 className="text-2xl font-bold tracking-tight">Cadelo Imperial</h2>
+                      <h2 className="text-2xl font-bold tracking-tight">{fullName || 'Arquiteto'}</h2>
                       <p className="text-sm text-zinc-500 font-medium">Fundador & Arquiteto Chefe</p>
                     </div>
                     <Button variant="outline" className="h-9 rounded-lg border-zinc-200/50 dark:border-white/10 font-bold text-xs uppercase">Alterar Avatar</Button>
@@ -106,23 +153,27 @@ export default function SettingsPage() {
                       <label className="text-[11px] font-bold uppercase tracking-widest text-zinc-400">Nome de Guerra</label>
                       <input 
                         type="text" 
-                        defaultValue="Cadelo Imperial"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
                         className="w-full bg-zinc-50 dark:bg-white/5 border border-transparent dark:border-white/5 rounded-lg px-4 py-2.5 text-sm font-medium focus:ring-1 focus:ring-orange-500/30 transition-all outline-none"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[11px] font-bold uppercase tracking-widest text-zinc-400">E-mail de Comando</label>
-                      <input 
-                        type="email" 
-                        defaultValue="cadelo@extrajus.com.br"
-                        className="w-full bg-zinc-50 dark:bg-white/5 border border-transparent dark:border-white/5 rounded-lg px-4 py-2.5 text-sm font-medium focus:ring-1 focus:ring-orange-500/30 transition-all outline-none cursor-not-allowed opacity-60"
-                        disabled
-                      />
+                      <label className="text-[11px] font-bold uppercase tracking-widest text-zinc-400">Poder Residual</label>
+                      <div className="w-full bg-zinc-50 dark:bg-white/5 border border-transparent dark:border-white/5 rounded-lg px-4 py-2.5 text-sm font-bold text-orange-500 flex items-center gap-2">
+                        <Zap size={14} /> {profile?.credits || 0} Créditos
+                      </div>
                     </div>
                   </div>
                   
                   <div className="mt-8 flex justify-end">
-                    <Button className="bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg px-6">Salvar Alterações</Button>
+                    <Button 
+                      disabled={isSaving}
+                      onClick={handleSave}
+                      className="bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg px-6"
+                    >
+                      {isSaving ? "Sincronizando..." : "Salvar Alterações"}
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -250,3 +301,4 @@ export default function SettingsPage() {
     </div>
   );
 }
+

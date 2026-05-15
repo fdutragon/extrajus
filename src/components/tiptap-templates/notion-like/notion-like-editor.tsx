@@ -6,6 +6,7 @@ import type { Doc as YDoc } from "yjs"
 import { createPortal } from "react-dom"
 import { SupabaseYjsProvider } from "../../../lib/supabase-yjs-provider"
 import { Gemini } from "../../../components/tiptap-extension/gemini-ai-extension"
+import { createClient } from "@/utils/supabase/client"
 
 // --- Tiptap Core Extensions ---
 import { StarterKit } from "@tiptap/starter-kit"
@@ -23,6 +24,9 @@ import {
   getHierarchicalIndexes,
   TableOfContents,
 } from "@tiptap/extension-table-of-contents"
+import { Underline } from "@tiptap/extension-underline"
+import { Link as TiptapLink } from "@tiptap/extension-link"
+import { BubbleMenu as BubbleMenuExtension } from "@tiptap/extension-bubble-menu"
 
 // --- Hooks ---
 import { useUiEditorState } from "../../../hooks/use-ui-editor-state"
@@ -93,6 +97,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { toast } from "sonner"
 import { Separator } from "../../../components/tiptap-ui-primitive/separator"
 import { ThemeToggle } from "../../../components/tiptap-templates/notion-like/notion-like-editor-theme-toggle"
 import { CollaborationUsers } from "../../../components/tiptap-templates/notion-like/notion-like-editor-collaboration-users"
@@ -114,6 +119,9 @@ import { NotionToolbar } from "../../../components/tiptap-templates/notion-like/
 import { MobileToolbar } from "../../../components/tiptap-templates/notion-like/notion-like-editor-mobile-toolbar"
 import { SetupErrorMessage } from "../../../components/tiptap-templates/notion-like/setup-error-message"
 import { TocSidebar } from "../../../components/tiptap-node/toc-node"
+import { ExportButton } from "../../../components/tiptap-ui/export-button/export-button"
+import { DataRoom } from "../../../components/tiptap-ui/data-room/data-room"
+import { BubbleMenu } from "../../../components/tiptap-ui/bubble-menu/bubble-menu"
 import {
   TocProvider,
   useToc,
@@ -128,9 +136,10 @@ function InviteButton({ room }: { room: string }) {
     if (typeof window === "undefined") return
     const url = new URL(window.location.href)
     url.searchParams.set("room", room)
-    navigator.clipboard.writeText(url.toString())
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    navigator.clipboard.writeText(url.toString()).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
   }
 
   return (
@@ -144,7 +153,7 @@ function InviteButton({ room }: { room: string }) {
       onClick={handleInvite}
     >
       {copied ? <Check size={12} /> : <UserPlus size={12} />}
-      {copied ? "Convidar" : "Convidar"}
+      {copied ? "Copiado" : "Convidar"}
     </Button>
   )
 }
@@ -154,6 +163,7 @@ function InviteButton({ room }: { room: string }) {
 export interface NotionEditorProps {
   room: string
   placeholder?: string
+  templateSlug?: string | null
 }
 
 export interface EditorProviderProps {
@@ -161,21 +171,52 @@ export interface EditorProviderProps {
   ydoc: YDoc
   placeholder?: string
   geminiKey: string | null
+  templateSlug?: string | null
 }
 
 /**
  * Loading spinner component shown while connecting to the notion server
  */
-export function LoadingSpinner({ text = "Conectando..." }: { text?: string }) {
+export function LoadingSpinner({ text = "Invocando Ritual..." }: { text?: string }) {
   return (
-    <div className="spinner-container">
-      <div className="spinner-content">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="10"></circle>
-          <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        <div className="spinner-loading-text">{text}</div>
+    <div className="fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-[#050505] overflow-hidden">
+      {/* Background Ambience */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(234,88,12,0.05),transparent_70%)] animate-pulse duration-[4000ms]" />
+      
+      <div className="relative flex flex-col items-center gap-8 animate-in fade-in zoom-in duration-1000">
+        {/* The Portal (Logo) */}
+        <div className="relative group">
+          <div className="absolute -inset-8 bg-orange-600/20 blur-[50px] rounded-full animate-pulse group-hover:bg-orange-600/30 transition-all duration-700" />
+          <div className="relative flex flex-col items-center">
+            <span className="text-[24px] font-black uppercase tracking-[0.6em] text-orange-600 drop-shadow-[0_0_20px_rgba(234,88,12,0.5)]">
+              ExtraJus
+            </span>
+            <div className="h-px w-full bg-gradient-to-r from-transparent via-orange-500/50 to-transparent mt-2 scale-x-0 animate-in slide-in-from-left duration-1000 fill-mode-forwards" style={{ animationDelay: '500ms' }} />
+          </div>
+        </div>
+
+        {/* Loading Message */}
+        <div className="flex flex-col items-center gap-3">
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500 animate-pulse">
+            {text}
+          </span>
+          <div className="flex gap-1.5">
+            {[0, 1, 2].map((i) => (
+              <div 
+                key={i} 
+                className="w-1 h-1 rounded-full bg-orange-600/40 animate-bounce" 
+                style={{ animationDelay: `${i * 150}ms`, animationDuration: '1000ms' }}
+              />
+            ))}
+          </div>
+        </div>
       </div>
+      
+      {/* Structural Framing */}
+      <div className="absolute top-12 left-12 w-24 h-px bg-white/[0.03]" />
+      <div className="absolute top-12 left-12 w-px h-24 bg-white/[0.03]" />
+      <div className="absolute bottom-12 right-12 w-24 h-px bg-white/[0.03]" />
+      <div className="absolute bottom-12 right-12 w-px h-24 bg-white/[0.03]" />
     </div>
   )
 }
@@ -386,6 +427,7 @@ export function EditorLayout() {
              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-32 bg-orange-500/5 blur-[80px] pointer-events-none rounded-full" />
 
              <div className="relative z-10 selection:bg-orange-500/30">
+               <BubbleMenu editor={editor} />
                <EditorContentArea />
              </div>
           </div>
@@ -396,9 +438,12 @@ export function EditorLayout() {
           <div className="w-72 h-[calc(100vh-96px)] bg-white/80 dark:bg-black/60 backdrop-blur-3xl border border-zinc-200/50 dark:border-white/[0.05] rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden group/oracle">
             <Tabs value={oracleTab} onValueChange={setOracleTab} className="w-full h-full flex flex-col">
               <div className="px-8 pt-8 mb-6">
-                <TabsList className="grid w-full grid-cols-2 bg-zinc-100 dark:bg-white/[0.03] rounded-2xl h-11 p-1.5 border border-zinc-200/50 dark:border-white/[0.05]">
+                <TabsList className="grid w-full grid-cols-3 bg-zinc-100 dark:bg-white/[0.03] rounded-2xl h-11 p-1.5 border border-zinc-200/50 dark:border-white/[0.05]">
                   <TabsTrigger value="insights" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-orange-600/20 transition-all">
                     Insights
+                  </TabsTrigger>
+                  <TabsTrigger value="data" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-orange-600/20 transition-all">
+                    Data
                   </TabsTrigger>
                   <TabsTrigger value="oraculo" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-orange-600/20 transition-all">
                     Oráculo
@@ -434,23 +479,26 @@ export function EditorLayout() {
                       <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest flex items-center gap-2">
                         <ShieldCheck size={12} /> Contrato Inabalável
                       </p>
-                    </div>
-
-                    <div className="space-y-4 pt-4 border-t border-zinc-200/50 dark:border-white/[0.05]">
+                      <div className="space-y-4 pt-4 border-t border-zinc-200/50 dark:border-white/[0.05]">
                        <h4 className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.25em]">Vulnerabilidades</h4>
                        <div className="bg-orange-500/[0.03] border border-orange-500/10 rounded-2xl p-5 space-y-4 group/card hover:border-orange-500/30 transition-all">
                          <p className="text-[11px] leading-relaxed italic text-zinc-600 dark:text-zinc-400 font-medium">
                            "Detectei um flanco exposto na cláusula 7.2. Deseja realizar a blindagem estratégica?"
                          </p>
                          <Button size="sm" className="w-full bg-orange-600 hover:bg-orange-700 text-white text-[9px] font-black uppercase tracking-widest h-9 rounded-xl shadow-lg shadow-orange-600/20 transition-all active:scale-95">
-                           Blindar Agora
+                           Aplicar Blindagem
                          </Button>
                        </div>
+                      </div>
                     </div>
                   </div>
                 </TabsContent>
 
-                <TabsContent value="oraculo" className="h-full m-0 flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <TabsContent value="data" className="h-full m-0 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <DataRoom editor={editor} />
+                </TabsContent>
+
+                <TabsContent value="oraculo" className="h-full m-0 flex flex-col space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <div className="flex-1 overflow-y-auto space-y-6 mb-6 pr-2 custom-scrollbar">
                     <div className="bg-zinc-100/50 dark:bg-white/[0.03] rounded-2xl p-5 border border-zinc-200/50 dark:border-white/[0.05] relative group/msg">
                       <div className="absolute -left-1 top-4 w-2 h-2 bg-orange-600 rounded-full shadow-[0_0_8px_rgba(234,88,12,0.5)]" />
@@ -484,7 +532,7 @@ export function EditorLayout() {
 }
 
 export function EditorProvider(props: EditorProviderProps) {
-  const { provider, ydoc, placeholder = "Comece a redigir a cláusula...", geminiKey } = props
+  const { provider, ydoc, placeholder = "Comece a redigir a cláusula...", geminiKey, templateSlug } = props
 
   const { user } = useUser()
   const { setTocContent } = useToc()
@@ -594,8 +642,43 @@ export function EditorProvider(props: EditorProviderProps) {
       Gemini.configure({
         apiKey: geminiKey || "",
       }),
+      Underline,
+      TiptapLink.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: "contract-link",
+        },
+      }),
+      BubbleMenuExtension,
     ],
   })
+
+  // Template Pre-population Logic
+  useEffect(() => {
+    if (!editor || !templateSlug) return
+
+    const checkAndFill = async () => {
+      // Small delay to ensure Yjs has loaded existing content if any
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      if (editor.isEmpty) {
+        console.log(`[NotionEditor] Pre-populating with template: ${templateSlug}`)
+        const supabase = createClient()
+        const { data } = await supabase
+          .from("templates")
+          .select("content")
+          .eq("slug", templateSlug)
+          .single()
+
+        if (data?.content) {
+          editor.commands.setContent(data.content)
+          toast.success("Modelo carregado no editor.")
+        }
+      }
+    }
+
+    checkAndFill()
+  }, [editor, templateSlug])
 
   const contextValue = useMemo(() => (editor ? { editor } : null), [editor])
   const memoizedLayout = useMemo(() => <EditorLayout />, [])
@@ -617,6 +700,7 @@ export function EditorProvider(props: EditorProviderProps) {
 export function NotionEditor({
   room,
   placeholder = "Start writing...",
+  templateSlug,
 }: NotionEditorProps) {
   return (
     <UserProvider>
@@ -624,7 +708,7 @@ export function NotionEditor({
         <AiProvider>
           <TocProvider>
             <AiMenuStateProvider>
-              <NotionEditorContent placeholder={placeholder} />
+              <NotionEditorContent placeholder={placeholder} templateSlug={templateSlug} />
             </AiMenuStateProvider>
           </TocProvider>
         </AiProvider>
@@ -636,7 +720,13 @@ export function NotionEditor({
 /**
  * Internal component that handles the editor loading state
  */
-export function NotionEditorContent({ placeholder }: { placeholder?: string }) {
+export function NotionEditorContent({ 
+  placeholder, 
+  templateSlug 
+}: { 
+  placeholder?: string, 
+  templateSlug?: string | null 
+}) {
   const { provider, ydoc, setupError: collabSetupError } = useCollab()
   const { geminiKey, setupError: aiSetupError } = useAi()
 
@@ -660,6 +750,7 @@ export function NotionEditorContent({ placeholder }: { placeholder?: string }) {
       ydoc={ydoc}
       placeholder={placeholder}
       geminiKey={geminiKey}
+      templateSlug={templateSlug}
     />
   )
 }
