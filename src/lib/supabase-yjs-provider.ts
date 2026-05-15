@@ -53,6 +53,7 @@ export class SupabaseYjsProvider extends Observable<string> {
       const id = channelName.split(":")[1]
       if (id && id !== "default") {
         this.contractId = id
+        console.log(`[SupabaseYjsProvider] Contract ID detected: ${this.contractId}`)
       }
     }
 
@@ -62,6 +63,11 @@ export class SupabaseYjsProvider extends Observable<string> {
         presence: { key: this.awareness.clientID.toString() },
       },
     })
+
+    // Browser close handling
+    if (typeof window !== "undefined") {
+      window.addEventListener("beforeunload", this.boundDestroy)
+    }
 
     // 1. Handle Broadcast messages
     this.channel.on("broadcast", { event: "message" }, ({ payload }) => {
@@ -81,14 +87,24 @@ export class SupabaseYjsProvider extends Observable<string> {
         
         if (this.contractId && isUuid) {
           try {
-            // Convert Uint8Array to hex string for Supabase bytea
-            const hex = Array.from(update).map(b => b.toString(16).padStart(2, '0')).join('')
-            await this.supabase.from("yjs_updates").insert({
+            // Optimized hex conversion
+            let hex = ""
+            for (let i = 0; i < update.length; i++) {
+              hex += update[i].toString(16).padStart(2, "0")
+            }
+            
+            const { error } = await this.supabase.from("yjs_updates").insert({
               contract_id: this.contractId,
               update: `\\x${hex}`
             })
+
+            if (error) {
+              console.error("[SupabaseYjsProvider] Error saving update:", error.message, error.details)
+            } else {
+              console.log(`[SupabaseYjsProvider] Update saved to DB for ${this.contractId}`)
+            }
           } catch (e) {
-            console.error("[SupabaseYjsProvider] Error saving update:", e)
+            console.error("[SupabaseYjsProvider] Unexpected error saving update:", e)
           }
         }
       }
@@ -114,7 +130,7 @@ export class SupabaseYjsProvider extends Observable<string> {
 
   private async init() {
     // Load initial state from database if contractId exists and is a valid UUID
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(this.contractId)
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(this.contractId || "")
 
     if (this.contractId && isUuid) {
       try {
@@ -128,8 +144,9 @@ export class SupabaseYjsProvider extends Observable<string> {
         if (error) throw error
 
         if (data && data.length > 0) {
+          console.log(`[SupabaseYjsProvider] Found ${data.length} updates in DB. Applying...`)
           Y.transact(this.doc, () => {
-            data.forEach((row: any) => {
+            data.forEach((row: any, index: number) => {
               // Row.update is returned as a hex string or Buffer depending on client
               // If it's a string, we might need to convert it.
               let updateData: Uint8Array
@@ -157,11 +174,15 @@ export class SupabaseYjsProvider extends Observable<string> {
               Y.applyUpdate(this.doc, updateData, this)
             })
           }, this)
-          console.log(`[SupabaseYjsProvider] Loaded ${data.length} updates`)
+          console.log(`[SupabaseYjsProvider] Initialization complete. Applied ${data.length} updates.`)
+        } else {
+          console.log(`[SupabaseYjsProvider] No previous data found for ${this.contractId}. Starting fresh.`)
         }
       } catch (e: any) {
         console.error("[SupabaseYjsProvider] Error loading initial data:", e.message || e)
       }
+    } else {
+      console.warn(`[SupabaseYjsProvider] Persistence disabled: ${this.contractId || 'No ID'} is not a valid UUID.`)
     }
 
     // Connect and initial sync
@@ -217,8 +238,15 @@ export class SupabaseYjsProvider extends Observable<string> {
     }
   }
 
+  private boundDestroy = this.destroy.bind(this)
+
   public destroy() {
+    console.log(`[SupabaseYjsProvider] Destroying provider for ${this.channelName}`)
+    if (typeof window !== "undefined") {
+      window.removeEventListener("beforeunload", this.boundDestroy)
+    }
     this.channel.unsubscribe()
+    this.supabase.removeChannel(this.channel)
     this.awareness.destroy()
     super.destroy()
   }

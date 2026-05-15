@@ -129,9 +129,9 @@ export default function SettingsPage() {
         {/* Content Area */}
         <div className="lg:col-span-9 space-y-6">
           {activeTab === "perfil" && (
-            <div className="space-y-6 animate-in slide-in-from-bottom-2 duration-500">
+            <div className="animate-in slide-in-from-bottom-2 duration-500">
               <Card className="bg-white dark:bg-[#0c0c0e] border-zinc-200/50 dark:border-white/5 rounded-xl overflow-hidden">
-                <div className="h-24 bg-gradient-to-r from-orange-600/20 via-zinc-900 to-zinc-950 p-6 flex justify-end items-start relative">
+                <div className="h-24 bg-gradient-to-r from-orange-600/20 via-zinc-900 to-zinc-950 pt-4 pr-4 flex justify-end items-start relative">
                    <div className="absolute inset-0 opacity-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
                    <Badge className="bg-orange-600 text-[10px] font-black uppercase">Arquiteto Nível 10</Badge>
                 </div>

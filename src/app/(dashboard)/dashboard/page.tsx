@@ -25,6 +25,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { createContractAction } from "@/app/actions";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -80,15 +81,15 @@ export default async function DashboardPage() {
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Comando de {profile?.full_name?.split(' ')[0] || 'Guerra'}</h1>
         </div>
-        <Button
-          asChild
-          className="bg-zinc-900 dark:bg-white text-white dark:text-black hover:opacity-90 font-bold tracking-tight rounded-lg px-5 py-2 group transition-all duration-300 shadow-lg shadow-black/10 dark:shadow-white/5"
-        >
-          <Link href="/editor">
+        <form action={createContractAction}>
+          <Button
+            type="submit"
+            className="bg-zinc-900 dark:bg-white text-white dark:text-black hover:opacity-90 font-bold tracking-tight rounded-lg px-5 py-2 group transition-all duration-300 shadow-lg shadow-black/10 dark:shadow-white/5"
+          >
             <PlusCircle size={16} className="mr-2" />
             Novo Contrato
-          </Link>
-        </Button>
+          </Button>
+        </form>
       </div>
 
       {/* Stats Grid */}

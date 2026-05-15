@@ -308,8 +308,6 @@ export function EditorLayout() {
           
           {/* Left Wing: Structure & Weight */}
           <div className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity duration-500">
-            <TurnIntoDropdown hideWhenUnavailable={true} showText={false} />
-            <div className="h-4 w-px bg-zinc-200/50 dark:bg-white/[0.05] mx-1" />
             <MarkButton type="bold" />
             <MarkButton type="italic" />
             <MarkButton type="underline" />
@@ -321,7 +319,7 @@ export function EditorLayout() {
           <Button 
             variant="ghost" 
             size="sm" 
-            className="h-8 w-auto px-3 bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 rounded-xl transition-all duration-500 group/ai relative overflow-hidden border border-orange-500/20 shadow-[0_0_15px_rgba(234,88,12,0.1)] gap-2"
+            className="h-8 w-auto px-3 bg-orange-500/[0.04] text-orange-600 hover:bg-orange-500/10 rounded-xl transition-all duration-500 group/ai relative overflow-hidden border border-orange-500/10 shadow-[0_0_10px_rgba(234,88,12,0.05)] gap-2"
             onClick={() => {
               if (editor) {
                 ;(editor.chain().focus() as any).aiGenerationShow().run()
@@ -362,7 +360,7 @@ export function EditorLayout() {
         
         {/* Fixed Left: O Códice (The War Library) */}
         <div className="absolute left-6 top-12 z-40 hidden lg:block animate-in slide-in-from-left-12 duration-1000 mt-6">
-          <div className="w-72 h-[calc(100vh-96px)] bg-white/80 dark:bg-black/60 backdrop-blur-3xl border border-zinc-200/50 dark:border-white/[0.05] rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col group/library">
+          <div className="w-80 h-[calc(100vh-96px)] bg-white/80 dark:bg-black/60 backdrop-blur-3xl border border-zinc-200/50 dark:border-white/[0.05] rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col group/library">
             
             <div className="p-8 pb-4">
               <div className="flex items-center gap-2 mb-6 opacity-40 group-hover/library:opacity-100 transition-opacity">
@@ -418,7 +416,7 @@ export function EditorLayout() {
 
         {/* Central Sanctuary - The Infinite Paper */}
         <main className="flex-1 overflow-y-auto custom-scrollbar bg-transparent flex justify-center pt-6 pb-32 px-4 relative z-10">
-          <div className="w-full max-w-[880px] h-fit min-h-[1123px] bg-white dark:bg-[#08080a] shadow-[0_40px_100px_rgba(0,0,0,0.1)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] border border-zinc-200/50 dark:border-white/[0.05] rounded-3xl p-20 md:pt-16 md:pb-40 md:px-32 relative animate-in fade-in zoom-in-95 duration-1000">
+          <div className="w-full max-w-[880px] h-fit min-h-[1123px] bg-white dark:bg-[#08080a] shadow-[0_40px_100px_rgba(0,0,0,0.1)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] border border-zinc-200/50 dark:border-white/[0.05] rounded-3xl p-20 md:pt-8 md:pb-40 md:px-32 relative animate-in fade-in zoom-in-95 duration-1000">
              
              {/* Premium Paper Texture */}
              <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-3xl" />
@@ -435,7 +433,7 @@ export function EditorLayout() {
 
         {/* Fixed Right: A Alquimia (The Oracle of Lilith) */}
         <div className="absolute right-6 top-12 z-40 hidden xl:block animate-in slide-in-from-right-12 duration-1000 mt-6">
-          <div className="w-72 h-[calc(100vh-96px)] bg-white/80 dark:bg-black/60 backdrop-blur-3xl border border-zinc-200/50 dark:border-white/[0.05] rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden group/oracle">
+          <div className="w-80 h-[calc(100vh-96px)] bg-white/80 dark:bg-black/60 backdrop-blur-3xl border border-zinc-200/50 dark:border-white/[0.05] rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden group/oracle">
             <Tabs value={oracleTab} onValueChange={setOracleTab} className="w-full h-full flex flex-col">
               <div className="px-8 pt-8 mb-6">
                 <TabsList className="grid w-full grid-cols-3 bg-zinc-100 dark:bg-white/[0.03] rounded-2xl h-11 p-1.5 border border-zinc-200/50 dark:border-white/[0.05]">
@@ -551,7 +549,6 @@ export function EditorProvider(props: EditorProviderProps) {
         dropcursor: {
           width: 2,
         },
-        link: { openOnClick: false },
       }),
       HorizontalRule,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
@@ -642,13 +639,13 @@ export function EditorProvider(props: EditorProviderProps) {
       Gemini.configure({
         apiKey: geminiKey || "",
       }),
-      Underline,
-      TiptapLink.configure({
+      // Underline,
+      /* TiptapLink.configure({
         openOnClick: false,
         HTMLAttributes: {
           class: "contract-link",
         },
-      }),
+      }), */
       BubbleMenuExtension,
     ],
   })
