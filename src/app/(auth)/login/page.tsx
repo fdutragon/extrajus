@@ -6,6 +6,8 @@ import Link from "next/link";
 import { ArrowRight, Globe } from "lucide-react";
 import { login } from "./actions";
 
+import { BrandSVG } from "@/components/brand-svg";
+
 export default async function LoginPage({
   searchParams,
 }: {
@@ -14,11 +16,7 @@ export default async function LoginPage({
   const { error } = await searchParams;
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-black tracking-tighter dark:text-white text-zinc-900">BEM-VINDO AO ARSENAL</h1>
-        <p className="text-zinc-500 dark:text-zinc-400">Insira suas credenciais para acessar o comando central.</p>
-      </div>
+    <div className="pt-8">
 
       <form className="space-y-4" action={login}>
         {error && (
@@ -27,22 +25,22 @@ export default async function LoginPage({
           </div>
         )}
         <div className="space-y-2">
-          <Label htmlFor="email">E-mail de Guerra</Label>
+          <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-2 block">E-mail de Guerra</Label>
           <Input 
             id="email" 
             name="email"
             placeholder="cadelo@imperio.com" 
             type="email" 
             required
-            className="rounded-none border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 focus:border-orange-500 transition-all"
+            className="h-12 px-4 rounded-2xl border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 focus:border-orange-500 transition-all text-base"
           />
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password">Senha Criptografada</Label>
+            <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-2 block">Senha Criptografada</Label>
             <Link 
               href="/forgot-password" 
-              className="text-xs text-orange-600 dark:text-orange-500 hover:underline font-bold"
+              className="text-[10px] text-orange-600 dark:text-orange-500 hover:underline font-black uppercase"
             >
               Esqueceu a chave?
             </Link>
@@ -52,7 +50,7 @@ export default async function LoginPage({
             name="password"
             type="password" 
             required
-            className="rounded-none border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 focus:border-orange-500 transition-all"
+            className="h-12 px-4 rounded-2xl border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 focus:border-orange-500 transition-all text-base"
           />
         </div>
         <div className="flex items-center space-x-2">
@@ -64,25 +62,25 @@ export default async function LoginPage({
             Manter sessão ativa
           </label>
         </div>
-        <Button type="submit" className="w-full bg-zinc-900 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 font-black h-12 rounded-none group transition-all">
+        <Button type="submit" className="w-full bg-zinc-900 dark:bg-white text-white dark:text-black hover:opacity-90 font-black h-12 rounded-2xl group transition-all shadow-xl shadow-black/10 dark:shadow-white/5">
           ACESSAR COMANDO <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
         </Button>
       </form>
 
-      <div className="relative">
+      <div className="relative my-10">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-zinc-200 dark:border-zinc-800" />
+          <span className="w-full border-t border-zinc-200 dark:border-zinc-800 opacity-50" />
         </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white dark:bg-[#050505] px-2 text-zinc-500">Ou use sua identidade digital</span>
+        <div className="relative flex justify-center text-[10px] font-black uppercase tracking-[0.2em]">
+          <span className="bg-white dark:bg-[#050505] px-6 text-zinc-400">Ou use sua identidade digital</span>
         </div>
       </div>
 
-      <Button variant="outline" className="w-full border-zinc-200 dark:border-zinc-800 rounded-none h-12 font-bold hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all">
+      <Button variant="outline" className="w-full h-12 rounded-2xl font-black border-zinc-200 dark:border-white/5 hover:bg-zinc-50 dark:hover:bg-white/5 transition-all shadow-sm">
         <Globe className="mr-2 h-4 w-4" /> GITHUB
       </Button>
 
-      <p className="text-center text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="text-center text-sm text-zinc-500 dark:text-zinc-400 pt-6">
         Novo por aqui?{" "}
         <Link href="/register" className="text-orange-600 dark:text-orange-500 font-black hover:underline">
           Recrute-se agora

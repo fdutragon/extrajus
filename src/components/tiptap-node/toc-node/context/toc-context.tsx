@@ -13,7 +13,7 @@ import { selectNodeAndHideFloating } from "../../../../hooks/use-floating-toolba
 
 type TocState = {
   tocContent: TableOfContentData | null
-  setTocContent: (value: TableOfContentData | null) => void
+  setTocContent: React.Dispatch<React.SetStateAction<TableOfContentData | null>>
 
   navigateToHeading: (
     item: TableOfContentDataItem,

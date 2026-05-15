@@ -11,10 +11,12 @@ type BaseProps = React.HTMLAttributes<HTMLDivElement>
 
 interface ToolbarProps extends BaseProps {
   variant?: "floating" | "fixed"
+  orientation?: "horizontal" | "vertical"
 }
 
 const useToolbarNavigation = (
-  toolbarRef: React.RefObject<HTMLDivElement | null>
+  toolbarRef: React.RefObject<HTMLDivElement | null>,
+  orientation: "horizontal" | "vertical" = "horizontal"
 ) => {
   const [items, setItems] = useState<HTMLElement[]>([])
 
@@ -43,7 +45,7 @@ const useToolbarNavigation = (
   const { selectedIndex } = useMenuNavigation<HTMLElement>({
     containerRef: toolbarRef,
     items,
-    orientation: "horizontal",
+    orientation,
     onSelect: (el) => el.click(),
     autoSelectFirstItem: false,
   })
@@ -80,10 +82,10 @@ const useToolbarNavigation = (
 }
 
 export const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(
-  ({ children, className, variant = "fixed", ...props }, ref) => {
+  ({ children, className, variant = "fixed", orientation = "horizontal", ...props }, ref) => {
     const toolbarRef = useRef<HTMLDivElement>(null)
     const composedRef = useComposedRef(toolbarRef, ref)
-    useToolbarNavigation(toolbarRef)
+    useToolbarNavigation(toolbarRef, orientation)
 
     return (
       <div
@@ -91,6 +93,7 @@ export const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(
         role="toolbar"
         aria-label="toolbar"
         data-variant={variant}
+        data-orientation={orientation}
         className={cn("tiptap-toolbar", className)}
         {...props}
       >
@@ -115,9 +118,9 @@ export const ToolbarGroup = forwardRef<HTMLDivElement, BaseProps>(
 )
 ToolbarGroup.displayName = "ToolbarGroup"
 
-export const ToolbarSeparator = forwardRef<HTMLDivElement, BaseProps>(
-  ({ ...props }, ref) => (
-    <Separator ref={ref} orientation="vertical" decorative {...props} />
+export const ToolbarSeparator = forwardRef<HTMLDivElement, BaseProps & { orientation?: "horizontal" | "vertical" }>(
+  ({ orientation = "vertical", ...props }, ref) => (
+    <Separator ref={ref} orientation={orientation} decorative {...props} />
   )
 )
 ToolbarSeparator.displayName = "ToolbarSeparator"

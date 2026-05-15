@@ -165,6 +165,8 @@ function renderBlockTypeButton(
 export interface TurnIntoDropdownProps
   extends Omit<ButtonProps, "type">, UseTurnIntoDropdownConfig {
   modal?: boolean
+  showText?: boolean
+  orientation?: "horizontal" | "vertical"
 }
 
 /**
@@ -182,6 +184,8 @@ export const TurnIntoDropdown = forwardRef<
     onOpenChange,
     modal = true,
     children,
+    showText = true,
+    orientation = "horizontal",
     ...buttonProps
   },
   ref
@@ -221,16 +225,23 @@ export const TurnIntoDropdown = forwardRef<
         >
           {children ?? (
             <>
-              <span className="tiptap-button-text">
-                {activeBlockType?.label || "Text"}
-              </span>
+              {showText && (
+                <span className="tiptap-button-text">
+                  {activeBlockType?.label || "Text"}
+                </span>
+              )}
               <Icon className="tiptap-button-dropdown-small" />
             </>
           )}
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="start">
+      <DropdownMenuContent 
+        align={orientation === "vertical" ? "start" : "start"} 
+        side={orientation === "vertical" ? "right" : "bottom"}
+        sideOffset={16}
+        className="z-[110]"
+      >
         <TurnIntoDropdownContent blockTypes={blockTypes} editor={editor} />
       </DropdownMenuContent>
     </DropdownMenu>

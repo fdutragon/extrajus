@@ -69,13 +69,11 @@ const fetchUsers = async (query: string): Promise<User[]> => {
   const userData = {
     users: employeeData.map(([name, position], index) => {
       const id = index + 1
-      const avatarNumber = id < 10 ? `0${id}` : `${id}`
-
       return {
         id,
         name,
         position,
-        avatarUrl: `/avatars/memoji_${avatarNumber}.png`,
+        avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff&rounded=true`,
       }
     }),
   }

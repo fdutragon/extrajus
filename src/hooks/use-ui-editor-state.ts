@@ -8,24 +8,21 @@ import {
 } from "../components/tiptap-extension/ui-state-extension"
 
 export function useUiEditorState(editor: Editor | null): UiState {
-  return (
-    useEditorState({
-      editor,
-      selector: ({ editor }) => {
-        if (!editor) return defaultUiState
+  const stateString = useEditorState({
+    editor,
+    selector: ({ editor }) => {
+      if (!editor) return JSON.stringify(defaultUiState)
 
-        const state = editor.storage.uiState
-        if (!state) {
-          console.warn(
-            "Editor storage uiState is not initialized. Ensure you have the uiState extension added to your editor."
-          )
-          return defaultUiState
-        }
+      const state = editor.storage.uiState
+      if (!state) {
+        return JSON.stringify(defaultUiState)
+      }
 
-        return { ...defaultUiState, ...state }
-      },
-    }) ?? defaultUiState
-  )
+      return JSON.stringify(state)
+    },
+  })
+
+  return stateString ? JSON.parse(stateString) : defaultUiState
 }
 
 export default useUiEditorState

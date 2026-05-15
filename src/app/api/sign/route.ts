@@ -11,16 +11,26 @@ export async function POST(request: Request) {
 
   const { title, content, signers } = await request.json()
 
-  // In a real scenario, you'd use a PDF generation library here.
-  // For this implementation, we'll simulate the Assinafy API call.
-  // Docs: https://api.assinafy.com.br/v1/docs#tag/Documentos/operation/createDocument
+  const assinafyApiKey = process.env.ASSINAFY_API_KEY;
+
+  // --- MOCK LOGIC ---
+  if (!assinafyApiKey) {
+    console.log("ASSINAFY_API_KEY não encontrada. Usando mock para simular sucesso.");
+    await new Promise(resolve => setTimeout(resolve, 1500)); // Simula latência da rede
+    return NextResponse.json({ 
+      success: true, 
+      documentId: `mock_${new Date().getTime()}`,
+      signUrl: "https://assinafy.com.br/mock-url-assinado-com-sucesso"
+    });
+  }
+  // --- END MOCK LOGIC ---
   
   try {
     const response = await fetch('https://api.assinafy.com.br/v1/documents', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.ASSINAFY_API_KEY}`,
+        'Authorization': `Bearer ${assinafyApiKey}`,
       },
       body: JSON.stringify({
         title: title || 'Contrato ExtraJus',

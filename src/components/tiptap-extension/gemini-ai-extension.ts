@@ -118,11 +118,11 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
         const { from } = editor.state.selection
 
         for await (const chunk of result.stream) {
-          let chunkText = chunk.text()
+          const chunkText = chunk.text()
           accumulatedText += chunkText
 
           // Aggressive cleanup: remove markdown blocks, excessive newlines, and redundant HTML tags
-          let cleanedContent = accumulatedText
+          const cleanedContent = accumulatedText
             .replace(/^```html\n?/, "")
             .replace(/\n?```$/, "")
             .replace(/\n{2,}/g, "\n")

@@ -1,5 +1,4 @@
-"use client"
-
+import { createClient } from "@/utils/supabase/server";
 import { 
   Table, 
   TableBody, 
@@ -11,133 +10,119 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
-  ContextMenu, 
-  ContextMenuContent, 
-  ContextMenuItem, 
-  ContextMenuSeparator, 
-  ContextMenuShortcut, 
-  ContextMenuTrigger 
-} from "@/components/ui/context-menu";
-import { 
   FileText, 
   Search, 
-  Filter, 
   MoreVertical, 
   Edit, 
   Trash2, 
-  Download, 
-  Eye,
-  Copy
+  Download,
+  Command,
+  ChevronDown,
+  Archive
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { revalidatePath } from "next/cache";
 
-export default function ContractsPage() {
-  const contracts = [
-    { id: "XJ-001", name: "Contrato Social - Holding Imperial", client: "Cadelo Holding", date: "14/05/2026", status: "Finalizado", type: "Societário" },
-    { id: "XJ-002", name: "Acordo de Acionistas", client: "Imperial Group", date: "13/05/2026", status: "Em Revisão", type: "Societário" },
-    { id: "XJ-003", name: "Compra e Venda de Ativos", client: "Mundo S.A.", date: "12/05/2026", status: "Draft", type: "Comercial" },
-    { id: "XJ-004", name: "NDA - Projeto Skynet", client: "Lilith Labs", date: "10/05/2026", status: "Aguardando Assinatura", type: "NDA" },
-    { id: "XJ-005", name: "Contrato de Aluguel - QG", client: "Propriedades Dark", date: "08/05/2026", status: "Finalizado", type: "Imobiliário" },
-    { id: "XJ-006", name: "Prestação de Serviços - Dev", client: "Antigravity", date: "05/05/2026", status: "Em Revisão", type: "Serviços" },
-  ];
+async function deleteContract(formData: FormData) {
+  'use server'
+  const supabase = await createClient();
+  const id = formData.get('id') as string;
+  
+  await supabase.from('contracts').delete().eq('id', id);
+  revalidatePath('/contracts');
+}
+
+export default async function ContractsPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: contracts } = await supabase
+    .from('contracts')
+    .select('*')
+    .eq('user_id', user?.id)
+    .order('updated_at', { ascending: false });
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tighter uppercase italic">Arsenal de Contratos</h1>
-          <p className="text-zinc-500 dark:text-zinc-400">Gerencie e audite todo o histórico de documentos do império.</p>
+    <div className="space-y-10 animate-in fade-in duration-700">
+      <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-zinc-200/50 dark:border-white/5 pb-8">
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-emerald-500/50 text-emerald-500 bg-emerald-500/5 px-2 py-0">Ativo</Badge>
+            <span className="text-[10px] text-zinc-500 font-mono tracking-widest uppercase italic">Repositório Seguro</span>
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight">Repositório Central</h1>
+          <p className="text-[13px] text-zinc-500 dark:text-zinc-400 max-w-md leading-relaxed">
+            Gestão completa e auditoria de documentos. O histórico completo da sua infraestrutura jurídica sob controle absoluto.
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" className="rounded-none border-zinc-200 dark:border-zinc-800">
-            <Filter size={16} className="mr-2" /> Filtrar
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <Button variant="outline" className="h-10 px-4 border-zinc-200/50 dark:border-white/10 hover:bg-zinc-100 dark:hover:bg-white/5 rounded-lg text-[13px] font-medium">
+            <Archive size={14} className="mr-2" /> Arquivo Morto
           </Button>
-          <Button className="bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-none">
-            EXPORTAR TODOS
+          <Button className="h-10 bg-zinc-900 dark:bg-white text-white dark:text-black hover:opacity-90 font-bold rounded-lg px-5 text-[13px] shadow-lg shadow-black/10 dark:shadow-white/5">
+            Exportar Todos
           </Button>
         </div>
       </div>
-
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-none overflow-hidden">
-        <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/50 flex items-center justify-between">
-          <div className="relative max-w-sm w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
+      <div className="bg-white dark:bg-[#0c0c0e] border border-zinc-200/50 dark:border-white/5 rounded-2xl overflow-hidden shadow-sm">
+        <div className="p-4 border-b border-zinc-100 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="relative max-w-md w-full group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-orange-500 transition-colors" size={14} />
             <input 
               type="text" 
-              placeholder="Buscar por nome ou ID..." 
-              className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-none pl-10 pr-4 py-2 text-sm focus:ring-1 focus:ring-orange-500 transition-all outline-none"
+              placeholder="Filtrar por nome, ID ou cliente..." 
+              className="w-full bg-zinc-50 dark:bg-white/[0.03] border border-transparent dark:border-white/5 rounded-lg pl-9 pr-4 py-2 text-[13px] focus:ring-1 focus:ring-orange-500/30 transition-all outline-none"
             />
           </div>
-          <p className="text-xs text-zinc-500 font-mono hidden sm:block">
-            {contracts.length} documentos encontrados
-          </p>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" className="text-[12px] font-bold text-zinc-500 gap-1.5">
+              Tipo: Todos <ChevronDown size={14} />
+            </Button>
+            <div className="h-4 w-[1px] bg-zinc-200 dark:bg-white/10" />
+            <span className="text-[11px] text-zinc-400 font-mono italic">
+              {contracts?.length || 0} docs
+            </span>
+          </div>
         </div>
-
         <Table>
           <TableHeader>
-            <TableRow className="border-zinc-100 dark:border-zinc-800 hover:bg-transparent bg-zinc-50/50 dark:bg-zinc-950/50">
-              <TableHead className="text-[10px] uppercase font-bold tracking-widest py-4">ID</TableHead>
-              <TableHead className="text-[10px] uppercase font-bold tracking-widest py-4">Documento</TableHead>
-              <TableHead className="text-[10px] uppercase font-bold tracking-widest py-4">Cliente</TableHead>
-              <TableHead className="text-[10px] uppercase font-bold tracking-widest py-4">Status</TableHead>
-              <TableHead className="text-[10px] uppercase font-bold tracking-widest py-4 text-right">Ações</TableHead>
+            <TableRow className="border-zinc-100 dark:border-white/5 hover:bg-transparent bg-zinc-50/30 dark:bg-white/[0.01]">
+              <TableHead className="text-[10px] uppercase font-bold tracking-widest py-4 pl-8">Contrato</TableHead>
+              <TableHead className="text-[10px] uppercase font-bold tracking-widest py-4">Última Modificação</TableHead>
+              <TableHead className="text-[10px] uppercase font-bold tracking-widest py-4 text-right pr-8">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {contracts.map((contract) => (
-              <ContextMenu key={contract.id}>
-                <ContextMenuTrigger
-                  render={<TableRow className="border-zinc-100 dark:border-zinc-800 group hover:bg-zinc-50 dark:hover:bg-zinc-950 transition-colors" />}
-                >
-                  <TableCell className="font-mono text-[10px] text-zinc-400">{contract.id}</TableCell>
-                  <TableCell className="font-medium text-xs">
-                    <div className="flex flex-col">
-                      <span className="group-hover:text-orange-500 transition-colors">{contract.name}</span>
-                      <span className="text-[10px] text-zinc-500 font-mono italic">{contract.type}</span>
+            {contracts?.map((contract) => (
+              <TableRow key={contract.id} className="border-zinc-100 dark:border-white/5 group hover:bg-zinc-50 dark:hover:bg-white/[0.01] transition-all h-16">
+                <TableCell className="py-4 pl-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-white/5 flex items-center justify-center text-zinc-400 group-hover:text-orange-500 transition-colors">
+                      <FileText size={14} />
                     </div>
-                  </TableCell>
-                  <TableCell className="text-xs text-zinc-500">{contract.client}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={cn(
-                      "rounded-none text-[10px] uppercase font-bold px-2 py-0",
-                      contract.status === "Finalizado" ? "border-emerald-500 text-emerald-500 bg-emerald-500/5" :
-                      contract.status === "Em Revisão" ? "border-orange-500 text-orange-500 bg-orange-500/5" :
-                      contract.status === "Aguardando Assinatura" ? "border-blue-500 text-blue-500 bg-blue-500/5" :
-                      "border-zinc-400 text-zinc-400"
-                    )}>
-                      {contract.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-orange-500/10 hover:text-orange-500">
-                      <MoreVertical size={16} />
-                    </Button>
-                  </TableCell>
-                </ContextMenuTrigger>
-                <ContextMenuContent className="w-64 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 backdrop-blur-xl">
-                  <ContextMenuItem className="gap-2 cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900 transition-colors">
-                    <Eye size={14} /> <span>Visualizar Documento</span>
-                    <ContextMenuShortcut>⌘V</ContextMenuShortcut>
-                  </ContextMenuItem>
-                  <ContextMenuItem className="gap-2 cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900 transition-colors">
-                    <Edit size={14} /> <span>Editar Cláusulas</span>
-                    <ContextMenuShortcut>⌘E</ContextMenuShortcut>
-                  </ContextMenuItem>
-                  <ContextMenuItem className="gap-2 cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900 transition-colors">
-                    <Copy size={14} /> <span>Duplicar Contrato</span>
-                    <ContextMenuShortcut>⌘D</ContextMenuShortcut>
-                  </ContextMenuItem>
-                  <ContextMenuSeparator className="bg-zinc-100 dark:border-zinc-800" />
-                  <ContextMenuItem className="gap-2 cursor-pointer focus:bg-zinc-100 dark:focus:bg-zinc-900 transition-colors">
-                    <Download size={14} /> <span>Exportar PDF</span>
-                  </ContextMenuItem>
-                  <ContextMenuSeparator className="bg-zinc-100 dark:border-zinc-800" />
-                  <ContextMenuItem className="gap-2 cursor-pointer focus:bg-red-500/10 text-red-500 transition-colors">
-                    <Trash2 size={14} /> <span>Mover para o Lixo</span>
-                    <ContextMenuShortcut>⌫</ContextMenuShortcut>
-                  </ContextMenuItem>
-                </ContextMenuContent>
-              </ContextMenu>
+                    <div className="flex flex-col">
+                      <Link href={`/editor?room=${contract.id}`} className="text-[13px] font-bold tracking-tight hover:underline">{contract.title || 'Contrato Sem Título'}</Link>
+                      <span className="text-[10px] text-zinc-500 font-mono mt-0.5">ID: {contract.id.slice(0, 8)}</span>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell className="text-[11px] text-zinc-400 font-mono">{new Date(contract.updated_at).toLocaleString('pt-BR')}</TableCell>
+                <TableCell className="text-right pr-8">
+                  <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Link href={`/editor?room=${contract.id}`}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
+                        <Edit size={14} />
+                      </Button>
+                    </Link>
+                    <form action={deleteContract}>
+                        <input type="hidden" name="id" value={contract.id} />
+                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-zinc-400 hover:text-red-500">
+                          <Trash2 size={14} />
+                        </Button>
+                    </form>
+                  </div>
+                </TableCell>
+              </TableRow>
             ))}
           </TableBody>
         </Table>

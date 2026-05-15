@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef } from "react"
 import { type Editor } from "@tiptap/react"
+import { cn } from "@/lib/utils"
 
 import { AiMenuItems } from "../../../components/tiptap-ui/ai-menu/ai-menu-items/ai-menu-items"
 
@@ -29,7 +30,8 @@ import { Button } from "../../../components/tiptap-ui-primitive/button"
 import {
   ComboboxList,
   ComboboxPopover,
-} from "../../../components/tiptap-ui-primitive/combobox"
+  ComboboxProvider,
+} from "../../../components/tiptap-ui-primitive/combobox/combobox"
 import { Card } from "../../../components/tiptap-ui-primitive/card/card"
 
 import {
@@ -68,9 +70,11 @@ export function AiMenuStateProvider({
 export function AiMenuContent({
   editor: providedEditor,
   anchorToSelection = false,
+  plain = false,
 }: {
   editor?: Editor | null
   anchorToSelection?: boolean
+  plain?: boolean
 }) {
   const { editor } = useTiptapEditor(providedEditor)
   const { state, updateState, setFallbackAnchor, reset } = useAiMenuState()
@@ -209,10 +213,10 @@ export function AiMenuContent({
   }, [aiGenerationIsLoading, updateState])
 
   useEffect(() => {
-    if (!aiGenerationActive && state.isOpen) {
+    if (!plain && !aiGenerationActive && state.isOpen) {
       closeAiMenu()
     }
-  }, [aiGenerationActive, state.isOpen, closeAiMenu])
+  }, [aiGenerationActive, state.isOpen, closeAiMenu, plain])
 
   const smoothFocusAndScroll = (element: HTMLElement | null) => {
     element?.focus()
@@ -231,7 +235,53 @@ export function AiMenuContent({
     selectionHasText(editor) ||
     (aiGenerationHasMessage && state.shouldShowInput && state.inputIsFocused)
 
-  if (!editor || !state.isOpen || !aiGenerationActive) {
+  const content = (
+    <ComboboxProvider>
+      <Card className={cn("tiptap-ai-menu", plain && "border-none bg-transparent shadow-none p-0")}>
+        {aiGenerationIsLoading && <AiMenuProgress editor={editor || ({} as any)} />}
+
+        {!aiGenerationIsLoading && (
+          <AiMenuInputTextarea
+            ref={tiptapAiPromptInputRef}
+            showPlaceholder={
+              !aiGenerationIsLoading &&
+              aiGenerationHasMessage &&
+              !state.shouldShowInput
+            }
+            onInputFocus={() => updateState({ inputIsFocused: true })}
+            onInputBlur={() => updateState({ inputIsFocused: false })}
+            onClose={handleInputOnClose}
+            onPlaceholderClick={() => updateState({ shouldShowInput: true })}
+            onInputSubmit={(value) => handlePromptSubmit(value)}
+            onToneChange={(tone: any) => updateState({ tone })}
+          />
+        )}
+
+        {aiGenerationHasMessage && !aiGenerationIsLoading && (
+          <AiMenuActions
+            editor={editor || ({} as any)}
+            options={{ tone: state.tone, format: "rich-text" }}
+            onAccept={handleOnAccept}
+            onReject={handleOnReject}
+          />
+        )}
+      </Card>
+    </ComboboxProvider>
+  )
+
+  if (plain) {
+    return content
+  }
+
+  if (!editor || !state.isOpen) {
+    return null
+  }
+
+  if (plain) {
+    return content
+  }
+
+  if (!aiGenerationActive) {
     return null
   }
 
@@ -330,13 +380,17 @@ export function AiMenuProgress({ editor }: { editor: Editor }) {
 export function AiMenu({
   editor,
   anchorToSelection,
+  plain,
 }: {
   editor?: Editor | null
   anchorToSelection?: boolean
+  plain?: boolean
 }) {
   return (
-    <AiMenuStateProvider>
-      <AiMenuContent editor={editor} anchorToSelection={anchorToSelection} />
-    </AiMenuStateProvider>
+    <AiMenuContent
+      editor={editor}
+      anchorToSelection={anchorToSelection}
+      plain={plain}
+    />
   )
 }

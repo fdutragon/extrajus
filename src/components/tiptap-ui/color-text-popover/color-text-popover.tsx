@@ -363,7 +363,9 @@ export function TextStyleColorPanel({
 export interface ColorTextPopoverProps
   extends
     Omit<React.ComponentProps<typeof Button>, "type">,
-    UseColorTextPopoverConfig {}
+    UseColorTextPopoverConfig {
+      orientation?: "horizontal" | "vertical"
+    }
 
 /**
  * Color text popover component for Tiptap editors.
@@ -443,8 +445,10 @@ export function ColorTextPopover({
 
       <PopoverContent
         aria-label="Text color options"
-        side="bottom"
+        side={buttonProps.orientation === "vertical" ? "right" : "bottom"}
         align="start"
+        sideOffset={buttonProps.orientation === "vertical" ? 16 : 4}
+        className="z-[110]"
       >
         <TextStyleColorPanel
           onColorChanged={handleColorChanged}

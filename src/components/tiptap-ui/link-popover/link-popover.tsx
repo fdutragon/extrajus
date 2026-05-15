@@ -74,6 +74,7 @@ export interface LinkPopoverProps
    * @default true
    */
   autoOpenOnLinkActive?: boolean
+  orientation?: "horizontal" | "vertical"
 }
 
 /**
@@ -292,7 +293,11 @@ export const LinkPopover = forwardRef<HTMLButtonElement, LinkPopoverProps>(
           </LinkButton>
         </PopoverTrigger>
 
-        <PopoverContent>
+        <PopoverContent
+          side={buttonProps.orientation === "vertical" ? "right" : "bottom"}
+          sideOffset={buttonProps.orientation === "vertical" ? 16 : 4}
+          className="z-[110]"
+        >
           <LinkMain
             url={url}
             setUrl={setUrl}

@@ -75,6 +75,14 @@ export interface ImproveDropdownProps extends Omit<ButtonProps, "type"> {
    * Whether the dropdown should use a modal
    */
   modal?: boolean
+  /**
+   * Whether to show the text label
+   */
+  showText?: boolean
+  /**
+   * The orientation of the toolbar
+   */
+  orientation?: "horizontal" | "vertical"
 }
 
 interface MenuAction {
@@ -128,6 +136,8 @@ export function ImproveDropdown({
   hideWhenUnavailable = false,
   textOptions,
   modal = true,
+  showText = true,
+  orientation = "horizontal",
   ...props
 }: ImproveDropdownProps) {
   const {
@@ -240,11 +250,16 @@ export function ImproveDropdown({
           {...props}
         >
           <AiSparklesIcon className="tiptap-button-icon" />
-          <span className="tiptap-button-text">IA</span>
+          {showText && <span className="tiptap-button-text">IA</span>}
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="start">
+      <DropdownMenuContent 
+        align={orientation === "vertical" ? "start" : "start"} 
+        side={orientation === "vertical" ? "right" : "bottom"}
+        sideOffset={16}
+        className="z-[110]"
+      >
         <DropdownMenuGroup>
           {subMenuActions.map((action, index) => (
             <SubMenuButton key={index} action={action} />

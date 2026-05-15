@@ -166,18 +166,6 @@ export const getSelectionBoundingRect = (editor: Editor): DOMRect | null => {
  * Generates a deterministic avatar URL from a user name
  */
 export const getAvatar = (name: string) => {
-  if (!name) {
-    return "/avatars/memoji_01.png"
-  }
-
-  let hash = 0
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash)
-    hash = hash & hash
-  }
-
-  const randomFraction = (Math.abs(hash) % 1000000) / 1000000
-  const id = 1 + Math.floor(randomFraction * 20)
-  const idString = id.toString().padStart(2, "0")
-  return `/avatars/memoji_${idString}.png`
+  const safeName = encodeURIComponent(name || "User")
+  return `https://ui-avatars.com/api/?name=${safeName}&background=random&color=fff&rounded=true`
 }

@@ -15,10 +15,24 @@
   align-items: center;
   gap: 0.25rem;
 
+  &[data-orientation="vertical"] {
+    flex-direction: column;
+    width: fit-content;
+    height: 100%;
+    padding: 0.5rem 0.25rem;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
   &-group {
     display: flex;
     align-items: center;
     gap: 0.125rem;
+
+    .tiptap-toolbar[data-orientation="vertical"] & {
+      flex-direction: column;
+    }
 
     &:empty {
       display: none;
@@ -36,14 +50,20 @@
     z-index: 50;
     width: 100%;
     min-height: var(--tt-toolbar-height);
-    background: var(--tt-toolbar-bg-color);
-    border-bottom: 1px solid var(--tt-toolbar-border-color);
     padding: 0 0.5rem;
     overflow-x: auto;
     overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     -ms-overflow-style: none;
+
+    &:not(.bg-transparent) {
+      background: var(--tt-toolbar-bg-color);
+    }
+
+    &:not(.border-none) {
+      border-bottom: 1px solid var(--tt-toolbar-border-color);
+    }
 
     &::-webkit-scrollbar {
       display: none;

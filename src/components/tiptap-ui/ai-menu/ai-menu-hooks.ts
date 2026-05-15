@@ -57,7 +57,16 @@ export function useAiMenuStateProvider() {
   const [state, setState] = useState<AiMenuState>(initialState)
 
   const updateState = useCallback((updates: Partial<AiMenuState>) => {
-    setState((prev) => ({ ...prev, ...updates }))
+    setState((prev) => {
+      let hasChanges = false
+      for (const key in updates) {
+        if (prev[key as keyof AiMenuState] !== updates[key as keyof AiMenuState]) {
+          hasChanges = true
+          break
+        }
+      }
+      return hasChanges ? { ...prev, ...updates } : prev
+    })
   }, [])
 
   const setFallbackAnchor = useCallback(
@@ -184,12 +193,25 @@ export function useAiContentTracker({
 
       if (!targetElement) return
 
-      cleanupRef(fallbackAnchorRef)
-
       const anchorRect = createEditorWidthAnchorRect(
         editor.view.dom,
         targetElement.getBoundingClientRect()
       )
+
+      // Only update if rect actually changed
+      const prevRect = fallbackAnchorRef.current?.getBoundingClientRect()
+      if (
+        prevRect &&
+        prevRect.top === anchorRect.top &&
+        prevRect.left === anchorRect.left &&
+        prevRect.width === anchorRect.width &&
+        prevRect.height === anchorRect.height
+      ) {
+        return
+      }
+
+      cleanupRef(fallbackAnchorRef)
+
       const anchor = createVirtualAnchor(anchorRect, editor.view.dom)
       fallbackAnchorRef.current = anchor
 
@@ -256,6 +278,18 @@ export function useTextSelectionTracker({
         editor.view.dom,
         selectionRect
       )
+
+      const prevRect = selectionAnchorRef.current?.getBoundingClientRect()
+      if (
+        prevRect &&
+        prevRect.top === anchorRect.top &&
+        prevRect.left === anchorRect.left &&
+        prevRect.width === anchorRect.width &&
+        prevRect.height === anchorRect.height
+      ) {
+        showAtAnchor(selectionAnchorRef.current!, anchorRect)
+        return true
+      }
 
       cleanupRef(selectionAnchorRef)
 

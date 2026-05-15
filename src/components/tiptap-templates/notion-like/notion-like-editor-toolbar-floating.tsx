@@ -17,6 +17,7 @@ import { MoreVerticalIcon } from "../../../components/tiptap-icons/more-vertical
 import { ColorTextPopover } from "../../../components/tiptap-ui/color-text-popover"
 import { ImproveDropdown } from "../../../components/tiptap-ui/improve-dropdown"
 import { LinkPopover } from "../../../components/tiptap-ui/link-popover"
+import { SignModal } from "../../../components/tiptap-ui/sign-modal/sign-modal"
 import type { Mark } from "../../../components/tiptap-ui/mark-button"
 import { canToggleMark, MarkButton } from "../../../components/tiptap-ui/mark-button"
 import type { TextAlign } from "../../../components/tiptap-ui/text-align-button"
@@ -227,6 +228,12 @@ export function MoreOptions({
               <ToolbarGroup>
                 <IndentButton action="outdent" />
                 <IndentButton action="indent" />
+              </ToolbarGroup>
+
+              <ToolbarSeparator />
+
+              <ToolbarGroup>
+                <SignModal />
               </ToolbarGroup>
             </Toolbar>
           </PopoverContent>

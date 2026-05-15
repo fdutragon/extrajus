@@ -12,6 +12,7 @@ export type CollabContextValue = {
   ydoc: YDoc
   hasCollab: boolean
   setupError: boolean
+  room: string
 }
 
 export const CollabContext = createContext<CollabContextValue>({
@@ -19,6 +20,7 @@ export const CollabContext = createContext<CollabContextValue>({
   provider: null,
   ydoc: new YDoc(),
   setupError: false,
+  room: "",
 })
 
 export const CollabConsumer = CollabContext.Consumer
@@ -85,8 +87,9 @@ export function CollabProvider({
       provider,
       ydoc,
       setupError,
+      room,
     }),
-    [hasCollab, provider, ydoc, setupError]
+    [hasCollab, provider, ydoc, setupError, room]
   )
 
   return (

@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
   Zap, 
@@ -13,7 +13,11 @@ import {
   Building2,
   Lock,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  ArrowRight,
+  Command,
+  LayoutGrid,
+  Filter
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -38,83 +42,134 @@ export default function ArsenalPage() {
   ];
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tighter uppercase italic flex items-center gap-3">
-            <Zap size={32} className="text-orange-500 fill-orange-500" />
-            Arsenal de Modelos
-          </h1>
-          <p className="text-zinc-500 dark:text-zinc-400">Modelos forjados pela elite jurídica para execução imediata.</p>
+    <div className="space-y-10 animate-in fade-in duration-700">
+      {/* Header Area */}
+      <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-zinc-200/50 dark:border-white/5 pb-8">
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-orange-500/50 text-orange-500 bg-orange-500/5 px-2 py-0">Modelos Forjados</Badge>
+            <span className="text-[10px] text-zinc-500 font-mono tracking-widest uppercase italic">Master Library</span>
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight">Arsenal Jurídico</h1>
+          <p className="text-[13px] text-zinc-500 dark:text-zinc-400 max-w-md leading-relaxed">
+            Acesso imediato a documentos de alta performance, estruturados para proteção total de ativos e operações complexas.
+          </p>
         </div>
-        <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
-          <input 
-            type="text" 
-            placeholder="Buscar modelo..." 
-            className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-none pl-10 pr-4 py-2 text-sm focus:ring-1 focus:ring-orange-500 outline-none"
-          />
+
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="relative flex-1 md:w-72 group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-orange-500 transition-colors" size={14} />
+            <input 
+              type="text" 
+              placeholder="Pesquisar no arsenal..." 
+              className="w-full bg-white dark:bg-white/5 border border-zinc-200/50 dark:border-white/10 rounded-lg pl-9 pr-4 py-2 text-[13px] focus:ring-1 focus:ring-orange-500/30 focus:border-orange-500/50 transition-all outline-none shadow-sm"
+            />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-30 group-focus-within:opacity-0 transition-opacity">
+              <Command size={10} />
+              <span className="text-[10px] font-bold">F</span>
+            </div>
+          </div>
+          <Button variant="outline" className="h-10 px-3 border-zinc-200/50 dark:border-white/10 hover:bg-zinc-100 dark:hover:bg-white/5 rounded-lg">
+            <Filter size={16} />
+          </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      {/* Categories Horizontal Scroll */}
+      <div className="flex items-center gap-3 overflow-x-auto pb-2 custom-scrollbar no-scrollbar">
         {categories.map((cat, i) => (
-          <Card key={i} className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 rounded-none hover:border-orange-500 transition-all cursor-pointer group">
-            <CardContent className="p-4 flex flex-col items-center justify-center text-center gap-2">
-              <cat.icon size={24} className="text-zinc-400 group-hover:text-orange-500 transition-colors" />
-              <div className="text-[10px] font-black uppercase tracking-tighter">{cat.name}</div>
-              <div className="text-[9px] text-zinc-500">{cat.count} MODELOS</div>
-            </CardContent>
-          </Card>
+          <button key={i} className="flex items-center gap-2.5 px-4 py-2 bg-white dark:bg-[#0c0c0e] border border-zinc-200/50 dark:border-white/5 rounded-full hover:border-orange-500/50 hover:bg-zinc-50 dark:hover:bg-white/[0.03] transition-all whitespace-nowrap shrink-0 group">
+            <cat.icon size={14} className="text-zinc-500 group-hover:text-orange-500 transition-colors" />
+            <span className="text-[12px] font-bold tracking-tight">{cat.name}</span>
+            <span className="text-[10px] text-zinc-400 font-mono ml-1">{cat.count}</span>
+          </button>
         ))}
       </div>
 
+      {/* Templates Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {templates.map((tpl, i) => (
-          <Card key={i} className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 rounded-none overflow-hidden group hover:shadow-xl transition-all relative">
-            <div className="absolute top-0 left-0 w-full h-1 bg-zinc-100 dark:bg-zinc-800 group-hover:bg-orange-500 transition-colors" />
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <Badge variant="outline" className="rounded-none text-[9px] uppercase font-black border-zinc-200 dark:border-zinc-800">
+          <Card key={i} className="bg-white dark:bg-[#0c0c0e] border-zinc-200/50 dark:border-white/5 rounded-xl overflow-hidden group hover:border-orange-500/30 transition-all duration-300 flex flex-col h-full relative">
+            <div className="absolute top-0 left-0 w-full h-0.5 bg-zinc-100 dark:bg-white/5 group-hover:bg-orange-500/50 transition-colors" />
+            
+            <CardContent className="p-6 flex flex-col h-full">
+              <div className="flex justify-between items-start mb-6">
+                <Badge variant="outline" className="text-[9px] uppercase font-bold tracking-widest border-zinc-200 dark:border-white/10 text-zinc-500 group-hover:border-orange-500/30 group-hover:text-orange-500 transition-colors">
                   {tpl.type}
                 </Badge>
-                <div className="p-1.5 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-zinc-400 group-hover:text-orange-500 transition-colors">
-                   <PlusCircle size={14} />
-                </div>
+                <button className="p-1.5 text-zinc-400 hover:text-orange-500 transition-colors">
+                   <PlusCircle size={16} />
+                </button>
               </div>
-              <CardTitle className="text-sm font-black uppercase tracking-tight mt-4 group-hover:text-orange-500 transition-colors">{tpl.title}</CardTitle>
-              <CardDescription className="text-xs leading-relaxed line-clamp-2 mt-2">{tpl.desc}</CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0 flex gap-2">
-              <Button variant="outline" className="flex-1 h-9 rounded-none text-[10px] font-black uppercase border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-950">
-                PREVISUALIZAR
-              </Button>
-              <Button className="flex-1 h-9 rounded-none bg-orange-600 hover:bg-orange-700 text-white text-[10px] font-black uppercase" render={<Link href="/editor" />} nativeButton={false}>
-                USAR AGORA
-              </Button>
+
+              <div className="flex-1 space-y-2">
+                <h3 className="text-sm font-bold tracking-tight group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{tpl.title}</h3>
+                <p className="text-[12px] text-zinc-500 leading-relaxed line-clamp-3 group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors">{tpl.desc}</p>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-zinc-100 dark:border-white/5 flex gap-2">
+                <Button variant="ghost" className="flex-1 h-9 rounded-lg text-[11px] font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/5 transition-all">
+                  Previsualizar
+                </Button>
+                <Button 
+                  className="flex-1 h-9 rounded-lg bg-zinc-900 dark:bg-white text-white dark:text-black hover:opacity-90 text-[11px] font-bold shadow-lg shadow-black/10 dark:shadow-white/5" 
+                >
+                  <Link href="/editor" className="flex items-center justify-center gap-1.5">
+                    Usar Agora <ArrowRight size={12} />
+                  </Link>
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Featured Alert */}
-      <div className="bg-zinc-900 text-white p-8 rounded-none relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-orange-600/10 blur-[100px] rounded-full -mr-32 -mt-32" />
-        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="space-y-4 max-w-2xl text-center md:text-left">
-            <div className="flex items-center gap-2 text-orange-500 justify-center md:justify-start">
-              <ShieldCheck size={20} />
-              <span className="text-xs font-black uppercase tracking-[0.3em]">Certificação ExtraJus</span>
+      {/* Featured / Custom Forge Section */}
+      <div className="bg-zinc-950 dark:bg-black border border-zinc-800 rounded-2xl p-10 relative overflow-hidden group shadow-2xl mt-12">
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-orange-600/5 blur-[100px] rounded-full -mr-48 -mt-48 group-hover:bg-orange-600/10 transition-all duration-1000" />
+        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-600/5 blur-[100px] rounded-full -ml-32 -mb-32 group-hover:bg-blue-600/10 transition-all duration-1000" />
+        
+        <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
+          <div className="space-y-6 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-500">
+              <ShieldCheck size={14} />
+              <span className="text-[10px] font-black uppercase tracking-widest">Protocolo de Forja Customizada</span>
             </div>
-            <h2 className="text-2xl font-black uppercase tracking-tighter italic">Não encontrou o que precisava?</h2>
-            <p className="text-zinc-400 text-sm leading-relaxed">
-              Nossa equipe de especialistas pode forjar um modelo customizado para sua operação em menos de 24 horas. 
-              Mantenha o controle absoluto da sua estratégia jurídica.
-            </p>
+            
+            <div className="space-y-3">
+              <h2 className="text-3xl font-bold tracking-tight text-white italic">Precisa de um Documento sob Medida?</h2>
+              <p className="text-[14px] text-zinc-400 leading-relaxed max-w-xl">
+                Nossos arquitetos jurídicos estão prontos para forjar modelos exclusivos para sua operação. 
+                Documentos blindados, otimizados para sua jurisdição e focados em controle absoluto. 
+                <span className="text-zinc-200 block mt-2 font-medium">Entrega em menos de 24 horas.</span>
+              </p>
+            </div>
+
+            <div className="flex items-center gap-6 pt-4 border-t border-white/5">
+              <div className="flex flex-col">
+                <span className="text-xl font-bold text-white">24h</span>
+                <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-tighter">Prazo Máximo</span>
+              </div>
+              <div className="h-8 w-[1px] bg-white/10" />
+              <div className="flex flex-col">
+                <span className="text-xl font-bold text-white">100%</span>
+                <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-tighter">Garantia de Blindagem</span>
+              </div>
+              <div className="h-8 w-[1px] bg-white/10" />
+              <div className="flex flex-col">
+                <span className="text-xl font-bold text-white">+500</span>
+                <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-tighter">Modelos Forjados</span>
+              </div>
+            </div>
           </div>
-          <Button size="lg" className="bg-white text-black hover:bg-zinc-200 font-black rounded-none px-12 py-8 transition-all shrink-0">
-            SOLICITAR FORJA CUSTOMIZADA
-          </Button>
+
+          <div className="w-full lg:w-auto shrink-0">
+            <Button size="lg" className="w-full lg:w-auto h-14 bg-white text-black hover:bg-zinc-200 font-bold px-10 rounded-xl shadow-2xl transition-all active:scale-[0.98] flex items-center gap-2 group">
+              Solicitar Forja Customizada
+              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>
