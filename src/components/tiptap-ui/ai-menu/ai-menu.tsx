@@ -235,9 +235,9 @@ export function AiMenuContent({
     selectionHasText(editor) ||
     (aiGenerationHasMessage && state.shouldShowInput && state.inputIsFocused)
 
-  const content = (
-    <ComboboxProvider>
-      <Card className={cn("tiptap-ai-menu", plain && "border-none bg-transparent shadow-none p-0")}>
+  if (plain) {
+    return (
+      <ComboboxProvider>
         <AiMenuInputTextarea
           ref={tiptapAiPromptInputRef}
           isLoading={aiGenerationIsLoading}
@@ -268,20 +268,20 @@ export function AiMenuContent({
             onReject={handleOnReject}
           />
         )}
+      </ComboboxProvider>
+    )
+  }
+
+  const content = (
+    <ComboboxProvider>
+      <Card className={cn("tiptap-ai-menu")}>
+         {/* Internal content if needed */}
       </Card>
     </ComboboxProvider>
   )
 
-  if (plain) {
-    return content
-  }
-
   if (!editor || !state.isOpen) {
     return null
-  }
-
-  if (plain) {
-    return content
   }
 
   if (!aiGenerationActive) {

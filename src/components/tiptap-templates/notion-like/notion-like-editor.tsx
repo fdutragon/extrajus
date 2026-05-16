@@ -277,7 +277,6 @@ export function EditorContentArea() {
       }}
     >
       <DragContextMenu />
-      <AiMenu />
       <SlashDropdownMenu />
       {createPortal(<MobileToolbar />, document.body)}
     </EditorContent>
@@ -359,23 +358,13 @@ export function EditorLayout() {
             <ResetAllFormattingButton />
           </div>
 
-          {/* The AI Heart: Absolute Center (Standardized Layout, Unique Color) */}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="h-8 w-auto px-3 bg-orange-500/[0.04] text-orange-600 hover:bg-orange-500/10 rounded-xl transition-all duration-500 group/ai relative overflow-hidden border border-orange-500/10 shadow-[0_0_10px_rgba(234,88,12,0.05)] gap-2"
-            onClick={() => {
-              if (editor) {
-                ;(editor.chain().focus() as any).aiGenerationShow().run()
-                updateState({ isOpen: true })
-              }
-            }}
+          <div 
+            className="relative flex items-center justify-center px-3 h-10 rounded-none cursor-default group/ia transition-all overflow-hidden border border-orange-500/10 gap-2"
           >
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] relative z-10">IA</span>
-            <BrainCircuit size={16} className="group-hover/ai:scale-110 transition-transform relative z-10" />
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/20 to-transparent opacity-0 group-hover/ai:opacity-100 transition-opacity" />
-            <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-orange-600 rounded-full blur-[2px] opacity-40 animate-pulse" />
-          </Button>
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-600/5 to-orange-950/10 transition-all" />
+            <BrainCircuit size={14} className="text-orange-500/60 relative z-10 animate-pulse" />
+            <span className="text-[12px] font-black uppercase tracking-[0.2em] relative z-10 text-orange-500/80">IA</span>
+          </div>
 
           {/* Right Wing: Refinement & Style */}
           <div className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity duration-500">
@@ -458,9 +447,9 @@ export function EditorLayout() {
                     </div>
                     <div className="space-y-1">
                       {templates.length > 0 ? templates.map(template => (
-                        <Link key={template.id} href={`/editor?template=${template.slug}`} className="w-full text-left text-[11px] py-2.5 px-3 hover:bg-purple-500/10 hover:text-purple-500 rounded-xl transition-all duration-300 group/item flex items-center justify-between font-bold text-foreground/70">
+                        <Link key={template.id} href={`/editor?template=${template.slug}`} className="w-full text-left text-[11px] py-2.5 px-3 hover:bg-orange-500/10 hover:text-orange-500 rounded-xl transition-all duration-300 group/item flex items-center justify-between font-bold text-foreground/70">
                           <span className="truncate">{template.title}</span>
-                          <ArrowRight size={10} className="opacity-0 group-hover/item:opacity-100 transition-opacity text-purple-500" />
+                          <ArrowRight size={10} className="opacity-0 group-hover/item:opacity-100 transition-opacity text-orange-500" />
                         </Link>
                       )) : (
                         <p className="text-[9px] text-zinc-600 px-3 py-2 italic font-medium">Carregando arsenal...</p>
@@ -481,38 +470,43 @@ export function EditorLayout() {
         </div>
 
         {/* Central Sanctuary - The Infinite Paper */}
-        <main className="flex-1 overflow-y-auto custom-scrollbar bg-transparent flex justify-center pt-6 pb-32 px-4 relative z-10">
-          <div className="w-full max-w-[880px] h-fit min-h-[1123px] bg-card shadow-2xl border border-border rounded-3xl p-20 md:pt-16 md:pb-40 md:px-32 relative animate-in fade-in zoom-in-95 duration-1000">
-             
-             {/* Document Title Header */}
-             <div className="mb-6 group/title relative">
-               <div className="absolute -left-8 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-orange-600/0 group-hover/title:bg-orange-600/20 transition-all rounded-full" />
-               <input 
-                 value={fileName}
-                 onChange={(e) => setFileName(e.target.value)}
-                 className="w-full bg-transparent border-none text-xl md:text-2xl font-black tracking-tight focus:outline-none focus:ring-0 placeholder:text-muted-foreground/20 text-foreground"
-                 placeholder="Título do Documento..."
-               />
-               <div className="flex items-center gap-2 mt-0.5 opacity-0 group-hover/title:opacity-100 transition-opacity">
-                  <FileText size={8} className="text-orange-500" />
-                  <span className="text-[7px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Documento Soberano • v2.4.0</span>
-               </div>
-             </div>
-
-             {/* Premium Paper Texture */}
-             <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-3xl" />
-             
-             {/* Focus Light Effect */}
-             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-32 bg-orange-500/5 blur-[80px] pointer-events-none rounded-full" />
-
-             <div className="relative z-10 selection:bg-orange-500/30">
-               <BubbleMenu editor={editor} />
-               <EditorContentArea />
-             </div>
-              {/* Fixed Transparent AI Command Center */}
-              <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-w-[600px] z-[100] px-4 animate-in slide-in-from-bottom-10 duration-1000">
-                 <AiMenu plain={true} />
+        <main className="flex-1 overflow-hidden bg-transparent flex justify-center pt-6 pb-6 px-4 relative z-10">
+          <div className="w-full max-w-[880px] h-full bg-card shadow-2xl border border-border rounded-3xl relative animate-in fade-in zoom-in-95 duration-1000 overflow-hidden flex flex-col">
+            
+            {/* Scrollable Content Area (Inside the Paper) */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-20 md:pt-16 md:pb-40 md:px-32 relative">
+              
+              {/* Document Title Header */}
+              <div className="mb-6 group/title relative">
+                <div className="absolute -left-8 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-orange-600/0 group-hover/title:bg-orange-600/20 transition-all rounded-full" />
+                <input 
+                  value={fileName}
+                  onChange={(e) => setFileName(e.target.value)}
+                  className="w-full bg-transparent border-none text-xl md:text-2xl font-black tracking-tight focus:outline-none focus:ring-0 placeholder:text-muted-foreground/20 text-foreground"
+                  placeholder="Título do Documento..."
+                />
+                <div className="flex items-center gap-2 mt-0.5 opacity-0 group-hover/title:opacity-100 transition-opacity">
+                   <FileText size={8} className="text-orange-500" />
+                   <span className="text-[7px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Documento Soberano • v2.4.0</span>
+                </div>
               </div>
+
+              {/* Premium Paper Texture */}
+              <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-3xl" />
+              
+              {/* Focus Light Effect */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-32 bg-orange-500/5 blur-[80px] pointer-events-none rounded-full" />
+
+              <div className="relative z-10 selection:bg-orange-500/30">
+                <BubbleMenu editor={editor} />
+                <EditorContentArea />
+              </div>
+            </div>
+
+            {/* Fixed Transparent AI Command Center */}
+            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-w-[600px] z-[100] px-4 animate-in slide-in-from-bottom-10 duration-1000">
+               <AiMenu plain={true} />
+            </div>
           </div>
         </main>
 

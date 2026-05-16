@@ -7,9 +7,8 @@ import type { Tone } from "../../../../components/tiptap-extension/gemini-ai-ext
 
 // Icons
 import { MicAiIcon } from "../../../../components/tiptap-icons/mic-ai-icon"
-import { ArrowUpIcon } from "../../../../components/tiptap-icons/arrow-up-icon"
 import { AiSparklesIcon } from "../../../../components/tiptap-icons/ai-sparkles-icon"
-import { StopCircle2Icon } from "../../../../components/tiptap-icons/stop-circle-2-icon"
+import { BrainCircuit, StopCircle as StopCircle2Icon, ArrowUp as ArrowUpIcon } from "lucide-react"
 
 // UI Components
 import { SUPPORTED_TONES } from "../../../../components/tiptap-ui/ai-menu"
@@ -139,7 +138,10 @@ export function AiPromptInputToolbar({
       style={{ display: showPlaceholder ? "none" : "flex" }}
     >
       <ToolbarGroup>
-        <ToneSelector tone={tone} onToneChange={handleToneChange} />
+        <div className="flex items-center gap-2 px-3 py-1 bg-orange-500/5 border border-orange-500/10 rounded-full">
+           <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
+           <span className="text-[10px] font-medium text-orange-500/60">Lilith ativa</span>
+        </div>
       </ToolbarGroup>
 
       <Spacer />
@@ -220,17 +222,13 @@ export function AiMenuInputTextarea({
       {...props}
     >
       {isLoading ? (
-        <div className="tiptap-ai-menu-progress">
-          <div className="tiptap-spinner-alt">
-            <span>AI is writing</span>
-            <div className="dots-container">
-              <div className="dot"></div>
-              <div className="dot"></div>
-              <div className="dot"></div>
-            </div>
+        <div className="flex items-center justify-between w-full h-[3.25rem] px-4 bg-orange-500/5 rounded-2xl border border-orange-500/10 animate-pulse-subtle">
+          <div className="flex items-center gap-3">
+             <BrainCircuit size={16} className="text-orange-500 animate-spin duration-[3000ms]" />
+             <span className="text-[11px] font-medium text-orange-500">Lilith está processando seu comando...</span>
           </div>
-          <Button variant="ghost" title="Stop" onClick={onStop}>
-            <StopCircle2Icon className="tiptap-button-icon" />
+          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-orange-500/10 text-orange-500" onClick={onStop}>
+            <StopCircle2Icon size={16} />
           </Button>
         </div>
       ) : showPlaceholder ? (

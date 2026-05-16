@@ -41,21 +41,6 @@ export interface SlashMenuConfig {
 }
 
 const texts = {
-  // AI
-  continue_writing: {
-    title: "Continuar Redigindo",
-    subtext: "Continuar a redação a partir da posição atual",
-    keywords: ["continuar", "escrever", "redigir", "ai"],
-    badge: AiSparklesIcon,
-    group: "IA Jurídica",
-  },
-  ai_ask_button: {
-    title: "Consultar Lilith",
-    subtext: "Gerar conteúdo ou cláusula com Inteligência Artificial",
-    keywords: ["ia", "lilith", "gerar", "cláusula"],
-    badge: AiSparklesIcon,
-    group: "IA Jurídica",
-  },
 
   // Style
   clausula: {
@@ -185,67 +170,6 @@ export type SlashMenuItemType = keyof typeof texts
 
 const getItemImplementations = () => {
   return {
-    // AI
-    continue_writing: {
-      check: (editor: Editor) => {
-        const { hasContent } = hasContentAbove(editor)
-        const extensionsReady = isExtensionAvailable(editor, [
-          "ai",
-          "aiAdvanced",
-        ])
-        return extensionsReady && hasContent
-      },
-      action: ({ editor }: { editor: Editor }) => {
-        const editorChain = editor.chain().focus()
-
-        const nodeSelectionPosition = findSelectionPosition({ editor })
-
-        if (nodeSelectionPosition !== null) {
-          editorChain.setNodeSelection(nodeSelectionPosition)
-        }
-
-        editorChain.run()
-
-        ;(editor.chain() as any).focus().aiGenerationShow().run()
-
-        requestAnimationFrame(() => {
-          const { hasContent, content } = hasContentAbove(editor)
-
-          const snippet =
-            content.length > 500 ? `...${content.slice(-500)}` : content
-
-          const prompt = hasContent
-            ? `Context: ${snippet}\n\nContinue writing from where the text above ends. Write ONLY ONE SENTENCE. DONT REPEAT THE TEXT.`
-            : "Start writing a new paragraph. Write ONLY ONE SENTENCE."
-
-          ;(editor.chain() as any)
-            .focus()
-            .aiTextPrompt({
-              stream: true,
-              format: "rich-text",
-              text: prompt,
-            })
-            .run()
-        })
-      },
-    },
-    ai_ask_button: {
-      check: (editor: Editor) =>
-        isExtensionAvailable(editor, ["ai", "aiAdvanced"]),
-      action: ({ editor }: { editor: Editor }) => {
-        const editorChain = editor.chain().focus()
-
-        const nodeSelectionPosition = findSelectionPosition({ editor })
-
-        if (nodeSelectionPosition !== null) {
-          editorChain.setNodeSelection(nodeSelectionPosition)
-        }
-
-        editorChain.run()
-
-        ;(editor.chain() as any).focus().aiGenerationShow().run()
-      },
-    },
 
     // Style
     clausula: {

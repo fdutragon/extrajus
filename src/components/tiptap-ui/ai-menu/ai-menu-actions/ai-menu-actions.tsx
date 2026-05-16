@@ -48,42 +48,38 @@ export function AiMenuActions({
   }, [editor, onAccept])
 
   return (
-    <div className="tiptap-ai-menu-actions">
+    <div className="tiptap-ai-menu-actions mt-6 p-3 bg-white/[0.02] dark:bg-orange-500/[0.03] border border-border dark:border-orange-500/10 rounded-2xl flex items-center justify-between backdrop-blur-md shadow-sm">
       <div className="tiptap-ai-menu-results">
         <Button
           variant="ghost"
-          className="tiptap-button"
+          className="tiptap-button text-[11px] font-medium hover:bg-orange-500/10 hover:text-orange-500 rounded-xl"
           onClick={handleRegenerate}
           disabled={aiGenerationIsLoading}
         >
-          <RefreshAiIcon className="tiptap-button-icon" />
-          Try again
+          <RefreshAiIcon className="tiptap-button-icon mr-2" />
+          Refazer ritual
         </Button>
       </div>
 
       <div className="tiptap-ai-menu-commit">
-        <ButtonGroup>
-          <ButtonGroup>
-            <Button
-              variant="ghost"
-              className="tiptap-button"
-              onClick={handleDiscard}
-            >
-              <XIcon className="tiptap-button-icon" />
-              Discard
-            </Button>
-          </ButtonGroup>
+        <ButtonGroup className="gap-2">
+          <Button
+            variant="ghost"
+            className="tiptap-button text-[11px] font-medium hover:bg-red-500/10 hover:text-red-500 rounded-xl"
+            onClick={handleDiscard}
+          >
+            <XIcon className="tiptap-button-icon mr-2" />
+            Descartar
+          </Button>
 
-          <ButtonGroup>
-            <Button
-              data-style="primary"
-              className="tiptap-button"
-              onClick={handleApply}
-            >
-              <CheckIcon className="tiptap-button-icon" />
-              Apply
-            </Button>
-          </ButtonGroup>
+          <Button
+            data-style="primary"
+            className="tiptap-button bg-orange-600 text-white hover:bg-orange-700 shadow-lg shadow-orange-600/20 text-[11px] font-medium px-6 rounded-xl transition-all active:scale-95"
+            onClick={handleApply}
+          >
+            <CheckIcon className="tiptap-button-icon mr-2" />
+            Aplicar pacto
+          </Button>
         </ButtonGroup>
       </div>
     </div>
