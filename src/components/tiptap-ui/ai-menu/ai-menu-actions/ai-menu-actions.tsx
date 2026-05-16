@@ -48,7 +48,7 @@ export function AiMenuActions({
   }, [editor, onAccept])
 
   return (
-    <div className="tiptap-ai-menu-actions mt-6 p-3 bg-white/[0.02] dark:bg-orange-500/[0.03] border border-border dark:border-orange-500/10 rounded-2xl flex items-center justify-between backdrop-blur-md shadow-sm">
+    <div className="tiptap-ai-menu-actions mt-4 pt-4 border-t border-border/40">
       <div className="tiptap-ai-menu-results">
         <Button
           variant="ghost"
