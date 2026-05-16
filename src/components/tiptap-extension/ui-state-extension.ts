@@ -51,13 +51,19 @@ export const UiState = Extension.create<UiState>({
 
   addCommands(): any {
     const createBooleanSetter =
-      (key: keyof UiState) => (value: boolean) => () => {
+      (key: keyof UiState) => (value: boolean) => ({ tr, dispatch }: any) => {
         this.storage[key] = value
+        if (dispatch) {
+          tr.setMeta('uiStateChanged', true)
+        }
         return true
       }
 
-    const createToggle = (key: keyof UiState, value: boolean) => () => () => {
+    const createToggle = (key: keyof UiState, value: boolean) => () => ({ tr, dispatch }: any) => {
       this.storage[key] = value
+      if (dispatch) {
+        tr.setMeta('uiStateChanged', true)
+      }
       return true
     }
 
@@ -80,8 +86,11 @@ export const UiState = Extension.create<UiState>({
       setIsDragging: createBooleanSetter("isDragging"),
 
       // Reset command
-      resetUiState: () => () => {
+      resetUiState: () => ({ tr, dispatch }: any) => {
         Object.assign(this.storage, { ...defaultUiState })
+        if (dispatch) {
+          tr.setMeta('uiStateChanged', true)
+        }
         return true
       },
     }

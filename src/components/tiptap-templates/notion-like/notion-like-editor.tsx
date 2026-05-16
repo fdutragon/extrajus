@@ -509,6 +509,10 @@ export function EditorLayout() {
                <BubbleMenu editor={editor} />
                <EditorContentArea />
              </div>
+              {/* Fixed Transparent AI Command Center */}
+              <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-w-[600px] z-[100] px-4 animate-in slide-in-from-bottom-10 duration-1000">
+                 <AiMenu plain={true} />
+              </div>
           </div>
         </main>
 
@@ -635,32 +639,6 @@ export function EditorLayout() {
         </div>
       </div>
 
-      {/* Floating Action Center - The War Tools */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-1.5 p-2 bg-background/80 backdrop-blur-xl border border-border rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] z-[100] animate-in slide-in-from-bottom-8 duration-1000">
-         <div className="flex items-center gap-1 pr-2 border-r border-border/50">
-            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-orange-500/10 text-muted-foreground hover:text-orange-500 transition-all group">
-              <FileText size={18} className="group-hover:scale-110 transition-transform" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-orange-500/10 text-muted-foreground hover:text-orange-500 transition-all group">
-              <Zap size={18} className="group-hover:scale-110 transition-transform" />
-            </Button>
-         </div>
-         
-         <div className="flex items-center gap-1 px-1">
-            <Button variant="ghost" size="icon" className="h-11 w-11 rounded-xl bg-orange-500 text-white hover:bg-orange-600 shadow-lg shadow-orange-500/20 group transition-all">
-              <Brain size={20} className="group-hover:rotate-12 transition-transform" />
-            </Button>
-         </div>
-
-         <div className="flex items-center gap-1 pl-2 border-l border-border/50">
-            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-orange-500/10 text-muted-foreground hover:text-orange-500 transition-all group">
-              <History size={18} className="group-hover:scale-110 transition-transform" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-orange-500/10 text-muted-foreground hover:text-orange-500 transition-all group">
-              <Settings2 size={18} className="group-hover:rotate-90 transition-transform duration-500" />
-            </Button>
-         </div>
-      </div>
     </div>
   )
 }

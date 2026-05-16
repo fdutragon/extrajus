@@ -29,8 +29,8 @@
 }
 
 .tiptap-ai-prompt-input {
-  background-color: var(--tiptap-ai-prompt-input-bg-color);
-  border: 1px solid var(--tiptap-ai-prompt-input-border-color);
+  background-color: transparent;
+  border: none;
   border-radius: var(--tt-radius-lg, 0.75rem);
   display: flex;
   flex-direction: column;
@@ -73,7 +73,7 @@
   &.tiptap-ai-prompt-input {
     height: 2.75rem;
     cursor: pointer;
-    border: 1px solid var(--tiptap-ai-prompt-input-border-color);
+    border: none;
     color: var(--tiptap-ai-prompt-input-text-color);
 
     &:hover {

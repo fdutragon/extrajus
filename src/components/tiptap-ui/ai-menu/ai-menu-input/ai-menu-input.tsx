@@ -9,6 +9,7 @@ import type { Tone } from "../../../../components/tiptap-extension/gemini-ai-ext
 import { MicAiIcon } from "../../../../components/tiptap-icons/mic-ai-icon"
 import { ArrowUpIcon } from "../../../../components/tiptap-icons/arrow-up-icon"
 import { AiSparklesIcon } from "../../../../components/tiptap-icons/ai-sparkles-icon"
+import { StopCircle2Icon } from "../../../../components/tiptap-icons/stop-circle-2-icon"
 
 // UI Components
 import { SUPPORTED_TONES } from "../../../../components/tiptap-ui/ai-menu"
@@ -161,11 +162,13 @@ export function AiMenuInputTextarea({
   onInputSubmit,
   onToneChange,
   onClose,
+  onStop,
   onInputFocus,
   onInputBlur,
   onEmptyBlur,
   onPlaceholderClick,
   showPlaceholder = false,
+  isLoading = false,
   placeholder = "Ask AI what you want...",
   ...props
 }: AiMenuInputTextareaProps) {
@@ -213,10 +216,24 @@ export function AiMenuInputTextarea({
     <div
       className="tiptap-ai-prompt-input"
       data-focused={isFocused}
-      data-active-state={showPlaceholder ? "off" : "on"}
+      data-active-state={showPlaceholder || isLoading ? "off" : "on"}
       {...props}
     >
-      {showPlaceholder ? (
+      {isLoading ? (
+        <div className="tiptap-ai-menu-progress">
+          <div className="tiptap-spinner-alt">
+            <span>AI is writing</span>
+            <div className="dots-container">
+              <div className="dot"></div>
+              <div className="dot"></div>
+              <div className="dot"></div>
+            </div>
+          </div>
+          <Button variant="ghost" title="Stop" onClick={onStop}>
+            <StopCircle2Icon className="tiptap-button-icon" />
+          </Button>
+        </div>
+      ) : showPlaceholder ? (
         <AiMenuInputPlaceholder onPlaceholderClick={handleOnPlaceholderClick} />
       ) : (
         <>

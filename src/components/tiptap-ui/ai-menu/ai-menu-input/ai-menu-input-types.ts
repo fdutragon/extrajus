@@ -2,10 +2,12 @@ export interface BaseAiMenuInputProps {
   onInputSubmit: (value: string) => void
   onToneChange?: (tone: string) => void
   onClose?: () => void
+  onStop?: () => void
   onInputFocus?: () => void
   onInputBlur?: () => void
   onEmptyBlur?: () => void
   showPlaceholder?: boolean
+  isLoading?: boolean
   onPlaceholderClick?: () => void
 }
 

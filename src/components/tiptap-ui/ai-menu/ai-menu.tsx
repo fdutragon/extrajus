@@ -238,24 +238,27 @@ export function AiMenuContent({
   const content = (
     <ComboboxProvider>
       <Card className={cn("tiptap-ai-menu", plain && "border-none bg-transparent shadow-none p-0")}>
-        {aiGenerationIsLoading && <AiMenuProgress editor={editor || ({} as any)} />}
-
-        {!aiGenerationIsLoading && (
-          <AiMenuInputTextarea
-            ref={tiptapAiPromptInputRef}
-            showPlaceholder={
-              !aiGenerationIsLoading &&
-              aiGenerationHasMessage &&
-              !state.shouldShowInput
-            }
-            onInputFocus={() => updateState({ inputIsFocused: true })}
-            onInputBlur={() => updateState({ inputIsFocused: false })}
-            onClose={handleInputOnClose}
-            onPlaceholderClick={() => updateState({ shouldShowInput: true })}
-            onInputSubmit={(value) => handlePromptSubmit(value)}
-            onToneChange={(tone: any) => updateState({ tone })}
-          />
-        )}
+        <AiMenuInputTextarea
+          ref={tiptapAiPromptInputRef}
+          isLoading={aiGenerationIsLoading}
+          onStop={() => {
+            if (!editor) return
+            ;(editor.chain() as any).aiReject({ type: "reset" }).run()
+            reset()
+            ;(editor.commands as any).resetUiState()
+          }}
+          showPlaceholder={
+            !aiGenerationIsLoading &&
+            aiGenerationHasMessage &&
+            !state.shouldShowInput
+          }
+          onInputFocus={() => updateState({ inputIsFocused: true })}
+          onInputBlur={() => updateState({ inputIsFocused: false })}
+          onClose={handleInputOnClose}
+          onPlaceholderClick={() => updateState({ shouldShowInput: true })}
+          onInputSubmit={(value) => handlePromptSubmit(value)}
+          onToneChange={(tone: any) => updateState({ tone })}
+        />
 
         {aiGenerationHasMessage && !aiGenerationIsLoading && (
           <AiMenuActions
@@ -293,24 +296,27 @@ export function AiMenuContent({
         flip={false}
       >
         <Card>
-          {aiGenerationIsLoading && <AiMenuProgress editor={editor} />}
-
-          {!aiGenerationIsLoading && (
-            <AiMenuInputTextarea
-              ref={tiptapAiPromptInputRef}
-              showPlaceholder={
-                !aiGenerationIsLoading &&
-                aiGenerationHasMessage &&
-                !state.shouldShowInput
-              }
-              onInputFocus={() => updateState({ inputIsFocused: true })}
-              onInputBlur={() => updateState({ inputIsFocused: false })}
-              onClose={handleInputOnClose}
-              onPlaceholderClick={() => updateState({ shouldShowInput: true })}
-              onInputSubmit={(value) => handlePromptSubmit(value)}
-              onToneChange={(tone: any) => updateState({ tone })}
-            />
-          )}
+          <AiMenuInputTextarea
+            ref={tiptapAiPromptInputRef}
+            isLoading={aiGenerationIsLoading}
+            onStop={() => {
+              if (!editor) return
+              ;(editor.chain() as any).aiReject({ type: "reset" }).run()
+              reset()
+              ;(editor.commands as any).resetUiState()
+            }}
+            showPlaceholder={
+              !aiGenerationIsLoading &&
+              aiGenerationHasMessage &&
+              !state.shouldShowInput
+            }
+            onInputFocus={() => updateState({ inputIsFocused: true })}
+            onInputBlur={() => updateState({ inputIsFocused: false })}
+            onClose={handleInputOnClose}
+            onPlaceholderClick={() => updateState({ shouldShowInput: true })}
+            onInputSubmit={(value) => handlePromptSubmit(value)}
+            onToneChange={(tone: any) => updateState({ tone })}
+          />
 
           {aiGenerationHasMessage && !aiGenerationIsLoading && (
             <AiMenuActions
@@ -345,35 +351,6 @@ export function AiMenuContent({
         )}
       </MenuContent>
     </Menu>
-  )
-}
-
-export function AiMenuProgress({ editor }: { editor: Editor }) {
-  const { reset } = useAiMenuState()
-
-  const handleStop = useCallback(() => {
-    if (!editor) return
-
-    ;(editor.chain() as any).aiReject({ type: "reset" }).run()
-    reset()
-    ;(editor.commands as any).resetUiState()
-  }, [editor, reset])
-
-  return (
-    <div className="tiptap-ai-menu-progress">
-      <div className="tiptap-spinner-alt">
-        <span>AI is writing</span>
-        <div className="dots-container">
-          <div className="dot"></div>
-          <div className="dot"></div>
-          <div className="dot"></div>
-        </div>
-      </div>
-
-      <Button variant="ghost" title="Stop" onClick={handleStop}>
-        <StopCircle2Icon className="tiptap-button-icon" />
-      </Button>
-    </div>
   )
 }
 

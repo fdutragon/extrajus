@@ -304,10 +304,17 @@ export function useTextSelectionTracker({
       const selectedElement = getSelectedDOMElement(editor)
       const shouldShow = Boolean(selectedElement && aiGenerationActive)
 
-      setMenuVisible(shouldShow)
-
-      if (shouldShow && selectedElement) {
-        showAtAnchor(selectedElement, selectedElement.getBoundingClientRect())
+      // Se a geração AI está ativa, a gente sempre tenta manter aberto
+      if (aiGenerationActive) {
+        setMenuVisible(true)
+        if (selectedElement) {
+          showAtAnchor(selectedElement, selectedElement.getBoundingClientRect())
+        }
+      } else {
+        setMenuVisible(shouldShow)
+        if (shouldShow && selectedElement) {
+          showAtAnchor(selectedElement, selectedElement.getBoundingClientRect())
+        }
       }
     }
 
