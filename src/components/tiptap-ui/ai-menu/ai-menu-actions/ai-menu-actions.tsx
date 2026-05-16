@@ -48,11 +48,11 @@ export function AiMenuActions({
   }, [editor, onAccept])
 
   return (
-    <div className="tiptap-ai-menu-actions mt-4 pt-4 border-t border-border/40">
+    <div className="tiptap-ai-menu-actions mt-4 p-4 border border-border/40 bg-white/[0.05] dark:bg-black/80 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
       <div className="tiptap-ai-menu-results">
         <Button
           variant="ghost"
-          className="tiptap-button text-[11px] font-medium hover:bg-orange-500/10 hover:text-orange-500 rounded-xl"
+          className="tiptap-button text-[11px] font-medium bg-orange-500/[0.06] text-orange-500/90 hover:bg-orange-500/10 hover:text-orange-500 rounded-xl border border-orange-500/10 transition-all"
           onClick={handleRegenerate}
           disabled={aiGenerationIsLoading}
         >
@@ -65,7 +65,7 @@ export function AiMenuActions({
         <ButtonGroup className="gap-2">
           <Button
             variant="ghost"
-            className="tiptap-button text-[11px] font-medium hover:bg-red-500/10 hover:text-red-500 rounded-xl"
+            className="tiptap-button text-[11px] font-medium bg-red-500/[0.06] text-red-500/90 hover:bg-red-500/10 hover:text-red-500 rounded-xl border border-red-500/10 transition-all"
             onClick={handleDiscard}
           >
             <XIcon className="tiptap-button-icon mr-2" />
@@ -74,7 +74,7 @@ export function AiMenuActions({
 
           <Button
             data-style="primary"
-            className="tiptap-button bg-orange-600 text-white hover:bg-orange-700 shadow-lg shadow-orange-600/20 text-[11px] font-medium px-6 rounded-xl transition-all active:scale-95"
+            className="tiptap-button bg-orange-600 text-white hover:bg-orange-700 shadow-lg shadow-orange-600/20 text-[11px] font-bold px-6 rounded-xl transition-all active:scale-95 border border-orange-400/20"
             onClick={handleApply}
           >
             <CheckIcon className="tiptap-button-icon mr-2" />

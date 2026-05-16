@@ -436,10 +436,12 @@ export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
 
     // Sync controlled props when not using context
     useEffect(() => {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (!context && openProp !== undefined) setLocalOpen(openProp)
     }, [openProp, context])
 
     useEffect(() => {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (!context && fullsizeProp !== undefined) setLocalFullsize(fullsizeProp)
     }, [fullsizeProp, context])
 

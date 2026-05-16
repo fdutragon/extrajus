@@ -492,6 +492,7 @@ export const TableSelectionOverlay: React.FC<TableSelectionOverlayProps> = ({
   }
 
   return (
+    // eslint-disable-next-line react-hooks/refs
     <FloatingPortal root={containerRef.current}>
       <div
         ref={refs.setFloating}

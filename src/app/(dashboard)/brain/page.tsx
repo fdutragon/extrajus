@@ -301,7 +301,7 @@ export default function BrainPage() {
                 <div className="pt-6 mt-auto">
                   <div className="flex items-center gap-2 p-3 bg-white/5 rounded-xl border border-white/5 italic text-[11px] text-zinc-500">
                     <Zap size={14} className="text-orange-500" />
-                    "Sua rede neural mapeia {data.contracts.length} contratos e {data.signatures.length} signatários ativos."
+                    &quot;Sua rede neural mapeia {data.contracts.length} contratos e {data.signatures.length} signatários ativos.&quot;
                   </div>
                 </div>
              </div>

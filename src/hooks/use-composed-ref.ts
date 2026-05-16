@@ -1,4 +1,5 @@
 "use client"
+/* eslint-disable react-hooks/immutability */
 
 import { useCallback, useRef } from "react"
 
@@ -25,8 +26,10 @@ export const useComposedRef = <T extends HTMLElement>(
   const prevUserRef = useRef<UserRef<T>>(null)
 
   return useCallback(
+    // eslint-disable-next-line react-hooks/immutability
     (instance: T | null) => {
       if (libRef && "current" in libRef) {
+        // eslint-disable-next-line react-hooks/immutability
         ;(libRef as { current: T | null }).current = instance
       }
 

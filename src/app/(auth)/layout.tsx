@@ -18,7 +18,7 @@ export default function AuthLayout({
         <div className="relative z-10">
           <blockquote className="space-y-4">
             <p className="text-3xl font-medium tracking-tight leading-snug dark:text-zinc-200 text-zinc-800 italic">
-              "A melhor forma de prever o futuro é redigir o contrato que o dita."
+              &quot;A melhor forma de prever o futuro é redigir o contrato que o dita.&quot;
             </p>
             <footer className="text-sm font-mono text-orange-600 dark:text-orange-500 uppercase tracking-widest">
               — Lilith OS // Protocolo de Dominação

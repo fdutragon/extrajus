@@ -50,7 +50,7 @@ export function AiMenuInputPlaceholder({
       <div className="tiptap-ai-prompt-input-placeholder-content">
         <AiSparklesIcon className="tiptap-ai-prompt-input-placeholder-icon" />
         <span className="tiptap-ai-prompt-input-placeholder-text">
-          Tell AI what else needs to be changed...
+          Dite o que Lilith deve alterar no texto...
         </span>
       </div>
       <Button data-style="primary" disabled>
@@ -171,7 +171,7 @@ export function AiMenuInputTextarea({
   onPlaceholderClick,
   showPlaceholder = false,
   isLoading = false,
-  placeholder = "Ask AI what you want...",
+  placeholder = "Dite sua ordem para Lilith...",
   ...props
 }: AiMenuInputTextareaProps) {
   const [promptValue, setPromptValue] = useComboboxValueState()
@@ -227,7 +227,7 @@ export function AiMenuInputTextarea({
              <BrainCircuit size={16} className="text-orange-500 animate-spin duration-[3000ms]" />
              <span className="text-[11px] font-medium text-orange-500">Lilith está processando seu comando...</span>
           </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-orange-500/10 text-orange-500" onClick={onStop}>
+          <Button variant="ghost" size="small" className="h-8 w-8 rounded-lg hover:bg-orange-500/10 text-orange-500" onClick={onStop}>
             <StopCircle2Icon size={16} />
           </Button>
         </div>

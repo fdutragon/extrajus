@@ -41,6 +41,7 @@ export const useCollaboration = (room: string) => {
 
   useEffect(() => {
     const noCollabParam = getUrlParam("noCollab")
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHasCollab(parseInt(noCollabParam || "0") !== 1)
   }, [])
 
@@ -49,8 +50,10 @@ export const useCollaboration = (room: string) => {
 
     try {
       const client = createClient()
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSupabase(client)
     } catch (e) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSetupError(true)
     }
   }, [hasCollab])
@@ -62,6 +65,7 @@ export const useCollaboration = (room: string) => {
 
     const newProvider = new SupabaseYjsProvider(supabase, channelName, ydoc)
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setProvider(newProvider)
 
     return () => {

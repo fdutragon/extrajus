@@ -322,7 +322,7 @@ export function EditorLayout() {
   }, [])
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden relative font-sans selection:bg-orange-500/30">
+    <div className="flex flex-col h-screen bg-white dark:bg-[#08080a] text-foreground overflow-hidden relative font-sans selection:bg-orange-500/30">
       
       {/* Background Ornaments */}
       <div className="absolute top-12 left-12 w-24 h-px bg-foreground/[0.03]" />
@@ -331,7 +331,7 @@ export function EditorLayout() {
       <div className="absolute bottom-12 right-12 w-px h-24 bg-foreground/[0.03]" />
 
       {/* Sovereign Header - The Command Monolith */}
-      <header className="fixed top-0 left-0 w-full h-12 border-b border-border bg-background/60 backdrop-blur-2xl flex items-center justify-between px-6 z-[100] transition-all duration-500 hover:bg-background/80 group">
+      <header className="fixed top-0 left-0 w-full h-12 border-b border-border bg-white/60 dark:bg-[#08080a]/60 backdrop-blur-2xl flex items-center justify-between px-6 z-[100] transition-all duration-500 hover:bg-white/80 dark:hover:bg-[#08080a]/80 group">
         <div className="flex items-center gap-6">
           <Link href="/dashboard">
             <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-orange-500/10 hover:text-orange-500 rounded-xl transition-all duration-300 group/back">
@@ -398,7 +398,7 @@ export function EditorLayout() {
         
         {/* Fixed Left: O Códice (The War Library) */}
         <div className="absolute left-6 top-12 z-40 hidden lg:block animate-in slide-in-from-left-12 duration-1000 mt-6">
-          <div className="w-80 h-[calc(100vh-96px)] bg-card border border-border rounded-[2rem] shadow-xl overflow-hidden flex flex-col group/library">
+          <div className="w-96 h-[calc(100vh-96px)] bg-card border border-border rounded-[2rem] shadow-xl overflow-hidden flex flex-col group/library">
             
             <div className="p-8 pb-4">
               <div className="flex items-center gap-2 mb-6 opacity-40 group-hover/library:opacity-100 transition-opacity">
@@ -470,8 +470,8 @@ export function EditorLayout() {
         </div>
 
         {/* Central Sanctuary - The Infinite Paper */}
-        <main className="flex-1 overflow-y-auto custom-scrollbar bg-transparent flex justify-center pt-6 pb-32 px-4 relative z-10">
-          <div className="w-full max-w-[880px] h-fit min-h-full bg-card shadow-2xl border border-border rounded-3xl p-20 md:pt-16 md:pb-40 md:px-32 relative animate-in fade-in zoom-in-95 duration-1000">
+        <main className="flex-1 overflow-y-auto custom-scrollbar bg-transparent pt-6 pb-6 px-4 relative z-10">
+          <div className="w-full max-w-[880px] mx-auto min-h-[calc(100vh-96px)] bg-card dark:bg-[#0c0c0e] shadow-2xl border border-border/50 dark:border-white/5 rounded-3xl p-20 md:pt-16 md:pb-20 md:px-32 relative animate-in fade-in zoom-in-95 duration-1000">
              
              {/* Document Title Header */}
              <div className="mb-6 group/title relative">
@@ -499,7 +499,7 @@ export function EditorLayout() {
                <EditorContentArea />
              </div>
               {/* Fixed Transparent AI Command Center */}
-              <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-w-[600px] z-[100] px-4 animate-in slide-in-from-bottom-10 duration-1000">
+              <div className="fixed bottom-20 left-1/2 -translate-x-1/2 w-full max-w-[600px] z-[100] px-4 animate-in slide-in-from-bottom-10 duration-1000">
                  <AiMenu plain={true} />
               </div>
           </div>
@@ -507,7 +507,7 @@ export function EditorLayout() {
 
         {/* Fixed Right: A Alquimia (The Oracle of Lilith) */}
         <div className="absolute right-6 top-12 z-40 hidden xl:block animate-in slide-in-from-right-12 duration-1000 mt-6">
-          <div className="w-80 h-[calc(100vh-96px)] bg-card border border-border rounded-[2rem] shadow-xl flex flex-col overflow-hidden group/oracle">
+          <div className="w-96 h-[calc(100vh-96px)] bg-card border border-border rounded-[2rem] shadow-xl flex flex-col overflow-hidden group/oracle">
             <Tabs value={oracleTab} onValueChange={setOracleTab} className="w-full h-full flex flex-col">
               <div className="px-8 pt-8 mb-6">
                 <TabsList className="grid w-full grid-cols-3 bg-muted rounded-2xl h-11 p-1.5 border border-border">
@@ -587,7 +587,7 @@ export function EditorLayout() {
                         </div>
                         
                         <p className="text-[12px] leading-relaxed text-zinc-300 font-medium italic mb-6">
-                          "Saudações, Arquiteto. Os fios deste contrato estão sob minha análise neural. Qual ordem Lilith deve executar para consolidar sua dominação hoje?"
+                          &quot;Saudações, Arquiteto. Os fios deste contrato estão sob minha análise neural. Qual ordem Lilith deve executar para consolidar sua dominação hoje?&quot;
                         </p>
                         
                         <div className="flex flex-wrap gap-2">

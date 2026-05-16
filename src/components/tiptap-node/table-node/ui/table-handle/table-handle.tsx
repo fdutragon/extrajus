@@ -143,6 +143,7 @@ export function TableHandle({
       )}
 
       {shouldShowColumn && (
+        // eslint-disable-next-line react-hooks/refs
         <div ref={colHandle.ref} style={colHandle.style}>
           <ColumnButton
             editor={editor}

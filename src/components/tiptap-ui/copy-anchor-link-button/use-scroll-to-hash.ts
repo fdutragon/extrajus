@@ -43,8 +43,11 @@ export function useScrollToHash(config: UseScrollToHashConfig = {}) {
 
   const onTargetFoundRef = useRef(onTargetFound)
   const onTargetNotFoundRef = useRef(onTargetNotFound)
-  onTargetFoundRef.current = onTargetFound
-  onTargetNotFoundRef.current = onTargetNotFound
+
+  useEffect(() => {
+    onTargetFoundRef.current = onTargetFound
+    onTargetNotFoundRef.current = onTargetNotFound
+  }, [onTargetFound, onTargetNotFound])
 
   const scrollToNode = useCallback(
     (id: string): boolean => {

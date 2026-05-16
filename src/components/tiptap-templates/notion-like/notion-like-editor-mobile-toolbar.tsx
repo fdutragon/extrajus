@@ -125,6 +125,7 @@ function useToolbarState(isMobile: boolean): ToolbarState {
 
   useEffect(() => {
     if (!isMobile && viewId !== TOOLBAR_VIEWS.MAIN) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setViewId(TOOLBAR_VIEWS.MAIN)
     }
   }, [isMobile, viewId])

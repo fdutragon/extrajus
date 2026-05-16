@@ -61,6 +61,7 @@ export function RiskAuditSidebar() {
     // Remove from list
     if (found) {
       const newResults = results.filter(r => r.id !== id)
+      // eslint-disable-next-line react-hooks/immutability
       editor.storage.ai.auditResults = newResults
       setResults(newResults)
     }
@@ -123,7 +124,7 @@ export function RiskAuditSidebar() {
                   <div key={risk.id} className="bg-zinc-900 border border-red-900/50 rounded-lg p-3 space-y-3">
                     <div>
                       <p className="text-xs font-bold text-red-500 mb-1">TERMO IDENTIFICADO:</p>
-                      <p className="text-sm text-zinc-300 bg-red-500/10 p-2 rounded">"{risk.originalText}"</p>
+                      <p className="text-sm text-zinc-300 bg-red-500/10 p-2 rounded">&quot;{risk.originalText}&quot;</p>
                     </div>
                     <div>
                       <p className="text-xs font-bold text-orange-500 mb-1">MOTIVO:</p>
@@ -131,7 +132,7 @@ export function RiskAuditSidebar() {
                     </div>
                     <div>
                       <p className="text-xs font-bold text-emerald-500 mb-1">SUGESTÃO LILITH:</p>
-                      <p className="text-sm text-emerald-400/90 bg-emerald-500/10 p-2 rounded">"{risk.suggestion}"</p>
+                      <p className="text-sm text-emerald-400/90 bg-emerald-500/10 p-2 rounded">&quot;{risk.suggestion}&quot;</p>
                     </div>
                     <Button 
                       onClick={() => applySuggestion(risk.originalText, risk.suggestion, risk.id)}

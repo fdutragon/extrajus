@@ -133,6 +133,7 @@ export function TocSidebar({
 
     const target = headingList.find((h) => h.id === hash)
     if (target) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setManualActiveId(target.id)
       hasRestoredHashRef.current = true
     }

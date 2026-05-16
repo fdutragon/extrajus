@@ -134,6 +134,7 @@ export function useAiAsk(config: UseAiAskConfig = {}) {
 
   useEffect(() => {
     if (!editor) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsVisible(false)
       return
     }

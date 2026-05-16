@@ -31,6 +31,7 @@ export const useAiToken = () => {
 
   useEffect(() => {
     const noAiParam = getUrlParam("noAi")
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHasAi(parseInt(noAiParam || "0") !== 1)
   }, [])
 
@@ -38,6 +39,7 @@ export const useAiToken = () => {
     if (!hasAi) return
 
     if (!GEMINI_API_KEY) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSetupError(true)
     } else {
       setGeminiKey(GEMINI_API_KEY)

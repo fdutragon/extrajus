@@ -77,7 +77,7 @@ export function DataRoom({ editor }: DataRoomProps) {
 
   const insertNewVariable = () => {
     if (newVarName && editor) {
-      editor.chain().focus().insertVariable(newVarName).run()
+      ;(editor.chain().focus() as any).insertVariable(newVarName).run()
       setNewVarName("")
       setIsAdding(false)
       toast.success(`Variável {{${newVarName}}} inserida no ritual.`)
@@ -174,7 +174,7 @@ export function DataRoom({ editor }: DataRoomProps) {
       <div className="pt-6 border-t border-white/[0.05]">
         <div className="p-4 bg-blue-600/[0.02] border border-blue-500/10 rounded-xl italic text-[9px] text-zinc-500 leading-relaxed group">
           <Zap size={12} className="text-blue-500 mb-2 group-hover:scale-110 transition-transform" />
-          "Dados injetados com precisão cirúrgica."
+          &quot;Dados injetados com precisão cirúrgica.&quot;
         </div>
       </div>
     </div>
