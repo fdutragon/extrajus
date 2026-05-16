@@ -90,7 +90,13 @@ import {
   Zap, 
   Check, 
   UserPlus,
-  ShieldCheck
+  ShieldCheck,
+  History,
+  Brain,
+  ArrowRight,
+  ShieldAlert,
+  Command,
+  Cpu
 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
@@ -99,7 +105,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
 import { Separator } from "../../../components/tiptap-ui-primitive/separator"
-import { ThemeToggle } from "../../../components/tiptap-templates/notion-like/notion-like-editor-theme-toggle"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { CollaborationUsers } from "../../../components/tiptap-templates/notion-like/notion-like-editor-collaboration-users"
 import { SignModal } from "../../../components/tiptap-ui/sign-modal/sign-modal"
 import { cn } from "@/lib/utils"
@@ -128,6 +134,8 @@ import {
 } from "../../../components/tiptap-node/toc-node/context/toc-context"
 import { ListNormalizationExtension } from "../../../components/tiptap-extension/list-normalization-extension"
 import { Indent } from "../../../components/tiptap-extension/indent-extension"
+import { BrandSVG } from "@/components/brand-svg"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 function InviteButton({ room }: { room: string }) {
   const [copied, setCopied] = useState(false)
@@ -138,6 +146,7 @@ function InviteButton({ room }: { room: string }) {
     url.searchParams.set("room", room)
     navigator.clipboard.writeText(url.toString()).then(() => {
       setCopied(true)
+      toast.success("Link do ritual copiado.")
       setTimeout(() => setCopied(false), 2000)
     })
   }
@@ -147,13 +156,13 @@ function InviteButton({ room }: { room: string }) {
       variant="ghost" 
       size="sm" 
       className={cn(
-        "h-7 gap-2 px-3 rounded-lg transition-all font-bold text-[9px] uppercase tracking-widest",
-        copied ? "text-emerald-500 bg-emerald-500/10" : "text-orange-500 hover:bg-orange-500/10"
+        "h-8 gap-2 px-4 rounded-full transition-all font-black text-[9px] uppercase tracking-widest border border-transparent",
+        copied ? "text-emerald-500 bg-emerald-500/5 border-emerald-500/10" : "text-zinc-500 hover:text-orange-500 hover:bg-orange-500/5 hover:border-orange-500/10"
       )}
       onClick={handleInvite}
     >
       {copied ? <Check size={12} /> : <UserPlus size={12} />}
-      {copied ? "Copiado" : "Convidar"}
+      {copied ? "Pronto" : "Convidar"}
     </Button>
   )
 }
@@ -179,7 +188,7 @@ export interface EditorProviderProps {
  */
 export function LoadingSpinner({ text = "Invocando Ritual..." }: { text?: string }) {
   return (
-    <div className="fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-[#050505] overflow-hidden">
+    <div className="fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-white dark:bg-[#050505] overflow-hidden">
       {/* Background Ambience */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(234,88,12,0.05),transparent_70%)] animate-pulse duration-[4000ms]" />
       
@@ -280,15 +289,50 @@ export function EditorContentArea() {
  */
 export function EditorLayout() {
   const [oracleTab, setOracleTab] = useState("insights")
+  const [fileName, setFileName] = useState("Contrato_Imperial_Alpha")
+  const [userContracts, setUserContracts] = useState<any[]>([])
+  const [templates, setTemplates] = useState<any[]>([])
   const { state, updateState } = useAiMenuState()
   const { editor } = useContext(EditorContext)!
   const { provider, room } = useCollab()
 
-  return (
-    <div className="flex flex-col h-screen bg-[#f8f8f8] dark:bg-[#020203] text-zinc-900 dark:text-zinc-100 overflow-hidden relative font-sans selection:bg-orange-500/30">
+  // Fetch dynamic content for Biblioteca
+  useEffect(() => {
+    const fetchArsenal = async () => {
+      const supabase = createClient()
       
+      // Fetch User Contracts
+      const { data: contracts } = await supabase
+        .from('contracts')
+        .select('id, title, status')
+        .order('updated_at', { ascending: false })
+        .limit(10)
+      
+      if (contracts) setUserContracts(contracts)
+
+      // Fetch Global Templates
+      const { data: tmpls } = await supabase
+        .from('templates')
+        .select('id, title, slug')
+        .limit(10)
+      
+      if (tmpls) setTemplates(tmpls)
+    }
+
+    fetchArsenal()
+  }, [])
+
+  return (
+    <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden relative font-sans selection:bg-orange-500/30">
+      
+      {/* Background Ornaments */}
+      <div className="absolute top-12 left-12 w-24 h-px bg-foreground/[0.03]" />
+      <div className="absolute top-12 left-12 w-px h-24 bg-foreground/[0.03]" />
+      <div className="absolute bottom-12 right-12 w-24 h-px bg-foreground/[0.03]" />
+      <div className="absolute bottom-12 right-12 w-px h-24 bg-foreground/[0.03]" />
+
       {/* Sovereign Header - The Command Monolith */}
-      <header className="fixed top-0 left-0 w-full h-12 border-b border-zinc-200/50 dark:border-white/[0.03] bg-white/60 dark:bg-black/60 backdrop-blur-2xl flex items-center justify-between px-6 z-[100] transition-all duration-500 hover:bg-white/80 dark:hover:bg-black/80 group">
+      <header className="fixed top-0 left-0 w-full h-12 border-b border-border bg-background/60 backdrop-blur-2xl flex items-center justify-between px-6 z-[100] transition-all duration-500 hover:bg-background/80 group">
         <div className="flex items-center gap-6">
           <Link href="/dashboard">
             <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-orange-500/10 hover:text-orange-500 rounded-xl transition-all duration-300 group/back">
@@ -298,7 +342,7 @@ export function EditorLayout() {
           <div className="flex flex-col">
             <div className="flex items-baseline gap-2 group/brand cursor-default">
               <span className="text-[11px] font-black uppercase tracking-[0.4em] text-orange-600 drop-shadow-[0_0_10px_rgba(234,88,12,0.3)] group-hover/brand:drop-shadow-[0_0_15px_rgba(234,88,12,0.6)] transition-all">ExtraJus</span>
-              <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest opacity-40">Cânone v2</span>
+              <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 truncate max-w-[120px]">{fileName}.docx</span>
             </div>
           </div>
         </div>
@@ -340,19 +384,24 @@ export function EditorLayout() {
             <TextAlignButton align="center" />
             <TextAlignButton align="right" />
             <TextAlignButton align="justify" />
-            <div className="h-4 w-px bg-zinc-200/50 dark:bg-white/[0.05] mx-1" />
+            <div className="h-4 w-px bg-border mx-1" />
             <LinkPopover autoOpenOnLinkActive={false} orientation="horizontal" />
             <ColorTextPopover orientation="horizontal" />
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3 pr-4 border-r border-zinc-200/50 dark:border-white/[0.05]">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 pr-4 border-r border-border/50">
             <InviteButton room={room || ""} />
-            <CollaborationUsers />
-            <ThemeToggle />
+            <div className="flex items-center gap-3 ml-2">
+              <CollaborationUsers />
+              <ThemeToggle />
+            </div>
           </div>
-          <SignModal />
+          <div className="flex items-center gap-2 pl-2">
+            <ExportButton />
+            <SignModal />
+          </div>
         </div>
       </header>
 
@@ -360,7 +409,7 @@ export function EditorLayout() {
         
         {/* Fixed Left: O Códice (The War Library) */}
         <div className="absolute left-6 top-12 z-40 hidden lg:block animate-in slide-in-from-left-12 duration-1000 mt-6">
-          <div className="w-80 h-[calc(100vh-96px)] bg-white/80 dark:bg-black/60 backdrop-blur-3xl border border-zinc-200/50 dark:border-white/[0.05] rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col group/library">
+          <div className="w-80 h-[calc(100vh-96px)] bg-card border border-border rounded-[2rem] shadow-xl overflow-hidden flex flex-col group/library">
             
             <div className="p-8 pb-4">
               <div className="flex items-center gap-2 mb-6 opacity-40 group-hover/library:opacity-100 transition-opacity">
@@ -373,7 +422,7 @@ export function EditorLayout() {
                   <Library size={20} className="text-orange-500" />
                 </div>
                 <div>
-                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-800 dark:text-zinc-200">Biblioteca</h3>
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Biblioteca</h3>
                   <p className="text-[8px] font-bold text-orange-500/60 uppercase tracking-widest">Arsenal Ativo</p>
                 </div>
               </div>
@@ -382,32 +431,49 @@ export function EditorLayout() {
             <div className="flex-1 overflow-hidden px-4">
               <ScrollArea className="h-full pr-4 custom-scrollbar">
                 <div className="space-y-8 py-4 px-2">
-                  {[
-                    { title: 'Protocolos de Elite', items: ['Contrato de Guerra', 'NDA Soberano', 'Acordo de Cúpula'], icon: '🛡️' },
-                    { title: 'Cláusulas Seladas', items: ['Sigilo Absoluto', 'Exclusividade Brutal', 'Foro de Dominação'], icon: '⚖️' },
-                    { title: 'Jurisprudência', items: ['Súmulas de Poder', 'Precedentes M&A'], icon: '📖' }
-                  ].map(cat => (
-                    <div key={cat.title} className="space-y-4">
-                      <div className="flex items-center justify-between border-b border-zinc-200/50 dark:border-white/[0.05] pb-2">
-                        <p className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.25em]">{cat.title}</p>
-                        <span className="text-[10px] grayscale opacity-50">{cat.icon}</span>
-                      </div>
-                      <div className="space-y-1">
-                        {cat.items.map(item => (
-                          <button key={item} className="w-full text-left text-[11px] py-2.5 px-3 hover:bg-orange-500/10 hover:text-orange-500 rounded-xl transition-all duration-300 group/item flex items-center justify-between font-bold text-zinc-600 dark:text-zinc-400">
-                            <span className="truncate">{item}</span>
-                            <Zap size={10} className="opacity-0 group-hover/item:opacity-100 transition-opacity text-orange-500" />
-                          </button>
-                        ))}
-                      </div>
+                  
+                  {/* Seus Pactos (User Contracts) */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between border-b border-border pb-2">
+                      <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.25em]">Seus Pactos</p>
+                      <span className="text-[10px] grayscale opacity-50 text-orange-500">🛡️</span>
                     </div>
-                  ))}
+                    <div className="space-y-1">
+                      {userContracts.length > 0 ? userContracts.map(contract => (
+                        <Link key={contract.id} href={`/editor?room=${contract.id}`} className="w-full text-left text-[11px] py-2.5 px-3 hover:bg-orange-500/10 hover:text-orange-500 rounded-xl transition-all duration-300 group/item flex items-center justify-between font-bold text-foreground/70">
+                          <span className="truncate">{contract.title || "Documento Sem Nome"}</span>
+                          <Zap size={10} className={cn("opacity-0 group-hover/item:opacity-100 transition-opacity", contract.status === 'signed' ? "text-emerald-500" : "text-orange-500")} />
+                        </Link>
+                      )) : (
+                        <p className="text-[9px] text-zinc-600 px-3 py-2 italic font-medium">Nenhum pacto selado ainda...</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Arsenal de Modelos (Global Templates) */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between border-b border-border pb-2">
+                      <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.25em]">Arsenal de Modelos</p>
+                      <span className="text-[10px] grayscale opacity-50">📖</span>
+                    </div>
+                    <div className="space-y-1">
+                      {templates.length > 0 ? templates.map(template => (
+                        <Link key={template.id} href={`/editor?template=${template.slug}`} className="w-full text-left text-[11px] py-2.5 px-3 hover:bg-purple-500/10 hover:text-purple-500 rounded-xl transition-all duration-300 group/item flex items-center justify-between font-bold text-foreground/70">
+                          <span className="truncate">{template.title}</span>
+                          <ArrowRight size={10} className="opacity-0 group-hover/item:opacity-100 transition-opacity text-purple-500" />
+                        </Link>
+                      )) : (
+                        <p className="text-[9px] text-zinc-600 px-3 py-2 italic font-medium">Carregando arsenal...</p>
+                      )}
+                    </div>
+                  </div>
+
                 </div>
               </ScrollArea>
             </div>
 
-            <div className="p-6 mt-auto bg-zinc-50/50 dark:bg-white/[0.02] border-t border-zinc-200/50 dark:border-white/[0.05]">
-               <Button variant="ghost" className="w-full justify-center text-[10px] font-black uppercase tracking-widest h-10 hover:bg-orange-500/10 hover:text-orange-500 rounded-xl transition-all text-zinc-500">
+            <div className="p-6 mt-auto bg-muted/50 border-t border-border">
+               <Button variant="ghost" className="w-full justify-center text-[10px] font-black uppercase tracking-widest h-10 hover:bg-orange-500/10 hover:text-orange-500 rounded-xl transition-all text-muted-foreground">
                  <Settings2 size={14} className="mr-2" /> Arsenal Config
                </Button>
             </div>
@@ -416,8 +482,23 @@ export function EditorLayout() {
 
         {/* Central Sanctuary - The Infinite Paper */}
         <main className="flex-1 overflow-y-auto custom-scrollbar bg-transparent flex justify-center pt-6 pb-32 px-4 relative z-10">
-          <div className="w-full max-w-[880px] h-fit min-h-[1123px] bg-white dark:bg-[#08080a] shadow-[0_40px_100px_rgba(0,0,0,0.1)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] border border-zinc-200/50 dark:border-white/[0.05] rounded-3xl p-20 md:pt-8 md:pb-40 md:px-32 relative animate-in fade-in zoom-in-95 duration-1000">
+          <div className="w-full max-w-[880px] h-fit min-h-[1123px] bg-card shadow-2xl border border-border rounded-3xl p-20 md:pt-16 md:pb-40 md:px-32 relative animate-in fade-in zoom-in-95 duration-1000">
              
+             {/* Document Title Header */}
+             <div className="mb-6 group/title relative">
+               <div className="absolute -left-8 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-orange-600/0 group-hover/title:bg-orange-600/20 transition-all rounded-full" />
+               <input 
+                 value={fileName}
+                 onChange={(e) => setFileName(e.target.value)}
+                 className="w-full bg-transparent border-none text-xl md:text-2xl font-black tracking-tight focus:outline-none focus:ring-0 placeholder:text-muted-foreground/20 text-foreground"
+                 placeholder="Título do Documento..."
+               />
+               <div className="flex items-center gap-2 mt-0.5 opacity-0 group-hover/title:opacity-100 transition-opacity">
+                  <FileText size={8} className="text-orange-500" />
+                  <span className="text-[7px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Documento Soberano • v2.4.0</span>
+               </div>
+             </div>
+
              {/* Premium Paper Texture */}
              <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-3xl" />
              
@@ -433,10 +514,10 @@ export function EditorLayout() {
 
         {/* Fixed Right: A Alquimia (The Oracle of Lilith) */}
         <div className="absolute right-6 top-12 z-40 hidden xl:block animate-in slide-in-from-right-12 duration-1000 mt-6">
-          <div className="w-80 h-[calc(100vh-96px)] bg-white/80 dark:bg-black/60 backdrop-blur-3xl border border-zinc-200/50 dark:border-white/[0.05] rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden group/oracle">
+          <div className="w-80 h-[calc(100vh-96px)] bg-card border border-border rounded-[2rem] shadow-xl flex flex-col overflow-hidden group/oracle">
             <Tabs value={oracleTab} onValueChange={setOracleTab} className="w-full h-full flex flex-col">
               <div className="px-8 pt-8 mb-6">
-                <TabsList className="grid w-full grid-cols-3 bg-zinc-100 dark:bg-white/[0.03] rounded-2xl h-11 p-1.5 border border-zinc-200/50 dark:border-white/[0.05]">
+                <TabsList className="grid w-full grid-cols-3 bg-muted rounded-2xl h-11 p-1.5 border border-border">
                   <TabsTrigger value="insights" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-orange-600/20 transition-all">
                     Insights
                   </TabsTrigger>
@@ -456,7 +537,7 @@ export function EditorLayout() {
                       <BrainCircuit size={20} className="text-orange-500 animate-pulse" />
                     </div>
                     <div>
-                      <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-800 dark:text-zinc-200">Alquimia AI</h3>
+                      <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Alquimia AI</h3>
                       <div className="flex items-center gap-1.5 mt-0.5">
                         <div className="w-1 h-1 rounded-full bg-green-500 animate-ping" />
                         <span className="text-[8px] text-green-500 font-bold uppercase tracking-widest">Sincronizada</span>
@@ -466,21 +547,21 @@ export function EditorLayout() {
 
                   <div className="space-y-8">
                     <div className="space-y-4">
-                      <h4 className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.25em] border-l-2 border-orange-600 pl-3">Score de Dominação</h4>
+                      <h4 className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.25em] border-l-2 border-orange-600 pl-3">Score de Dominação</h4>
                       <div className="flex items-baseline gap-3">
-                        <div className="text-5xl font-black tracking-tighter text-zinc-800 dark:text-white">92</div>
+                        <div className="text-5xl font-black tracking-tighter text-foreground">92</div>
                         <div className="text-xl font-bold text-orange-600">%</div>
                       </div>
-                      <div className="w-full h-1.5 bg-zinc-100 dark:bg-white/[0.05] rounded-full overflow-hidden">
+                      <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
                         <div className="w-[92%] h-full bg-gradient-to-r from-orange-600 to-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.4)]" />
                       </div>
                       <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest flex items-center gap-2">
                         <ShieldCheck size={12} /> Contrato Inabalável
                       </p>
-                      <div className="space-y-4 pt-4 border-t border-zinc-200/50 dark:border-white/[0.05]">
-                       <h4 className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.25em]">Vulnerabilidades</h4>
+                      <div className="space-y-4 pt-4 border-t border-border">
+                       <h4 className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.25em]">Vulnerabilidades</h4>
                        <div className="bg-orange-500/[0.03] border border-orange-500/10 rounded-2xl p-5 space-y-4 group/card hover:border-orange-500/30 transition-all">
-                         <p className="text-[11px] leading-relaxed italic text-zinc-600 dark:text-zinc-400 font-medium">
+                         <p className="text-[11px] leading-relaxed italic text-muted-foreground font-medium">
                            "Detectei um flanco exposto na cláusula 7.2. Deseja realizar a blindagem estratégica?"
                          </p>
                          <Button size="sm" className="w-full bg-orange-600 hover:bg-orange-700 text-white text-[9px] font-black uppercase tracking-widest h-9 rounded-xl shadow-lg shadow-orange-600/20 transition-all active:scale-95">
@@ -496,34 +577,89 @@ export function EditorLayout() {
                   <DataRoom editor={editor} />
                 </TabsContent>
 
-                <TabsContent value="oraculo" className="h-full m-0 flex flex-col space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <div className="flex-1 overflow-y-auto space-y-6 mb-6 pr-2 custom-scrollbar">
-                    <div className="bg-zinc-100/50 dark:bg-white/[0.03] rounded-2xl p-5 border border-zinc-200/50 dark:border-white/[0.05] relative group/msg">
-                      <div className="absolute -left-1 top-4 w-2 h-2 bg-orange-600 rounded-full shadow-[0_0_8px_rgba(234,88,12,0.5)]" />
-                      <p className="text-[11px] leading-relaxed text-zinc-600 dark:text-zinc-300 font-medium">
-                        Saudações, Arquiteto. Os padrões deste contrato estão sob minha análise. Qual ordem Lilith deve executar hoje?
-                      </p>
-                      <div className="flex items-center gap-2 mt-4">
-                        <div className="w-4 h-px bg-orange-500/30" />
-                        <span className="text-[8px] font-black text-orange-500 uppercase tracking-widest">Lilith • Presença Ativa</span>
+                <TabsContent value="oraculo" className="h-full m-0 flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700">
+                  <div className="flex-1 overflow-y-auto space-y-6 mb-4 pr-2 custom-scrollbar">
+                    <div className="relative group/lilith p-6 rounded-[2rem] bg-orange-600/[0.02] border border-orange-500/10 shadow-2xl shadow-orange-900/5 overflow-hidden transition-all hover:bg-orange-600/[0.04]">
+                      {/* Aura Effect */}
+                      <div className="absolute -top-12 -right-12 w-32 h-32 bg-orange-600/10 blur-[60px] rounded-full animate-pulse" />
+                      <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-orange-600/5 blur-[40px] rounded-full" />
+                      
+                      <div className="relative z-10">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="relative">
+                            <div className="w-2 h-2 bg-orange-500 rounded-full animate-ping absolute inset-0" />
+                            <div className="w-2 h-2 bg-orange-600 rounded-full relative shadow-[0_0_10px_rgba(234,88,12,0.8)]" />
+                          </div>
+                          <span className="text-[9px] font-black text-orange-500 uppercase tracking-[0.3em]">Lilith • Presença Suprema</span>
+                        </div>
+                        
+                        <p className="text-[12px] leading-relaxed text-zinc-300 font-medium italic mb-6">
+                          "Saudações, Arquiteto. Os fios deste contrato estão sob minha análise neural. Qual ordem Lilith deve executar para consolidar sua dominação hoje?"
+                        </p>
+                        
+                        <div className="flex flex-wrap gap-2">
+                          {['Blindar Cláusulas', 'Analisar Riscos', 'Resumir Ritual'].map(hint => (
+                            <button key={hint} className="px-3 py-1.5 rounded-full bg-white/5 border border-white/5 text-[8px] font-black uppercase tracking-widest text-zinc-500 hover:text-orange-500 hover:border-orange-500/20 hover:bg-orange-500/5 transition-all">
+                              {hint}
+                            </button>
+                          ))}
+                        </div>
                       </div>
+                    </div>
+
+                    <div className="px-4 py-8 text-center opacity-20 group">
+                      <div className="h-px w-full bg-gradient-to-r from-transparent via-zinc-500 to-transparent mb-6 scale-x-50 group-hover:scale-x-100 transition-transform duration-1000" />
+                      <Cpu size={24} className="mx-auto mb-3 text-zinc-500" />
+                      <p className="text-[8px] font-black uppercase tracking-[0.4em] text-zinc-500">Neural Sync Active</p>
                     </div>
                   </div>
 
-                  <div className="relative group/input">
-                    <textarea 
-                      placeholder="Dite sua ordem suprema..." 
-                      className="w-full bg-zinc-100/50 dark:bg-white/[0.03] border border-zinc-200/50 dark:border-white/[0.05] rounded-2xl p-4 text-[11px] focus:outline-none focus:border-orange-500/40 min-h-[100px] resize-none placeholder:text-zinc-500 font-medium transition-all group-hover/input:border-orange-500/20"
-                    />
-                    <Button size="icon" className="absolute bottom-4 right-4 h-8 w-8 bg-orange-600 hover:bg-orange-700 rounded-xl shadow-lg shadow-orange-600/20 transition-all active:scale-90">
-                      <Zap size={16} fill="white" />
-                    </Button>
+                  <div className="relative group/input mt-auto pb-2">
+                    <div className="absolute -inset-1 bg-gradient-to-b from-orange-600/20 to-transparent blur-xl opacity-0 group-hover/input:opacity-100 transition-opacity duration-500" />
+                    <div className="relative">
+                      <textarea 
+                        placeholder="Dite sua ordem..." 
+                        className="w-full bg-[#0c0c0e] border border-white/5 rounded-2xl p-4 text-[11px] font-bold focus:outline-none focus:border-orange-500/40 min-h-[80px] max-h-[150px] resize-none placeholder:text-zinc-800 tracking-tight transition-all shadow-2xl"
+                      />
+                      <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                        <Button size="icon" className="h-8 w-8 bg-orange-600 hover:bg-orange-700 rounded-xl shadow-xl shadow-orange-600/20 transition-all active:scale-90 group/btn">
+                          <Zap size={14} fill="white" className="group-hover:scale-110 transition-transform" />
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </TabsContent>
               </div>
             </Tabs>
           </div>
         </div>
+      </div>
+
+      {/* Floating Action Center - The War Tools */}
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-1.5 p-2 bg-background/80 backdrop-blur-xl border border-border rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] z-[100] animate-in slide-in-from-bottom-8 duration-1000">
+         <div className="flex items-center gap-1 pr-2 border-r border-border/50">
+            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-orange-500/10 text-muted-foreground hover:text-orange-500 transition-all group">
+              <FileText size={18} className="group-hover:scale-110 transition-transform" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-orange-500/10 text-muted-foreground hover:text-orange-500 transition-all group">
+              <Zap size={18} className="group-hover:scale-110 transition-transform" />
+            </Button>
+         </div>
+         
+         <div className="flex items-center gap-1 px-1">
+            <Button variant="ghost" size="icon" className="h-11 w-11 rounded-xl bg-orange-500 text-white hover:bg-orange-600 shadow-lg shadow-orange-500/20 group transition-all">
+              <Brain size={20} className="group-hover:rotate-12 transition-transform" />
+            </Button>
+         </div>
+
+         <div className="flex items-center gap-1 pl-2 border-l border-border/50">
+            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-orange-500/10 text-muted-foreground hover:text-orange-500 transition-all group">
+              <History size={18} className="group-hover:scale-110 transition-transform" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-orange-500/10 text-muted-foreground hover:text-orange-500 transition-all group">
+              <Settings2 size={18} className="group-hover:rotate-90 transition-transform duration-500" />
+            </Button>
+         </div>
       </div>
     </div>
   )
@@ -541,6 +677,10 @@ export function EditorProvider(props: EditorProviderProps) {
       attributes: {
         class: "notion-like-editor",
       },
+      // Prevent automatic scroll into view when editor is focused
+      // This is crucial for header buttons to work without jumping the page
+      scrollThreshold: 0,
+      scrollMargin: 0,
     },
     extensions: [
       StarterKit.configure({

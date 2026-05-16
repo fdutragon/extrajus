@@ -1,5 +1,6 @@
 import { Extension, GlobalAttributes } from "@tiptap/core"
 import { GoogleGenerativeAI } from "@google/generative-ai"
+import { toast } from "sonner"
 
 export type Language =
   | "en" | "ko" | "zh" | "ja" | "es" | "ru" | "fr" | "pt" | "de" | "it" | "nl" | "id" | "vi" | "tr" | "ar"
@@ -93,25 +94,26 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
   addCommands(): any {
     const runGemini = async (editor: any, prompt: string) => {
       const { apiKey, model: modelName } = this.options
-      if (!apiKey) {
-        console.error("Gemini API Key is missing")
-        return
-      }
-
-      this.storage.lastPrompt = prompt
-      this.storage.generatedWith = { name: "gemini" }
-      this.storage.state = "loading"
-
-      const genAI = new GoogleGenerativeAI(apiKey)
-      const model = genAI.getGenerativeModel({
-        model: modelName,
-        systemInstruction: "You are Lilith, a powerful and sophisticated AI assistant for a professional legal contract editor. Your output MUST be strictly valid HTML fragments. RULES: 1. NEVER use Markdown (no **, no #, no ```). 2. NEVER use markdown code blocks. 3. Use ONLY: <p>, <strong>, <em>, <ul>, <li>, <br>. 4. ALWAYS wrap text in <p> tags. 5. NO redundant line breaks. Do not use more than one <br> in a row. 6. NO empty paragraphs (<p></p> or <p><br></p>). 7. Return ONLY the requested content, no conversational filler.",
-      }, { apiVersion: "v1beta" })
       
       editor.commands.aiGenerationSetIsLoading(true)
       editor.commands.aiGenerationHasMessage(false)
+      this.storage.lastPrompt = prompt
+      this.storage.state = "loading"
+
+      if (!apiKey) {
+        console.error("Gemini API Key is missing")
+        editor.commands.aiGenerationSetIsLoading(false)
+        this.storage.state = "error"
+        return
+      }
 
       try {
+        const genAI = new GoogleGenerativeAI(apiKey)
+        const model = genAI.getGenerativeModel({
+          model: modelName,
+          systemInstruction: "You are Lilith, a powerful and sophisticated AI assistant for a professional legal contract editor. Your output MUST be strictly valid HTML fragments. RULES: 1. NEVER use Markdown (no **, no #, no ```). 2. NEVER use markdown code blocks. 3. Use ONLY: <p>, <strong>, <em>, <ul>, <li>, <br>. 4. ALWAYS wrap text in <p> tags. 5. NO redundant line breaks. Do not use more than one <br> in a row. 6. NO empty paragraphs (<p></p> or <p><br></p>). 7. Return ONLY the requested content, no conversational filler.",
+        }, { apiVersion: "v1beta" })
+        
         const result = await model.generateContentStream(prompt)
 
         let accumulatedText = ""
@@ -152,6 +154,7 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
       } catch (error) {
         console.error("Gemini generation failed:", error)
         this.storage.state = "error"
+        toast.error("O Oráculo falhou em responder. Verifique sua conexão ou chave de API.")
       } finally {
         editor.commands.aiGenerationSetIsLoading(false)
       }

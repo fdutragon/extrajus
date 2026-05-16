@@ -80,6 +80,7 @@ export const ListButton = forwardRef<HTMLButtonElement, ListButtonProps>(
       (event: React.MouseEvent<HTMLButtonElement>) => {
         onClick?.(event)
         if (event.defaultPrevented) return
+        event.preventDefault()
         handleToggle()
       },
       [handleToggle, onClick]

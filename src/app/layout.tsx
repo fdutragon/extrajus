@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,6 +15,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "ExtraJus - O Google Docs dos Contratos",
   description: "Plataforma de inteligência jurídica para redação de contratos de alto impacto.",
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 import { ThemeProvider } from "@/components/theme-provider";
@@ -37,8 +40,6 @@ export default function RootLayout({
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
-          enableSystem
-          enableColorScheme
           disableTransitionOnChange
         >
           <TooltipProvider>

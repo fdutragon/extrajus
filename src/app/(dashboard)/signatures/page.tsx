@@ -28,12 +28,15 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function SignaturesPage() {
   const [loading, setLoading] = useState(true);
   const [signatures, setSignatures] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
   const supabase = createClient();
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchData() {
@@ -70,8 +73,50 @@ export default function SignaturesPage() {
   const pendingSignatures = signatures.filter(s => s.status === 'pending');
   const signedDocuments = signatures.filter(s => s.status === 'signed');
 
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    toast.loading(`Importando ${file.name}...`, { id: "import" });
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error("Você precisa estar logado.", { id: "import" });
+      return;
+    }
+
+    // 1. Create a new contract
+    const { data: contract, error } = await supabase
+      .from('contracts')
+      .insert({
+        user_id: user.id,
+        title: file.name.replace(/\.[^/.]+$/, ""), // Remove extension
+        status: 'draft'
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error creating contract:", error);
+      toast.error("Erro ao importar documento.", { id: "import" });
+      return;
+    }
+
+    toast.success("Documento pronto para edição!", { id: "import" });
+
+    // 2. Redirect to editor
+    router.push(`/editor?room=${contract.id}`);
+  };
+
   return (
     <div className="space-y-10 animate-in fade-in duration-700">
+      <input 
+        type="file" 
+        id="import-doc" 
+        className="hidden" 
+        accept=".pdf,.docx,.doc,.txt,.html"
+        onChange={handleImport}
+      />
       {/* Header Area */}
       <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-zinc-200/50 dark:border-white/5 pb-8">
         <div className="space-y-3">
@@ -89,7 +134,10 @@ export default function SignaturesPage() {
           <Button variant="outline" className="h-10 px-4 border-zinc-200/50 dark:border-white/10 hover:bg-zinc-100 dark:hover:bg-white/5 rounded-lg text-[13px] font-medium">
             <Filter size={14} className="mr-2" /> Filtrar
           </Button>
-          <Button className="h-10 bg-zinc-900 dark:bg-white text-white dark:text-black hover:opacity-90 font-bold rounded-lg px-5 text-[13px] shadow-lg shadow-black/10 dark:shadow-white/5">
+          <Button 
+            onClick={() => document.getElementById('import-doc')?.click()}
+            className="h-10 bg-zinc-900 dark:bg-white text-white dark:text-black hover:opacity-90 font-bold rounded-lg px-5 text-[13px] shadow-lg shadow-black/10 dark:shadow-white/5"
+          >
             Importar Documento
           </Button>
         </div>

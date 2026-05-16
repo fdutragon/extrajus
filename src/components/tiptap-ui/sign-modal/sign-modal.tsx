@@ -14,8 +14,10 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { FileSignature, Plus, Trash2, Send, ShieldCheck, UserPlus } from "lucide-react"
+import { FileSignature, Trash2, Send, ShieldCheck, UserPlus, Fingerprint, Zap, Plus } from "lucide-react"
 import { useSearchParams } from "next/navigation"
+import { toast } from "sonner"
+import { cn } from "@/lib/utils"
 
 export function SignModal() {
   const { editor } = useTiptapEditor()
@@ -26,7 +28,13 @@ export function SignModal() {
   const [isSending, setIsSending] = useState(false)
   const [open, setOpen] = useState(false)
 
-  const addSigner = () => setSigners([...signers, { name: "", email: "" }])
+  const addSigner = () => {
+    setSigners([...signers, { name: "", email: "" }])
+    toast("Novo elo adicionado ao pacto.", {
+      icon: <UserPlus size={14} className="text-orange-500" />,
+      style: { background: '#09090b', border: '1px solid rgba(255,255,255,0.05)', color: 'white' }
+    });
+  }
   
   const removeSigner = (index: number) => {
     if (signers.length > 1) {
@@ -42,31 +50,38 @@ export function SignModal() {
 
   const handleSign = async () => {
     if (!editor) return;
+    const validSigners = signers.filter((s) => s.email && s.name);
+    if (validSigners.length === 0) {
+      toast.error("Ritual incompleto. Adicione signatários válidos.");
+      return;
+    }
+
     setIsSending(true);
+    const ritualToast = toast.loading("Consagrando documento...", {
+      style: { background: '#09090b', border: '1px solid rgba(234,88,12,0.2)', color: 'white' }
+    });
 
     try {
       const response = await fetch("/api/sign", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contractId,
           title: "Contrato de Guerra - ExtraJus",
           content: editor.getHTML(),
-          signers: signers.filter((s) => s.email && s.name),
+          signers: validSigners,
         }),
       });
 
       const data = await response.json();
       if (data.success) {
-        alert(`Sucesso! Documento enviado para assinatura. ID: ${data.documentId}`);
+        toast.success("Pacto Selado. Os signatários foram convocados.", { id: ritualToast });
         setOpen(false);
       } else {
-        alert(`Erro ao selar pacto: ${data.error}`);
+        toast.error(`Falha no Ritual: ${data.error}`, { id: ritualToast });
       }
     } catch (e) {
-      alert("Falha crítica na comunicação com o servidor de rituais.");
+      toast.error("Erro na rede neural de selamento.", { id: ritualToast });
     } finally {
       setIsSending(false);
     }
@@ -76,105 +91,121 @@ export function SignModal() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button size="small" className="h-7 rounded-full bg-orange-600 hover:bg-orange-700 text-white font-black text-[9px] uppercase tracking-widest px-4 shadow-lg shadow-orange-600/20 gap-2 transition-all group">
-            <FileSignature size={12} className="transition-transform group-hover:scale-110" />
-            <span>Selar Pacto</span>
+          <Button className="h-8 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-black hover:opacity-90 font-black text-[8px] uppercase tracking-wider px-4 shadow-2xl transition-all active:scale-95 flex items-center gap-2 border-none">
+            <Fingerprint size={12} />
+            Selar Pacto
           </Button>
         }
       />
       
-      <DialogContent className="sm:max-w-[450px] bg-black/90 backdrop-blur-2xl border-white/5 text-white rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] p-0 overflow-hidden">
-        <div className="relative p-8">
-          {/* Subtle Ambient Glow inside modal */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-orange-600/10 blur-[60px] rounded-full pointer-events-none" />
+      <DialogContent className="sm:max-w-[480px] bg-[#09090b] border-white/5 text-white rounded-3xl shadow-[0_0_80px_rgba(0,0,0,0.9)] p-0 overflow-hidden ring-1 ring-white/10 animate-in zoom-in-95 duration-300">
+        <div className="relative p-0 flex flex-col h-full max-h-[90vh]">
+          {/* Top Decorative bar */}
+          <div className="h-1.5 w-full bg-gradient-to-r from-transparent via-orange-600 to-transparent opacity-50" />
           
-          <DialogHeader className="mb-8">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl bg-orange-600/10 flex items-center justify-center border border-orange-600/20 shadow-lg shadow-orange-600/5">
-                <ShieldCheck className="text-orange-500" size={20} />
-              </div>
-              <div>
-                <DialogTitle className="text-xs font-black uppercase tracking-[0.3em] text-orange-500">Ritual de Selamento</DialogTitle>
-                <DialogDescription className="text-[10px] font-medium text-zinc-500 uppercase tracking-widest mt-0.5">
-                  Consagração de validade jurídica via Assinafy
-                </DialogDescription>
-              </div>
-            </div>
-          </DialogHeader>
-          
-          <div className="space-y-6 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-            {signers.map((signer, index) => (
-              <div key={index} className="relative group space-y-4 p-5 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-orange-500/20 transition-all duration-500">
-                <div className="flex justify-between items-center mb-1">
-                  <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[8px] font-black text-zinc-500 border border-white/5">
-                      {index + 1}
-                    </div>
-                    <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Signatário</span>
-                  </div>
-                  {signers.length > 1 && (
-                    <Button 
-                      variant="ghost" 
-                      onClick={() => removeSigner(index)} 
-                      className="h-6 w-6 p-0 text-zinc-600 hover:text-red-500 hover:bg-red-500/10 rounded-lg"
-                    >
-                      <Trash2 size={12} />
-                    </Button>
-                  )}
+          <div className="p-8 pb-4 flex flex-col gap-8">
+            <DialogHeader className="text-center sm:text-left">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <DialogTitle className="text-xl font-black tracking-tighter italic flex items-center gap-2">
+                    <span className="text-orange-500">Pacto</span> ExtraJus
+                  </DialogTitle>
+                  <DialogDescription className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">
+                    Defina os guardiões que selarão este ritual.
+                  </DialogDescription>
                 </div>
+                <div className="px-3 py-1.5 rounded-full bg-orange-600/5 border border-orange-500/20 flex items-center gap-2 self-start sm:self-center shrink-0">
+                   <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
+                   <span className="text-[8px] font-black uppercase tracking-wider text-orange-500 whitespace-nowrap">Criptografia Ativa</span>
+                </div>
+              </div>
+            </DialogHeader>
 
-                <div className="grid gap-4">
-                  <div className="space-y-1.5">
-                    <Label htmlFor={`name-${index}`} className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Nome de Batismo</Label>
-                    <Input
-                      id={`name-${index}`}
-                      placeholder="Nome completo..."
-                      value={signer.name}
-                      onChange={(e) => updateSigner(index, "name", e.target.value)}
-                      className="h-10 bg-black/40 border-white/5 focus:border-orange-500/50 focus:ring-orange-500/20 rounded-xl text-xs font-bold tracking-wide placeholder:text-zinc-700 transition-all"
-                    />
+            <div className="space-y-6 overflow-y-auto pr-2 custom-scrollbar max-h-[350px]">
+              {signers.map((signer, index) => (
+                <div key={index} className="group relative">
+                  <div className="flex items-center justify-between mb-3 px-1">
+                    <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest flex items-center gap-2">
+                      <div className="w-4 h-px bg-zinc-800" /> Membro {index + 1}
+                    </span>
+                    {signers.length > 1 && (
+                      <button 
+                        onClick={() => removeSigner(index)}
+                        className="text-zinc-600 hover:text-red-500 transition-colors"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    )}
                   </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor={`email-${index}`} className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Portal de Contato (E-mail)</Label>
-                    <Input
-                      id={`email-${index}`}
-                      type="email"
-                      placeholder="email@imperio.com"
-                      value={signer.email}
-                      onChange={(e) => updateSigner(index, "email", e.target.value)}
-                      className="h-10 bg-black/40 border-white/5 focus:border-orange-500/50 focus:ring-orange-500/20 rounded-xl text-xs font-bold tracking-wide placeholder:text-zinc-700 transition-all"
-                    />
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-[8px] font-black uppercase tracking-[0.2em] text-zinc-600 ml-3">Guardião Legal</Label>
+                      <Input
+                        placeholder="Nome completo..."
+                        value={signer.name}
+                        onChange={(e) => updateSigner(index, "name", e.target.value)}
+                        className="bg-white/[0.02] border-white/5 focus:border-orange-500/40 focus:bg-white/[0.04] rounded-xl px-4 h-11 text-xs font-bold tracking-tight placeholder:text-zinc-800 transition-all focus:ring-4 focus:ring-orange-500/5"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[8px] font-black uppercase tracking-[0.2em] text-zinc-600 ml-3">E-mail Seguro</Label>
+                      <Input
+                        type="email"
+                        placeholder="email@vault.com"
+                        value={signer.email}
+                        onChange={(e) => updateSigner(index, "email", e.target.value)}
+                        className="bg-white/[0.02] border-white/5 focus:border-orange-500/40 focus:bg-white/[0.04] rounded-xl px-4 h-11 text-xs font-bold tracking-tight placeholder:text-zinc-800 transition-all focus:ring-4 focus:ring-orange-500/5"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-            
-            <Button 
-              variant="ghost" 
-              onClick={addSigner} 
-              className="w-full h-12 border-2 border-dashed border-white/5 hover:border-orange-500/30 hover:bg-orange-500/5 rounded-2xl gap-3 transition-all group"
-            >
-              <UserPlus size={16} className="text-zinc-500 group-hover:text-orange-500 transition-colors" />
-              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-orange-500">Adicionar Signatário</span>
-            </Button>
+              ))}
+              
+              <button 
+                onClick={addSigner}
+                className="w-full py-4 rounded-xl border border-dashed border-white/5 hover:border-orange-500/20 hover:bg-white/[0.01] transition-all flex items-center justify-center gap-3 group"
+              >
+                <div className="w-6 h-6 rounded-full bg-zinc-900 flex items-center justify-center border border-white/5 group-hover:border-orange-500/30 transition-all">
+                  <Plus size={12} className="text-zinc-600 group-hover:text-orange-500" />
+                </div>
+                <span className="text-[10px] font-bold text-zinc-600 group-hover:text-zinc-400 uppercase tracking-widest">Expandir Protocolo</span>
+              </button>
+            </div>
           </div>
 
-          <DialogFooter className="mt-8 pt-6 border-t border-white/5">
-            <Button 
-              onClick={handleSign} 
-              disabled={isSending}
-              className="w-full h-14 bg-orange-600 hover:bg-orange-700 text-white font-black rounded-2xl gap-3 shadow-xl shadow-orange-600/20 transition-all active:scale-[0.98] relative overflow-hidden group"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:animate-shimmer" />
-              {isSending ? (
-                <span className="text-[10px] uppercase tracking-[0.3em] animate-pulse">Selando Pacto...</span>
-              ) : (
-                <>
-                  <Send size={18} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-                  <span className="text-[11px] uppercase tracking-[0.3em]">Disparar Selamento</span>
-                </>
-              )}
-            </Button>
+          <DialogFooter className="p-8 pt-2 mt-auto">
+            <div className="w-full flex flex-col gap-6">
+              <div className="flex items-center justify-between text-[9px] font-bold text-zinc-500 uppercase tracking-[0.2em] px-1 mt-6">
+                 <span className="flex items-center gap-2"><ShieldCheck size={12} className="text-orange-500" /> Validado AES-256</span>
+                 <span className="flex items-center gap-2"><Zap size={12} className="text-blue-500" /> Despacho Instantâneo</span>
+              </div>
+
+              <Button 
+                onClick={handleSign}
+                disabled={isSending}
+                className={cn(
+                  "w-full h-16 rounded-[1.25rem] font-black text-xs uppercase tracking-[0.4em] transition-all relative overflow-hidden group",
+                  isSending 
+                    ? "bg-zinc-800 text-zinc-500 cursor-not-allowed" 
+                    : "bg-white text-black hover:bg-orange-500 hover:text-white shadow-[0_20px_40px_rgba(0,0,0,0.4)]"
+                )}
+              >
+                {isSending ? (
+                  <span className="flex items-center gap-3 animate-pulse">
+                    Consagrando...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-3">
+                    Selar Pacto <Send size={16} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                  </span>
+                )}
+                {/* Glow effect on hover */}
+                {!isSending && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-600/0 via-orange-600/20 to-orange-600/0 -translate-x-full group-hover:animate-shimmer" />
+                )}
+              </Button>
+            </div>
           </DialogFooter>
         </div>
       </DialogContent>

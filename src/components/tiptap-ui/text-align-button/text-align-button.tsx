@@ -97,6 +97,7 @@ export const TextAlignButton = forwardRef<
       (event: React.MouseEvent<HTMLButtonElement>) => {
         onClick?.(event)
         if (event.defaultPrevented) return
+        event.preventDefault()
         handleTextAlign()
       },
       [handleTextAlign, onClick]

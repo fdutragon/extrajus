@@ -182,39 +182,39 @@ export default async function DashboardPage() {
           <div className="sticky top-0 space-y-4">
             <h2 className="text-sm font-bold uppercase tracking-widest text-zinc-500 px-1">Inteligência</h2>
 
-            <div className="bg-zinc-950 dark:bg-[#09090b] border border-zinc-800 rounded-xl p-6 relative overflow-hidden group shadow-2xl">
+            <div className="bg-white dark:bg-[#09090b] border border-zinc-200/50 dark:border-white/5 rounded-xl p-6 relative overflow-hidden group shadow-sm hover:shadow-xl transition-all duration-500">
               {/* Ambient Glow */}
-              <div className="absolute top-0 right-0 w-40 h-40 bg-orange-600/10 blur-[80px] rounded-full -mr-20 -mt-20 group-hover:bg-orange-600/20 transition-all duration-1000" />
+              <div className="absolute top-0 right-0 w-40 h-40 bg-orange-600/5 dark:bg-orange-600/10 blur-[80px] rounded-full -mr-20 -mt-20 group-hover:bg-orange-600/10 dark:group-hover:bg-orange-600/20 transition-all duration-1000" />
 
               <div className="relative z-10 space-y-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center border border-orange-500/20 shadow-inner">
-                    <Sparkles size={20} className="text-orange-500 animate-pulse" />
+                  <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center border border-orange-500/20 shadow-inner text-orange-500">
+                    <Sparkles size={20} className="animate-pulse" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-white tracking-tight">Lilith AI Insights</h3>
-                    <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Priority Analysis</p>
+                    <h3 className="text-sm font-bold text-zinc-900 dark:text-white tracking-tight">Lilith AI Insights</h3>
+                    <p className="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-widest font-bold">Priority Analysis</p>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="p-3 rounded-lg bg-white/5 border border-white/5 hover:border-orange-500/30 transition-all cursor-help group/item">
+                  <div className="p-3 rounded-lg bg-zinc-50 dark:bg-white/5 border border-zinc-100 dark:border-white/5 hover:border-orange-500/30 transition-all cursor-help group/item">
                     <div className="flex items-center gap-2 mb-1">
                       <Zap size={12} className="text-orange-500" />
                       <span className="text-[10px] font-black uppercase text-orange-500">Capacidade</span>
                     </div>
-                    <p className="text-[12px] text-zinc-400 leading-relaxed group-hover/item:text-zinc-200 transition-colors">
-                      Você ainda possui <span className="text-white font-bold">{profile?.credits || 0} créditos</span> de ritual. Tempo de resposta médio: <span className="text-white font-bold">4.2s</span>.
+                    <p className="text-[12px] text-zinc-600 dark:text-zinc-400 leading-relaxed group-hover/item:text-zinc-900 dark:group-hover/item:text-zinc-200 transition-colors">
+                      Você ainda possui <span className="text-zinc-900 dark:text-white font-bold">{profile?.credits || 0} créditos</span> de ritual. Tempo de resposta médio: <span className="text-zinc-900 dark:text-white font-bold">4.2s</span>.
                     </p>
                   </div>
 
-                  <div className="p-3 rounded-lg bg-white/5 border border-white/5 hover:border-purple-500/30 transition-all cursor-help group/item">
+                  <div className="p-3 rounded-lg bg-zinc-50 dark:bg-white/5 border border-zinc-100 dark:border-white/5 hover:border-purple-500/30 transition-all cursor-help group/item">
                     <div className="flex items-center gap-2 mb-1">
                       <TrendingUp size={12} className="text-purple-500" />
                       <span className="text-[10px] font-black uppercase text-purple-500">Expansão</span>
                     </div>
-                    <p className="text-[12px] text-zinc-400 leading-relaxed group-hover/item:text-zinc-200 transition-colors">
-                      O seu arsenal conta com <span className="text-white font-bold">{templateCount || 0} modelos</span> de alta performance prontos para forja imediata.
+                    <p className="text-[12px] text-zinc-600 dark:text-zinc-400 leading-relaxed group-hover/item:text-zinc-900 dark:group-hover/item:text-zinc-200 transition-colors">
+                      O seu arsenal conta com <span className="text-zinc-900 dark:text-white font-bold">{templateCount || 0} modelos</span> de alta performance prontos para forja imediata.
                     </p>
                   </div>
                 </div>

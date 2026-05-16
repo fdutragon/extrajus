@@ -1,6 +1,5 @@
 import { Shield } from "lucide-react";
 import Link from "next/link";
-import { BrandSVG } from "@/components/brand-svg";
 
 export default function AuthLayout({
   children,
@@ -13,8 +12,7 @@ export default function AuthLayout({
         <div className="absolute inset-0 bg-orange-600/5 dark:bg-orange-600/10 blur-[100px] rounded-full -translate-x-1/2 -translate-y-1/2" />
         
         <Link href="/" className="flex items-center gap-1.5 relative z-10 group">
-          <BrandSVG className="w-10 h-10" />
-          <span className="text-2xl font-black tracking-[-0.08em] uppercase dark:text-white text-zinc-900">ExtraJus</span>
+          <span className="text-xl font-bold tracking-tight text-orange-500 uppercase italic drop-shadow-[0_0_15px_rgba(249,115,22,0.4)]">ExtraJus</span>
         </Link>
 
         <div className="relative z-10">

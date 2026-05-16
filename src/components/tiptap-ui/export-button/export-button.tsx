@@ -11,19 +11,55 @@ export function ExportButton() {
   const [isExporting, setIsExporting] = useState(false)
 
   const handleExport = async () => {
-    const editorElement = document.querySelector(".notion-like-editor")
+    // Select the actual content area
+    const editorElement = document.querySelector(".notion-like-editor-content") as HTMLElement
     if (!editorElement) {
-      toast.error("Editor não encontrado para exportação.")
+      toast.error("Arsenal não encontrado para exportação.")
       return
     }
 
     setIsExporting(true)
+    const exportToast = toast.loading("Selando documento para exportação...", {
+      style: { background: '#09090b', border: '1px solid rgba(255,255,255,0.05)', color: 'white' }
+    });
+
     try {
-      const canvas = await html2canvas(editorElement as HTMLElement, {
+      // Create a clone to modify styles for export without flickering the UI
+      const canvas = await html2canvas(editorElement, {
         scale: 2,
         useCORS: true,
         logging: false,
         backgroundColor: "#ffffff",
+        onclone: (clonedDoc) => {
+          const el = clonedDoc.querySelector(".notion-like-editor-content") as HTMLElement
+          if (el) {
+            el.style.backgroundColor = "white"
+            el.style.color = "black"
+            el.style.padding = "60px"
+            
+            // Force basic colors for all children to avoid html2canvas parsing errors (lab, oklch)
+            const allElements = el.querySelectorAll("*")
+            allElements.forEach((child: any) => {
+              const computed = window.getComputedStyle(child)
+              
+              // If the element has a color using modern functions, fallback to black/basic
+              // html2canvas fails on 'lab', 'oklch', etc.
+              child.style.color = "black"
+              
+              if (computed.backgroundColor !== "rgba(0, 0, 0, 0)" && computed.backgroundColor !== "transparent") {
+                 // Keep backgrounds but simplify them if they are complex
+                 if (computed.backgroundColor.includes("oklch") || computed.backgroundColor.includes("lab")) {
+                   child.style.backgroundColor = "#f4f4f5" // Simple zinc fallback
+                 }
+              }
+
+              // Remove modern shadows/filters that might use unsupported colors
+              child.style.boxShadow = "none"
+              child.style.textShadow = "none"
+              child.style.filter = "none"
+            })
+          }
+        }
       })
 
       const imgData = canvas.toDataURL("image/png")
@@ -33,12 +69,12 @@ export function ExportButton() {
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width
 
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight)
-      pdf.save(`extrajus-contrato-${new Date().getTime()}.pdf`)
+      pdf.save(`extrajus-pacto-${new Date().getTime()}.pdf`)
       
-      toast.success("Documento selado e exportado com sucesso.")
+      toast.success("Documento selado e exportado com sucesso.", { id: exportToast })
     } catch (error) {
       console.error("Export error:", error)
-      toast.error("Falha na exportação do ritual.")
+      toast.error("Falha na exportação do ritual.", { id: exportToast })
     } finally {
       setIsExporting(false)
     }
@@ -48,13 +84,17 @@ export function ExportButton() {
     <Button
       variant="ghost"
       size="sm"
-      className="h-8 gap-2 px-3 text-zinc-500 hover:text-zinc-900 dark:hover:text-white rounded-xl transition-all"
+      className="h-8 gap-2 px-4 text-zinc-500 hover:text-white dark:hover:bg-white/5 rounded-full transition-all group border border-transparent hover:border-white/5 flex items-center justify-center"
       onClick={handleExport}
       disabled={isExporting}
     >
-      {isExporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
-      <span className="text-[10px] font-black uppercase tracking-widest">
-        {isExporting ? "Selando..." : "Exportar"}
+      {isExporting ? (
+        <Loader2 size={12} className="animate-spin text-orange-500" />
+      ) : (
+        <Download size={12} className="transition-transform" />
+      )}
+      <span className="text-[9px] font-black uppercase tracking-[0.2em] leading-none">
+        {isExporting ? "Exportando" : "Baixar"}
       </span>
     </Button>
   )

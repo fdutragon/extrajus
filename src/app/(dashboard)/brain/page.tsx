@@ -26,6 +26,8 @@ const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
   ssr: false,
 });
 
+import { forceCollide } from "d3-force";
+
 export default function BrainPage() {
   const [selectedNode, setSelectedNode] = useState<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -84,7 +86,7 @@ export default function BrainPage() {
     nodes.push({ 
       id: "core", 
       name: data.profile?.full_name?.toUpperCase() || "LILITH CORE", 
-      val: 25, 
+      val: 10, 
       group: "core", 
       color: "#f97316" 
     });
@@ -94,7 +96,7 @@ export default function BrainPage() {
       nodes.push({
         id: c.id,
         name: c.title,
-        val: 15,
+        val: 4,
         group: "contract",
         color: "#a855f7",
         status: c.status
@@ -108,7 +110,7 @@ export default function BrainPage() {
       nodes.push({
         id: sigId,
         name: s.signer_name,
-        val: 10,
+        val: 3,
         group: "signer",
         color: "#60a5fa",
         status: s.status
@@ -121,10 +123,29 @@ export default function BrainPage() {
     return { nodes, links };
   }, [data]);
 
+  const fgRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (fgRef.current) {
+      // Increase repulsion between nodes (negative value)
+      fgRef.current.d3Force("charge").strength(-800);
+      // Increase distance between connected nodes
+      fgRef.current.d3Force("link").distance(180);
+      // Add a slight collision force to prevent overlap
+      fgRef.current.d3Force("collide", forceCollide(30));
+
+      // Initial Zoom and Center
+      setTimeout(() => {
+        fgRef.current.zoom(6, 1000);
+        fgRef.current.centerAt(0, 0, 1000);
+      }, 500);
+    }
+  }, [graphData]);
+
   if (loading) return <div className="p-20 text-center text-zinc-500 uppercase font-black text-xs animate-pulse">Invocando Sinapses...</div>
 
   return (
-    <div className="flex flex-col space-y-6 animate-in fade-in duration-700 min-h-[85vh]">
+    <div className="flex flex-col space-y-10 animate-in fade-in duration-700 min-h-[85vh]">
       {/* Header Area */}
       <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-zinc-200/50 dark:border-white/5 pb-6">
         <div className="space-y-3">
@@ -146,7 +167,7 @@ export default function BrainPage() {
         </div>
       </div>
 
-      <div className="flex-1 flex gap-4 min-h-0">
+      <div className="flex-1 flex gap-8 min-h-0">
         {/* Main Graph Island */}
         <div 
           ref={containerRef}
@@ -166,11 +187,12 @@ export default function BrainPage() {
           </div>
 
           <ForceGraph2D
+            ref={fgRef}
             graphData={graphData}
             width={dimensions.width}
             height={dimensions.height}
             backgroundColor="transparent"
-            nodeRelSize={6}
+            nodeRelSize={4}
             nodeAutoColorBy="group"
             linkDirectionalParticles={2}
             linkDirectionalParticleSpeed={0.005}
@@ -195,7 +217,7 @@ export default function BrainPage() {
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-                ctx.fillText(label, node.x, node.y + (node.val / 2) + 8);
+                ctx.fillText(label, node.x, node.y + (node.val / 2) + 6);
               }
             }}
             onNodeClick={(node) => setSelectedNode(node)}

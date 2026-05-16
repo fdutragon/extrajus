@@ -33,7 +33,7 @@ export function NotionEditorHeader() {
   }
 
   return (
-    <header className="notion-like-editor-header fixed top-0 left-0 w-full h-11 border-b border-zinc-200/50 dark:border-white/5 bg-white/40 dark:bg-black/40 backdrop-blur-md flex items-center justify-between px-4 z-[100] transition-all hover:bg-white/60 dark:hover:bg-black/60">
+    <header className="notion-like-editor-header fixed top-0 left-0 w-full h-11 border-b border-border bg-background/40 dark:bg-black/40 backdrop-blur-md flex items-center justify-between px-4 z-[100] transition-all hover:bg-background/60 dark:hover:bg-black/60">
       {/* Left: Navigation & Branding */}
       <div className="flex items-center gap-3">
         <Link href="/dashboard">
@@ -43,7 +43,7 @@ export function NotionEditorHeader() {
         </Link>
         <div className="flex items-baseline gap-2 group cursor-default">
           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-orange-600 group-hover:drop-shadow-[0_0_8px_rgba(234,88,12,0.5)] transition-all">Cânone</span>
-          <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-widest opacity-50">v2.4.0</span>
+          <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest opacity-60">v2.4.0</span>
         </div>
         
         <Separator orientation="vertical" className="h-4 mx-1 opacity-20" />
@@ -58,7 +58,7 @@ export function NotionEditorHeader() {
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-3 group cursor-default">
         <div className="w-1 h-4 bg-orange-600/20 group-hover:bg-orange-600 transition-all rounded-full" />
         <div className="flex items-center gap-2">
-          <FileText size={12} className="text-zinc-400 group-hover:text-orange-500 transition-colors" />
+          <FileText size={12} className="text-muted-foreground group-hover:text-orange-500 transition-colors" />
           <span className="text-[11px] font-black uppercase tracking-[0.2em] opacity-80 group-hover:opacity-100 transition-opacity">Contrato_Imperial_Alpha.docx</span>
         </div>
         <div className="w-1 h-4 bg-orange-600/20 group-hover:bg-orange-600 transition-all rounded-full" />
@@ -66,7 +66,7 @@ export function NotionEditorHeader() {
 
       {/* Right: Collaboration & The Ritual */}
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2 pr-2 border-r border-zinc-200/50 dark:border-white/5">
+        <div className="flex items-center gap-2 pr-2 border-r border-border">
           <Button 
             variant="ghost" 
             size="sm" 

@@ -46,9 +46,7 @@ export const UiState = Extension.create<UiState>({
   name: "uiState",
 
   addStorage() {
-    return {
-      uiState: { ...defaultUiState },
-    }
+    return { ...defaultUiState }
   },
 
   addCommands(): any {

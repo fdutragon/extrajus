@@ -84,6 +84,7 @@ export const ResetAllFormattingButton = forwardRef<
       (event: React.MouseEvent<HTMLButtonElement>) => {
         onClick?.(event)
         if (event.defaultPrevented) return
+        event.preventDefault()
         handleResetFormatting()
       },
       [handleResetFormatting, onClick]

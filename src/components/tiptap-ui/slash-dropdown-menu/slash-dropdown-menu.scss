@@ -1,11 +1,17 @@
 :root {
   --tt-slash-decoration-bg-color: var(--tt-gray-light-a-100);
   --tt-slash-decoration-color: var(--tt-gray-light-a-400);
+  --tt-slash-scrollbar-thumb: oklch(0.8 0 0);
+  --tt-slash-scrollbar-hover: oklch(0.7 0 0);
+  --tt-slash-scrollbar-track: oklch(0.96 0 0);
 }
 
 .dark {
   --tt-slash-decoration-bg-color: var(--tt-gray-dark-a-100);
   --tt-slash-decoration-color: var(--tt-gray-dark-a-400);
+  --tt-slash-scrollbar-thumb: oklch(0.3 0 0);
+  --tt-slash-scrollbar-hover: oklch(0.4 0 0);
+  --tt-slash-scrollbar-track: oklch(0.1 0 0);
 }
 
 span.tiptap-slash-decoration {
@@ -20,6 +26,30 @@ span.tiptap-slash-decoration::after {
 
 span.tiptap-slash-decoration.is-empty::after {
   content: attr(data-decoration-content);
+}
+
+.tiptap-slash-card {
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--tt-slash-scrollbar-track);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--tt-slash-scrollbar-thumb);
+    border-radius: 10px;
+    transition: background 0.2s ease;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--tt-slash-scrollbar-hover);
+  }
 }
 
 .tiptap-slash-card-body {

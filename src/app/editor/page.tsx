@@ -31,7 +31,7 @@ import { UserPlus, Check } from "lucide-react"
 import { NotionEditor } from "@/components/tiptap-templates/notion-like/notion-like-editor"
 import { SignModal } from "@/components/tiptap-ui/sign-modal/sign-modal"
 import { CollaborationUsers } from "@/components/tiptap-templates/notion-like/notion-like-editor-collaboration-users"
-import { ThemeToggle } from "@/components/tiptap-templates/notion-like/notion-like-editor-theme-toggle"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { NotionToolbar } from "@/components/tiptap-templates/notion-like/notion-like-editor-toolbar"
 import { cn } from "@/lib/utils"
 

@@ -204,10 +204,15 @@
     width: 8px;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-zinc-950;
+    background: var(--background);
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-zinc-800 hover:bg-zinc-700 transition-colors;
+    background: var(--border);
+    border-radius: 4px;
+    border: 2px solid var(--background);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
   }
 }
 
