@@ -157,7 +157,7 @@ function InviteButton({ room }: { room: string }) {
       size="sm" 
       className={cn(
         "h-8 gap-2 px-4 rounded-full transition-all font-black text-[9px] uppercase tracking-widest border border-transparent",
-        copied ? "text-emerald-500 bg-emerald-500/5 border-emerald-500/10" : "text-zinc-500 hover:text-orange-500 hover:bg-orange-500/5 hover:border-orange-500/10"
+        copied ? "text-emerald-500 bg-emerald-500/5 border-emerald-500/10" : "text-muted-foreground hover:text-primary hover:bg-primary/5 hover:border-primary/10"
       )}
       onClick={handleInvite}
     >
@@ -188,32 +188,32 @@ export interface EditorProviderProps {
  */
 export function LoadingSpinner({ text = "Invocando Ritual..." }: { text?: string }) {
   return (
-    <div className="fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-white dark:bg-[#050505] overflow-hidden">
+    <div className="fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-background overflow-hidden">
       {/* Background Ambience */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(234,88,12,0.05),transparent_70%)] animate-pulse duration-[4000ms]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(var(--primary)/0.05),transparent_70%)] animate-pulse duration-[4000ms]" />
       
       <div className="relative flex flex-col items-center gap-8 animate-in fade-in zoom-in duration-1000">
         {/* The Portal (Logo) */}
         <div className="relative group">
-          <div className="absolute -inset-8 bg-orange-600/20 blur-[50px] rounded-full animate-pulse group-hover:bg-orange-600/30 transition-all duration-700" />
+          <div className="absolute -inset-8 bg-primary/20 blur-[50px] rounded-full animate-pulse transition-all duration-700" />
           <div className="relative flex flex-col items-center">
-            <span className="text-[24px] font-black uppercase tracking-[0.6em] text-orange-600 drop-shadow-[0_0_20px_rgba(234,88,12,0.5)]">
+            <span className="text-[24px] font-black uppercase tracking-[0.6em] text-primary">
               ExtraJus
             </span>
-            <div className="h-px w-full bg-gradient-to-r from-transparent via-orange-500/50 to-transparent mt-2 scale-x-0 animate-in slide-in-from-left duration-1000 fill-mode-forwards" style={{ animationDelay: '500ms' }} />
+            <div className="h-px w-full bg-gradient-to-r from-transparent via-primary/50 to-transparent mt-2 scale-x-0 animate-in slide-in-from-left duration-1000 fill-mode-forwards" style={{ animationDelay: '500ms' }} />
           </div>
         </div>
 
         {/* Loading Message */}
         <div className="flex flex-col items-center gap-3">
-          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500 animate-pulse">
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground animate-pulse">
             {text}
           </span>
           <div className="flex gap-1.5">
             {[0, 1, 2].map((i) => (
               <div 
                 key={i} 
-                className="w-1 h-1 rounded-full bg-orange-600/40 animate-bounce" 
+                className="w-1 h-1 rounded-full bg-primary/40 animate-bounce" 
                 style={{ animationDelay: `${i * 150}ms`, animationDuration: '1000ms' }}
               />
             ))}
@@ -322,7 +322,7 @@ export function EditorLayout() {
   }, [])
 
   return (
-    <div className="flex flex-col h-screen bg-white dark:bg-[#08080a] text-foreground overflow-hidden relative font-sans selection:bg-orange-500/30">
+    <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden relative font-sans selection:bg-primary/30">
       
       {/* Background Ornaments */}
       <div className="absolute top-12 left-12 w-24 h-px bg-foreground/[0.03]" />
@@ -331,16 +331,16 @@ export function EditorLayout() {
       <div className="absolute bottom-12 right-12 w-px h-24 bg-foreground/[0.03]" />
 
       {/* Sovereign Header - The Command Monolith */}
-      <header className="fixed top-0 left-0 w-full h-12 border-b border-border bg-white/60 dark:bg-[#08080a]/60 backdrop-blur-2xl flex items-center justify-between px-6 z-[100] transition-all duration-500 hover:bg-white/80 dark:hover:bg-[#08080a]/80 group">
+      <header className="fixed top-0 left-0 w-full h-12 border-b border-border bg-background/60 backdrop-blur-2xl flex items-center justify-between px-6 z-[100] transition-all duration-500 hover:bg-background/80 group">
         <div className="flex items-center gap-6">
           <Link href="/dashboard">
-            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-orange-500/10 hover:text-orange-500 rounded-xl transition-all duration-300 group/back">
+            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-300 group/back">
               <ChevronLeft size={18} className="group-hover/back:-translate-x-0.5 transition-transform" />
             </Button>
           </Link>
           <div className="flex flex-col">
             <div className="flex items-baseline gap-2 group/brand cursor-default">
-              <span className="text-[11px] font-black uppercase tracking-[0.4em] text-orange-600 drop-shadow-[0_0_10px_rgba(234,88,12,0.3)] group-hover/brand:drop-shadow-[0_0_15px_rgba(234,88,12,0.6)] transition-all">ExtraJus</span>
+              <span className="text-[11px] font-black uppercase tracking-[0.4em] text-primary transition-all">ExtraJus</span>
               <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 truncate max-w-[120px]">{fileName}.docx</span>
             </div>
           </div>
@@ -359,11 +359,11 @@ export function EditorLayout() {
           </div>
 
           <div 
-            className="relative flex items-center justify-center px-3 h-10 rounded-none cursor-default group/ia transition-all overflow-hidden border border-orange-500/10 gap-2"
+            className="relative flex items-center justify-center px-3 h-10 rounded-none cursor-default group/ia transition-all overflow-hidden border border-primary/10 gap-2"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-600/5 to-orange-950/10 transition-all" />
-            <BrainCircuit size={14} className="text-orange-500/60 relative z-10 animate-pulse" />
-            <span className="text-[12px] font-black uppercase tracking-[0.2em] relative z-10 text-orange-500/80">IA</span>
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 transition-all" />
+            <BrainCircuit size={14} className="text-primary/60 relative z-10 animate-pulse" />
+            <span className="text-[12px] font-black uppercase tracking-[0.2em] relative z-10 text-primary/80">IA</span>
           </div>
 
           {/* Right Wing: Refinement & Style */}
@@ -398,21 +398,21 @@ export function EditorLayout() {
         
         {/* Fixed Left: O Códice (The War Library) */}
         <div className="absolute left-6 top-12 z-40 hidden lg:block animate-in slide-in-from-left-12 duration-1000 mt-6">
-          <div className="w-96 h-[calc(100vh-96px)] bg-card border border-border rounded-[2rem] shadow-xl overflow-hidden flex flex-col group/library">
+          <div className="w-96 h-[calc(100vh-96px)] bg-card border border-border rounded-[2rem] overflow-hidden flex flex-col group/library">
             
             <div className="p-8 pb-4">
               <div className="flex items-center gap-2 mb-6 opacity-40 group-hover/library:opacity-100 transition-opacity">
-                <FileText size={12} className="text-orange-500" />
+                <FileText size={12} className="text-primary" />
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] truncate">Nexus_Imperial.ext</span>
               </div>
               
               <div className="flex items-center gap-4 mb-2">
-                <div className="w-10 h-10 rounded-2xl bg-orange-500/10 flex items-center justify-center border border-orange-500/20 shadow-lg shadow-orange-500/5">
-                  <Library size={20} className="text-orange-500" />
+                <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm">
+                  <Library size={20} className="text-primary" />
                 </div>
                 <div>
                   <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Biblioteca</h3>
-                  <p className="text-[8px] font-bold text-orange-500/60 uppercase tracking-widest">Arsenal Ativo</p>
+                  <p className="text-[8px] font-bold text-primary/60 uppercase tracking-widest">Arsenal Ativo</p>
                 </div>
               </div>
             </div>
@@ -425,16 +425,16 @@ export function EditorLayout() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between border-b border-border pb-2">
                       <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.25em]">Seus Pactos</p>
-                      <span className="text-[10px] grayscale opacity-50 text-orange-500">🛡️</span>
+                      <span className="text-[10px] grayscale opacity-50 text-primary">🛡️</span>
                     </div>
                     <div className="space-y-1">
                       {userContracts.length > 0 ? userContracts.map(contract => (
-                        <Link key={contract.id} href={`/editor?room=${contract.id}`} className="w-full text-left text-[11px] py-2.5 px-3 hover:bg-orange-500/10 hover:text-orange-500 rounded-xl transition-all duration-300 group/item flex items-center justify-between font-bold text-foreground/70">
+                        <Link key={contract.id} href={`/editor?room=${contract.id}`} className="w-full text-left text-[11px] py-2.5 px-3 hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-300 group/item flex items-center justify-between font-bold text-foreground/70">
                           <span className="truncate">{contract.title || "Documento Sem Nome"}</span>
-                          <Zap size={10} className={cn("opacity-0 group-hover/item:opacity-100 transition-opacity", contract.status === 'signed' ? "text-emerald-500" : "text-orange-500")} />
+                          <Zap size={10} className={cn("opacity-0 group-hover/item:opacity-100 transition-opacity", contract.status === 'signed' ? "text-emerald-500" : "text-primary")} />
                         </Link>
                       )) : (
-                        <p className="text-[9px] text-zinc-600 px-3 py-2 italic font-medium">Nenhum pacto selado ainda...</p>
+                        <p className="text-[9px] text-muted-foreground px-3 py-2 italic font-medium">Nenhum pacto selado ainda...</p>
                       )}
                     </div>
                   </div>
@@ -447,12 +447,12 @@ export function EditorLayout() {
                     </div>
                     <div className="space-y-1">
                       {templates.length > 0 ? templates.map(template => (
-                        <Link key={template.id} href={`/editor?template=${template.slug}`} className="w-full text-left text-[11px] py-2.5 px-3 hover:bg-orange-500/10 hover:text-orange-500 rounded-xl transition-all duration-300 group/item flex items-center justify-between font-bold text-foreground/70">
+                        <Link key={template.id} href={`/editor?template=${template.slug}`} className="w-full text-left text-[11px] py-2.5 px-3 hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-300 group/item flex items-center justify-between font-bold text-foreground/70">
                           <span className="truncate">{template.title}</span>
-                          <ArrowRight size={10} className="opacity-0 group-hover/item:opacity-100 transition-opacity text-orange-500" />
+                          <ArrowRight size={10} className="opacity-0 group-hover/item:opacity-100 transition-opacity text-primary" />
                         </Link>
                       )) : (
-                        <p className="text-[9px] text-zinc-600 px-3 py-2 italic font-medium">Carregando arsenal...</p>
+                        <p className="text-[9px] text-muted-foreground px-3 py-2 italic font-medium">Carregando arsenal...</p>
                       )}
                     </div>
                   </div>
@@ -462,7 +462,7 @@ export function EditorLayout() {
             </div>
 
             <div className="p-6 mt-auto bg-muted/50 border-t border-border">
-               <Button variant="ghost" className="w-full justify-center text-[10px] font-black uppercase tracking-widest h-10 hover:bg-orange-500/10 hover:text-orange-500 rounded-xl transition-all text-muted-foreground">
+               <Button variant="ghost" className="w-full justify-center text-[10px] font-black uppercase tracking-widest h-10 hover:bg-primary/10 hover:text-primary rounded-xl transition-all text-muted-foreground">
                  <Settings2 size={14} className="mr-2" /> Arsenal Config
                </Button>
             </div>
@@ -471,19 +471,19 @@ export function EditorLayout() {
 
         {/* Central Sanctuary - The Infinite Paper */}
         <main className="flex-1 overflow-y-auto custom-scrollbar bg-transparent pt-6 pb-6 px-4 relative z-10">
-          <div className="w-full max-w-[880px] mx-auto min-h-[calc(100vh-96px)] bg-card dark:bg-[#0c0c0e] shadow-2xl border border-border/50 dark:border-white/5 rounded-3xl p-20 md:pt-16 md:pb-20 md:px-32 relative animate-in fade-in zoom-in-95 duration-1000">
+          <div className="w-full max-w-[880px] mx-auto min-h-[calc(100vh-96px)] bg-card border border-border/50 rounded-3xl p-20 md:pt-16 md:pb-20 md:px-32 relative animate-in fade-in zoom-in-95 duration-1000">
              
              {/* Document Title Header */}
              <div className="mb-6 group/title relative">
-               <div className="absolute -left-8 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-orange-600/0 group-hover/title:bg-orange-600/20 transition-all rounded-full" />
+               <div className="absolute -left-8 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-primary/0 group-hover/title:bg-primary/20 transition-all rounded-full" />
                <input 
                  value={fileName}
                  onChange={(e) => setFileName(e.target.value)}
-                 className="w-full bg-transparent border-none text-xl md:text-2xl font-black tracking-tight focus:outline-none focus:ring-0 placeholder:text-muted-foreground/20 text-foreground"
+                 className="w-full bg-transparent border-none text-xl md:text-2xl font-black tracking-tight focus:outline-none focus:ring-0 placeholder:text-muted-foreground/20 text-foreground uppercase italic"
                  placeholder="Título do Documento..."
                />
                <div className="flex items-center gap-2 mt-0.5 opacity-0 group-hover/title:opacity-100 transition-opacity">
-                  <FileText size={8} className="text-orange-500" />
+                  <FileText size={8} className="text-primary" />
                   <span className="text-[7px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Documento Soberano • v2.4.0</span>
                </div>
              </div>
@@ -492,9 +492,9 @@ export function EditorLayout() {
              <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-3xl" />
              
              {/* Focus Light Effect */}
-             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-32 bg-orange-500/5 blur-[80px] pointer-events-none rounded-full" />
+             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-32 bg-primary/5 blur-[80px] pointer-events-none rounded-full" />
 
-             <div className="relative z-10 selection:bg-orange-500/30">
+             <div className="relative z-10 selection:bg-primary/30">
                <BubbleMenu editor={editor} />
                <EditorContentArea />
              </div>
@@ -511,13 +511,13 @@ export function EditorLayout() {
             <Tabs value={oracleTab} onValueChange={setOracleTab} className="w-full h-full flex flex-col">
               <div className="px-8 pt-8 mb-6">
                 <TabsList className="grid w-full grid-cols-3 bg-muted rounded-2xl h-11 p-1.5 border border-border">
-                  <TabsTrigger value="insights" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-orange-600/20 transition-all">
+                  <TabsTrigger value="insights" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all">
                     Insights
                   </TabsTrigger>
-                  <TabsTrigger value="data" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-orange-600/20 transition-all">
+                  <TabsTrigger value="data" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all">
                     Data
                   </TabsTrigger>
-                  <TabsTrigger value="oraculo" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-orange-600/20 transition-all">
+                  <TabsTrigger value="oraculo" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all">
                     Oráculo
                   </TabsTrigger>
                 </TabsList>
@@ -526,8 +526,8 @@ export function EditorLayout() {
               <div className="flex-1 overflow-hidden px-8 pb-8">
                 <TabsContent value="insights" className="h-full m-0 flex flex-col space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-2xl bg-orange-500/10 flex items-center justify-center border border-orange-500/20 shadow-lg shadow-orange-500/5">
-                      <BrainCircuit size={20} className="text-orange-500 animate-pulse" />
+                    <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm">
+                      <BrainCircuit size={20} className="text-primary animate-pulse" />
                     </div>
                     <div>
                       <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Alquimia AI</h3>
@@ -540,24 +540,24 @@ export function EditorLayout() {
 
                   <div className="space-y-8">
                     <div className="space-y-4">
-                      <h4 className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.25em] border-l-2 border-orange-600 pl-3">Score de Dominação</h4>
+                      <h4 className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.25em] border-l-2 border-primary pl-3">Score de Dominação</h4>
                       <div className="flex items-baseline gap-3">
                         <div className="text-5xl font-black tracking-tighter text-foreground">92</div>
-                        <div className="text-xl font-bold text-orange-600">%</div>
+                        <div className="text-xl font-bold text-primary">%</div>
                       </div>
                       <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
-                        <div className="w-[92%] h-full bg-gradient-to-r from-orange-600 to-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.4)]" />
+                        <div className="w-[92%] h-full bg-gradient-to-r from-primary to-primary/60" />
                       </div>
                       <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest flex items-center gap-2">
                         <ShieldCheck size={12} /> Contrato Inabalável
                       </p>
                       <div className="space-y-4 pt-4 border-t border-border">
                        <h4 className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.25em]">Vulnerabilidades</h4>
-                       <div className="bg-orange-500/[0.03] border border-orange-500/10 rounded-2xl p-5 space-y-4 group/card hover:border-orange-500/30 transition-all">
+                       <div className="bg-primary/[0.03] border border-primary/10 rounded-2xl p-5 space-y-4 group/card hover:border-primary/30 transition-all">
                          <p className="text-[11px] leading-relaxed italic text-muted-foreground font-medium">
                            "Detectei um flanco exposto na cláusula 7.2. Deseja realizar a blindagem estratégica?"
                          </p>
-                         <Button size="sm" className="w-full bg-orange-600 hover:bg-orange-700 text-white text-[9px] font-black uppercase tracking-widest h-9 rounded-xl shadow-lg shadow-orange-600/20 transition-all active:scale-95">
+                         <Button size="sm" className="w-full bg-primary hover:opacity-90 text-primary-foreground text-[9px] font-black uppercase tracking-widest h-9 rounded-xl transition-all active:scale-95">
                            Aplicar Blindagem
                          </Button>
                        </div>
@@ -572,27 +572,27 @@ export function EditorLayout() {
 
                 <TabsContent value="oraculo" className="h-full m-0 flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700">
                   <div className="flex-1 overflow-y-auto space-y-6 mb-4 pr-2 custom-scrollbar">
-                    <div className="relative group/lilith p-6 rounded-[2rem] bg-orange-600/[0.02] border border-orange-500/10 shadow-2xl shadow-orange-900/5 overflow-hidden transition-all hover:bg-orange-600/[0.04]">
+                    <div className="relative group/lilith p-6 rounded-[2rem] bg-primary/5 border border-primary/10 shadow-xl overflow-hidden transition-all hover:bg-primary/10">
                       {/* Aura Effect */}
-                      <div className="absolute -top-12 -right-12 w-32 h-32 bg-orange-600/10 blur-[60px] rounded-full animate-pulse" />
-                      <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-orange-600/5 blur-[40px] rounded-full" />
+                      <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/10 blur-[60px] rounded-full animate-pulse" />
+                      <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-primary/5 blur-[40px] rounded-full" />
                       
                       <div className="relative z-10">
                         <div className="flex items-center gap-3 mb-4">
                           <div className="relative">
-                            <div className="w-2 h-2 bg-orange-500 rounded-full animate-ping absolute inset-0" />
-                            <div className="w-2 h-2 bg-orange-600 rounded-full relative shadow-[0_0_10px_rgba(234,88,12,0.8)]" />
+                            <div className="w-2 h-2 bg-primary rounded-full animate-ping absolute inset-0" />
+                            <div className="w-2 h-2 bg-primary rounded-full relative shadow-sm" />
                           </div>
-                          <span className="text-[9px] font-black text-orange-500 uppercase tracking-[0.3em]">Lilith • Presença Suprema</span>
+                          <span className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">Lilith • Presença Suprema</span>
                         </div>
                         
-                        <p className="text-[12px] leading-relaxed text-zinc-300 font-medium italic mb-6">
+                        <p className="text-[12px] leading-relaxed text-muted-foreground font-medium italic mb-6">
                           &quot;Saudações, Arquiteto. Os fios deste contrato estão sob minha análise neural. Qual ordem Lilith deve executar para consolidar sua dominação hoje?&quot;
                         </p>
                         
                         <div className="flex flex-wrap gap-2">
                           {['Blindar Cláusulas', 'Analisar Riscos', 'Resumir Ritual'].map(hint => (
-                            <button key={hint} className="px-3 py-1.5 rounded-full bg-white/5 border border-white/5 text-[8px] font-black uppercase tracking-widest text-zinc-500 hover:text-orange-500 hover:border-orange-500/20 hover:bg-orange-500/5 transition-all">
+                            <button key={hint} className="px-3 py-1.5 rounded-full bg-muted border border-border text-[8px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary hover:border-primary/20 hover:bg-primary/5 transition-all">
                               {hint}
                             </button>
                           ))}
@@ -601,21 +601,21 @@ export function EditorLayout() {
                     </div>
 
                     <div className="px-4 py-8 text-center opacity-20 group">
-                      <div className="h-px w-full bg-gradient-to-r from-transparent via-zinc-500 to-transparent mb-6 scale-x-50 group-hover:scale-x-100 transition-transform duration-1000" />
-                      <Cpu size={24} className="mx-auto mb-3 text-zinc-500" />
-                      <p className="text-[8px] font-black uppercase tracking-[0.4em] text-zinc-500">Neural Sync Active</p>
+                      <div className="h-px w-full bg-gradient-to-r from-transparent via-border to-transparent mb-6 scale-x-50 group-hover:scale-x-100 transition-transform duration-1000" />
+                      <Cpu size={24} className="mx-auto mb-3 text-muted-foreground" />
+                      <p className="text-[8px] font-black uppercase tracking-[0.4em] text-muted-foreground">Neural Sync Active</p>
                     </div>
                   </div>
 
                   <div className="relative group/input mt-auto pb-2">
-                    <div className="absolute -inset-1 bg-gradient-to-b from-orange-600/20 to-transparent blur-xl opacity-0 group-hover/input:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute -inset-1 bg-gradient-to-b from-primary/20 to-transparent blur-xl opacity-0 group-hover/input:opacity-100 transition-opacity duration-500" />
                     <div className="relative">
                       <textarea 
                         placeholder="Dite sua ordem..." 
-                        className="w-full bg-[#0c0c0e] border border-white/5 rounded-2xl p-4 text-[11px] font-bold focus:outline-none focus:border-orange-500/40 min-h-[80px] max-h-[150px] resize-none placeholder:text-zinc-800 tracking-tight transition-all shadow-2xl"
+                        className="w-full bg-muted/50 border border-border rounded-2xl p-4 text-[11px] font-bold focus:outline-none focus:border-primary/40 min-h-[80px] max-h-[150px] resize-none placeholder:text-muted-foreground/50 tracking-tight transition-all shadow-sm"
                       />
                       <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                        <Button size="icon" className="h-8 w-8 bg-orange-600 hover:bg-orange-700 rounded-xl shadow-xl shadow-orange-600/20 transition-all active:scale-90 group/btn">
+                        <Button size="icon" className="h-8 w-8 bg-primary hover:opacity-90 rounded-xl shadow-lg transition-all active:scale-90 group/btn text-primary-foreground">
                           <Zap size={14} fill="white" className="group-hover:scale-110 transition-transform" />
                         </Button>
                       </div>

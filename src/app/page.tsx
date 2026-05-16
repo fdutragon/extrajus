@@ -48,12 +48,12 @@ export default function Home() {
   const graphData = useMemo(() => {
     return { 
       nodes: [
-        { id: "core", name: "LILITH CORE", val: 30, group: "core", color: "#f97316" },
-        { id: "p1", name: "Draft A-1", val: 15, group: "pro", color: "#60a5fa" },
-        { id: "p2", name: "Draft B-2", val: 15, group: "pro", color: "#60a5fa" },
-        { id: "p3", name: "Protocol X", val: 15, group: "pro", color: "#60a5fa" },
-        { id: "o1", name: "Imperial Merger", val: 20, group: "opportunity", color: "#fbbf24" },
-        { id: "o2", name: "Tech IPO", val: 18, group: "opportunity", color: "#fbbf24" },
+        { id: "core", name: "LILITH CORE", val: 30, group: "core", color: "hsl(var(--primary))" },
+        { id: "p1", name: "Draft A-1", val: 15, group: "pro", color: "hsl(var(--primary) / 0.7)" },
+        { id: "p2", name: "Draft B-2", val: 15, group: "pro", color: "hsl(var(--primary) / 0.7)" },
+        { id: "p3", name: "Protocol X", val: 15, group: "pro", color: "hsl(var(--primary) / 0.7)" },
+        { id: "o1", name: "Imperial Merger", val: 20, group: "opportunity", color: "hsl(var(--primary) / 0.4)" },
+        { id: "o2", name: "Tech IPO", val: 18, group: "opportunity", color: "hsl(var(--primary) / 0.4)" },
       ], 
       links: [
         { source: "core", target: "p1" },
@@ -67,12 +67,12 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#000] text-zinc-400 selection:bg-orange-500/30 font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-background text-muted-foreground selection:bg-primary/30 font-sans overflow-x-hidden">
       {/* Background Patterns */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(249,115,22,0.1),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,var(--primary),transparent_50%)] opacity-[0.05]" />
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.02] mix-blend-overlay" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-[0.2]" />
       </div>
 
       {/* Navigation */}
@@ -83,23 +83,23 @@ export default function Home() {
         <div className={cn(
           "max-w-5xl mx-auto flex justify-between items-center transition-all duration-300 p-2 rounded-full border",
           scrolled 
-            ? "bg-black/60 backdrop-blur-xl border-white/10 shadow-[0_0_20px_rgba(0,0,0,0.5)]" 
+            ? "bg-background/60 backdrop-blur-xl border-border shadow-lg" 
             : "bg-transparent border-transparent"
         )}>
           <div className="flex items-center gap-6 pl-4">
             <Link href="/" className="flex items-center gap-2 group">
-              <span className="text-sm font-bold tracking-tight text-white uppercase italic">ExtraJus</span>
+              <span className="text-sm font-bold tracking-tight text-foreground uppercase italic">ExtraJus</span>
             </Link>
             <div className="hidden md:flex items-center gap-6 text-[11px] font-medium uppercase tracking-wider">
-              <a href="#arsenal" className="hover:text-white transition-colors">Arsenal</a>
-              <a href="#sindicato" className="hover:text-white transition-colors">Sindicato</a>
-              <a href="#tecnologia" className="hover:text-white transition-colors">Engine</a>
+              <a href="#arsenal" className="hover:text-foreground transition-colors">Arsenal</a>
+              <a href="#sindicato" className="hover:text-foreground transition-colors">Sindicato</a>
+              <a href="#tecnologia" className="hover:text-foreground transition-colors">Engine</a>
             </div>
           </div>
           <div className="flex items-center gap-3 pr-2">
             <ThemeToggle />
             <Link href="/login">
-              <Button size="sm" className="bg-white text-black hover:bg-zinc-200 rounded-full px-5 h-8 text-[11px] font-bold uppercase tracking-wider transition-all active:scale-95 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+              <Button size="sm" className="bg-primary text-primary-foreground hover:opacity-90 rounded-full px-5 h-8 text-[11px] font-bold uppercase tracking-wider transition-all active:scale-95 shadow-sm">
                 Acessar Core
               </Button>
             </Link>
@@ -110,24 +110,24 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative pt-48 pb-32 px-6">
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/5 border border-orange-500/20 text-orange-500 text-[10px] font-bold tracking-widest uppercase mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/20 text-primary text-[10px] font-bold tracking-widest uppercase mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             <Terminal size={12} /> Lilith Engine v2.0 Online
           </div>
-          <h1 className="text-4xl md:text-7xl font-bold tracking-tighter leading-[1.1] mb-8 text-white animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
-            A nova era da <br /> <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-500">Engenharia Jurídica.</span>
+          <h1 className="text-4xl md:text-7xl font-bold tracking-tighter leading-[1.1] mb-8 text-foreground animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+            A nova era da <br /> <span className="text-transparent bg-clip-text bg-gradient-to-b from-foreground to-muted-foreground/60">Engenharia Jurídica.</span>
           </h1>
-          <p className="text-lg md:text-xl text-zinc-500 max-w-2xl mx-auto font-medium leading-relaxed mb-12 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
-            O sistema operacional definitivo para a elite. Redija, assine e monitore contratos através de uma <span className="text-white">infraestrutura de alto desempenho.</span>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed mb-12 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
+            O sistema operacional definitivo para a elite. Redija, assine e monitore contratos através de uma <span className="text-foreground">infraestrutura de alto desempenho.</span>
           </p>
           
           <div className="flex flex-col sm:flex-row justify-center gap-4 mb-24 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-700">
             <Link href="/dashboard">
-              <Button size="lg" className="bg-white text-black hover:bg-zinc-200 rounded-full px-10 h-14 text-sm font-bold uppercase tracking-wider group shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+              <Button size="lg" className="bg-primary text-primary-foreground hover:opacity-90 rounded-full px-10 h-14 text-sm font-bold uppercase tracking-wider group shadow-xl">
                 Entrar no War Room <ChevronRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
             <Link href="/editor">
-              <Button variant="outline" size="lg" className="border-white/10 bg-white/5 hover:bg-white/10 text-white rounded-full px-10 h-14 text-sm font-bold uppercase tracking-wider">
+              <Button variant="outline" size="lg" className="border-border bg-background/50 hover:bg-muted text-foreground rounded-full px-10 h-14 text-sm font-bold uppercase tracking-wider">
                 Forjar Contrato
               </Button>
             </Link>
@@ -135,10 +135,10 @@ export default function Home() {
 
           {/* Product Showcase */}
           <div className="relative max-w-5xl mx-auto animate-in fade-in zoom-in-95 duration-1000 delay-1000">
-            <div className="absolute -inset-1 bg-gradient-to-b from-orange-500/20 to-transparent rounded-[2rem] blur-2xl opacity-50" />
-            <div className="relative bg-zinc-900/50 border border-white/10 rounded-[2rem] shadow-2xl overflow-hidden aspect-[16/9] flex backdrop-blur-sm">
+            <div className="absolute -inset-1 bg-gradient-to-b from-primary/20 to-transparent rounded-[2rem] blur-2xl opacity-50" />
+            <div className="relative bg-card/50 border border-border rounded-[2rem] shadow-2xl overflow-hidden aspect-[16/9] flex backdrop-blur-sm">
                {/* Left Sidebar Mockup */}
-               <div className="w-64 border-r border-white/5 hidden md:block bg-black/40 p-6 text-left">
+               <div className="w-64 border-r border-border hidden md:block bg-muted/40 p-6 text-left">
                   <div className="flex items-center gap-2 mb-8 opacity-40">
                     <div className="w-3 h-3 rounded-full bg-red-500/50" />
                     <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
@@ -159,7 +159,7 @@ export default function Home() {
                   </div>
                </div>
                {/* Editor Mockup */}
-               <div className="flex-1 p-12 text-left relative overflow-hidden bg-black/20">
+               <div className="flex-1 p-12 text-left relative overflow-hidden bg-muted/20">
                   <div className="max-w-2xl space-y-8 opacity-80">
                     <div className="space-y-4">
                        <div className="h-10 w-3/4 bg-white/10 rounded-lg" />
@@ -168,7 +168,7 @@ export default function Home() {
                        <div className="h-4 w-2/3 bg-white/5 rounded-full" />
                     </div>
                     <div className="flex items-center gap-4 pt-4">
-                       <div className="px-3 py-1 bg-orange-500/20 border border-orange-500/40 rounded text-[9px] font-bold text-orange-500 uppercase tracking-widest">
+                       <div className="px-3 py-1 bg-primary/20 border border-primary/40 rounded text-[9px] font-bold text-primary uppercase tracking-widest">
                           Lilith AI: Blindagem Ativa
                        </div>
                     </div>
@@ -180,14 +180,14 @@ export default function Home() {
                   </div>
                   
                   {/* Floating Elements */}
-                  <div className="absolute top-1/4 right-12 bg-black/80 backdrop-blur-md border border-white/10 p-4 rounded-2xl shadow-2xl animate-float">
+                  <div className="absolute top-1/4 right-12 bg-background/80 backdrop-blur-md border border-border p-4 rounded-2xl shadow-2xl animate-float">
                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-500">
+                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
                           <MousePointer2 size={16} />
                         </div>
                         <div>
                           <p className="text-[10px] font-bold text-white uppercase tracking-tighter">Dr. Victor</p>
-                          <p className="text-[8px] text-zinc-500 uppercase tracking-widest">Editando Cláusula 12.4</p>
+                          <p className="text-[8px] text-muted-foreground uppercase tracking-widest">Editando Cláusula 12.4</p>
                         </div>
                      </div>
                   </div>
@@ -202,10 +202,10 @@ export default function Home() {
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-4">
             <div className="space-y-2">
-              <h2 className="text-3xl font-bold text-white tracking-tight italic uppercase">O Arsenal do Arquiteto</h2>
-              <p className="text-zinc-500 max-w-sm">Módulos de elite construídos para dominação jurídica absoluta.</p>
+              <h2 className="text-3xl font-bold text-foreground tracking-tight italic uppercase">O Arsenal do Arquiteto</h2>
+              <p className="text-muted-foreground max-w-sm">Módulos de elite construídos para dominação jurídica absoluta.</p>
             </div>
-            <div className="text-[10px] font-bold tracking-[0.3em] uppercase text-zinc-600">
+            <div className="text-[10px] font-bold tracking-[0.3em] uppercase text-muted-foreground">
               Mapeamento de Recursos v2
             </div>
           </div>
@@ -217,11 +217,11 @@ export default function Home() {
               title="O Cânone"
               subtitle="Editor Notional & Colaborativo"
               description="Motor de redação baseado em TipTap e Yjs. Sincronização em tempo real com cursores de elite e LegalNodes hierárquicos."
-              icon={<Layers className="w-5 h-5 text-orange-500" />}
+              icon={<Layers className="w-5 h-5 text-primary" />}
             >
-              <div className="mt-8 relative h-full w-full overflow-hidden rounded-xl bg-black/40 border border-white/5 p-4 font-mono text-[10px] text-zinc-600">
+              <div className="mt-8 relative h-full w-full overflow-hidden rounded-xl bg-muted/40 border border-border p-4 font-mono text-[10px] text-muted-foreground">
                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                     <span>LILITH_BUFFER_INIT...</span>
                  </div>
                  <div className="space-y-2 opacity-50">
@@ -230,36 +230,35 @@ export default function Home() {
                     <div className="h-4 w-3/4 bg-white/5 rounded" />
                     <p className="text-white">2. VALORES E CRÉDITOS</p>
                     <div className="h-4 w-full bg-white/5 rounded" />
-                    <p className="flex items-center gap-1">   2.1. O pagamento será feito via [ <span className="text-orange-500">variable_01</span> ]</p>
+                    <p className="flex items-center gap-1">   2.1. O pagamento será feito via [ <span className="text-primary">variable_01</span> ]</p>
                  </div>
-                 <div className="absolute bottom-4 left-4 right-4 h-10 bg-white/5 border border-white/10 rounded flex items-center px-4 gap-2">
-                    <span className="text-orange-500">/</span>
-                    <span className="text-zinc-400">Inserir Cláusula de Sigilo...</span>
+                 <div className="absolute bottom-4 left-4 right-4 h-10 bg-muted/50 border border-border rounded flex items-center px-4 gap-2">
+                    <span className="text-primary">/</span>
+                    <span className="text-muted-foreground">Inserir Cláusula de Sigilo...</span>
                  </div>
               </div>
             </BentoCard>
 
-            {/* War Room (Dashboard) */}
             <BentoCard 
               className="md:col-span-4 h-[400px]"
               title="War Room"
               subtitle="Comando Central"
               description="Monitoramento em tempo real de contratos ativos e insights neurais da Lilith."
-              icon={<Activity className="w-5 h-5 text-blue-500" />}
+              icon={<Activity className="w-5 h-5 text-primary" />}
             >
-              <div className="mt-8 space-y-4">
-                <div className="p-4 rounded-xl bg-blue-500/5 border border-blue-500/10">
-                   <p className="text-[10px] uppercase font-bold text-blue-500 mb-1">Contratos Ativos</p>
-                   <p className="text-3xl font-black text-white">42</p>
+              <div className="mt-8 space-y-3">
+                <div className="p-5 rounded-2xl bg-primary/5 border border-primary/10 transition-all hover:bg-primary/10 group/stat">
+                   <p className="text-[10px] uppercase font-black text-primary/60 mb-2 tracking-widest">Contratos Ativos</p>
+                   <div className="flex items-baseline gap-2">
+                     <p className="text-4xl font-black text-foreground tracking-tighter">42</p>
+                     <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                   </div>
                 </div>
-                <div className="p-4 rounded-xl bg-orange-500/5 border border-orange-500/10">
-                   <p className="text-[10px] uppercase font-bold text-orange-500 mb-1">Créditos de IA</p>
-                   <p className="text-3xl font-black text-white">8.4k</p>
-                </div>
-                <div className="flex items-center justify-between px-2 pt-2">
-                   <div className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                      <span className="text-[10px] uppercase font-bold text-zinc-600 italic">Sync Active</span>
+                <div className="p-5 rounded-2xl bg-muted/50 border border-border transition-all hover:border-primary/30 group/stat">
+                   <p className="text-[10px] uppercase font-black text-muted-foreground mb-2 tracking-widest">Créditos de IA</p>
+                   <div className="flex items-baseline gap-2">
+                     <p className="text-4xl font-black text-foreground tracking-tighter">8.4k</p>
+                     <span className="text-[10px] font-bold text-primary">UNIT</span>
                    </div>
                 </div>
               </div>
@@ -271,13 +270,13 @@ export default function Home() {
               title="Lilith AI"
               subtitle="Alquimia Jurídica"
               description="Geração contextual e blindagem estratégica de termos ambíguos."
-              icon={<Sparkles className="w-5 h-5 text-purple-500" />}
+              icon={<Sparkles className="w-5 h-5 text-primary" />}
             >
               <div className="mt-6 flex flex-col gap-2">
                  <div className="p-3 bg-white/5 border border-white/10 rounded-lg text-[10px] italic">
                    "Redigir termo de confidencialidade agressivo para M&A."
                  </div>
-                 <div className="self-end p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg text-[10px] text-white">
+                 <div className="self-end p-3 bg-primary/10 border border-primary/20 rounded-lg text-[10px] text-white">
                    Processando Blindagem Estratégica...
                  </div>
               </div>
@@ -289,23 +288,23 @@ export default function Home() {
               title="Execução"
               subtitle="Pipeline de Assinaturas"
               description="Assinaturas incontestáveis com registro blockchain e biometria."
-              icon={<Fingerprint className="w-5 h-5 text-emerald-500" />}
+              icon={<Fingerprint className="w-5 h-5 text-primary" />}
             >
               <div className="mt-8 relative px-4">
                  <div className="space-y-3">
                    <div className="flex items-center gap-3 opacity-30">
-                      <div className="w-4 h-4 rounded-full border border-zinc-600" />
-                      <div className="h-2 w-24 bg-zinc-800 rounded" />
+                      <div className="w-4 h-4 rounded-full border border-muted-foreground" />
+                      <div className="h-2 w-24 bg-muted rounded" />
                    </div>
                    <div className="flex items-center gap-3">
-                      <div className="w-4 h-4 rounded-full border-2 border-emerald-500 flex items-center justify-center">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                      <div className="w-4 h-4 rounded-full border-2 border-primary flex items-center justify-center">
+                        <div className="w-2 h-2 rounded-full bg-primary" />
                       </div>
-                      <div className="h-2 w-32 bg-emerald-500/20 rounded" />
+                      <div className="h-2 w-32 bg-primary/20 rounded" />
                    </div>
                  </div>
                  <div className="absolute top-1/2 right-0 -translate-y-1/2 rotate-12">
-                   <div className="bg-emerald-500 text-black px-2 py-1 text-[8px] font-black uppercase rounded shadow-lg">SIGNED</div>
+                   <div className="bg-primary text-primary-foreground px-2 py-1 text-[8px] font-black uppercase rounded shadow-lg">SIGNED</div>
                  </div>
               </div>
             </BentoCard>
@@ -316,16 +315,16 @@ export default function Home() {
               title="Arsenal"
               subtitle="Templates Soberanos"
               description="Modelos de alta performance forjados pela inteligência central."
-              icon={<ShieldCheck className="w-5 h-5 text-zinc-400" />}
+              icon={<ShieldCheck className="w-5 h-5 text-primary" />}
             >
                <div className="mt-8 grid grid-cols-2 gap-2">
-                 <div className="aspect-square bg-white/5 border border-white/10 rounded-lg flex flex-col items-center justify-center gap-2 group-hover:bg-white/10 transition-colors">
-                    <FileText size={20} className="text-zinc-600" />
-                    <span className="text-[8px] uppercase font-bold text-zinc-500">Cível</span>
+                 <div className="aspect-square bg-muted/50 border border-border rounded-lg flex flex-col items-center justify-center gap-2 group-hover:bg-muted transition-colors">
+                    <FileText size={20} className="text-muted-foreground" />
+                    <span className="text-[8px] uppercase font-bold text-muted-foreground">Cível</span>
                  </div>
                  <div className="aspect-square bg-white/5 border border-white/10 rounded-lg flex flex-col items-center justify-center gap-2 group-hover:bg-white/10 transition-colors">
-                    <Gavel size={20} className="text-zinc-600" />
-                    <span className="text-[8px] uppercase font-bold text-zinc-500">Elite</span>
+                    <Gavel size={20} className="text-muted-foreground" />
+                    <span className="text-[8px] uppercase font-bold text-muted-foreground">Elite</span>
                  </div>
                </div>
             </BentoCard>
@@ -334,25 +333,25 @@ export default function Home() {
       </section>
 
       {/* Neural Sindicato Section */}
-      <section id="sindicato" className="py-32 px-6 relative overflow-hidden bg-[#030303]">
+      <section id="sindicato" className="py-32 px-6 relative overflow-hidden bg-background">
         <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/5 border border-blue-500/20 text-blue-500 text-[10px] font-bold tracking-widest uppercase">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/20 text-primary text-[10px] font-bold tracking-widest uppercase">
               O Sindicato
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight uppercase italic">Networking <br /> <span className="text-zinc-500">Neural de Elite.</span></h2>
-            <p className="text-lg text-zinc-500 leading-relaxed font-medium">
-              Mapeie mentes e oportunidades em tempo real. O ExtraJus conecta profissionais em um grafo interativo estilo <span className="text-white">Obsidian Engineering.</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight leading-tight uppercase italic">Networking <br /> <span className="text-muted-foreground">Neural de Elite.</span></h2>
+            <p className="text-lg text-muted-foreground leading-relaxed font-medium">
+              Mapeie mentes e oportunidades em tempo real. O ExtraJus conecta profissionais em um grafo interativo estilo <span className="text-foreground">Obsidian Engineering.</span>
             </p>
             <Link href="/dashboard">
-              <Button variant="link" className="text-white p-0 h-auto font-bold uppercase text-xs tracking-widest hover:opacity-70 group">
+              <Button variant="link" className="text-foreground p-0 h-auto font-bold uppercase text-xs tracking-widest hover:opacity-70 group">
                 Explorar Conexões <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
           </div>
           <div className="relative aspect-square pointer-events-none">
-             <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-[120px]" />
-             <div className="relative h-full w-full bg-black border border-white/5 rounded-3xl overflow-hidden shadow-2xl flex items-center justify-center">
+             <div className="absolute inset-0 bg-primary/10 rounded-full blur-[120px]" />
+             <div className="relative h-full w-full bg-card border border-border rounded-3xl overflow-hidden shadow-2xl flex items-center justify-center">
                 <ForceGraph2D
                   graphData={graphData}
                   width={500}
@@ -384,8 +383,8 @@ export default function Home() {
                   }}
                 />
                 <div className="absolute top-6 left-6 flex items-center gap-2 opacity-50">
-                   <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                   <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest">Neural Link v2.0</span>
+                   <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                   <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Neural Link v2.0</span>
                 </div>
              </div>
           </div>
@@ -397,18 +396,18 @@ export default function Home() {
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div className="relative order-2 lg:order-1">
-               <div className="bg-zinc-900/40 border border-white/10 rounded-[2.5rem] p-10 space-y-10 backdrop-blur-xl">
+               <div className="bg-card border border-border rounded-[2.5rem] p-10 space-y-10 backdrop-blur-xl">
                   <div className="space-y-4">
-                     <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-orange-500">
+                     <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-primary">
                         <span>Agressividade Jurídica</span>
                         <span>94%</span>
                      </div>
                      <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                        <div className="h-full w-[94%] bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]" />
+                        <div className="h-full w-[94%] bg-primary shadow-[0_0_10px_rgba(249,115,22,0.5)]" />
                      </div>
                   </div>
                   <div className="space-y-4">
-                     <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-purple-500">
+                     <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-primary">
                         <span>Criatividade IA</span>
                         <span>Precisa</span>
                      </div>
@@ -416,7 +415,7 @@ export default function Home() {
                         {["Precisa", "Equilibrada", "Inovadora"].map((mode) => (
                           <div key={mode} className={cn(
                             "flex-1 h-10 rounded-lg flex items-center justify-center text-[9px] font-bold uppercase tracking-tighter border transition-all",
-                            mode === "Precisa" ? "bg-purple-500/20 border-purple-500 text-purple-500" : "bg-white/5 border-white/10 text-zinc-600"
+                            mode === "Precisa" ? "bg-primary/20 border-primary text-primary" : "bg-white/5 border-white/10 text-muted-foreground"
                           )}>
                             {mode}
                           </div>
@@ -424,18 +423,18 @@ export default function Home() {
                      </div>
                   </div>
                   <div className="pt-6 border-t border-white/5">
-                     <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 italic text-[11px]">
+                     <div className="flex items-center gap-4 p-4 rounded-2xl bg-muted border border-border italic text-[11px]">
                         "Lilith, reescreva a cláusula de rescisão para ser unilateral e incontestável."
                      </div>
                   </div>
                </div>
             </div>
             <div className="space-y-6 order-1 lg:order-2">
-               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/5 border border-orange-500/20 text-orange-500 text-[10px] font-bold tracking-widest uppercase">
+               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/20 text-primary text-[10px] font-bold tracking-widest uppercase">
                   Sistemas Centrais
                </div>
-               <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight uppercase italic">Calibração <br /> <span className="text-zinc-500">Sob Medida.</span></h2>
-               <p className="text-lg text-zinc-500 leading-relaxed font-medium">
+               <h2 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight leading-tight uppercase italic">Calibração <br /> <span className="text-muted-foreground">Sob Medida.</span></h2>
+               <p className="text-lg text-muted-foreground leading-relaxed font-medium">
                   Ajuste fino da sua inteligência jurídica. Do modo diplomático à agressividade absoluta, você dita as regras da negociação.
                </p>
             </div>
@@ -444,10 +443,10 @@ export default function Home() {
       </section>
 
       {/* Section 2: Tech Infrastructure */}
-      <section id="tecnologia" className="py-32 px-6 border-t border-white/5 bg-[#030303]">
+      <section id="tecnologia" className="py-32 px-6 border-t border-border bg-background">
         <div className="max-w-5xl mx-auto text-center mb-20">
-          <h2 className="text-3xl font-bold text-white tracking-tight uppercase italic mb-4">Engine de Sobrevivência</h2>
-          <p className="text-zinc-500 max-w-xl mx-auto font-medium">
+          <h2 className="text-3xl font-bold text-foreground tracking-tight uppercase italic mb-4">Engine de Sobrevivência</h2>
+          <p className="text-muted-foreground max-w-xl mx-auto font-medium">
             Construído sobre uma stack indestrutível para garantir que seus dados nunca desapareçam.
           </p>
         </div>
@@ -458,12 +457,12 @@ export default function Home() {
              { title: "Binary State", icon: <Database />, desc: "Persistência em hexadecimal otimizada." },
              { title: "LegalNodes", icon: <Layers />, desc: "Hierarquia jurídica auto-gerenciada." }
            ].map((tech, i) => (
-             <div key={i} className="p-8 bg-zinc-900/20 border border-white/5 rounded-[2rem] hover:bg-zinc-900/40 transition-all group">
-                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-zinc-500 mb-6 group-hover:text-white transition-colors">
+             <div key={i} className="p-8 bg-card border border-border rounded-[2rem] hover:bg-muted transition-all group">
+                <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-muted-foreground mb-6 group-hover:text-primary transition-colors">
                   {tech.icon}
                 </div>
-                <h3 className="text-sm font-bold text-white mb-2 uppercase tracking-widest italic">{tech.title}</h3>
-                <p className="text-[11px] text-zinc-500 font-medium leading-relaxed">{tech.desc}</p>
+                <h3 className="text-sm font-bold text-foreground mb-2 uppercase tracking-widest italic">{tech.title}</h3>
+                <p className="text-[11px] text-muted-foreground font-medium leading-relaxed">{tech.desc}</p>
              </div>
            ))}
         </div>
@@ -481,7 +480,7 @@ export default function Home() {
                "p-10 rounded-[2.5rem] border flex flex-col transition-all duration-500",
                plan.highlight 
                  ? "bg-white text-black border-white shadow-[0_0_50px_rgba(255,255,255,0.1)] scale-105 z-10" 
-                 : "bg-zinc-900/20 border-white/5 text-zinc-500 hover:border-white/20"
+                 : "bg-muted/20 border-white/5 text-muted-foreground hover:border-white/20"
              )}>
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] mb-4">{plan.name}</p>
                 <div className="mb-10">
@@ -491,7 +490,7 @@ export default function Home() {
                 <div className="space-y-4 mb-10 flex-1">
                    {plan.feat.map((f, j) => (
                      <div key={j} className="flex items-center gap-3 text-[11px] font-bold">
-                        <CheckCircle2 size={14} className={plan.highlight ? "text-orange-500" : "text-zinc-800"} />
+                        <CheckCircle2 size={14} className={plan.highlight ? "text-primary" : "text-muted"} />
                         {f}
                      </div>
                    ))}
@@ -508,11 +507,11 @@ export default function Home() {
       </section>
 
       {/* Section 4: FAQ */}
-      <section className="py-32 px-6 border-t border-white/5 bg-[#030303]">
+      <section className="py-32 px-6 border-t border-border bg-background">
         <div className="max-w-3xl mx-auto space-y-12">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-white tracking-tight uppercase italic mb-2">Protocolos de Dúvida</h2>
-            <p className="text-zinc-500 text-sm font-medium">Esclarecimentos técnicos e misticismo operacional.</p>
+            <h2 className="text-2xl font-bold text-foreground tracking-tight uppercase italic mb-2">Protocolos de Dúvida</h2>
+            <p className="text-muted-foreground text-sm font-medium">Esclarecimentos técnicos e misticismo operacional.</p>
           </div>
           <div className="space-y-4">
              {[
@@ -520,12 +519,12 @@ export default function Home() {
                { q: "Meus dados estão seguros?", a: "Utilizamos criptografia AES-256 e hashes em blockchain para cada assinatura, garantindo imutabilidade absoluta." },
                { q: "Posso colaborar em tempo real?", a: "Sim. Nossa infraestrutura permite que múltiplos signatários e advogados editem simultaneamente com visibilidade total." }
              ].map((item, i) => (
-               <div key={i} className="p-6 bg-zinc-900/10 border border-white/5 rounded-2xl group hover:border-white/10 transition-colors cursor-pointer">
+               <div key={i} className="p-6 bg-card border border-border rounded-2xl group hover:border-primary/40 transition-colors cursor-pointer">
                   <div className="flex justify-between items-center mb-3">
-                     <h4 className="text-sm font-bold text-white uppercase italic tracking-wider">{item.q}</h4>
-                     <ChevronRight size={16} className="text-zinc-700 group-hover:text-white transition-colors" />
+                     <h4 className="text-sm font-bold text-foreground uppercase italic tracking-wider">{item.q}</h4>
+                     <ChevronRight size={16} className="text-muted-foreground group-hover:text-white transition-colors" />
                   </div>
-                  <p className="text-xs text-zinc-500 leading-relaxed font-medium">{item.a}</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed font-medium">{item.a}</p>
                </div>
              ))}
           </div>
@@ -533,38 +532,38 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="relative pt-32 pb-12 px-6 border-t border-white/5 bg-black">
+      <footer className="relative pt-32 pb-12 px-6 border-t border-border bg-background">
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 pb-20">
             <div className="md:col-span-2 space-y-6">
               <div className="flex items-center gap-2">
-                <span className="text-xl font-bold tracking-tight text-white uppercase italic">ExtraJus</span>
+                <span className="text-xl font-bold tracking-tight text-foreground uppercase italic">ExtraJus</span>
               </div>
-              <p className="text-sm text-zinc-500 max-w-sm font-medium">
+              <p className="text-sm text-muted-foreground max-w-sm font-medium">
                 O núcleo de inteligência definitiva para operações jurídicas de alto impacto. Projetado para quem não aceita a mediocridade.
               </p>
             </div>
             <div className="space-y-4">
-              <h4 className="text-[10px] font-bold text-white uppercase tracking-[0.2em]">Recursos</h4>
-              <ul className="space-y-3 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
+              <h4 className="text-[10px] font-bold text-foreground uppercase tracking-[0.2em]">Recursos</h4>
+              <ul className="space-y-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                 <li><a href="#" className="hover:text-white transition-colors">O Cânone</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">War Room</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Lilith AI</a></li>
               </ul>
             </div>
             <div className="space-y-4">
-              <h4 className="text-[10px] font-bold text-white uppercase tracking-[0.2em]">Infra</h4>
-              <ul className="space-y-3 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
+              <h4 className="text-[10px] font-bold text-foreground uppercase tracking-[0.2em]">Infra</h4>
+              <ul className="space-y-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                 <li><a href="#" className="hover:text-white transition-colors">Status</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Security</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Supabase</a></li>
               </ul>
             </div>
           </div>
-          <div className="pt-12 flex flex-col md:flex-row justify-between items-center gap-8 text-[9px] font-bold text-zinc-600 uppercase tracking-[0.3em] italic">
+          <div className="pt-12 flex flex-col md:flex-row justify-between items-center gap-8 text-[9px] font-bold text-muted-foreground uppercase tracking-[0.3em] italic">
             <span>Core_v2.0 // © 2026 Império do Cadelo</span>
             <div className="flex items-center gap-6">
-               <span className="text-zinc-800">Designed for Supremacy</span>
+               <span className="text-muted">Designed for Supremacy</span>
             </div>
           </div>
         </div>
@@ -590,7 +589,7 @@ function BentoCard({
 }) {
   return (
     <div className={cn(
-      "group relative bg-zinc-900/20 border border-white/5 rounded-3xl p-8 flex flex-col overflow-hidden hover:bg-zinc-900/40 hover:border-white/10 transition-all duration-500",
+      "group relative bg-card border border-border rounded-3xl p-8 flex flex-col overflow-hidden hover:bg-muted/50 hover:border-primary/20 transition-all duration-500",
       className
     )}>
       <div className="relative z-10 flex flex-col h-full">
@@ -598,12 +597,12 @@ function BentoCard({
           <div className="flex flex-col">
             <div className="flex items-center gap-2 mb-1">
               {icon}
-              <span className="text-[10px] font-bold text-white uppercase tracking-widest">{title}</span>
+              <span className="text-[10px] font-bold text-foreground uppercase tracking-widest">{title}</span>
             </div>
-            <p className="text-lg font-bold text-white tracking-tight">{subtitle}</p>
+            <p className="text-lg font-bold text-foreground tracking-tight">{subtitle}</p>
           </div>
         </div>
-        <p className="text-sm text-zinc-500 font-medium leading-relaxed max-w-[240px]">
+        <p className="text-sm text-muted-foreground font-medium leading-relaxed max-w-[240px]">
           {description}
         </p>
         <div className="flex-1">
@@ -612,7 +611,7 @@ function BentoCard({
       </div>
       
       {/* Background Glow */}
-      <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-white/5 blur-[80px] rounded-full group-hover:bg-white/10 transition-colors duration-500" />
+      <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-primary/5 blur-[80px] rounded-full group-hover:bg-primary/10 transition-colors duration-500" />
     </div>
   );
 }

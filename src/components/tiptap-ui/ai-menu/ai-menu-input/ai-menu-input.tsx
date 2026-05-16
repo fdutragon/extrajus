@@ -138,9 +138,9 @@ export function AiPromptInputToolbar({
       style={{ display: showPlaceholder ? "none" : "flex" }}
     >
       <ToolbarGroup>
-        <div className="flex items-center gap-2 px-3 py-1 bg-orange-500/5 border border-orange-500/10 rounded-full">
-           <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
-           <span className="text-[10px] font-medium text-orange-500/60">Lilith ativa</span>
+        <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
+           <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+           <span className="text-[10px] font-medium text-primary">Lilith ativa</span>
         </div>
       </ToolbarGroup>
 
@@ -222,12 +222,12 @@ export function AiMenuInputTextarea({
       {...props}
     >
       {isLoading ? (
-        <div className="flex items-center justify-between w-full h-[3.25rem] px-4 bg-orange-500/5 rounded-2xl border border-orange-500/10 animate-pulse-subtle">
+        <div className="flex items-center justify-between w-full h-[3.25rem] px-4 bg-primary/5 rounded-2xl border border-primary/10 animate-pulse-subtle">
           <div className="flex items-center gap-3">
-             <BrainCircuit size={16} className="text-orange-500 animate-spin duration-[3000ms]" />
-             <span className="text-[11px] font-medium text-orange-500">Lilith está processando seu comando...</span>
+             <BrainCircuit size={16} className="text-primary animate-spin duration-[3000ms]" />
+             <span className="text-[11px] font-medium text-primary">Lilith está processando seu comando...</span>
           </div>
-          <Button variant="ghost" size="small" className="h-8 w-8 rounded-lg hover:bg-orange-500/10 text-orange-500" onClick={onStop}>
+          <Button variant="ghost" size="small" className="h-8 w-8 rounded-lg hover:bg-primary/10 text-primary" onClick={onStop}>
             <StopCircle2Icon size={16} />
           </Button>
         </div>

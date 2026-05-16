@@ -37,12 +37,12 @@ export function NotionEditorHeader() {
       {/* Left: Navigation & Branding */}
       <div className="flex items-center gap-3">
         <Link href="/dashboard">
-          <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-orange-500/10 hover:text-orange-500 rounded-lg transition-all">
+          <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-primary/10 hover:text-primary rounded-lg transition-all">
             <ChevronLeft size={16} />
           </Button>
         </Link>
         <div className="flex items-baseline gap-2 group cursor-default">
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-orange-600 group-hover:drop-shadow-[0_0_8px_rgba(234,88,12,0.5)] transition-all">Cânone</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary transition-all">Cânone</span>
           <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest opacity-60">v2.4.0</span>
         </div>
         
@@ -56,12 +56,12 @@ export function NotionEditorHeader() {
 
       {/* Center: Document Title - The Soul of the Contract */}
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-3 group cursor-default">
-        <div className="w-1 h-4 bg-orange-600/20 group-hover:bg-orange-600 transition-all rounded-full" />
+        <div className="w-1 h-4 bg-primary/20 group-hover:bg-primary transition-all rounded-full" />
         <div className="flex items-center gap-2">
-          <FileText size={12} className="text-muted-foreground group-hover:text-orange-500 transition-colors" />
+          <FileText size={12} className="text-muted-foreground group-hover:text-primary transition-colors" />
           <span className="text-[11px] font-black uppercase tracking-[0.2em] opacity-80 group-hover:opacity-100 transition-opacity">Contrato_Imperial_Alpha.docx</span>
         </div>
-        <div className="w-1 h-4 bg-orange-600/20 group-hover:bg-orange-600 transition-all rounded-full" />
+        <div className="w-1 h-4 bg-primary/20 group-hover:bg-primary transition-all rounded-full" />
       </div>
 
       {/* Right: Collaboration & The Ritual */}
@@ -72,7 +72,7 @@ export function NotionEditorHeader() {
             size="sm" 
             className={cn(
               "h-7 gap-2 px-3 rounded-lg transition-all font-bold text-[9px] uppercase tracking-widest",
-              copied ? "text-emerald-500 bg-emerald-500/10" : "text-orange-500 hover:bg-orange-500/10"
+              copied ? "text-emerald-500 bg-emerald-500/10" : "text-primary hover:bg-primary/10"
             )}
             onClick={handleInvite}
           >

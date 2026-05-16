@@ -93,24 +93,24 @@ export default function DashboardLayoutClient({
 
       {/* Sidebar Island */}
       <aside className={cn(
-        "bg-card dark:bg-[#09090b] border border-border flex flex-col transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) z-50 overflow-hidden shrink-0",
+        "bg-card border-border flex flex-col transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) z-50 overflow-hidden shrink-0",
         // Mobile (Default)
-        "fixed inset-y-1 left-1 rounded-xl shadow-2xl",
+        "fixed inset-y-1 left-1 rounded-xl",
         isCollapsed ? "-translate-x-full w-0 opacity-0" : "translate-x-0 w-72 opacity-100",
         // Desktop (lg)
-        "lg:static lg:translate-x-0 lg:opacity-100 lg:w-72 lg:rounded-l-xl lg:rounded-r-none lg:shadow-sm lg:border-r-0 lg:inset-auto",
+        "lg:static lg:translate-x-0 lg:opacity-100 lg:w-72 lg:rounded-l-xl lg:rounded-r-none lg:border-r border-border lg:inset-auto",
         isCollapsed ? "lg:w-12" : "lg:w-72"
       )}>
         {/* Subtle texture overlay */}
         <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
 
         {/* Organization Switcher / Logo Area */}
-        <div className="h-12 px-4 flex items-center overflow-hidden shrink-0 border-b border-zinc-100 dark:border-white/5 relative z-10">
+        <div className="h-12 px-4 flex items-center overflow-hidden shrink-0 border-b border-border relative z-10">
           <div className={cn(
             "flex items-center gap-2 animate-in fade-in slide-in-from-left-2 duration-500",
             isCollapsed && "justify-center w-full"
           )}>
-            <span className="text-sm font-bold tracking-tight text-orange-500 uppercase italic drop-shadow-[0_0_8px_rgba(234,88,12,0.3)]">
+            <span className="text-sm font-bold tracking-tight text-primary uppercase italic">
               {isCollapsed ? "E" : "ExtraJus"}
             </span>
           </div>
@@ -124,21 +124,21 @@ export default function DashboardLayoutClient({
               isCollapsed && "hidden lg:hidden"
             )}>
               <div className="flex items-center justify-between">
-                <span className="text-[9px] font-semibold text-zinc-400 uppercase tracking-[0.15em]">Status da Nave</span>
+                <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-[0.15em]">Status da Nave</span>
                 <div className="flex gap-1">
-                  <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
-                  <div className="w-1 h-1 rounded-full bg-emerald-500/50" />
-                  <div className="w-1 h-1 rounded-full bg-emerald-500/30" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary/50" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary/30" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                <div className="bg-zinc-50 dark:bg-white/5 rounded-lg p-2.5 border border-zinc-100 dark:border-white/5">
-                  <div className="text-[9px] text-zinc-500 uppercase font-bold mb-1">Synapse</div>
-                  <div className="text-[12px] font-mono font-bold text-orange-500">98.4%</div>
+                <div className="bg-muted rounded-lg p-2.5 border border-border">
+                  <div className="text-[9px] text-muted-foreground uppercase font-bold mb-1">Synapse</div>
+                  <div className="text-[12px] font-mono font-bold text-primary">98.4%</div>
                 </div>
-                <div className="bg-zinc-50 dark:bg-white/5 rounded-lg p-2.5 border border-zinc-100 dark:border-white/5">
-                  <div className="text-[9px] text-zinc-500 uppercase font-bold mb-1">Uptime</div>
-                  <div className="text-[12px] font-mono font-bold text-zinc-700 dark:text-zinc-300">14d</div>
+                <div className="bg-muted rounded-lg p-2.5 border border-border">
+                  <div className="text-[9px] text-muted-foreground uppercase font-bold mb-1">Uptime</div>
+                  <div className="text-[12px] font-mono font-bold text-foreground/80">14d</div>
                 </div>
               </div>
             </div>
@@ -146,11 +146,11 @@ export default function DashboardLayoutClient({
 
           <nav className="space-y-0.5">
             {(!isCollapsed || (typeof window !== 'undefined' && window.innerWidth < 1024)) && (
-              <div className={cn("px-2 mb-2 text-[9px] font-semibold text-zinc-400 uppercase tracking-[0.15em] animate-in fade-in duration-700", isCollapsed && "lg:hidden")}>Geral</div>
+              <div className={cn("px-2 mb-2 text-[9px] font-semibold text-muted-foreground uppercase tracking-[0.15em] animate-in fade-in duration-700", isCollapsed && "lg:hidden")}>Geral</div>
             )}
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href;
+              const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
               const collapsedOnDesktop = isCollapsed;
               return (
                 <Link
@@ -162,12 +162,12 @@ export default function DashboardLayoutClient({
                     collapsedOnDesktop ? "lg:justify-center lg:px-0" : "px-2.5",
                     !collapsedOnDesktop && "px-2.5",
                     isActive
-                      ? "bg-zinc-100 dark:bg-white/10 text-zinc-900 dark:text-white shadow-[0_1px_2px_rgba(0,0,0,0.05)] border border-zinc-200/50 dark:border-white/5"
-                      : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-white/5 border border-transparent"
+                      ? "bg-primary/15 text-primary border border-primary/30 font-bold"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent border border-transparent"
                   )}
                   title={collapsedOnDesktop ? item.name : ""}
                 >
-                  <Icon size={15} className={cn(isActive ? "text-orange-500" : "text-zinc-500 group-hover:text-zinc-400 transition-colors shrink-0")} />
+                  <Icon size={15} className={cn(isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground transition-colors shrink-0")} />
                   <span className={cn(
                     "truncate animate-in fade-in slide-in-from-left-1 duration-300",
                     collapsedOnDesktop && "lg:hidden"
@@ -180,14 +180,14 @@ export default function DashboardLayoutClient({
           {/* Recent Projects - New Section */}
           {(!isCollapsed || (typeof window !== 'undefined' && window.innerWidth < 1024)) && (
             <div className={cn("space-y-3 animate-in fade-in duration-1000 delay-300", isCollapsed && "lg:hidden")}>
-              <div className="px-2 text-[9px] font-semibold text-zinc-400 uppercase tracking-[0.15em]">Projetos Recentes</div>
+              <div className="px-2 text-[9px] font-semibold text-muted-foreground uppercase tracking-[0.15em]">Projetos Recentes</div>
               <div className="space-y-1">
                 {[
-                  { name: "Holding Imperial", color: "bg-orange-500" },
-                  { name: "Projeto Skynet", color: "bg-blue-500" },
-                  { name: "M&A Alpha Group", color: "bg-purple-500" }
+                  { name: "Holding Imperial", color: "bg-primary" },
+                  { name: "Projeto Skynet", color: "bg-primary/70" },
+                  { name: "M&A Alpha Group", color: "bg-primary/40" }
                 ].map((project) => (
-                  <button key={project.name} className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-[11.5px] text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors group">
+                  <button key={project.name} className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-[11.5px] text-muted-foreground hover:text-foreground transition-colors group">
                     <div className={cn("w-1.5 h-1.5 rounded-full shrink-0 group-hover:scale-125 transition-transform", project.color)} />
                     <span className="truncate">{project.name}</span>
                   </button>
@@ -198,11 +198,11 @@ export default function DashboardLayoutClient({
 
           <nav className="space-y-0.5">
             {(!isCollapsed || (typeof window !== 'undefined' && window.innerWidth < 1024)) && (
-              <div className={cn("px-2 mb-2 text-[9px] font-semibold text-zinc-400 uppercase tracking-[0.15em] animate-in fade-in duration-700", isCollapsed && "lg:hidden")}>Sistema</div>
+              <div className={cn("px-2 mb-2 text-[9px] font-semibold text-muted-foreground uppercase tracking-[0.15em] animate-in fade-in duration-700", isCollapsed && "lg:hidden")}>Sistema</div>
             )}
             {secondaryItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href;
+              const isActive = pathname === item.href || pathname.startsWith(item.href);
               const collapsedOnDesktop = isCollapsed;
               return (
                 <Link
@@ -214,12 +214,12 @@ export default function DashboardLayoutClient({
                     collapsedOnDesktop ? "lg:justify-center lg:px-0" : "px-2.5",
                     !collapsedOnDesktop && "px-2.5",
                     isActive
-                      ? "bg-zinc-100 dark:bg-white/10 text-zinc-900 dark:text-white shadow-[0_1px_2px_rgba(0,0,0,0.05)] border border-zinc-200/50 dark:border-white/5"
-                      : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-white/5 border border-transparent"
+                      ? "bg-primary/15 text-primary border border-primary/30 font-bold"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent border border-transparent"
                   )}
                   title={collapsedOnDesktop ? item.name : ""}
                 >
-                  <Icon size={15} className={cn(isActive ? "text-orange-500" : "text-zinc-500 group-hover:text-zinc-400 transition-colors shrink-0")} />
+                  <Icon size={15} className={cn(isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground transition-colors shrink-0")} />
                   <span className={cn(
                     "truncate animate-in fade-in slide-in-from-left-1 duration-300",
                     collapsedOnDesktop && "lg:hidden"
@@ -231,16 +231,16 @@ export default function DashboardLayoutClient({
 
           {/* Lilith Pulse - AI Live Activity Feed */}
           {(!isCollapsed || (typeof window !== 'undefined' && window.innerWidth < 1024)) && (
-            <div className={cn("px-2 pt-4 border-t border-zinc-100 dark:border-white/5 space-y-3 animate-in fade-in duration-1000", isCollapsed && "lg:hidden")}>
+            <div className={cn("px-2 pt-4 border-t border-border space-y-3 animate-in fade-in duration-1000", isCollapsed && "lg:hidden")}>
                <div className="flex items-center gap-2">
                  <div className="relative">
-                   <div className="w-2 h-2 rounded-full bg-orange-500 animate-ping absolute inset-0" />
-                   <div className="w-2 h-2 rounded-full bg-orange-500 relative" />
+                   <div className="w-2 h-2 rounded-full bg-primary animate-ping absolute inset-0" />
+                   <div className="w-2 h-2 rounded-full bg-primary relative" />
                  </div>
-                 <span className="text-[9px] font-bold text-orange-500 uppercase tracking-widest">Lilith Pulse</span>
+                 <span className="text-[9px] font-bold text-primary uppercase tracking-widest">Lilith Pulse</span>
                </div>
-               <div className="bg-orange-500/5 rounded-lg p-2.5 border border-orange-500/10">
-                 <p className="text-[10px] text-orange-500/80 leading-tight italic font-medium font-mono">
+               <div className="bg-primary/5 rounded-lg p-2.5 border border-primary/10">
+                 <p className="text-[10px] text-primary/80 leading-tight italic font-medium font-mono">
                    "Auditoria de risco ativa em todos os contratos."
                  </p>
                </div>
@@ -249,17 +249,17 @@ export default function DashboardLayoutClient({
         </div>
 
         {/* User / Footer */}
-        <div className="p-2 border-t border-zinc-100 dark:border-white/5 space-y-1 shrink-0 relative z-10">
+        <div className="p-2 border-t border-border space-y-1 shrink-0 relative z-10">
           <button 
             className={cn(
-              "flex items-center gap-2.5 w-full py-2 rounded-lg hover:bg-zinc-50 dark:hover:bg-white/5 transition-colors group overflow-hidden border border-transparent",
+              "flex items-center gap-2.5 w-full py-2 rounded-lg hover:bg-muted transition-colors group overflow-hidden border border-transparent",
               isCollapsed ? "lg:justify-center lg:px-0" : "px-2.5"
             )}
             onClick={async () => await signOut()}
           >
-            <LogOut size={15} className="text-zinc-500 group-hover:text-red-500 transition-colors shrink-0" />
+            <LogOut size={15} className="text-muted-foreground group-hover:text-destructive transition-colors shrink-0" />
             <span className={cn(
-              "text-[12.5px] font-medium text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-zinc-300 truncate animate-in fade-in slide-in-from-left-1 duration-300",
+              "text-[12.5px] font-medium text-muted-foreground group-hover:text-foreground truncate animate-in fade-in slide-in-from-left-1 duration-300",
               isCollapsed && "lg:hidden"
             )}>Sair</span>
           </button>
@@ -267,25 +267,25 @@ export default function DashboardLayoutClient({
       </aside>
 
       {/* Main Content Island */}
-      <div className="flex-1 flex flex-col min-w-0 bg-white dark:bg-[#08080a] border border-zinc-200/50 dark:border-white/5 rounded-r-xl rounded-l-none lg:rounded-l-none shadow-sm overflow-hidden relative transition-all duration-500">
+      <div className="flex-1 flex flex-col min-w-0 bg-background border border-border rounded-r-xl rounded-l-none lg:rounded-l-none shadow-sm overflow-hidden relative transition-all duration-500">
         {/* Top Navigation Bar Integrated into Content Island */}
-        <header className="h-12 border-b border-zinc-100 dark:border-white/5 flex items-center justify-between px-4 shrink-0 bg-white/80 dark:bg-[#08080a]/80 backdrop-blur-xl z-30">
+        <header className="h-12 border-b border-border flex items-center justify-between px-4 shrink-0 bg-background/80 backdrop-blur-xl z-30">
           <div className="flex items-center gap-3 flex-1">
             <button 
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="p-1 hover:bg-zinc-100 dark:hover:bg-white/10 rounded-md text-zinc-400 transition-colors"
+              className="p-1 hover:bg-muted rounded-md text-muted-foreground transition-colors"
             >
               {isCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
             </button>
             
-            <div className="h-4 w-[1px] bg-zinc-200 dark:bg-white/10 mx-1" />
+            <div className="h-4 w-[1px] bg-border mx-1" />
 
             <div className="relative max-w-[280px] w-full group">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-orange-500 transition-colors" size={12} />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={12} />
               <input 
                 type="text" 
                 placeholder="Pesquisar..." 
-                className="w-full bg-zinc-50 dark:bg-white/5 border border-transparent dark:border-white/5 rounded-md pl-9 pr-4 py-1 text-[12px] focus:ring-1 focus:ring-orange-500/20 focus:border-orange-500/30 transition-all outline-none"
+                className="w-full bg-muted border border-border rounded-md pl-9 pr-4 py-1 text-[12px] focus:ring-1 focus:ring-primary/20 focus:border-primary/30 transition-all outline-none"
               />
               <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-20 group-focus-within:opacity-0 transition-opacity">
                 <Command size={9} />
@@ -296,9 +296,9 @@ export default function DashboardLayoutClient({
 
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <div className="h-3 w-[1px] bg-zinc-200 dark:bg-white/10 mx-1" />
+            <div className="h-3 w-[1px] bg-border mx-1" />
             <div className="flex items-center gap-2 pl-1 cursor-pointer group">
-              <Avatar className="h-6 w-6 rounded-full border border-zinc-100 dark:border-white/10 ring-0 group-hover:ring-2 ring-orange-500/20 transition-all">
+              <Avatar className="h-6 w-6 rounded-full border border-border ring-0 group-hover:ring-2 ring-primary/20 transition-all">
                 <AvatarImage src={profile?.avatar_url || "https://github.com/shadcn.png"} />
                 <AvatarFallback className="text-[10px]">{profile?.full_name?.slice(0,2).toUpperCase() || "AI"}</AvatarFallback>
               </Avatar>

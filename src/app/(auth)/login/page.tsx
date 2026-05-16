@@ -20,27 +20,27 @@ export default async function LoginPage({
 
       <form className="space-y-4" action={login}>
         {error && (
-          <div className="p-3 text-sm text-white bg-red-600 font-bold border border-red-800">
+          <div className="p-3 text-sm text-destructive-foreground bg-destructive font-bold border border-destructive/20 rounded-xl">
             {error}
           </div>
         )}
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-2 block">E-mail de Guerra</Label>
+          <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">E-mail de Guerra</Label>
           <Input 
             id="email" 
             name="email"
             placeholder="cadelo@imperio.com" 
             type="email" 
             required
-            className="h-12 px-4 rounded-2xl border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 focus:border-orange-500 transition-all text-base"
+            className="h-12 px-4 rounded-2xl border-border bg-background dark:bg-card focus:border-primary transition-all text-base"
           />
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-2 block">Senha Criptografada</Label>
+            <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">Senha Criptografada</Label>
             <Link 
               href="/forgot-password" 
-              className="text-[10px] text-orange-600 dark:text-orange-500 hover:underline font-black uppercase"
+              className="text-[10px] text-primary dark:text-primary hover:underline font-black uppercase"
             >
               Esqueceu a chave?
             </Link>
@@ -50,39 +50,39 @@ export default async function LoginPage({
             name="password"
             type="password" 
             required
-            className="h-12 px-4 rounded-2xl border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 focus:border-orange-500 transition-all text-base"
+            className="h-12 px-4 rounded-2xl border-border bg-background dark:bg-card focus:border-primary transition-all text-base"
           />
         </div>
         <div className="flex items-center space-x-2">
-          <Checkbox id="remember" name="remember" className="border-zinc-300 dark:border-zinc-700 data-[state=checked]:bg-orange-600 data-[state=checked]:border-orange-600" />
+          <Checkbox id="remember" name="remember" className="border-muted-foreground dark:border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary" />
           <label
             htmlFor="remember"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-zinc-500"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground"
           >
             Manter sessão ativa
           </label>
         </div>
-        <Button type="submit" className="w-full bg-zinc-900 dark:bg-white text-white dark:text-black hover:opacity-90 font-black h-12 rounded-2xl group transition-all shadow-xl shadow-black/10 dark:shadow-white/5">
+        <Button type="submit" className="w-full bg-primary text-primary-foreground hover:opacity-90 font-black h-12 rounded-2xl group transition-all shadow-xl shadow-primary/10">
           ACESSAR COMANDO <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
         </Button>
       </form>
 
       <div className="relative my-10">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-zinc-200 dark:border-zinc-800 opacity-50" />
+          <span className="w-full border-t border-border opacity-50" />
         </div>
         <div className="relative flex justify-center text-[10px] font-black uppercase tracking-[0.2em]">
-          <span className="bg-white dark:bg-[#050505] px-6 text-zinc-400">Ou use sua identidade digital</span>
+          <span className="bg-background px-6 text-muted-foreground">Ou use sua identidade digital</span>
         </div>
       </div>
 
-      <Button variant="outline" className="w-full h-12 rounded-2xl font-black border-zinc-200 dark:border-white/5 hover:bg-zinc-50 dark:hover:bg-white/5 transition-all shadow-sm">
+      <Button variant="outline" className="w-full h-12 rounded-2xl font-black border-border hover:bg-muted transition-all shadow-sm">
         <Globe className="mr-2 h-4 w-4" /> GITHUB
       </Button>
 
-      <p className="text-center text-sm text-zinc-500 dark:text-zinc-400 pt-6">
+      <p className="text-center text-sm text-muted-foreground dark:text-muted-foreground pt-6">
         Novo por aqui?{" "}
-        <Link href="/register" className="text-orange-600 dark:text-orange-500 font-black hover:underline">
+        <Link href="/register" className="text-primary dark:text-primary font-black hover:underline">
           Recrute-se agora
         </Link>
       </p>

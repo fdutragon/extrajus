@@ -73,7 +73,7 @@ export function RiskAuditSidebar() {
       {!isOpen && (
         <Button
           onClick={runAudit}
-          className="fixed bottom-6 right-6 rounded-full shadow-lg h-14 px-6 bg-red-600 hover:bg-red-700 text-white font-bold flex items-center gap-2 z-50"
+          className="fixed bottom-6 right-6 rounded-full shadow-lg h-14 px-6 bg-primary hover:opacity-90 text-primary-foreground font-bold flex items-center gap-2 z-50 border border-primary/20"
         >
           <AlertTriangle className="w-5 h-5" />
           AUDITORIA DE RISCO
@@ -82,22 +82,22 @@ export function RiskAuditSidebar() {
 
       {/* Sidebar Panel */}
       {isOpen && (
-        <div className="fixed top-0 right-0 w-80 h-full bg-zinc-950 border-l border-zinc-800 shadow-2xl flex flex-col z-50">
-          <div className="p-4 border-b border-zinc-800 flex justify-between items-center bg-zinc-900">
-            <div className="flex items-center gap-2 text-red-500 font-bold">
+        <div className="fixed top-0 right-0 w-80 h-full bg-card border-l border-border shadow-2xl flex flex-col z-50 animate-in slide-in-from-right duration-300">
+          <div className="p-4 border-b border-border flex justify-between items-center bg-muted/30">
+            <div className="flex items-center gap-2 text-primary font-bold">
               <AlertTriangle className="w-5 h-5" />
               <span>RADAR LILITH</span>
             </div>
-            <Button variant="ghost" onClick={() => setIsOpen(false)} className="text-zinc-400 hover:text-white">
+            <Button variant="ghost" onClick={() => setIsOpen(false)} className="text-muted-foreground hover:text-foreground">
               <X className="w-5 h-5" />
             </Button>
           </div>
 
-          <div className="p-4 border-b border-zinc-800">
+          <div className="p-4 border-b border-border">
             <Button 
               onClick={runAudit} 
               disabled={isAuditing}
-              className="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold"
+              className="w-full bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 font-bold"
             >
               {isAuditing ? "ANALISANDO..." : "REESCANEAR CONTRATO"}
             </Button>
@@ -105,38 +105,38 @@ export function RiskAuditSidebar() {
 
           <ScrollArea className="flex-1 p-4">
             {isAuditing && (
-              <div className="flex flex-col items-center justify-center py-10 text-zinc-500 space-y-4">
-                <div className="w-8 h-8 border-4 border-red-500 border-t-transparent rounded-full animate-spin" />
-                <p className="font-medium text-sm">Lilith está caçando brechas...</p>
+              <div className="flex flex-col items-center justify-center py-10 text-muted-foreground space-y-4">
+                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+                <p className="font-medium text-sm italic">Lilith caçando brechas...</p>
               </div>
             )}
 
             {!isAuditing && results.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-10 text-emerald-500 space-y-4">
+              <div className="flex flex-col items-center justify-center py-10 text-primary/60 space-y-4 opacity-70">
                 <ShieldCheck className="w-12 h-12" />
-                <p className="font-bold text-center">Nenhum risco detectado.<br/>O contrato está blindado.</p>
+                <p className="font-bold text-center text-xs uppercase tracking-widest leading-relaxed">Nenhum risco detectado.<br/>O contrato está blindado.</p>
               </div>
             )}
 
             {!isAuditing && results.length > 0 && (
               <div className="space-y-4">
                 {results.map((risk) => (
-                  <div key={risk.id} className="bg-zinc-900 border border-red-900/50 rounded-lg p-3 space-y-3">
+                  <div key={risk.id} className="bg-muted/30 border border-destructive/20 rounded-lg p-3 space-y-3">
                     <div>
-                      <p className="text-xs font-bold text-red-500 mb-1">TERMO IDENTIFICADO:</p>
-                      <p className="text-sm text-zinc-300 bg-red-500/10 p-2 rounded">&quot;{risk.originalText}&quot;</p>
+                      <p className="text-[10px] font-black text-destructive uppercase tracking-widest mb-1 opacity-70">TERMO IDENTIFICADO:</p>
+                      <p className="text-sm text-foreground bg-destructive/5 p-2 rounded border border-destructive/10 italic">&quot;{risk.originalText}&quot;</p>
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-orange-500 mb-1">MOTIVO:</p>
-                      <p className="text-sm text-zinc-400">{risk.reason}</p>
+                      <p className="text-[10px] font-black text-primary/60 uppercase tracking-widest mb-1">MOTIVO:</p>
+                      <p className="text-[12px] text-muted-foreground leading-relaxed">{risk.reason}</p>
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-emerald-500 mb-1">SUGESTÃO LILITH:</p>
-                      <p className="text-sm text-emerald-400/90 bg-emerald-500/10 p-2 rounded">&quot;{risk.suggestion}&quot;</p>
+                      <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">SUGESTÃO LILITH:</p>
+                      <p className="text-sm text-primary bg-primary/5 p-2 rounded border border-primary/10 font-medium">&quot;{risk.suggestion}&quot;</p>
                     </div>
                     <Button 
                       onClick={() => applySuggestion(risk.originalText, risk.suggestion, risk.id)}
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs"
+                      className="w-full bg-primary text-primary-foreground font-bold text-[10px] uppercase tracking-widest py-5 rounded-xl"
                     >
                       OTIMIZAR AGORA
                     </Button>

@@ -61,18 +61,18 @@
   --tt-gray-dark-800: rgba(224, 224, 225, 1);
   --tt-gray-dark-900: rgba(245, 245, 245, 1);
 
-  /* Brand colors (Orange - Dark Occult) */
-  --tt-brand-color-50: rgba(255, 247, 237, 1);
-  --tt-brand-color-100: rgba(255, 237, 213, 1);
-  --tt-brand-color-200: rgba(253, 216, 169, 1);
-  --tt-brand-color-300: rgba(253, 186, 116, 1);
-  --tt-brand-color-400: rgba(251, 146, 60, 1);
-  --tt-brand-color-500: rgba(249, 115, 22, 1);
-  --tt-brand-color-600: rgba(234, 88, 12, 1);
-  --tt-brand-color-700: rgba(194, 65, 12, 1);
-  --tt-brand-color-800: rgba(154, 52, 18, 1);
-  --tt-brand-color-900: rgba(124, 45, 18, 1);
-  --tt-brand-color-950: rgba(67, 20, 7, 1);
+  /* Brand colors (Synced with Theme Primary) */
+  --tt-brand-color-50: var(--primary);
+  --tt-brand-color-100: var(--primary);
+  --tt-brand-color-200: var(--primary);
+  --tt-brand-color-300: var(--primary);
+  --tt-brand-color-400: var(--primary);
+  --tt-brand-color-500: var(--primary);
+  --tt-brand-color-600: var(--primary);
+  --tt-brand-color-700: var(--primary);
+  --tt-brand-color-800: var(--primary);
+  --tt-brand-color-900: var(--primary);
+  --tt-brand-color-950: var(--primary);
 
   /* Green */
   --tt-color-green-inc-5: hsla(129, 100%, 97%, 1);
@@ -123,11 +123,7 @@
   ******************/
 
   /* Shadows Light */
-  --tt-shadow-elevated-md:
-    0px 16px 48px 0px rgba(17, 24, 39, 0.04),
-    0px 12px 24px 0px rgba(17, 24, 39, 0.04),
-    0px 6px 8px 0px rgba(17, 24, 39, 0.02),
-    0px 2px 3px 0px rgba(17, 24, 39, 0.02);
+  --tt-shadow-elevated-md: var(--shadow-md);
 
   /************************************************** 
        Radius variables 
@@ -183,7 +179,7 @@
   --tt-sidebar-bg-color: var(--tt-gray-light-100);
   --tt-scrollbar-color: var(--tt-gray-light-a-200);
   --tt-cursor-color: var(--tt-brand-color-500);
-  --tt-selection-color: rgba(249, 115, 22, 0.2);
+  --tt-selection-color: color-mix(in srgb, var(--primary), transparent 80%);
   --tt-card-bg-color: var(--white);
   --tt-card-border-color: var(--tt-gray-light-a-100);
 }
@@ -196,13 +192,11 @@
   --tt-sidebar-bg-color: var(--tt-gray-dark-100);
   --tt-scrollbar-color: var(--tt-gray-dark-a-200);
   --tt-cursor-color: var(--tt-brand-color-400);
-  --tt-selection-color: rgba(251, 146, 60, 0.2);
+  --tt-selection-color: color-mix(in srgb, var(--primary), transparent 80%);
   --tt-card-bg-color: var(--tt-gray-dark-50);
   --tt-card-border-color: var(--tt-gray-dark-a-50);
 
-  --tt-shadow-elevated-md:
-    0px 16px 48px 0px rgba(0, 0, 0, 0.5), 0px 12px 24px 0px rgba(0, 0, 0, 0.24),
-    0px 6px 8px 0px rgba(0, 0, 0, 0.22), 0px 2px 3px 0px rgba(0, 0, 0, 0.12);
+  --tt-shadow-elevated-md: var(--shadow-md);
 }
 
 /* Text colors */

@@ -139,30 +139,30 @@ export default function ArsenalPage() {
   return (
     <div className="space-y-10 animate-in fade-in duration-700">
       {/* Header Area */}
-      <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-zinc-200/50 dark:border-white/5 pb-8">
+      <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-border pb-8">
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-orange-500/50 text-orange-500 bg-orange-500/5 px-2 py-0">Modelos Forjados</Badge>
-            <span className="text-[10px] text-zinc-500 font-mono tracking-widest uppercase italic">Master Library</span>
+            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2 py-0">Modelos Forjados</Badge>
+            <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase italic">Master Library</span>
           </div>
           <h1 className="text-3xl font-bold tracking-tight">Arsenal Jurídico</h1>
-          <p className="text-[13px] text-zinc-500 dark:text-zinc-400 max-w-md leading-relaxed">
+          <p className="text-[13px] text-muted-foreground max-w-md leading-relaxed">
             Acesso imediato a documentos de alta performance, estruturados para proteção total de ativos e operações complexas.
           </p>
         </div>
 
         <div className="flex items-center gap-3 w-full md:w-auto">
           <div className="relative flex-1 md:w-72 group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-orange-500 transition-colors" size={14} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={14} />
             <input 
               type="text" 
               placeholder="Pesquisar no arsenal..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-white dark:bg-white/5 border border-zinc-200/50 dark:border-white/10 rounded-lg pl-9 pr-4 py-2 text-[13px] focus:ring-1 focus:ring-orange-500/30 focus:border-orange-500/50 transition-all outline-none shadow-sm"
+              className="w-full bg-muted border border-border rounded-lg pl-9 pr-4 py-2 text-[13px] focus:ring-1 focus:ring-primary/30 transition-all outline-none"
             />
           </div>
-          <Button variant="outline" className="h-10 px-3 border-zinc-200/50 dark:border-white/10 hover:bg-zinc-100 dark:hover:bg-white/5 rounded-lg">
+          <Button variant="outline" className="h-10 px-3 border-border hover:bg-muted rounded-lg">
             <Filter size={16} />
           </Button>
         </div>
@@ -174,7 +174,7 @@ export default function ArsenalPage() {
           onClick={() => setSelectedCategory(null)}
           className={cn(
             "flex items-center gap-2.5 px-4 py-2 border rounded-full transition-all whitespace-nowrap shrink-0 group",
-            !selectedCategory ? "bg-orange-500 border-orange-500 text-white" : "bg-white dark:bg-[#0c0c0e] border-zinc-200/50 dark:border-white/5 hover:border-orange-500/50"
+            !selectedCategory ? "bg-primary border-primary text-primary-foreground shadow-sm" : "bg-card border-border hover:border-primary/50"
           )}
         >
           <LayoutGrid size={14} />
@@ -186,10 +186,10 @@ export default function ArsenalPage() {
             onClick={() => setSelectedCategory(cat.name)}
             className={cn(
               "flex items-center gap-2.5 px-4 py-2 border rounded-full transition-all whitespace-nowrap shrink-0 group",
-              selectedCategory === cat.name ? "bg-orange-500 border-orange-500 text-white" : "bg-white dark:bg-[#0c0c0e] border-zinc-200/50 dark:border-white/5 hover:border-orange-500/50"
+              selectedCategory === cat.name ? "bg-primary border-primary text-primary-foreground shadow-sm" : "bg-card border-border hover:border-primary/50"
             )}
           >
-            <cat.icon size={14} className={cn(selectedCategory === cat.name ? "text-white" : "text-zinc-500 group-hover:text-orange-500")} />
+            <cat.icon size={14} className={cn(selectedCategory === cat.name ? "text-primary-foreground" : "text-muted-foreground group-hover:text-primary")} />
             <span className="text-[12px] font-bold tracking-tight">{cat.name}</span>
           </button>
         ))}
@@ -199,41 +199,41 @@ export default function ArsenalPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
           Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-64 bg-zinc-100 dark:bg-white/5 rounded-xl animate-pulse" />
+            <div key={i} className="h-64 bg-muted rounded-xl animate-pulse" />
           ))
         ) : filteredTemplates.length === 0 ? (
-          <div className="col-span-full py-20 text-center text-zinc-500 uppercase font-black text-xs tracking-[0.2em]">Nenhum modelo encontrado no setor.</div>
+          <div className="col-span-full py-20 text-center text-muted-foreground uppercase font-black text-xs tracking-[0.2em]">Nenhum modelo encontrado no setor.</div>
         ) : (
           filteredTemplates.map((tpl, i) => (
-            <Card key={tpl.id} className="bg-white dark:bg-[#0c0c0e] border-zinc-200/50 dark:border-white/5 rounded-xl overflow-hidden group hover:border-orange-500/30 transition-all duration-300 flex flex-col h-full relative">
-              <div className="absolute top-0 left-0 w-full h-0.5 bg-zinc-100 dark:bg-white/5 group-hover:bg-orange-500/50 transition-colors" />
+            <Card key={tpl.id} className="bg-card border-border rounded-xl overflow-hidden group hover:border-primary/30 transition-all duration-300 flex flex-col h-full relative">
+              <div className="absolute top-0 left-0 w-full h-0.5 bg-muted group-hover:bg-primary transition-colors" />
               
               <CardContent className="p-6 flex flex-col h-full">
                 <div className="flex justify-between items-start mb-6">
-                  <Badge variant="outline" className="text-[9px] uppercase font-bold tracking-widest border-zinc-200 dark:border-white/10 text-zinc-500 group-hover:border-orange-500/30 group-hover:text-orange-500 transition-colors">
+                  <Badge variant="outline" className="text-[9px] uppercase font-bold tracking-widest border-border text-muted-foreground group-hover:border-primary/30 group-hover:text-primary transition-colors">
                     {tpl.category}
                   </Badge>
-                  <button className="p-1.5 text-zinc-400 hover:text-orange-500 transition-colors">
+                  <button className="p-1.5 text-muted-foreground hover:text-primary transition-colors">
                      <PlusCircle size={16} />
                   </button>
                 </div>
 
                 <div className="flex-1 space-y-2">
-                  <h3 className="text-sm font-bold tracking-tight group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{tpl.title}</h3>
-                  <p className="text-[12px] text-zinc-500 leading-relaxed line-clamp-3 group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors">{tpl.description}</p>
+                  <h3 className="text-sm font-bold tracking-tight text-foreground transition-colors">{tpl.title}</h3>
+                  <p className="text-[12px] text-muted-foreground leading-relaxed line-clamp-3 group-hover:text-foreground transition-colors">{tpl.description}</p>
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-zinc-100 dark:border-white/5 flex gap-2">
+                <div className="mt-8 pt-6 border-t border-border flex gap-2">
                   <Button 
                     variant="ghost" 
                     onClick={() => setPreviewTemplate(tpl)}
-                    className="flex-1 h-9 rounded-lg text-[11px] font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/5 transition-all"
+                    className="flex-1 h-9 rounded-lg text-[11px] font-bold text-muted-foreground hover:bg-muted transition-all"
                   >
                     Previsualizar
                   </Button>
                   <Button 
                     onClick={() => handleUseTemplate(tpl)}
-                    className="flex-1 h-9 rounded-lg bg-zinc-900 dark:bg-white text-white dark:text-black hover:opacity-90 text-[11px] font-bold shadow-lg shadow-black/10 dark:shadow-white/5" 
+                    className="flex-1 h-9 rounded-lg bg-primary text-primary-foreground hover:opacity-90 text-[11px] font-bold" 
                   >
                     Usar Agora <ArrowRight size={12} className="ml-1.5" />
                   </Button>
@@ -245,40 +245,39 @@ export default function ArsenalPage() {
       </div>
 
       {/* Featured / Custom Forge Section */}
-      <div className="bg-zinc-950 dark:bg-black border border-zinc-800 rounded-2xl p-10 relative overflow-hidden group shadow-2xl mt-12">
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-orange-600/5 blur-[100px] rounded-full -mr-48 -mt-48 group-hover:bg-orange-600/10 transition-all duration-1000" />
-        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-600/5 blur-[100px] rounded-full -ml-32 -mb-32 group-hover:bg-blue-600/10 transition-all duration-1000" />
+      <div className="bg-card border border-border rounded-2xl p-10 relative overflow-hidden group mt-12">
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/5 blur-[100px] rounded-full -mr-48 -mt-48 group-hover:bg-primary/10 transition-all duration-1000" />
         
         <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
           <div className="space-y-6 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-500">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary">
               <ShieldCheck size={14} />
               <span className="text-[10px] font-black uppercase tracking-widest">Protocolo de Forja Customizada</span>
             </div>
             
             <div className="space-y-3">
-              <h2 className="text-3xl font-bold tracking-tight text-white italic">Precisa de um Documento sob Medida?</h2>
-              <p className="text-[14px] text-zinc-400 leading-relaxed max-w-xl">
+              <h2 className="text-3xl font-bold tracking-tight text-foreground italic uppercase">Precisa de um Documento sob Medida?</h2>
+              <p className="text-[14px] text-muted-foreground leading-relaxed max-w-xl">
                 Nossos arquitetos jurídicos estão prontos para forjar modelos exclusivos para sua operação. 
                 Documentos blindados, otimizados para sua jurisdição e focados em controle absoluto. 
-                <span className="text-zinc-200 block mt-2 font-medium">Entrega em menos de 24 horas.</span>
+                <span className="text-foreground block mt-2 font-medium">Entrega em menos de 24 horas.</span>
               </p>
             </div>
 
-            <div className="flex items-center gap-6 pt-4 border-t border-white/5">
+            <div className="flex items-center gap-6 pt-4 border-t border-border">
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-white">24h</span>
-                <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-tighter">Prazo Máximo</span>
+                <span className="text-xl font-bold text-foreground italic uppercase">24h</span>
+                <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Prazo Máximo</span>
               </div>
-              <div className="h-8 w-[1px] bg-white/10" />
+              <div className="h-8 w-[1px] bg-border" />
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-white">100%</span>
-                <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-tighter">Garantia de Blindagem</span>
+                <span className="text-xl font-bold text-foreground italic uppercase">100%</span>
+                <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Garantia de Blindagem</span>
               </div>
-              <div className="h-8 w-[1px] bg-white/10" />
+              <div className="h-8 w-[1px] bg-border" />
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-white">+500</span>
-                <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-tighter">Modelos Forjados</span>
+                <span className="text-xl font-bold text-foreground italic uppercase">+500</span>
+                <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Modelos Forjados</span>
               </div>
             </div>
           </div>
@@ -287,7 +286,7 @@ export default function ArsenalPage() {
             <Button 
               disabled={isForaging}
               onClick={handleForgeRequest}
-              size="lg" className="w-full lg:w-auto h-14 bg-white text-black hover:bg-zinc-200 font-bold px-10 rounded-xl shadow-2xl transition-all active:scale-[0.98] flex items-center gap-2 group"
+              size="lg" className="w-full lg:w-auto h-14 bg-foreground text-background hover:opacity-90 font-bold px-10 rounded-xl transition-all active:scale-[0.98] flex items-center gap-2 group"
             >
               {isForaging ? "Enviando..." : "Solicitar Forja Customizada"}
               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
@@ -297,16 +296,16 @@ export default function ArsenalPage() {
       </div>
       {/* Preview Modal */}
       <Dialog open={!!previewTemplate} onOpenChange={(open) => !open && setPreviewTemplate(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] p-0 overflow-hidden bg-white dark:bg-[#0c0c0e] border-zinc-200 dark:border-white/5 shadow-2xl">
+        <DialogContent className="max-w-4xl max-h-[90vh] p-0 overflow-hidden bg-background border-border shadow-2xl">
           <div className="flex flex-col h-full">
-            <div className="p-8 border-b border-zinc-100 dark:border-white/5 bg-zinc-50/50 dark:bg-white/[0.02]">
+            <div className="p-8 border-b border-border bg-muted/30">
               <DialogHeader>
                 <div className="flex items-center gap-3 mb-2">
-                  <Badge variant="outline" className="text-[10px] uppercase font-bold border-orange-500/30 text-orange-500">{previewTemplate?.category}</Badge>
-                  <span className="text-[10px] text-zinc-500 font-mono uppercase">Estrutura de Elite</span>
+                  <Badge variant="outline" className="text-[10px] uppercase font-bold border-primary/30 text-primary bg-primary/5">{previewTemplate?.category}</Badge>
+                  <span className="text-[10px] text-muted-foreground font-mono uppercase">Estrutura de Elite</span>
                 </div>
-                <DialogTitle className="text-2xl font-bold tracking-tight">{previewTemplate?.title}</DialogTitle>
-                <DialogDescription className="text-zinc-500 text-sm">{previewTemplate?.description}</DialogDescription>
+                <DialogTitle className="text-2xl font-bold tracking-tight text-foreground">{previewTemplate?.title}</DialogTitle>
+                <DialogDescription className="text-muted-foreground text-sm">{previewTemplate?.description}</DialogDescription>
               </DialogHeader>
             </div>
 
@@ -317,15 +316,15 @@ export default function ArsenalPage() {
               />
             </ScrollArea>
 
-            <div className="p-6 border-t border-zinc-100 dark:border-white/5 bg-zinc-50/50 dark:bg-white/[0.02] flex justify-end gap-3">
-              <Button variant="ghost" onClick={() => setPreviewTemplate(null)} className="h-10 px-6 font-bold text-xs uppercase">Fechar Análise</Button>
+            <div className="p-6 border-t border-border bg-muted/30 flex justify-end gap-3">
+              <Button variant="ghost" onClick={() => setPreviewTemplate(null)} className="h-10 px-6 font-bold text-[10px] uppercase text-muted-foreground hover:text-foreground transition-colors">Fechar Análise</Button>
               <Button 
                 onClick={() => {
                   const tpl = previewTemplate;
                   setPreviewTemplate(null);
                   handleUseTemplate(tpl);
                 }}
-                className="h-10 px-6 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg text-xs uppercase shadow-lg shadow-orange-500/20"
+                className="h-10 px-6 bg-primary text-primary-foreground font-bold rounded-lg text-[10px] uppercase hover:opacity-90 transition-all"
               >
                 Forjar Este Modelo
               </Button>

@@ -1,8 +1,8 @@
 :root {
-  --tiptap-ai-prompt-input-content-placeholder: var(--tt-gray-light-a-400);
-  --tiptap-ai-prompt-input-bg-color: var(--white);
-  --tiptap-ai-prompt-input-focused-border-color: var(--tt-brand-color-500);
-  --tiptap-ai-prompt-input-border-color: var(--tt-gray-light-a-200);
+  --tiptap-ai-prompt-input-content-placeholder: var(--muted-foreground);
+  --tiptap-ai-prompt-input-bg-color: var(--popover);
+  --tiptap-ai-prompt-input-focused-border-color: var(--primary);
+  --tiptap-ai-prompt-input-border-color: var(--border);
 
   [data-active-state="off"] {
     --tiptap-ai-prompt-input-text-color: var(--tt-gray-light-a-400);
@@ -14,10 +14,10 @@
 }
 
 .dark {
-  --tiptap-ai-prompt-input-content-placeholder: var(--tt-gray-dark-a-400);
-  --tiptap-ai-prompt-input-bg-color: rgba(12, 12, 14, 0.5);
-  --tiptap-ai-prompt-input-focused-border-color: var(--tt-brand-color-500);
-  --tiptap-ai-prompt-input-border-color: rgba(234, 88, 12, 0.2);
+  --tiptap-ai-prompt-input-content-placeholder: var(--muted-foreground);
+  --tiptap-ai-prompt-input-bg-color: var(--card);
+  --tiptap-ai-prompt-input-focused-border-color: var(--primary);
+  --tiptap-ai-prompt-input-border-color: var(--primary);
 
   [data-active-state="off"] {
     --tiptap-ai-prompt-input-text-color: var(--tt-gray-dark-a-400);
@@ -46,7 +46,8 @@
   }
 
   &:hover {
-    border-color: rgba(234, 88, 12, 0.4);
+    border-color: var(--primary);
+    opacity: 0.8;
   }
 }
 

@@ -84,12 +84,12 @@ export function ExportButton() {
     <Button
       variant="ghost"
       size="sm"
-      className="h-8 gap-2 px-4 text-zinc-500 hover:text-white dark:hover:bg-white/5 rounded-full transition-all group border border-transparent hover:border-white/5 flex items-center justify-center"
+      className="h-8 gap-2 px-4 text-muted-foreground hover:text-foreground dark:hover:bg-primary/5 rounded-full transition-all group border border-transparent hover:border-border/40 flex items-center justify-center"
       onClick={handleExport}
       disabled={isExporting}
     >
       {isExporting ? (
-        <Loader2 size={12} className="animate-spin text-orange-500" />
+        <Loader2 size={12} className="animate-spin text-primary" />
       ) : (
         <Download size={12} className="transition-transform" />
       )}

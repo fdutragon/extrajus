@@ -60,7 +60,7 @@ export function BrandSVG({ className }: { className?: string }) {
              stroke="url(#glow-orange)" 
              strokeWidth="4" 
              strokeLinecap="round"
-             className="drop-shadow-[0_0_10px_rgba(234,88,12,0.5)]"
+             className="shadow-primary"
            />
            
            {/* Digital Seal (Central) */}

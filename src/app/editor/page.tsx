@@ -53,12 +53,12 @@ function InviteButton({ room }: { room: string }) {
       size="sm" 
       className={cn(
         "h-7 gap-2 px-3 rounded-lg transition-all font-bold text-[9px] uppercase tracking-widest",
-        copied ? "text-emerald-500 bg-emerald-500/10" : "text-orange-500 hover:bg-orange-500/10"
+        copied ? "text-primary bg-primary/10" : "text-primary hover:bg-primary/10"
       )}
       onClick={handleInvite}
     >
       {copied ? <Check size={12} /> : <UserPlus size={12} />}
-      {copied ? "Convidar" : "Convidar"}
+      {copied ? "Link Copiado" : "Convidar"}
     </Button>
   )
 }
