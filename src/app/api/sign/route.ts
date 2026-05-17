@@ -65,7 +65,7 @@ export async function POST(request: Request) {
     if (process.env.RESEND_API_KEY && signers.length > 0) {
       const emailPromises = signers.map(signer => 
         resend.emails.send({
-          from: 'ExtraJus <onboarding@resend.dev>',
+          from: 'ExtraJus <assinaturas@extrajus.pro>',
           to: signer.email,
           subject: `📜 Convocação para Selamento: ${title || 'Novo Pacto'}`,
           html: `
