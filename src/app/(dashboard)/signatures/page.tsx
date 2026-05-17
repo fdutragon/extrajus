@@ -80,12 +80,16 @@ export default function PactsPage() {
     if (!selectedPact || !sealingCode) return;
     setIsSealing(true);
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado.");
+
       const response = await fetch("/api/sign/confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           contractId: selectedPact.contract_id, 
-          sealingCode 
+          sealingCode,
+          email: user.email
         })
       });
 
@@ -352,6 +356,8 @@ export default function PactsPage() {
                                 <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-[8px] font-black uppercase tracking-widest px-1.5 h-4">Analisando</Badge>
                               ) : pact.status === 'signed' ? (
                                 <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[8px] font-black uppercase tracking-widest px-1.5 h-4">Selado</Badge>
+                              ) : pact.status === 'partially_signed' ? (
+                                <Badge className="bg-blue-500/10 text-blue-500 border-blue-500/20 text-[8px] font-black uppercase tracking-widest px-1.5 h-4">Parcial</Badge>
                               ) : (
                                 <Badge className="bg-primary/10 text-primary border-primary/20 text-[8px] font-black uppercase tracking-widest px-1.5 h-4">Pendente</Badge>
                               )}
@@ -435,7 +441,7 @@ export default function PactsPage() {
                              <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Status do Ritual</span>
                              <p className="text-xs font-bold text-foreground flex items-center gap-2">
                                 {selectedPact.status === 'signed' ? <Check className="text-emerald-500" size={14} /> : <Zap className="text-primary" size={14} />}
-                                {selectedPact.status === 'signed' ? 'Pacto Integralmente Selado' : 'Aguardando Signatários'}
+                                {selectedPact.status === 'signed' ? 'Pacto Integralmente Selado' : selectedPact.status === 'partially_signed' ? 'Pacto Parcialmente Selado' : 'Aguardando Signatários'}
                              </p>
                           </div>
 
@@ -447,9 +453,16 @@ export default function PactsPage() {
                           <div className="pt-4 border-t border-border space-y-3">
                              <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Signatários do Pacto</span>
                              {selectedPact.signers.map((s: any, i: number) => (
-                               <div key={i} className="flex items-center justify-between">
-                                  <span className="text-[10px] font-bold text-foreground">{s.name}</span>
-                                  <Badge className="h-4 text-[7px] font-black uppercase px-1 bg-muted text-muted-foreground border-none">Convocado</Badge>
+                               <div key={i} className="flex items-center justify-between p-2 rounded-xl bg-muted/30 border border-border/50">
+                                  <div className="flex flex-col">
+                                     <span className="text-[10px] font-bold text-foreground">{s.name}</span>
+                                     <span className="text-[8px] text-muted-foreground font-mono">{s.email}</span>
+                                  </div>
+                                  {s.signed ? (
+                                     <Badge className="h-5 text-[7px] font-black uppercase px-2 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded">Selou</Badge>
+                                  ) : (
+                                     <Badge className="h-5 text-[7px] font-black uppercase px-2 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded">Pendente</Badge>
+                                  )}
                                </div>
                              ))}
                           </div>
