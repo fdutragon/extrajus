@@ -32,6 +32,27 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'ID do contrato é obrigatório' }, { status: 400 })
     }
 
+    // Buscar perfil do criador do contrato no banco para pegar o nome oficial
+    const { data: creatorProfile } = await supabase
+      .from('profiles')
+      .select('name')
+      .eq('id', user.id)
+      .single();
+
+    const creatorEmail = (user.email || '').toLowerCase().trim();
+    const creatorName = creatorProfile?.name || user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || "Criador do Pacto";
+
+    // Verificar se o criador já foi explicitamente adicionado
+    const hasCreator = signers.some(s => (s.email || '').toLowerCase().trim() === creatorEmail);
+    const finalSigners = [...signers];
+
+    if (!hasCreator && creatorEmail) {
+      finalSigners.unshift({
+        name: creatorName,
+        email: creatorEmail
+      });
+    }
+
     // 1. Geração de Código de Selamento Único (6 Dígitos) Inviolável
     const sealingCode = crypto.randomInt(100000, 999999).toString();
     
@@ -45,7 +66,7 @@ export async function POST(request: Request) {
     const { error: sigError } = await supabase.from('signatures').upsert({
       contract_id: contractId,
       status: 'pending',
-      signers: signers,
+      signers: finalSigners,
       protocolo: sealingCode,
       manifesto: { 
         invited_at: timestamp,
@@ -62,8 +83,8 @@ export async function POST(request: Request) {
     // 3. Enviar Convocação via Resend (Bombardeio Paralelo)
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
-    if (process.env.RESEND_API_KEY && signers.length > 0) {
-      const emailPromises = signers.map(signer => 
+    if (process.env.RESEND_API_KEY && finalSigners.length > 0) {
+      const emailPromises = finalSigners.map(signer => 
         resend.emails.send({
           from: 'ExtraJus <assinaturas@extrajus.pro>',
           to: signer.email,
