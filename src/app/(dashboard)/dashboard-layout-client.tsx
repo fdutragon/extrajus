@@ -41,9 +41,8 @@ export default function DashboardLayoutClient({
     profileRef.current = profile;
   }, [profile]);
 
+  // 1. Buscar o perfil inicialmente e ouvir atualizações locais
   useEffect(() => {
-    let channel: any;
-
     async function fetchProfile() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -56,48 +55,60 @@ export default function DashboardLayoutClient({
       
       if (data) {
         setProfile(data);
-
-        // Se inscrever para atualizações em tempo real do perfil do usuário
-        if (!channel) {
-          channel = supabase
-            .channel(`profile-realtime-${user.id}`)
-            .on(
-              'postgres_changes',
-              {
-                event: 'UPDATE',
-                schema: 'public',
-                table: 'profiles',
-                filter: `id=eq.${user.id}`
-              },
-              (payload: any) => {
-                const newProfile = payload.new;
-                const oldProfile = profileRef.current;
-
-                setProfile(newProfile);
-                window.dispatchEvent(new Event('profile-updated'));
-
-                // Se o saldo de créditos aumentou, mostra a notificação mágica
-                if (oldProfile && newProfile.credits > oldProfile.credits) {
-                  const added = newProfile.credits - oldProfile.credits;
-                  toast.success(`💥 Arsenal Recarregado! +${added} Créditos adicionados!`, {
-                    description: `Confirmado via Pix. Seu novo saldo é de ${newProfile.credits} créditos de poder.`,
-                    duration: 10000,
-                  });
-                }
-              }
-            )
-            .subscribe();
-        }
       }
     }
 
     fetchProfile();
 
-    // Listen for profile updates from settings
+    // Ouvir atualizações locais do settings
     window.addEventListener('profile-updated', fetchProfile);
     
     return () => {
       window.removeEventListener('profile-updated', fetchProfile);
+    };
+  }, []);
+
+  // 2. Conexão isolada e blindada para o Realtime (Tempo Real)
+  useEffect(() => {
+    let channel: any;
+
+    async function initRealtime() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      channel = supabase
+        .channel(`profile-realtime-${user.id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'profiles',
+            filter: `id=eq.${user.id}`
+          },
+          (payload: any) => {
+            const newProfile = payload.new;
+            const oldProfile = profileRef.current;
+
+            setProfile(newProfile);
+            window.dispatchEvent(new Event('profile-updated'));
+
+            // Notificação visual de recarga
+            if (oldProfile && newProfile.credits > oldProfile.credits) {
+              const added = newProfile.credits - oldProfile.credits;
+              toast.success(`💥 Arsenal Recarregado! +${added} Créditos adicionados!`, {
+                description: `Confirmado via Pix. Seu novo saldo é de ${newProfile.credits} créditos de poder.`,
+                duration: 10000,
+              });
+            }
+          }
+        )
+        .subscribe();
+    }
+
+    initRealtime();
+
+    return () => {
       if (channel) {
         supabase.removeChannel(channel);
       }
