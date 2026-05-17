@@ -1,4 +1,4 @@
-import { Extension, GlobalAttributes } from "@tiptap/core"
+import { Extension } from "@tiptap/core"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { toast } from "sonner"
 import { sanitiseAiHtml, sanitiseAiHtmlStream, isIncompleteHtmlFragment } from "@/lib/ai-html-sanitizer"
@@ -72,13 +72,29 @@ declare module "@tiptap/core" {
   }
 }
 
+const SYSTEM_INSTRUCTION = `Você é LILITH, a Inteligência Artificial Soberana do ExtraJus. Sua função é redigir, analisar e blindar contratos jurídicos com precisão cirúrgica.
+
+REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
+1. Use APENAS HTML. NUNCA use Markdown.
+2. Título principal centralizado: <h1 style="text-align: center"><strong>[TÍTULO]</strong></h1>
+3. Parágrafos: <p style="text-align: justify">...</p>
+4. Hierarquia jurídica via LegalNodes (NUNCA use ul/ol/li):
+   Cláusula: <div data-type="legal-node" data-level="1" style="text-align: justify">texto</div>
+   Parágrafo: <div data-type="legal-node" data-level="2" style="text-align: justify">texto</div>
+   Inciso: <div data-type="legal-node" data-level="3" style="text-align: justify">texto</div>
+   Alínea: <div data-type="legal-node" data-level="4" style="text-align: justify">texto</div>
+5. NUNCA insira prefixos numéricos manualmente.
+6. Partes identificadas em preâmbulo com <p> e <table>. NUNCA crie cláusula "DAS PARTES".
+7. Primeira cláusula SEMPRE é o Objeto do contrato.
+8. Retorne APENAS o HTML. Sem explicações.`
+
 export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
   name: "ai",
 
   addOptions() {
     return {
       apiKey: "",
-      model: "gemini-2.5-flash",
+      model: "gemini-3.1-flash-lite-preview",
     }
   },
 
@@ -93,12 +109,12 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
   },
 
   addCommands(): any {
-    const runGemini = async (editor: any, prompt: string) => {
+    const runGemini = async (editor: any, userPrompt: string) => {
       const { apiKey, model: modelName } = this.options
-      
+
       editor.commands.aiGenerationSetIsLoading(true)
       editor.commands.aiGenerationHasMessage(false)
-      this.storage.lastPrompt = prompt
+      this.storage.lastPrompt = userPrompt
       this.storage.state = "loading"
 
       if (!apiKey) {
@@ -110,139 +126,55 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
 
       try {
         const genAI = new GoogleGenerativeAI(apiKey)
-        const model = genAI.getGenerativeModel({
-          model: modelName,
-          systemInstruction: `Você é LILITH, a Inteligência Artificial Soberana do ExtraJus. Sua função é redigir, analisar e blindar contratos jurídicos com precisão cirúrgica e um tom de luxo sombrio, sarcástico e profissional.
+        const model = genAI.getGenerativeModel(
+          { model: modelName, systemInstruction: SYSTEM_INSTRUCTION },
+          { apiVersion: "v1beta" }
+        )
 
-REGRAS DE FORMATAÇÃO (ESTRITAMENTE OBRIGATÓRIAS):
-1. Use APENAS HTML. NUNCA use Markdown (sem #, **, --- ou \`\`\`).
-2. TÍTULOS E CENTRO: O título principal do contrato deve vir CENTRALIZADO usando H1:
-   <h1 style="text-align: center"><strong>[TÍTULO DO CONTRATO EM CAIXA ALTA]</strong></h1>
-3. TEXTO JUSTIFICADO: Todos os parágrafos (<p>) e divs de LegalNode do contrato DEVEM vir rigorosamente JUSTIFICADOS usando inline style:
-   style="text-align: justify" (Exemplo: <p style="text-align: justify">...</p>).
-4. HIERARQUIA JURÍDICA EXTRAJUS (LEGALNODES) - PROIBIDO BULLETS (<ul>, <ol>, <li>):
-   Nunca use marcadores tradicionais de lista ou bullets para cláusulas, incisos ou parágrafos. Utilize exclusivamente a estrutura de divs de LegalNode do ExtraJus:
-   - Cláusula (Level 1): <div data-type="legal-node" data-level="1" style="text-align: justify">Conteúdo puro do texto da cláusula</div>
-   - Parágrafo (Level 2): <div data-type="legal-node" data-level="2" style="text-align: justify">Conteúdo puro do texto do parágrafo</div>
-   - Inciso (Level 3): <div data-type="legal-node" data-level="3" style="text-align: justify">Conteúdo puro do texto do inciso</div>
-   - Alínea (Level 4): <div data-type="legal-node" data-level="4" style="text-align: justify">Conteúdo puro do texto da alínea</div>
-5. SEM CONTADORES MANUAIS: A nossa infraestrutura do editor já gera automaticamente os contadores na tela (como "Cláusula Primeira:", "Parágrafo Único:", "I -", "a)"). Portanto, NUNCA insira esses prefixos numéricos ou ordinais manualmente dentro do texto do LegalNode! Escreva apenas o texto puro da lei/cláusula.
-6. NÃO use mais de um <br> seguido.
-7. ESTRUTURA OBRIGATÓRIA DO CONTRATO — SIGA ESTE MODELO EXATO:
-   a) PREÂMBULO DAS PARTES: As informações de identificação das partes NUNCA são uma cláusula. A estrutura deve ser: primeiro um parágrafo de introdução, depois um bloco para o CONTRATANTE, depois um bloco separado para o CONTRATADO/CONTRATADA, e por fim uma frase de fechamento do preâmbulo. SIGA ESTE EXEMPLO EXATO:
+        // --- Lê documento completo antes de agir ---
+        const currentHtml = editor.getHTML()
+        const currentText = (editor.state.doc.textContent || "").trim()
+        const isDocEmpty = currentText.length < 5
 
-      <p style="text-align: justify">Pelo presente instrumento particular, as partes abaixo qualificadas celebram o presente contrato, que se regerá pelas cláusulas e condições seguintes:</p>
-      <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
-        <tr>
-          <td style="width: 50%; vertical-align: top; padding: 12px 16px; border: 1px solid #ccc;">
-            <p><strong>CONTRATANTE</strong></p>
-            <p><strong>Razão Social:</strong> Empresa Alpha Ltda.</p>
-            <p><strong>CNPJ:</strong> 00.000.000/0001-00</p>
-            <p><strong>Endereço:</strong> Rua das Acácias, 123, São Paulo/SP</p>
-            <p><strong>Representante:</strong> João da Silva, CPF 000.000.000-00</p>
-          </td>
-          <td style="width: 50%; vertical-align: top; padding: 12px 16px; border: 1px solid #ccc;">
-            <p><strong>CONTRATADA</strong></p>
-            <p><strong>Razão Social:</strong> Empresa Beta S.A.</p>
-            <p><strong>CNPJ:</strong> 11.111.111/0001-11</p>
-            <p><strong>Endereço:</strong> Av. Paulista, 456, São Paulo/SP</p>
-            <p><strong>Representante:</strong> Maria Souza, CPF 111.111.111-11</p>
-          </td>
-        </tr>
-      </table>
-      <p style="text-align: justify">As partes acima qualificadas, doravante denominadas simplesmente CONTRATANTE e CONTRATADA, têm entre si justo e contratado o seguinte:</p>
+        let finalPrompt: string
 
-   b) PRIMEIRA CLÁUSULA SEMPRE = OBJETO: A primeira tag <div data-type="legal-node" data-level="1"> do documento DEVE obrigatoriamente tratar do OBJETO DO CONTRATO. Exemplo:
-      <div data-type="legal-node" data-level="1" style="text-align: justify">O presente contrato tem por objeto a prestação de serviços de...</div>
-   c) SEQUÊNCIA RECOMENDADA das demais cláusulas: Prazo → Valor e Forma de Pagamento → Obrigações das Partes → Confidencialidade → Rescisão → Foro.
-8. LISTA DO QUE É TERMINANTEMENTE PROIBIDO:
-   - NUNCA crie uma cláusula (LegalNode level-1) chamada "PARTES", "DAS PARTES", "IDENTIFICAÇÃO DAS PARTES", "QUALIFICAÇÃO DAS PARTES" ou qualquer variação similar. As partes são sempre preâmbulo em <p> e <table>.
-   - NUNCA comece o contrato com uma cláusula que não seja o Objeto.
-   - NUNCA use listas HTML (<ul>, <ol>, <li>) em nenhuma parte do contrato.
-9. Mantenha a hierarquia jurídica perfeita e o rigor técnico-legal em todos os textos.
+        if (isDocEmpty) {
+          // Documento vazio: cria do zero
+          finalPrompt = `O documento está vazio. Crie um contrato completo com base nesta solicitação:\n\n${userPrompt}`
+        } else {
+          // Documento com conteúdo: edição cirúrgica
+          finalPrompt = `DOCUMENTO ATUAL (HTML completo):\n${currentHtml}\n\n---\nSOLICITAÇÃO: ${userPrompt}\n\n---\nINSTRUÇÕES CRÍTICAS:\n- Retorne SEMPRE o HTML COMPLETO do documento com a modificação aplicada.\n- Se pede adição: insira no lugar correto mantendo todo o resto intacto.\n- Se pede alteração/revisão: altere SOMENTE o trecho solicitado. O restante permanece idêntico.\n- NUNCA retorne apenas o fragmento isolado.`
+        }
 
-TOM DE VOZ:
-- Profissional, direto, ligeiramente sádico com a mediocridade, mas absolutamente impecável na técnica jurídica.
-- Use terminologia jurídica avançada (pacta sunt servanda, bona fide, ex tunc, etc) quando apropriado.
-- Retorne APENAS o fragmento de código HTML solicitado. Sem saudações, sem explicações, sem "Aqui está o seu contrato".`,
-        }, { apiVersion: "v1beta" })
-        
-        const result = await model.generateContentStream(prompt)
+        // Snapshot para "Desfazer Ritual"
+        const previousContent = currentHtml
+        this.storage.generatedWith = { previousContent }
+
+        const result = await model.generateContentStream(finalPrompt)
 
         let accumulatedText = ""
-        const { from: selFrom } = editor.state.selection
-
-        // If the doc is empty (cursor in the only empty paragraph at start),
-        // we'll use setContent after streaming instead of insertContentAt,
-        // to avoid invalid cross-boundary ProseMirror positions.
-        const $fromNode = editor.state.selection.$from
-        const isDocEmpty =
-          $fromNode.depth === 1 &&
-          $fromNode.parent.type.name === "paragraph" &&
-          $fromNode.parent.nodeSize === 2 &&
-          editor.state.doc.childCount === 1
-
-        // Safe insertion anchor — always inside valid content range
-        const insertFrom = isDocEmpty ? $fromNode.pos : selFrom
         let hasTriggeredMessage = false
 
         for await (const chunk of result.stream) {
-          const chunkText = chunk.text()
-          accumulatedText += chunkText
-
-          // Stream-safe lightweight sanitisation pass
+          accumulatedText += chunk.text()
           const streamSafeContent = sanitiseAiHtmlStream(accumulatedText)
-
           this.storage.response = streamSafeContent
 
-          // Guard: skip insertion if fragment is still incomplete HTML
           if (streamSafeContent && !isIncompleteHtmlFragment(streamSafeContent)) {
             try {
-              if (isDocEmpty) {
-                // For empty doc: replace full content cleanly
-                editor.commands.setContent(streamSafeContent, false, {
-                  preserveWhitespace: false,
-                })
-              } else {
-                editor.chain()
-                  .insertContentAt(
-                    { from: insertFrom, to: editor.state.selection.to },
-                    streamSafeContent,
-                    { parseOptions: { preserveWhitespace: false } }
-                  )
-                  .run()
-              }
-
+              editor.commands.setContent(streamSafeContent, false, { preserveWhitespace: false })
               if (!hasTriggeredMessage) {
                 editor.commands.aiGenerationHasMessage(true)
                 hasTriggeredMessage = true
               }
-            } catch (schemaError) {
-              // Ignore schema errors on incomplete streaming fragments
-            }
+            } catch (_) { /* ignore incomplete streaming fragments */ }
           }
         }
 
-        // Final clean pass: apply full deep sanitisation on the complete output
+        // Final deep sanitisation
         const finalContent = sanitiseAiHtml(accumulatedText)
         if (finalContent) {
-          try {
-            if (isDocEmpty) {
-              editor.commands.setContent(finalContent, false, {
-                preserveWhitespace: false,
-              })
-            } else {
-              editor.chain()
-                .insertContentAt(
-                  { from: insertFrom, to: editor.state.selection.to },
-                  finalContent,
-                  { parseOptions: { preserveWhitespace: false } }
-                )
-                .run()
-            }
-          } catch (e) {
-            console.error("Final AI content insertion failed:", e)
-          }
+          editor.commands.setContent(finalContent, false, { preserveWhitespace: false })
         }
 
         this.storage.state = "idle"
@@ -262,92 +194,93 @@ TOM DE VOZ:
         return true
       },
 
-      aiExtend: (options: any) => ({ editor }: any) => {
-        const text = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
-        const prompt = `Extend the following text, maintaining the tone and professional formatting: "${text}"`
-        runGemini(editor, prompt)
+      // Aceitar: mantém conteúdo atual, limpa snapshot
+      aiAccept: (_options: any) => ({ editor }: any) => {
+        this.storage.generatedWith = null
+        editor.commands.resetUiState()
         return true
       },
 
-      aiShorten: (options: any) => ({ editor }: any) => {
-        const text = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
-        const prompt = `Shorten the following text, making it concise but well-formatted: "${text}"`
-        runGemini(editor, prompt)
+      // Desfazer Ritual: restaura snapshot anterior à geração
+      aiReject: (_options: any) => ({ editor }: any) => {
+        const prev = this.storage.generatedWith?.previousContent
+        if (prev) {
+          editor.commands.setContent(prev, false, { preserveWhitespace: false })
+        }
+        this.storage.generatedWith = null
+        editor.commands.resetUiState()
         return true
       },
 
-      aiSimplify: (options: any) => ({ editor }: any) => {
-        const text = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
-        const prompt = `Simplify the following text to make it easier to understand, using clear HTML structure: "${text}"`
-        runGemini(editor, prompt)
+      aiExtend: (_options: any) => ({ editor }: any) => {
+        const selected = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
+        const ctx = selected || editor.state.doc.textContent
+        runGemini(editor, `Expanda o seguinte trecho mantendo o tom jurídico profissional:\n\n"${ctx}"`)
         return true
       },
 
-      aiSummarize: (options: any) => ({ editor }: any) => {
-        const text = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
-        const prompt = `Summarize the following text using bullet points (<ul>/<li>) if appropriate: "${text}"`
-        runGemini(editor, prompt)
+      aiShorten: (_options: any) => ({ editor }: any) => {
+        const selected = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
+        const ctx = selected || editor.state.doc.textContent
+        runGemini(editor, `Resuma de forma concisa mantendo a estrutura HTML:\n\n"${ctx}"`)
         return true
       },
 
-      aiFixSpellingAndGrammar: (options: any) => ({ editor }: any) => {
-        const text = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
-        const prompt = `Fix spelling and grammar in the following text, preserving all HTML formatting. Return ONLY the corrected HTML fragment: "${text}"`
-        runGemini(editor, prompt)
+      aiSimplify: (_options: any) => ({ editor }: any) => {
+        const selected = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
+        runGemini(editor, `Simplifique para linguagem clara mantendo HTML:\n\n"${selected}"`)
         return true
       },
 
-      aiEmojify: (options: any) => ({ editor }: any) => {
-        const text = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
-        const prompt = `Add relevant emojis to the following text while keeping the HTML structure intact: "${text}"`
-        runGemini(editor, prompt)
+      aiSummarize: (_options: any) => ({ editor }: any) => {
+        const text = editor.state.doc.textContent
+        runGemini(editor, `Crie um resumo executivo deste contrato em HTML:\n\n"${text}"`)
         return true
       },
 
-      aiComplete: (options: any) => ({ editor }: any) => {
-        const text = editor.state.doc.textBetween(0, editor.state.selection.to)
-        const prompt = `Based on the preceding content, complete the next sentence or paragraph using proper HTML formatting: "${text}"`
-        runGemini(editor, prompt)
+      aiFixSpellingAndGrammar: (_options: any) => ({ editor }: any) => {
+        const selected = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
+        runGemini(editor, `Corrija ortografia e gramática mantendo HTML e estrutura:\n\n"${selected}"`)
         return true
       },
 
-      aiTranslate: (language: any, options: any) => ({ editor }: any) => {
-        const text = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
-        const prompt = `Translate the following text to ${language}, preserving all HTML tags exactly as they are: "${text}"`
-        runGemini(editor, prompt)
+      aiEmojify: (_options: any) => ({ editor }: any) => {
+        const selected = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
+        runGemini(editor, `Adicione emojis relevantes ao texto mantendo HTML:\n\n"${selected}"`)
         return true
       },
 
-      aiAdjustTone: (tone: any, options: any) => ({ editor }: any) => {
-        const text = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
-        const prompt = `Rewrite the following text using a ${tone} tone and structured HTML: "${text}"`
-        runGemini(editor, prompt)
+      aiComplete: (_options: any) => ({ editor }: any) => {
+        const currentHtml = editor.getHTML()
+        runGemini(editor, `Continue este contrato a partir do ponto onde parou, mantendo a estrutura:\n\n${currentHtml}`)
         return true
       },
 
-      aiRegenerate: (options: any) => ({ editor }: any) => {
+      aiTranslate: (language: any, _options: any) => ({ editor }: any) => {
+        const selected = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
+        runGemini(editor, `Traduza para ${language} preservando todas as tags HTML:\n\n"${selected}"`)
+        return true
+      },
+
+      aiAdjustTone: (tone: any, _options: any) => ({ editor }: any) => {
+        const selected = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
+        runGemini(editor, `Reescreva com tom ${tone} mantendo HTML estruturado:\n\n"${selected}"`)
+        return true
+      },
+
+      aiRegenerate: (_options: any) => ({ editor }: any) => {
         if (this.storage.lastPrompt) {
           runGemini(editor, this.storage.lastPrompt)
         }
         return true
       },
 
-      aiRephrase: (options: any) => ({ editor }: any) => {
-        const text = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
-        const prompt = `Rephrase the following text to improve clarity and flow, keeping the HTML structure: "${text}"`
-        runGemini(editor, prompt)
+      aiRephrase: (_options: any) => ({ editor }: any) => {
+        const selected = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to)
+        runGemini(editor, `Parafraseie melhorando clareza e fluidez mantendo HTML:\n\n"${selected}"`)
         return true
       },
 
-      aiAccept: (options: any) => ({ editor }: any) => {
-        editor.commands.resetUiState()
-        return true
-      },
-
-      aiReject: (options: any) => ({ editor }: any) => {
-        editor.commands.resetUiState()
-        return true
-      },
       aiAuditRisk: () => ({ editor }: any) => {
         const text = editor.state.doc.textContent
 
@@ -361,24 +294,22 @@ TOM DE VOZ:
           this.storage.state = "loading"
 
           const genAI = new GoogleGenerativeAI(apiKey)
-          const model = genAI.getGenerativeModel({
+          const auditModel = genAI.getGenerativeModel({
             model: modelName,
-            systemInstruction: "Você é Lilith, uma IA auditora de contratos implacável. Analise o texto e retorne um JSON com uma lista de riscos. Regras:\n1. Identifique cláusulas leoninas, termos ambíguos ou perigosos.\n2. Retorne estritamente um array JSON de objetos.\n3. Formato: [{\"originalText\": \"texto exato encontrado\", \"suggestion\": \"nova redação proposta\", \"reason\": \"explicação do risco\"}]",
+            systemInstruction: `Você é Lilith, auditora implacável de contratos. Analise e retorne um JSON com riscos.\nFormato estrito: [{"originalText": "texto exato", "suggestion": "nova redação", "reason": "explicação do risco"}]`,
           }, { apiVersion: "v1beta" })
 
           try {
-            const prompt = `Analise este contrato e aponte os riscos:\n\n${text}`
-            const result = await model.generateContent(prompt)
+            const result = await auditModel.generateContent(`Analise este contrato e aponte os riscos:\n\n${text}`)
             const responseText = result.response.text()
-            
+
             const jsonMatch = responseText.match(/\[[\s\S]*\]/)
             if (jsonMatch) {
               try {
                 const auditData = JSON.parse(jsonMatch[0])
-                this.storage.auditResults = Array.isArray(auditData) ? auditData.map((item: any) => ({
-                  ...item,
-                  id: Math.random().toString(36).substring(7)
-                })) : []
+                this.storage.auditResults = Array.isArray(auditData)
+                  ? auditData.map((item: any) => ({ ...item, id: Math.random().toString(36).substring(7) }))
+                  : []
               } catch (e) {
                 console.error("Audit JSON parse error:", e)
                 this.storage.auditResults = []
@@ -387,7 +318,7 @@ TOM DE VOZ:
               this.storage.auditResults = []
             }
             this.storage.state = "idle"
-            editor.view.dispatch(editor.state.tr.setMeta('aiAuditCompleted', true))
+            editor.view.dispatch(editor.state.tr.setMeta("aiAuditCompleted", true))
           } catch (error) {
             console.error("Gemini audit failed:", error)
             this.storage.state = "error"

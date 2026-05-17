@@ -16,19 +16,12 @@ export async function POST(request: Request) {
     }
 
     const checkEmail = (email || '').toLowerCase().trim();
-    const userEmail = (user?.email || '').toLowerCase().trim();
 
-    if (!checkEmail && !userEmail) {
-      return NextResponse.json({ error: 'Você precisa estar autenticado para selar o pacto.' }, { status: 401 })
+    if (!checkEmail) {
+      return NextResponse.json({ error: 'O e-mail do signatário é obrigatório para selar o pacto.' }, { status: 400 })
     }
 
-    // [SEGURANÇA] Se o usuário está logado, ele SÓ pode assinar com o próprio e-mail da sessão.
-    // Isso evita que alguém assine por outro sabendo o código e o e-mail.
-    if (user && checkEmail && userEmail !== checkEmail) {
-      return NextResponse.json({ error: 'Tentativa de usurpação de identidade detectada. Você só pode selar com seu próprio e-mail autenticado.' }, { status: 403 });
-    }
-
-    const emailToVerify = userEmail || checkEmail;
+    const emailToVerify = checkEmail;
 
     // 1. Validar se o pacto existe e se o código está correto
     const { data: signature, error: sigError } = await supabase

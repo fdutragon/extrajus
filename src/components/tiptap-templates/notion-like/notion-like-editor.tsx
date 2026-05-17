@@ -441,6 +441,7 @@ export function EditorLayout() {
   const [sealingCode, setSealingCode] = useState("")
   const [consentCheck, setConsentCheck] = useState(false)
   const [isSealing, setIsSealing] = useState(false)
+  const [hasAudited, setHasAudited] = useState(false)
 
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
@@ -483,6 +484,19 @@ export function EditorLayout() {
     return Math.max(1, Math.ceil(wordCount / 200))
   }, [wordCount])
 
+  const auditScore = useMemo(() => {
+    if (!hasAudited) return 0;
+    return Math.max(0, 100 - (auditResults.length * 15));
+  }, [hasAudited, auditResults]);
+
+  const auditStatus = useMemo(() => {
+    if (!hasAudited) return { label: "Inativa", color: "text-muted-foreground bg-muted border-border", barColor: "bg-muted", desc: "Oráculo adormecido. Inicie a auditoria para avaliar o pacto." };
+    if (auditScore >= 90) return { label: "Soberano ✨", color: "text-[#c0ff00] bg-[#c0ff00]/10 border-[#c0ff00]/20", barColor: "bg-[#c0ff00]", desc: "Este pacto atingiu blindagem absoluta. As cláusulas estão impecáveis e extremamente seguras contra brechas de terceiros." };
+    if (auditScore >= 70) return { label: "Seguro 👍", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20", barColor: "bg-emerald-500", desc: "O contrato possui excelente blindagem. Alguns riscos pontuais foram identificados, mas a saúde estrutural é ótima." };
+    if (auditScore >= 50) return { label: "Vulnerável ⚠️", color: "text-amber-400 bg-amber-500/10 border-amber-500/20", barColor: "bg-amber-500", desc: "Presença de ambiguidades e riscos moderados. Sugerimos aplicar os ajustes recomendados pela IA Lilith." };
+    return { label: "Risco Crítico 🔥", color: "text-red-400 bg-red-500/10 border-red-500/20", barColor: "bg-red-500", desc: "Vulnerabilidade crítica detectada! O pacto está exposto a graves riscos jurídicos que ameaçam a sua blindagem." };
+  }, [hasAudited, auditScore]);
+
   const filteredContracts = useMemo(() => {
     return userContracts.filter(c => 
       c.title?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -508,6 +522,7 @@ export function EditorLayout() {
       setTimeout(() => {
         const results = (editor.storage as any).ai.auditResults
         setAuditResults(results || [])
+        setHasAudited(true)
         setIsAuditing(false)
         toast.success("Auditoria concluída. Analise os riscos detectados.", { id: toastId })
       }, 3000)
@@ -519,7 +534,53 @@ export function EditorLayout() {
   }
 
   const handleConfirmSignature = async () => {
-    // ... (rest of logic remains same)
+    if (!signerEmail) {
+      toast.error("Por favor, informe seu e-mail de convidado.")
+      return
+    }
+    if (!sealingCode || sealingCode.length !== 6) {
+      toast.error("Por favor, informe o código de selamento de 6 dígitos.")
+      return
+    }
+    if (!consentCheck) {
+      toast.error("Você precisa marcar o consentimento digital para prosseguir.")
+      return
+    }
+
+    setIsSealing(true)
+    const toastId = toast.loading("Selando o instrumento contratual na rede neural...")
+
+    try {
+      const response = await fetch("/api/sign/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contractId: room,
+          sealingCode,
+          email: signerEmail
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.error) {
+        throw new Error(data.error)
+      }
+
+      toast.success("Pacto selado com sucesso absoluta! A integridade digital foi garantida.", { id: toastId })
+      setSealingCode("")
+      setConsentCheck(false)
+      
+      // Pequeno delay para atualizar a tela e recarregar
+      setTimeout(() => {
+        window.location.reload()
+      }, 1500)
+
+    } catch (error: any) {
+      toast.error(error.message || "Erro desconhecido ao selar pacto.", { id: toastId })
+    } finally {
+      setIsSealing(false)
+    }
   }
 
   // Fetch dynamic content for Biblioteca and Logs
@@ -1083,45 +1144,93 @@ export function EditorLayout() {
 
                     <ScrollArea className="flex-1 -mx-2 px-2 custom-scrollbar">
                       <div className="space-y-6 pb-6">
-                        <div className="space-y-3">
-                          <h4 className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.25em] border-l-2 border-primary pl-2.5">Score de Risco</h4>
-                          
-                          {auditResults.length > 0 ? (
-                            <div className="space-y-4">
-                              <div className="flex items-baseline gap-2">
-                                <div className="text-4xl font-black tracking-tighter text-foreground">
-                                  {Math.max(0, 100 - (auditResults.length * 12))}
-                                </div>
-                                <div className="text-sm font-bold text-primary">%</div>
-                                <span className="text-[9px] font-bold text-muted-foreground uppercase ml-auto bg-muted/60 px-2 py-0.5 rounded border border-border">
-                                  {auditResults.length * 12 > 40 ? "Risco Alto ⚠️" : "Risco Baixo ✅"}
-                                </span>
+                        <div className="space-y-4">
+                          <h4 className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.25em] border-l-2 border-primary pl-2.5">
+                            Status de Blindagem
+                          </h4>
+
+                          {!hasAudited ? (
+                            <div className="py-16 text-center space-y-4 border border-dashed border-border rounded-2xl bg-muted/5 transition-colors">
+                              <Brain size={28} className="mx-auto text-muted-foreground animate-pulse" />
+                              <div className="space-y-1 px-4">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-foreground">
+                                  Análise Neural Inativa
+                                </p>
+                                <p className="text-[9px] text-muted-foreground max-w-[200px] mx-auto leading-relaxed">
+                                  Invoque o oráculo da IA Lilith para escanear brechas, ambiguidades e blindar este instrumento.
+                                </p>
                               </div>
-                              <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
-                                <div 
-                                  className="h-full bg-gradient-to-r from-primary to-primary/60 transition-all duration-1000" 
-                                  style={{ width: `${Math.max(0, 100 - (auditResults.length * 12))}%` }} 
-                                />
-                              </div>
-                              <div className="space-y-3 pt-2">
-                                 {auditResults.map((risk) => (
-                                   <div key={risk.id} className="p-4 rounded-2xl bg-red-500/[0.02] border border-red-500/10 space-y-2 group/risk hover:border-red-500/25 transition-all">
-                                     <p className="text-[9px] font-black text-red-400 uppercase tracking-widest flex items-center gap-1.5">
-                                       <ShieldAlert size={10} /> Cláusula de Risco
-                                     </p>
-                                     <p className="text-[10px] font-bold text-foreground italic">"{risk.originalText}"</p>
-                                     <p className="text-[9px] text-muted-foreground leading-relaxed">{risk.reason}</p>
-                                     <Button size="sm" className="w-full bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground text-[8px] font-black uppercase tracking-widest h-8 rounded-xl transition-all">
-                                        Aplicar Sugestão
-                                     </Button>
-                                   </div>
-                                 ))}
-                              </div>
+                              <Button 
+                                onClick={runAudit}
+                                disabled={isAuditing}
+                                className="bg-primary hover:opacity-90 text-primary-foreground font-black text-[9px] uppercase tracking-widest h-8 px-4 rounded-xl transition-all"
+                              >
+                                {isAuditing ? "Escaneando..." : "Iniciar Escaneamento"}
+                              </Button>
                             </div>
                           ) : (
-                            <div className="py-16 text-center space-y-3 opacity-20 border border-dashed border-border rounded-2xl">
-                              <Brain size={24} className="mx-auto" />
-                              <p className="text-[8px] font-black uppercase tracking-widest max-w-[160px] mx-auto leading-relaxed">Nenhuma vulnerabilidade detectada.<br />Execute o escaneamento.</p>
+                            <div className="space-y-5">
+                              {/* Shielding Health Panel */}
+                              <div className="p-5 rounded-2xl bg-muted/30 border border-border space-y-4">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
+                                    Score de Blindagem
+                                  </span>
+                                  <span className={cn("text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full border", auditStatus.color)}>
+                                    {auditStatus.label}
+                                  </span>
+                                </div>
+
+                                <div className="flex items-baseline gap-2">
+                                  <span className="text-5xl font-black tracking-tighter text-foreground">
+                                    {auditScore}
+                                  </span>
+                                  <span className="text-lg font-bold text-primary">%</span>
+                                </div>
+
+                                <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                                  <div 
+                                    className={cn("h-full transition-all duration-1000", auditStatus.barColor)}
+                                    style={{ width: `${auditScore}%` }} 
+                                  />
+                                </div>
+
+                                <p className="text-[9px] text-muted-foreground leading-relaxed italic">
+                                  "{auditStatus.desc}"
+                                </p>
+                              </div>
+
+                              {/* Cláusulas de Risco list */}
+                              {auditResults.length > 0 ? (
+                                <div className="space-y-3">
+                                  <h5 className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-2 pl-1">
+                                    Vulnerabilidades no Pacto ({auditResults.length})
+                                  </h5>
+                                  <div className="space-y-3">
+                                     {auditResults.map((risk) => (
+                                       <div key={risk.id} className="p-4 rounded-2xl bg-red-500/[0.02] border border-red-500/10 space-y-2.5 group/risk hover:border-red-500/25 transition-all">
+                                         <div className="flex items-center justify-between">
+                                           <span className="text-[9px] font-black text-red-400 uppercase tracking-widest flex items-center gap-1.5">
+                                             <ShieldAlert size={10} /> Cláusula de Risco
+                                           </span>
+                                           <span className="text-[8px] font-bold text-red-500/70 uppercase">Score -15%</span>
+                                         </div>
+                                         <p className="text-[10px] font-bold text-foreground italic">"{risk.originalText}"</p>
+                                         <p className="text-[9px] text-muted-foreground leading-relaxed">{risk.reason}</p>
+                                         <Button size="sm" className="w-full bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground text-[8px] font-black uppercase tracking-widest h-8 rounded-xl transition-all">
+                                            Aplicar Sugestão de Blindagem
+                                         </Button>
+                                       </div>
+                                     ))}
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="p-6 text-center space-y-3 border border-dashed border-[#c0ff00]/30 bg-[#c0ff00]/[0.01] rounded-2xl">
+                                  <ShieldCheck size={28} className="mx-auto text-[#c0ff00]" />
+                                  <p className="text-[10px] font-black uppercase tracking-widest text-[#c0ff00]">Blindagem Total Confirmada</p>
+                                  <p className="text-[9px] text-muted-foreground max-w-[200px] mx-auto leading-relaxed">Nenhuma brecha estrutural detectada pela rede neural da IA Lilith. O pacto está chancelado.</p>
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
