@@ -70,50 +70,42 @@ export default function DashboardLayoutClient({
 
   // 2. Conexão isolada e blindada para o Realtime (Tempo Real)
   useEffect(() => {
-    let channel: any;
+    if (!profile?.id) return;
 
-    async function initRealtime() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+    const channel = supabase
+      .channel(`profile-realtime-${profile.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${profile.id}`
+        },
+        (payload: any) => {
+          const newProfile = payload.new;
+          const oldProfile = profileRef.current;
 
-      channel = supabase
-        .channel(`profile-realtime-${user.id}`)
-        .on(
-          'postgres_changes',
-          {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'profiles',
-            filter: `id=eq.${user.id}`
-          },
-          (payload: any) => {
-            const newProfile = payload.new;
-            const oldProfile = profileRef.current;
+          setProfile(newProfile);
+          window.dispatchEvent(new Event('profile-updated'));
 
-            setProfile(newProfile);
-            window.dispatchEvent(new Event('profile-updated'));
-
-            // Notificação visual de recarga
-            if (oldProfile && newProfile.credits > oldProfile.credits) {
-              const added = newProfile.credits - oldProfile.credits;
-              toast.success(`💥 Arsenal Recarregado! +${added} Créditos adicionados!`, {
-                description: `Confirmado via Pix. Seu novo saldo é de ${newProfile.credits} créditos de poder.`,
-                duration: 10000,
-              });
-            }
+          // Notificação visual de recarga
+          if (oldProfile && newProfile.credits > oldProfile.credits) {
+            const added = newProfile.credits - oldProfile.credits;
+            toast.success(`💥 Arsenal Recarregado! +${added} Créditos adicionados!`, {
+              description: `Confirmado via Pix. Seu novo saldo é de ${newProfile.credits} créditos de poder.`,
+              duration: 10000,
+            });
           }
-        )
-        .subscribe();
-    }
+        }
+      );
 
-    initRealtime();
+    channel.subscribe();
 
     return () => {
-      if (channel) {
-        supabase.removeChannel(channel);
-      }
+      supabase.removeChannel(channel);
     };
-  }, []);
+  }, [profile?.id]);
 
   // Persist sidebar state
   useEffect(() => {
