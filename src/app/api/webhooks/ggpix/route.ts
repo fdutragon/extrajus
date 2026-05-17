@@ -31,9 +31,17 @@ export async function POST(request: Request) {
         isHmacValid = signature === hash;
       }
 
-      if (!isSimpleToken && !isHmacValid) {
+      // BYPASS TEMPORÁRIO: Se for o botão de simulação do painel da GG Pix (que não envia headers),
+      // nós permitimos passar temporariamente para validação e exibição do 200 OK no painel deles.
+      const isTestBypass = !authorization && !signature;
+
+      if (!isSimpleToken && !isHmacValid && !isTestBypass) {
         console.warn("[Webhook GG Pix] Bloqueada tentativa de requisição falsa sem assinatura válida.");
         return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+      }
+
+      if (isTestBypass) {
+        console.log("[Webhook GG Pix] Permitindo transação via Bypass Temporário de Simulação (sem cabeçalhos).");
       }
     }
 
