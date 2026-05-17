@@ -91,9 +91,10 @@ export async function POST(request: Request) {
 
       if (updateTxError) throw updateTxError;
 
-      // 3. Adicionar créditos ao usuário (Conversão 1 centavo = 1 ponto de poder? Ou customizado)
-      // Vamos assumir que 1 Real (100 centavos) = 10 Créditos (Ajustável)
-      const creditsToAdd = Math.floor(amount / 10); 
+      // 3. Adicionar créditos ao usuário (Conversão Ajustada: 3 Créditos por 1 Real)
+      // amount vem em centavos do GG Pix (ex: R$ 1,00 = 100 centavos).
+      // Então, credits = (amount * 3) / 100
+      const creditsToAdd = Math.floor((amount * 3) / 100); 
 
       const { error: updateProfileError } = await supabase.rpc('increment_credits', {
         user_id: transaction.user_id,
