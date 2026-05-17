@@ -32,6 +32,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Toaster } from "sonner";
 
 export default function RootLayout({
   children,
@@ -53,6 +54,7 @@ export default function RootLayout({
         >
           <TooltipProvider>
             {children}
+            <Toaster richColors closeButton theme="dark" position="bottom-right" />
             <Analytics />
             <SpeedInsights />
           </TooltipProvider>
