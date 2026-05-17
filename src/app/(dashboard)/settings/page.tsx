@@ -364,7 +364,7 @@ export default function SettingsPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {[
-                      { credits: 100, price: 10, label: "Iniciado", color: "text-blue-500" },
+                      { credits: 3, price: 1, label: "Teste Real", color: "text-blue-500" },
                       { credits: 550, price: 50, label: "Profissional", color: "text-primary", popular: true },
                       { credits: 1200, price: 100, label: "Imperial", color: "text-amber-500" },
                     ].map((pkg) => (
