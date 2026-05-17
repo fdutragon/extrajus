@@ -235,29 +235,31 @@ export default function AdminDashboard() {
                     <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1f1f23" opacity={0.5} />
                 <XAxis 
                   dataKey="name" 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{fill: 'hsl(var(--muted-foreground))', fontSize: 10, fontWeight: 700}}
+                  tick={{fill: '#a1a1aa', fontSize: 10, fontWeight: 700}}
                   dy={10}
                 />
                 <YAxis 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{fill: 'hsl(var(--muted-foreground))', fontSize: 10, fontWeight: 700}}
+                  tick={{fill: '#a1a1aa', fontSize: 10, fontWeight: 700}}
                   tickFormatter={(value) => `R$ ${value}`}
                 />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: 'hsl(var(--card))', 
+                    backgroundColor: '#0f0f11', 
                     borderRadius: '16px', 
-                    border: '1px solid hsl(var(--border))',
+                    border: '1px solid #27272a',
                     fontSize: '11px',
                     fontWeight: '800',
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                    color: '#ffffff',
+                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
                   }}
+                  itemStyle={{ color: '#c0ff00' }}
                   formatter={(value: any) => [`R$ ${Number(value || 0).toLocaleString('pt-BR')}`, 'Receita']}
                 />
                 <Area 
