@@ -36,6 +36,11 @@ import {
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({ totalUsers: 0, totalRevenue: 0 });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [users, setUsers] = useState<any[]>([]);
   const [chartData, setChartData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -428,7 +433,9 @@ export default function AdminDashboard() {
           </div>
           
           <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
+            {mounted && (
+              <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+
               <AreaChart data={chartData.length > 0 ? chartData : [{name: 'Sem Dados', value: 0}]}>
                 <defs>
                   <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
@@ -473,7 +480,8 @@ export default function AdminDashboard() {
                   animationDuration={2000}
                 />
               </AreaChart>
-            </ResponsiveContainer>
+                          </ResponsiveContainer>
+            )}
           </div>
         </Card>
 
