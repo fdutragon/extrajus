@@ -13,8 +13,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ExtraJus - O Google Docs dos Contratos",
-  description: "Plataforma de inteligência jurídica para redação de contratos de alto impacto.",
+  title: "ExtraJus — Inteligência Jurídica e Contratos de Alto Impacto",
+  description: "Ecossistema de alta tecnologia e inteligência artificial para redação, auditoria e blindagem contratual definitiva.",
+  icons: {
+    icon: [
+      { url: "/icon.svg?v=7", type: "image/svg+xml" }
+    ],
+    shortcut: "/icon.svg?v=7",
+    apple: "/icon.svg?v=7"
+  },
   robots: {
     index: true,
     follow: true,

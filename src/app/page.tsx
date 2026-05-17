@@ -30,6 +30,7 @@ import dynamic from "next/dynamic";
 import React, { useMemo, useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/ui/logo";
 
 // Dynamic import for the graph
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
@@ -87,8 +88,8 @@ export default function Home() {
             : "bg-transparent border-transparent"
         )}>
           <div className="flex items-center gap-6 pl-4">
-            <Link href="/" className="flex items-center gap-2 group">
-              <span className="text-sm font-bold tracking-tight text-foreground uppercase italic">ExtraJus</span>
+            <Link href="/" className="flex items-center group">
+              <Logo iconSize={36} showText={true} />
             </Link>
             <div className="hidden md:flex items-center gap-6 text-[11px] font-medium uppercase tracking-wider">
               <a href="#arsenal" className="hover:text-foreground transition-colors">Arsenal</a>
@@ -536,8 +537,8 @@ export default function Home() {
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 pb-20">
             <div className="md:col-span-2 space-y-6">
-              <div className="flex items-center gap-2">
-                <span className="text-xl font-bold tracking-tight text-foreground uppercase italic">ExtraJus</span>
+              <div className="flex items-center">
+                <Logo iconSize={48} showText={true} />
               </div>
               <p className="text-sm text-muted-foreground max-w-sm font-medium">
                 O núcleo de inteligência definitiva para operações jurídicas de alto impacto. Projetado para quem não aceita a mediocridade.

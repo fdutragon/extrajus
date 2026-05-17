@@ -1,4 +1,4 @@
-import { Shield } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
 import Link from "next/link";
 
 export default function AuthLayout({
@@ -10,9 +10,9 @@ export default function AuthLayout({
     <div className="min-h-screen grid lg:grid-cols-2 bg-background transition-colors duration-500">
       <div className="hidden lg:flex flex-col justify-between p-12 bg-muted/20 dark:bg-card border-r border-border relative overflow-hidden">
         <div className="absolute inset-0 bg-primary/5 dark:bg-primary/10 blur-[100px] rounded-full -translate-x-1/2 -translate-y-1/2" />
-        
-        <Link href="/" className="flex items-center gap-1.5 relative z-10 group">
-          <span className="text-xl font-bold tracking-tight text-primary uppercase italic">ExtraJus</span>
+
+        <Link href="/" className="flex items-center relative z-10 group">
+          <Logo iconSize={48} showText={true} />
         </Link>
 
         <div className="relative z-10">

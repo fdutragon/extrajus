@@ -7,6 +7,7 @@ import { createPortal } from "react-dom"
 import { SupabaseYjsProvider } from "../../../lib/supabase-yjs-provider"
 import { Gemini } from "../../../components/tiptap-extension/gemini-ai-extension"
 import { createClient } from "@/utils/supabase/client"
+import { Logo } from "@/components/ui/logo"
 
 // --- Tiptap Core Extensions ---
 import { StarterKit } from "@tiptap/starter-kit"
@@ -109,6 +110,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Slider } from "@/components/ui/slider"
 import { toast } from "sonner"
 import { Separator } from "../../../components/tiptap-ui-primitive/separator"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -202,12 +204,9 @@ export function LoadingSpinner({ text = "Invocando Ritual..." }: { text?: string
       <div className="relative flex flex-col items-center gap-8 animate-in fade-in zoom-in duration-1000">
         {/* The Portal (Logo) */}
         <div className="relative group">
-          <div className="absolute -inset-8 bg-primary/20 blur-[50px] rounded-full animate-pulse transition-all duration-700" />
+          <div className="absolute -inset-10 bg-primary/10 blur-[60px] rounded-full animate-pulse transition-all duration-700" />
           <div className="relative flex flex-col items-center">
-            <span className="text-[24px] font-black uppercase tracking-[0.6em] text-primary">
-              ExtraJus
-            </span>
-            <div className="h-px w-full bg-gradient-to-r from-transparent via-primary/50 to-transparent mt-2 scale-x-0 animate-in slide-in-from-left duration-1000 fill-mode-forwards" style={{ animationDelay: '500ms' }} />
+            <Logo iconSize={64} className="flex-col text-center gap-4" />
           </div>
         </div>
 
@@ -446,6 +445,8 @@ export function EditorLayout() {
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const [fontSize, setFontSize] = useState<number>(18)
+  const [fontFamily, setFontFamily] = useState<string>("Lora")
 
   const handleManualSave = async () => {
     if (!provider) {
@@ -632,6 +633,12 @@ export function EditorLayout() {
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden relative font-sans selection:bg-primary/30">
+      <style dangerouslySetInnerHTML={{ __html: `
+        .tiptap.ProseMirror {
+          font-family: ${fontFamily === "Lora" ? '"Lora", serif' : fontFamily === "Inter" ? '"Inter", sans-serif' : fontFamily === "Times New Roman" ? '"Times New Roman", serif' : '"JetBrains Mono", monospace'} !important;
+          font-size: ${fontSize}px !important;
+        }
+      ` }} />
       
       {/* Background Ornaments */}
       <div className="absolute top-12 left-12 w-24 h-px bg-foreground/[0.03]" />
@@ -679,9 +686,13 @@ export function EditorLayout() {
               </span>
             </div>
           )}
-          <div className="flex flex-col">
-            <div className="flex items-baseline gap-2 group/brand cursor-default">
-              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground truncate max-w-[240px]">{fileName}.docx</span>
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground truncate max-w-[160px]">{fileName}.docx</span>
+            <div className="h-4 w-px bg-border/50" />
+            <div className="flex items-center gap-2.5 text-[9px] font-bold text-muted-foreground/50 tracking-wider">
+              <span className="bg-primary/5 text-primary/70 px-2 py-0.5 rounded-full border border-primary/10 font-black uppercase tracking-[0.1em]">Soberano v2.4.0</span>
+              <span className="flex items-center gap-1"><FileText size={10} /> {wordCount} palavras</span>
+              <span className="flex items-center gap-1"><Cpu size={10} /> {readTime} min</span>
             </div>
           </div>
         </div>
@@ -800,6 +811,85 @@ export function EditorLayout() {
 
               <ScrollArea className="flex-1 -mx-2 px-2 custom-scrollbar">
                 <div className="space-y-6 pb-6">
+                  {/* Tipografia Soberana */}
+                  <div className="space-y-4 p-4 rounded-2xl bg-muted/30 border border-border/40 relative overflow-hidden group/tipografia">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-50" />
+                    <div className="flex items-center justify-between border-b border-border/40 pb-2">
+                      <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground">Tipografia Soberana</span>
+                      <span className="text-[10px]">🖋️</span>
+                    </div>
+                    
+                    {/* Font Style Selection */}
+                    <div className="space-y-1.5">
+                      <label className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/80">Estilo de Letra</label>
+                      <div className="grid grid-cols-2 gap-1 bg-background/40 p-0.5 rounded-xl border border-border/60">
+                        <button
+                          onClick={() => setFontFamily("Lora")}
+                          className={cn(
+                            "text-[9px] font-black uppercase py-1.5 rounded-lg transition-all duration-300",
+                            fontFamily === "Lora"
+                              ? "bg-primary text-primary-foreground shadow-[0_2px_10px_rgba(var(--primary-rgb),0.3)]"
+                              : "text-muted-foreground hover:text-foreground hover:bg-primary/5"
+                          )}
+                        >
+                          Lora (Serifa)
+                        </button>
+                        <button
+                          onClick={() => setFontFamily("Inter")}
+                          className={cn(
+                            "text-[9px] font-black uppercase py-1.5 rounded-lg transition-all duration-300",
+                            fontFamily === "Inter"
+                              ? "bg-primary text-primary-foreground shadow-[0_2px_10px_rgba(var(--primary-rgb),0.3)]"
+                              : "text-muted-foreground hover:text-foreground hover:bg-primary/5"
+                          )}
+                        >
+                          Inter (Sans)
+                        </button>
+                        <button
+                          onClick={() => setFontFamily("Times New Roman")}
+                          className={cn(
+                            "text-[9px] font-black uppercase py-1.5 rounded-lg transition-all duration-300 col-span-1",
+                            fontFamily === "Times New Roman"
+                              ? "bg-primary text-primary-foreground shadow-[0_2px_10px_rgba(var(--primary-rgb),0.3)]"
+                              : "text-muted-foreground hover:text-foreground hover:bg-primary/5"
+                          )}
+                        >
+                          Times (Formal)
+                        </button>
+                        <button
+                          onClick={() => setFontFamily("JetBrains Mono")}
+                          className={cn(
+                            "text-[9px] font-black uppercase py-1.5 rounded-lg transition-all duration-300 col-span-1",
+                            fontFamily === "JetBrains Mono"
+                              ? "bg-primary text-primary-foreground shadow-[0_2px_10px_rgba(var(--primary-rgb),0.3)]"
+                              : "text-muted-foreground hover:text-foreground hover:bg-primary/5"
+                          )}
+                        >
+                          JetBrains (Brutal)
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Font Size Selector (with Shadcn Slider) */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <label className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/80">Tamanho da Letra</label>
+                        <span className="text-[9px] font-black text-primary bg-primary/10 px-2.5 py-0.5 rounded-full border border-primary/20">{fontSize}px</span>
+                      </div>
+                      <div className="px-1 py-1.5 flex items-center gap-3">
+                        <span className="text-[9px] font-black text-muted-foreground/60">A-</span>
+                        <Slider
+                          value={[fontSize]}
+                          onValueChange={(val) => { if (Array.isArray(val)) { setFontSize(val[0]); } else if (typeof val === "number") { setFontSize(val); } }}
+                          min={12}
+                          max={26}
+                          step={1}
+                          className="flex-1"
+                        />
+                        <span className="text-[9px] font-black text-muted-foreground/60">A+</span>
+                      </div>
+                    </div>
+                  </div>
                   {/* Seus Pactos (User Contracts) */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between border-b border-border pb-1.5">
@@ -849,38 +939,13 @@ export function EditorLayout() {
 
         {/* Central Sanctuary - The Infinite Paper */}
         <main className="flex-1 overflow-y-auto custom-scrollbar bg-transparent px-8 py-8 relative z-10">
-          <div className="w-full max-w-[840px] mx-auto bg-card border border-border/40 rounded-3xl px-16 md:px-28 py-16 md:py-24 relative shadow-[0_4px_30px_rgba(0,0,0,0.2)] animate-in fade-in zoom-in-95 duration-1000 min-h-[800px] md:min-h-[1188px]">
+          <div className="w-full max-w-[840px] mx-auto bg-card border border-border/40 rounded-3xl px-12 md:px-20 pt-10 pb-16 md:pt-16 md:pb-24 relative shadow-[0_4px_30px_rgba(0,0,0,0.2)] animate-in fade-in zoom-in-95 duration-1000 min-h-[800px] md:min-h-[1188px]">
              
              {/* Premium Paper Texture */}
              <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-3xl" />
              
              {/* Focus Light Effect */}
              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-32 bg-primary/5 blur-[80px] pointer-events-none rounded-full" />
-
-             {/* Document Header Metadata */}
-             <div className="mb-6 border-b border-border/40 pb-5 flex flex-col gap-4">
-               <div className="flex items-center justify-between">
-                 <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
-                   <span className="bg-primary/10 text-primary px-2.5 py-0.5 rounded-full border border-primary/20">Documento Soberano</span>
-                   <span>v2.4.0</span>
-                 </div>
-                 {/* Live Document Stats HUD */}
-                 <div className="flex items-center gap-4 text-[9px] font-bold text-muted-foreground/60 tracking-wider">
-                   <span className="flex items-center gap-1.5"><FileText size={10} /> {wordCount} palavras</span>
-                   <span className="flex items-center gap-1.5"><Cpu size={10} /> {readTime} min de leitura</span>
-                 </div>
-               </div>
-
-               <div className="group/title relative">
-                 <input 
-                   value={fileName}
-                   onChange={(e) => setFileName(e.target.value)}
-                   disabled={readOnly}
-                   className="w-full bg-transparent border-none text-2xl md:text-3xl font-black tracking-tight focus:outline-none focus:ring-0 placeholder:text-muted-foreground/20 text-foreground uppercase italic disabled:opacity-80 disabled:cursor-default"
-                   placeholder="Título do Documento..."
-                 />
-               </div>
-             </div>
 
              <div className="relative z-10 selection:bg-primary/30">
                {!readOnly && <BubbleMenu editor={editor} />}

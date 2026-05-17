@@ -1,0 +1,51 @@
+<svg
+  width="128"
+  height="128"
+  viewBox="0 0 128 128"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  {/* Círculo/Anel Dourado Imperial de Contorno ao redor do Brasão (Trazendo o acabamento de medalha perfeito) */}
+  <circle 
+    cx="64" 
+    cy="64" 
+    r="58" 
+    stroke="#e5b567" 
+    strokeWidth="5" 
+  />
+
+  {/* A Espada e a Balança da Justiça - Silhueta Dourada Imperial Sólida */}
+  {/* Lâmina da Espada */}
+  <path 
+    d="M64 16 L71 31 L67 95 L64 102 L61 95 L57 31 Z" 
+    fill="#e5b567" 
+  />
+  
+  {/* Guarda-mão da Balança Estilizada */}
+  <path 
+    d="M28 58 H100" 
+    stroke="#e5b567" 
+    strokeWidth="7" 
+    strokeLinecap="round" 
+  />
+  
+  {/* Detalhes Rúnicos de Contrapeso na Balança */}
+  <path 
+    d="M31 58 V70 M97 58 V70" 
+    stroke="#e5b567" 
+    strokeWidth="5" 
+    strokeLinecap="round" 
+  />
+  
+  {/* Pratos de Peso da Balança (Círculos Sólidos) */}
+  <circle cx="31" cy="76" r="7" fill="#e5b567" />
+  <circle cx="97" cy="76" r="7" fill="#e5b567" />
+  
+  {/* Losango de Poder no Coração do Brasão */}
+  <path 
+    d="M64 48 L73 58 L64 68 L55 58 Z" 
+    fill="#09090b" 
+    stroke="#e5b567" 
+    strokeWidth="4" 
+  />
+</svg>

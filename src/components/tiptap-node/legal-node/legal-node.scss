@@ -3,6 +3,7 @@
 
   .legal-node {
     display: flex;
+    margin-top: 0;
     margin-bottom: 0.25rem;
     position: relative;
     
@@ -21,7 +22,10 @@
     &.legal-node-level-1 {
       counter-increment: clausula;
       counter-reset: paragrafo inciso;
-      margin-top: 0.6rem;
+      margin-top: 0;
+      margin-bottom: 0.9rem;
+      font-weight: 700;
+      font-size: 1.2em;
       
       .legal-node-counter::before {
         content: "Cláusula " counter(clausula) "ª.";
@@ -32,6 +36,9 @@
       counter-increment: paragrafo;
       counter-reset: inciso;
       margin-left: 2rem;
+      margin-top: 0;
+      margin-bottom: 0.8rem;
+      font-size: 1.08em;
       
       .legal-node-counter {
         font-weight: 600;
@@ -46,6 +53,9 @@
       counter-increment: inciso;
       counter-reset: alinea;
       margin-left: 4rem;
+      margin-top: 0;
+      margin-bottom: 1.2rem;
+      font-size: 1.0em;
       
       .legal-node-counter {
         font-weight: 500;
@@ -59,6 +69,9 @@
     &.legal-node-level-4 {
       counter-increment: alinea;
       margin-left: 6rem;
+      margin-top: 0;
+      margin-bottom: 1.2rem;
+      font-size: 0.92em;
       
       .legal-node-counter {
         font-weight: 400;
@@ -69,7 +82,12 @@
       }
     }
     
-    /* Handle singular paragraph rule (Parágrafo Único) using general sibling combinator logic 
-       if needed later, but standard numbering is better for simple CSS */
+    /* Collapse double gap: when a clausula (level-1) immediately follows
+       the last inciso (level-3) or alinea (level-4), pull it back up
+       so only one block of breathing room remains between sections. */
+    &.legal-node-level-3 + &.legal-node-level-1,
+    &.legal-node-level-4 + &.legal-node-level-1 {
+      margin-top: -0.6rem;
+    }
   }
 }

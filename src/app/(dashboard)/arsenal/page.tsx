@@ -210,7 +210,7 @@ export default function ArsenalPage() {
               
               <CardContent className="p-6 flex flex-col h-full">
                 <div className="flex justify-between items-start mb-6">
-                  <Badge variant="outline" className="text-[9px] uppercase font-bold tracking-widest border-border text-muted-foreground group-hover:border-primary/30 group-hover:text-primary transition-colors h-fit py-1 flex items-center justify-center leading-none">
+                  <Badge variant="outline" className="text-[9px] uppercase font-bold tracking-widest border-border text-muted-foreground group-hover:border-primary/30 group-hover:text-primary transition-colors h-fit py-1 inline-flex items-center justify-center leading-none align-middle">
                     {tpl.category}
                   </Badge>
                   <button className="p-1.5 text-muted-foreground hover:text-primary transition-colors">

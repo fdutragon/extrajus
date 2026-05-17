@@ -24,6 +24,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState, useEffect } from "react";
 import { signOut } from "../(auth)/login/actions";
 import { createClient } from "@/utils/supabase/client";
+import { Logo } from "@/components/ui/logo";
 export default function DashboardLayoutClient({
   children,
 }: {
@@ -105,14 +106,12 @@ export default function DashboardLayoutClient({
         <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
 
         {/* Organization Switcher / Logo Area */}
-        <div className="h-12 px-4 flex items-center overflow-hidden shrink-0 border-b border-border relative z-10">
+        <div className="h-14 px-3 flex items-center overflow-hidden shrink-0 border-b border-border relative z-10">
           <div className={cn(
             "flex items-center gap-2 animate-in fade-in slide-in-from-left-2 duration-500",
             isCollapsed && "justify-center w-full"
           )}>
-            <span className="text-sm font-bold tracking-tight text-primary uppercase italic">
-              {isCollapsed ? "E" : "ExtraJus"}
-            </span>
+            <Logo showText={!isCollapsed} iconSize={32} />
           </div>
         </div>
 
