@@ -32,7 +32,7 @@ export default async function LoginPage({
             placeholder="cadelo@imperio.com" 
             type="email" 
             required
-            className="h-12 px-4 rounded-2xl border-border bg-background dark:bg-card focus:border-primary transition-all text-base"
+            className="h-12 px-4 rounded-2xl border-border bg-background dark:bg-card transition-all text-base"
           />
         </div>
         <div className="space-y-2">
@@ -50,7 +50,7 @@ export default async function LoginPage({
             name="password"
             type="password" 
             required
-            className="h-12 px-4 rounded-2xl border-border bg-background dark:bg-card focus:border-primary transition-all text-base"
+            className="h-12 px-4 rounded-2xl border-border bg-background dark:bg-card transition-all text-base"
           />
         </div>
         <div className="flex items-center space-x-2">

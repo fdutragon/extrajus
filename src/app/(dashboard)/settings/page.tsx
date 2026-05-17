@@ -7,31 +7,23 @@ import { Badge } from "@/components/ui/badge";
 import { 
   User, 
   Settings, 
-  Shield, 
   Sparkles, 
-  Bell, 
   CreditCard, 
   Cpu, 
   Zap, 
-  Lock, 
-  Fingerprint,
-  Moon,
-  Sun,
-  Monitor,
   Check,
   ChevronRight,
-  Database,
   FileText,
   Command,
-  ShieldCheck
+  ShieldCheck,
+  Shield
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
+import { QRCodeSVG } from "qrcode.react";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("perfil");
@@ -42,6 +34,8 @@ export default function SettingsPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isGeneratingPix, setIsGeneratingPix] = useState(false);
+  const [pixData, setPixData] = useState<{ pixCode: string, pixQrCode: string } | null>(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -67,13 +61,32 @@ export default function SettingsPage() {
     fetchProfile();
   }, []);
 
+  const handleBuyCredits = async (amountCents: number) => {
+    setIsGeneratingPix(true);
+    setPixData(null);
+    try {
+      const response = await fetch("/api/billing/pix", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amountCents, description: "Compra de Créditos ExtraJus" })
+      });
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+      setPixData(data);
+      toast.success("Pix gerado. Selamento aguardando pagamento.");
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao gerar Pix.");
+    } finally {
+      setIsGeneratingPix(false);
+    }
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // 1. Update Profile Table (using upsert to ensure row exists)
       const { error: profileError } = await supabase
         .from('profiles')
         .upsert({ 
@@ -85,14 +98,12 @@ export default function SettingsPage() {
 
       if (profileError) throw profileError;
 
-      // 2. Update Auth Email if changed
       if (email !== user.email) {
         const { error: emailError } = await supabase.auth.updateUser({ email });
         if (emailError) throw emailError;
         toast.info("Confirme o novo email na sua caixa de entrada.");
       }
 
-      // 3. Update Password if provided
       if (password) {
         const { error: passwordError } = await supabase.auth.updateUser({ password });
         if (passwordError) throw passwordError;
@@ -112,8 +123,6 @@ export default function SettingsPage() {
   const menuItems = [
     { id: "perfil", name: "Perfil do Arquiteto", icon: User },
     { id: "lilith", name: "Calibração da Lilith", icon: Sparkles },
-    { id: "seguranca", name: "Protocolos de Segurança", icon: Shield },
-    { id: "visual", name: "Interface & Estética", icon: Monitor },
     { id: "faturamento", name: "Faturamento & Créditos", icon: CreditCard },
   ];
 
@@ -121,7 +130,6 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700">
-      {/* Header Area */}
       <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-border pb-8">
         <div className="space-y-3">
           <div className="flex items-center gap-2">
@@ -130,13 +138,12 @@ export default function SettingsPage() {
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground italic uppercase">Configurações do Sistema</h1>
           <p className="text-[13px] text-muted-foreground max-w-md leading-relaxed">
-            Calibre os parâmetros da sua infraestrutura. Ajuste a agressividade da Lilith, gerencie chaves de acesso e protocolos de segurança.
+            Calibre os parâmetros da sua infraestrutura. Ajuste a agressividade da Lilith e gerencie seu fluxo de faturamento.
           </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Navigation Sidebar */}
         <div className="lg:col-span-3 space-y-2 sticky top-0">
           {menuItems.map((item) => {
             const Icon = item.icon;
@@ -160,7 +167,6 @@ export default function SettingsPage() {
           })}
         </div>
 
-        {/* Content Area */}
         <div className="lg:col-span-9 space-y-6">
           {activeTab === "perfil" && (
             <div className="animate-in slide-in-from-bottom-2 duration-500">
@@ -183,17 +189,17 @@ export default function SettingsPage() {
                     </div>
                   </div>
 
-                  <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-12">
                     <div className="space-y-6">
                       <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground border-b border-border pb-2">Identidade Central</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
                         <div className="space-y-2">
                           <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                             <FileText size={10} /> Nome Completo
                           </label>
                           <input 
                             type="text" 
-                            className="w-full bg-muted/30 border border-border rounded-lg px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary/30 transition-all outline-none"
+                            className="w-full bg-muted/30 border border-border rounded-lg px-4 py-2.5 text-sm transition-all outline-none"
                             placeholder="Seu nome de guerra..."
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
@@ -205,16 +211,18 @@ export default function SettingsPage() {
                           </label>
                           <input 
                             type="text" 
-                            className="w-full bg-muted/30 border border-border rounded-lg px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary/30 transition-all outline-none"
+                            className="w-full bg-muted/30 border border-border rounded-lg px-4 py-2.5 text-sm transition-all outline-none"
                             placeholder="username"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                           />
                         </div>
                       </div>
+                    </div>
 
+                    <div className="space-y-6">
                       <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground border-b border-border pb-2">Canais de Acesso</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
                         <div className="space-y-2">
                           <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                             <FileText size={10} /> Email de Comunicação
@@ -232,7 +240,7 @@ export default function SettingsPage() {
                           </label>
                           <input 
                             type="password" 
-                            className="w-full bg-muted/30 border border-border rounded-lg px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary/30 transition-all outline-none"
+                            className="w-full bg-muted/30 border border-border rounded-lg px-4 py-2.5 text-sm transition-all outline-none"
                             placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -331,60 +339,109 @@ export default function SettingsPage() {
             </div>
           )}
 
-          {activeTab === "seguranca" && (
+          {activeTab === "faturamento" && (
             <div className="space-y-6 animate-in slide-in-from-bottom-2 duration-500">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <Card className="bg-card border-border rounded-xl p-6 space-y-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                      <ShieldCheck size={20} />
+              <Card className="rounded-xl p-8 relative overflow-hidden">
+                <div className="relative z-10 space-y-8">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-inner">
+                         <CreditCard size={24} className="text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-foreground tracking-tight">Faturamento & Créditos</h3>
+                        <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold">Gerencie seu poder computacional</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-foreground">Biometria Avançada</h3>
-                      <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Segurança de Ritual</p>
+                    <div className="text-right">
+                       <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block mb-1">Saldo Atual</span>
+                       <div className="flex items-baseline gap-1">
+                          <span className="text-3xl font-black text-primary">{profile?.credits || 0}</span>
+                          <span className="text-xs font-bold text-muted-foreground">CRÉDITOS</span>
+                       </div>
                     </div>
                   </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">Exigir reconhecimento facial ou digital para acessar contratos confidenciais.</p>
-                </Card>
 
-                <Card className="bg-card border-border rounded-xl p-6 space-y-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                      <Lock size={20} />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-foreground">Criptografia de Alma</h3>
-                      <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">AES-256 Protocol</p>
-                    </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {[
+                      { credits: 100, price: 10, label: "Iniciado", color: "text-blue-500" },
+                      { credits: 550, price: 50, label: "Profissional", color: "text-primary", popular: true },
+                      { credits: 1200, price: 100, label: "Imperial", color: "text-amber-500" },
+                    ].map((pkg) => (
+                      <div 
+                        key={pkg.credits}
+                        className={cn(
+                          "p-6 rounded-2xl border transition-all cursor-pointer group relative overflow-hidden",
+                          pkg.popular ? "bg-primary/5 border-primary/30" : "bg-muted/30 border-border hover:border-primary/20"
+                        )}
+                        onClick={() => handleBuyCredits(pkg.price * 100)}
+                      >
+                        {pkg.popular && (
+                          <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-[8px] font-black px-3 py-1 rounded-bl-xl uppercase tracking-widest">Popular</div>
+                        )}
+                        <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest block mb-2">{pkg.label}</span>
+                        <div className="flex items-baseline gap-1 mb-4">
+                           <span className={cn("text-2xl font-black", pkg.color)}>{pkg.credits}</span>
+                           <span className="text-[10px] font-bold text-muted-foreground">créditos</span>
+                        </div>
+                        <div className="flex items-center justify-between mt-auto pt-4 border-t border-border/50">
+                           <span className="text-sm font-bold text-foreground">R$ {pkg.price}</span>
+                           <Button size="sm" variant="ghost" className="h-7 px-3 text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-primary hover:text-primary-foreground">Adquirir</Button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">Todos os documentos são protegidos com chaves AES-256 e hash na blockchain.</p>
-                </Card>
-              </div>
 
-              <Card className="bg-card border-border rounded-xl p-8 space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                      <Zap size={20} />
+                  {isGeneratingPix && (
+                    <div className="p-12 text-center border-2 border-dashed border-border rounded-3xl animate-pulse">
+                       <Zap size={32} className="mx-auto text-primary mb-4 animate-bounce" />
+                       <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Invocando Pix na Rede Neural...</p>
                     </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-foreground">Chaves da Infraestrutura</h3>
-                      <p className="text-xs text-muted-foreground">Gerencie o acesso de sistemas externos ao seu arsenal.</p>
+                  )}
+
+                  {pixData && (
+                    <div className="p-8 bg-primary/5 border border-primary/20 rounded-3xl animate-in zoom-in-95 duration-500">
+                       <div className="flex flex-col md:flex-row gap-8 items-center">
+                          <div className="w-48 h-48 bg-white p-2 rounded-2xl shadow-xl flex items-center justify-center overflow-hidden">
+                             <QRCodeSVG 
+                               value={pixData.pixQrCode}
+                               size={180}
+                               level="L"
+                               includeMargin={false}
+                             />
+                          </div>
+                          <div className="flex-1 space-y-4">
+                             <div className="space-y-1">
+                                <h4 className="text-sm font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                                   <ShieldCheck size={16} /> Pagamento Seguro
+                                </h4>
+                                <p className="text-xs text-muted-foreground leading-relaxed">
+                                   Aponte a câmera do seu banco para o QR Code ou use o código abaixo. Os créditos cairão instantaneamente após a confirmação.
+                                </p>
+                             </div>
+                             <div className="space-y-2">
+                                <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Código Copia e Cola</span>
+                                <div className="flex gap-2">
+                                   <input 
+                                     readOnly 
+                                     value={pixData.pixCode} 
+                                     className="flex-1 bg-background border border-border rounded-xl px-4 py-2 text-[10px] font-mono truncate"
+                                   />
+                                   <Button 
+                                     size="sm" 
+                                     className="rounded-xl font-black text-[9px] uppercase tracking-widest"
+                                     onClick={() => {
+                                        navigator.clipboard.writeText(pixData.pixCode);
+                                        toast.success("Código copiado.");
+                                     }}
+                                   >Copiar</Button>
+                                </div>
+                             </div>
+                          </div>
+                       </div>
                     </div>
-                  </div>
-                    <Button variant="outline" className="h-8 text-[11px] font-bold rounded-lg px-4 border-border">Gerar Nova Chave</Button>
+                  )}
                 </div>
-
-                 <div className="bg-muted/50 border border-border rounded-lg p-4 flex items-center justify-between">
-                   <div className="flex items-center gap-3">
-                      <Database size={16} className="text-muted-foreground" />
-                      <span className="text-xs font-mono text-muted-foreground tracking-tight">sk_live_************************4a8b</span>
-                   </div>
-                   <div className="flex items-center gap-2">
-                       <Badge className="bg-muted text-muted-foreground border-none font-bold text-[9px]">Produção</Badge>
-                       <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive"><Zap size={14} /></Button>
-                   </div>
-                 </div>
               </Card>
             </div>
           )}
@@ -393,4 +450,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-

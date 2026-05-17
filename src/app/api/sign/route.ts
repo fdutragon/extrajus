@@ -1,5 +1,9 @@
 import { createClient } from '@/utils/supabase/server'
 import { NextResponse } from 'next/server'
+import crypto from 'crypto'
+import { Resend } from 'resend'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 interface Signer {
   name: string;
@@ -7,137 +11,98 @@ interface Signer {
 }
 
 interface SignRequest {
-  contractId?: string;
+  contractId: string;
   title?: string;
   content: string;
   signers: Signer[];
 }
 
 export async function POST(request: Request) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  const { contractId, title, content, signers } = await request.json() as SignRequest;
-
-  const assinafyApiKey = process.env.ASSINAFY_API_KEY;
-  const assinafyWorkspaceId = process.env.ASSINAFY_WORKSPACE_ID; // Importante: Deve ser configurado no .env
-
-  if (!assinafyApiKey || !assinafyWorkspaceId) {
-    return NextResponse.json({ 
-      error: 'Configuração da Assinafy incompleta (API Key ou Workspace ID ausente no .env)' 
-    }, { status: 500 })
-  }
-
   try {
-    // 1. Upload do Documento (Multipart Form Data)
-    // Criamos um arquivo HTML temporário a partir do conteúdo do editor
-    const formData = new FormData();
-    const fullHtml = `
-      <!DOCTYPE html>
-      <html>
-      <head><meta charset="utf-8"></head>
-      <body style="font-family: sans-serif; padding: 40px; line-height: 1.6;">
-        <h1 style="text-align: center;">${title || 'Contrato ExtraJus'}</h1>
-        ${content}
-      </body>
-      </html>
-    `;
-    
-    // Convertemos para Blob para simular um arquivo real no FormData
-    const blob = new Blob([fullHtml], { type: 'text/html' });
-    formData.append('file', blob, `${title?.replace(/\s+/g, '_') || 'contrato'}.html`);
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
 
-    const uploadResponse = await fetch(`https://api.assinafy.com.br/v1/accounts/${assinafyWorkspaceId}/documents`, {
-      method: 'POST',
-      headers: {
-        'X-Api-Key': assinafyApiKey,
-      },
-      body: formData
-    });
-
-    const uploadResult = await uploadResponse.json();
-    if (!uploadResponse.ok) {
-      throw new Error(uploadResult.message || 'Erro no upload do documento para Assinafy');
+    if (!user) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     }
 
-    const documentId = uploadResult.id || uploadResult.data?.id;
+    const { contractId, title, content, signers } = await request.json() as SignRequest;
 
-    // 2. Criação/Vinculação de Signatários
-    const signerIds: string[] = [];
-    for (const s of signers) {
-      const signerResponse = await fetch(`https://api.assinafy.com.br/v1/accounts/${assinafyWorkspaceId}/signers`, {
-        method: 'POST',
-        headers: {
-          'X-Api-Key': assinafyApiKey,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          full_name: s.name,
-          email: s.email
-        })
-      });
-      
-      const signerResult = await signerResponse.json();
-      // O Assinafy pode retornar 200 se criar ou se o signatário já existir dependendo da versão
-      const sId = signerResult.data?.id || signerResult.id;
-      if (sId) {
-        signerIds.push(sId);
-      } else {
-        console.warn(`Signatário ${s.email} não pôde ser processado:`, signerResult.message);
+    if (!contractId) {
+      return NextResponse.json({ error: 'ID do contrato é obrigatório' }, { status: 400 })
+    }
+
+    // 1. Geração de Código de Selamento Único (6 Dígitos) para cada signatário
+    // Para simplificar agora, vamos gerar um protocolo global para o pacto,
+    // mas o destinatário precisa estar logado para usá-lo.
+    const sealingCode = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    const timestamp = new Date().toISOString();
+    const documentHash = crypto
+      .createHash('sha256')
+      .update(content + (title || ''))
+      .digest('hex');
+
+    // 2. Registrar/Atualizar Registro de Assinatura como PENDENTE
+    const { error: sigError } = await supabase.from('signatures').upsert({
+      contract_id: contractId,
+      status: 'pending',
+      signers: signers,
+      protocolo: sealingCode, // Agora usamos o código de 6 dígitos como protocolo de entrada
+      manifesto: { 
+        invited_at: timestamp,
+        document_hash: documentHash,
+        version: "3.0.0-RITUAL"
+      }
+    }, { onConflict: 'contract_id' });
+
+    if (sigError) throw sigError;
+
+    // Atualizar status do contrato
+    await supabase.from('contracts').update({ status: 'pending' }).eq('id', contractId);
+
+    // 3. Enviar Convocação via Resend
+    if (process.env.RESEND_API_KEY) {
+      for (const signer of signers) {
+        await resend.emails.send({
+          from: 'ExtraJus <onboarding@resend.dev>',
+          to: signer.email,
+          subject: `📜 Convocação para Selamento: ${title || 'Novo Pacto'}`,
+          html: `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #000; color: #fff; padding: 40px; border: 1px solid #111;">
+              <h1 style="color: #c0ff00; font-size: 24px; text-transform: uppercase; letter-spacing: 4px;">ExtraJus</h1>
+              <p style="font-size: 14px; opacity: 0.7; border-bottom: 1px solid #222; padding-bottom: 20px;">RITUAL DE ASSINATURA DIGITAL</p>
+              
+              <p style="margin-top: 30px;">Saudações, <strong>${signer.name}</strong>.</p>
+              <p>Um novo pacto soberano aguarda seu selamento: <strong>${title || 'Sem Título'}</strong>.</p>
+              
+              <div style="background: #0a0a0a; border: 1px dashed #c0ff00; padding: 30px; margin: 30px 0; text-align: center;">
+                <p style="font-size: 10px; color: #c0ff00; text-transform: uppercase; margin-bottom: 10px;">Seu Código de Selamento</p>
+                <code style="font-size: 32px; font-weight: bold; letter-spacing: 10px; color: #fff;">${sealingCode}</code>
+              </div>
+
+              <p style="font-size: 13px; line-height: 1.6; opacity: 0.8;">
+                Para selar este pacto, acesse sua conta no ExtraJus e insira o código no painel de <strong>Pactos Pendentes</strong>. Se você ainda não possui um nó na rede, crie sua conta com este e-mail para visualizar o documento.
+              </p>
+
+              <a href="${process.env.NEXT_PUBLIC_SITE_URL}/signatures" 
+                 style="display: inline-block; background: #c0ff00; color: #000; text-decoration: none; padding: 15px 30px; font-weight: bold; border-radius: 5px; margin-top: 20px; text-transform: uppercase; font-size: 12px;">
+                Acessar Painel de Selamento
+              </a>
+
+              <p style="margin-top: 50px; font-size: 10px; opacity: 0.3; text-align: center;">
+                ExtraJus AI © 2026 • Ritual Sovereign Protocol
+              </p>
+            </div>
+          `
+        });
       }
     }
 
-    if (signerIds.length === 0) {
-      throw new Error("Não foi possível registrar os signatários no Assinafy.");
-    }
-
-    // 3. Solicitação de Assinatura (Assignment)
-    const assignmentResponse = await fetch(`https://api.assinafy.com.br/v1/documents/${documentId}/assignments`, {
-      method: 'POST',
-      headers: {
-        'X-Api-Key': assinafyApiKey,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        method: 'virtual',
-        signerIds: signerIds
-      })
-    });
-
-    const assignmentResult = await assignmentResponse.json();
-    if (!assignmentResponse.ok) {
-      throw new Error(assignmentResult.message || 'Erro ao criar o fluxo de assinaturas');
-    }
-
-    // 4. Persistência no Supabase
-    if (contractId) {
-      const { error: sigError } = await supabase.from('signatures').insert({
-        contract_id: contractId,
-        external_id: documentId,
-        status: 'pending',
-        signers: signers
-      })
-
-      if (sigError) console.error("Error saving signature to DB:", sigError);
-
-      await supabase
-        .from('contracts')
-        .update({ status: 'pending', updated_at: new Date().toISOString() })
-        .eq('id', contractId)
-    }
-
-    return NextResponse.json({ 
-      success: true, 
-      documentId: documentId,
-      signUrl: assignmentResult.data?.signing_url || uploadResult.data?.signing_url
-    })
+    return NextResponse.json({ success: true, message: "Convites enviados e pacto em estado pendente." });
 
   } catch (error: any) {
-    console.error("Assinafy API Failure:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    console.error("ExtraJus Signature API Failure:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

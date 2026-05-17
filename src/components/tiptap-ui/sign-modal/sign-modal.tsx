@@ -88,8 +88,8 @@ export function SignModal() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button className="h-8 rounded-full bg-primary text-primary-foreground hover:opacity-90 font-black text-[8px] uppercase tracking-wider px-4 transition-all active:scale-95 flex items-center gap-2 border-none">
-            <Fingerprint size={12} />
+          <Button className="h-9 rounded-full bg-primary text-primary-foreground hover:opacity-90 font-bold text-xs tracking-wide px-5 py-2 transition-all active:scale-95 flex items-center gap-2 border-none">
+            <Fingerprint size={14} />
             Selar Pacto
           </Button>
         }
@@ -142,7 +142,7 @@ export function SignModal() {
                         placeholder="Nome completo..."
                         value={signer.name}
                         onChange={(e) => updateSigner(index, "name", e.target.value)}
-                        className="bg-muted/30 border-border focus:border-primary/40 focus:bg-muted/50 rounded-xl px-4 h-11 text-xs font-bold tracking-tight placeholder:text-muted-foreground/50 transition-all focus:ring-4 focus:ring-primary/5"
+                        className="bg-muted/30 border-border rounded-xl px-4 h-11 text-xs font-bold tracking-tight placeholder:text-muted-foreground/50 transition-all"
                       />
                     </div>
                     <div className="space-y-2">
@@ -152,7 +152,7 @@ export function SignModal() {
                         placeholder="email@vault.com"
                         value={signer.email}
                         onChange={(e) => updateSigner(index, "email", e.target.value)}
-                        className="bg-muted/30 border-border focus:border-primary/40 focus:bg-muted/50 rounded-xl px-4 h-11 text-xs font-bold tracking-tight placeholder:text-muted-foreground/50 transition-all focus:ring-4 focus:ring-primary/5"
+                        className="bg-muted/30 border-border rounded-xl px-4 h-11 text-xs font-bold tracking-tight placeholder:text-muted-foreground/50 transition-all"
                       />
                     </div>
                   </div>
@@ -182,7 +182,7 @@ export function SignModal() {
                 onClick={handleSign}
                 disabled={isSending}
                 className={cn(
-                  "w-full h-16 rounded-[1.25rem] font-black text-xs uppercase tracking-[0.4em] transition-all relative overflow-hidden group",
+                  "w-full h-16 rounded-[1.25rem] font-bold text-sm tracking-wide transition-all relative overflow-hidden group",
                   isSending 
                     ? "bg-muted text-muted-foreground cursor-not-allowed" 
                     : "bg-primary text-primary-foreground hover:opacity-90"

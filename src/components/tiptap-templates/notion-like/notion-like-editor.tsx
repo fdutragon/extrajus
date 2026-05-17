@@ -167,8 +167,6 @@ function InviteButton({ room }: { room: string }) {
   )
 }
 
-
-
 export interface NotionEditorProps {
   room: string
   placeholder?: string
@@ -282,6 +280,19 @@ export function EditorContentArea() {
     </EditorContent>
   )
 }
+
+const ORACLE_LOGS = [
+  { id: 1, user: "Cadelo Imperial", action: "Cláusula de Sigilo Blindada", time: "12m atrás", version: "v2.4.1" },
+  { id: 2, user: "Lilith OS", action: "Auditoria de Risco Concluída", time: "45m atrás", version: "v2.4.0" },
+  { id: 3, user: "Cadelo Imperial", action: "Invocação de Template: M&A", time: "2h atrás", version: "v2.3.8" },
+  { id: 4, user: "Sistema", action: "Sessão Colaborativa Iniciada", time: "4h atrás", version: "v2.3.0" },
+];
+
+const ORACLE_INSIGHTS = {
+  score: 92,
+  status: "Contrato Inabalável",
+  vulnerabilityMsg: '"Detectei um flanco exposto na cláusula 7.2. Deseja realizar a blindagem estratégica?"',
+};
 
 /**
  * Component that creates and provides the editor instance
@@ -401,11 +412,6 @@ export function EditorLayout() {
           <div className="w-96 h-[calc(100vh-96px)] bg-card border border-border rounded-[2rem] overflow-hidden flex flex-col group/library">
             
             <div className="p-8 pb-4">
-              <div className="flex items-center gap-2 mb-6 opacity-40 group-hover/library:opacity-100 transition-opacity">
-                <FileText size={12} className="text-primary" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] truncate">Nexus_Imperial.ext</span>
-              </div>
-              
               <div className="flex items-center gap-4 mb-2">
                 <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm">
                   <Library size={20} className="text-primary" />
@@ -429,7 +435,7 @@ export function EditorLayout() {
                     </div>
                     <div className="space-y-1">
                       {userContracts.length > 0 ? userContracts.map(contract => (
-                        <Link key={contract.id} href={`/editor?room=${contract.id}`} className="w-full text-left text-[11px] py-2.5 px-3 hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-300 group/item flex items-center justify-between font-bold text-foreground/70">
+                        <Link key={contract.id} href={`/editor?room=${contract.id}`} className="w-full text-left text-xs py-2.5 px-3 hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-300 group/item flex items-center justify-between font-bold text-foreground/70">
                           <span className="truncate">{contract.title || "Documento Sem Nome"}</span>
                           <Zap size={10} className={cn("opacity-0 group-hover/item:opacity-100 transition-opacity", contract.status === 'signed' ? "text-emerald-500" : "text-primary")} />
                         </Link>
@@ -447,7 +453,7 @@ export function EditorLayout() {
                     </div>
                     <div className="space-y-1">
                       {templates.length > 0 ? templates.map(template => (
-                        <Link key={template.id} href={`/editor?template=${template.slug}`} className="w-full text-left text-[11px] py-2.5 px-3 hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-300 group/item flex items-center justify-between font-bold text-foreground/70">
+                        <Link key={template.id} href={`/editor?template=${template.slug}`} className="w-full text-left text-xs py-2.5 px-3 hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-300 group/item flex items-center justify-between font-bold text-foreground/70">
                           <span className="truncate">{template.title}</span>
                           <ArrowRight size={10} className="opacity-0 group-hover/item:opacity-100 transition-opacity text-primary" />
                         </Link>
@@ -507,26 +513,23 @@ export function EditorLayout() {
 
         {/* Fixed Right: A Alquimia (The Oracle of Lilith) */}
         <div className="absolute right-6 top-12 z-40 hidden xl:block animate-in slide-in-from-right-12 duration-1000 mt-6">
-          <div className="w-96 h-[calc(100vh-96px)] bg-card border border-border rounded-[2rem] shadow-xl flex flex-col overflow-hidden group/oracle">
+          <div className="w-96 h-[calc(100vh-96px)] bg-card border border-border rounded-[2rem] flex flex-col overflow-hidden group/oracle">
             <Tabs value={oracleTab} onValueChange={setOracleTab} className="w-full h-full flex flex-col">
               <div className="px-8 pt-8 mb-6">
-                <TabsList className="grid w-full grid-cols-3 bg-muted rounded-2xl h-11 p-1.5 border border-border">
-                  <TabsTrigger value="insights" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all">
+                <TabsList className="grid w-full grid-cols-2 bg-muted rounded-2xl h-10 p-1 border border-border items-center">
+                  <TabsTrigger value="insights" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all h-full flex items-center justify-center">
                     Insights
                   </TabsTrigger>
-                  <TabsTrigger value="data" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all">
-                    Data
-                  </TabsTrigger>
-                  <TabsTrigger value="oraculo" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all">
-                    Oráculo
+                  <TabsTrigger value="logs" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all h-full flex items-center justify-center">
+                    Logs
                   </TabsTrigger>
                 </TabsList>
               </div>
 
               <div className="flex-1 overflow-hidden px-8 pb-8">
-                <TabsContent value="insights" className="h-full m-0 flex flex-col space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <TabsContent value="insights" className="h-full m-0 flex flex-col space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 border-none">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm">
+                    <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
                       <BrainCircuit size={20} className="text-primary animate-pulse" />
                     </div>
                     <div>
@@ -542,20 +545,20 @@ export function EditorLayout() {
                     <div className="space-y-4">
                       <h4 className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.25em] border-l-2 border-primary pl-3">Score de Dominação</h4>
                       <div className="flex items-baseline gap-3">
-                        <div className="text-5xl font-black tracking-tighter text-foreground">92</div>
+                        <div className="text-5xl font-black tracking-tighter text-foreground">{ORACLE_INSIGHTS.score}</div>
                         <div className="text-xl font-bold text-primary">%</div>
                       </div>
                       <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
                         <div className="w-[92%] h-full bg-gradient-to-r from-primary to-primary/60" />
                       </div>
                       <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest flex items-center gap-2">
-                        <ShieldCheck size={12} /> Contrato Inabalável
+                        <ShieldCheck size={12} /> {ORACLE_INSIGHTS.status}
                       </p>
                       <div className="space-y-4 pt-4 border-t border-border">
                        <h4 className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.25em]">Vulnerabilidades</h4>
                        <div className="bg-primary/[0.03] border border-primary/10 rounded-2xl p-5 space-y-4 group/card hover:border-primary/30 transition-all">
                          <p className="text-[11px] leading-relaxed italic text-muted-foreground font-medium">
-                           "Detectei um flanco exposto na cláusula 7.2. Deseja realizar a blindagem estratégica?"
+                           {ORACLE_INSIGHTS.vulnerabilityMsg}
                          </p>
                          <Button size="sm" className="w-full bg-primary hover:opacity-90 text-primary-foreground text-[9px] font-black uppercase tracking-widest h-9 rounded-xl transition-all active:scale-95">
                            Aplicar Blindagem
@@ -566,61 +569,41 @@ export function EditorLayout() {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="data" className="h-full m-0 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <DataRoom editor={editor} />
-                </TabsContent>
-
-                <TabsContent value="oraculo" className="h-full m-0 flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700">
-                  <div className="flex-1 overflow-y-auto space-y-6 mb-4 pr-2 custom-scrollbar">
-                    <div className="relative group/lilith p-6 rounded-[2rem] bg-primary/5 border border-primary/10 shadow-xl overflow-hidden transition-all hover:bg-primary/10">
-                      {/* Aura Effect */}
-                      <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/10 blur-[60px] rounded-full animate-pulse" />
-                      <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-primary/5 blur-[40px] rounded-full" />
-                      
-                      <div className="relative z-10">
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="relative">
-                            <div className="w-2 h-2 bg-primary rounded-full animate-ping absolute inset-0" />
-                            <div className="w-2 h-2 bg-primary rounded-full relative shadow-sm" />
-                          </div>
-                          <span className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">Lilith • Presença Suprema</span>
+                <TabsContent value="logs" className="h-full m-0 flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700 border-none">
+                  <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                        <History size={12} className="text-primary" />
+                        Histórico de Versões
+                      </h4>
+                    </div>
+                    
+                    {ORACLE_LOGS.map((log) => (
+                      <div key={log.id} className="p-4 rounded-2xl bg-muted/30 border border-border hover:border-primary/30 transition-all group/log cursor-pointer">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-[10px] font-black text-primary uppercase tracking-widest">{log.version}</span>
+                          <span className="text-[8px] font-bold text-muted-foreground uppercase">{log.time}</span>
                         </div>
-                        
-                        <p className="text-[12px] leading-relaxed text-muted-foreground font-medium italic mb-6">
-                          &quot;Saudações, Arquiteto. Os fios deste contrato estão sob minha análise neural. Qual ordem Lilith deve executar para consolidar sua dominação hoje?&quot;
-                        </p>
-                        
-                        <div className="flex flex-wrap gap-2">
-                          {['Blindar Cláusulas', 'Analisar Riscos', 'Resumir Ritual'].map(hint => (
-                            <button key={hint} className="px-3 py-1.5 rounded-full bg-muted border border-border text-[8px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary hover:border-primary/20 hover:bg-primary/5 transition-all">
-                              {hint}
-                            </button>
-                          ))}
+                        <p className="text-[12px] font-bold text-foreground mb-1 group-hover/log:text-primary transition-colors">{log.action}</p>
+                        <div className="flex items-center gap-2">
+                           <div className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center text-[8px] font-black text-primary">
+                             {log.user[0]}
+                           </div>
+                           <span className="text-[10px] font-medium text-muted-foreground">{log.user}</span>
                         </div>
                       </div>
-                    </div>
+                    ))}
 
-                    <div className="px-4 py-8 text-center opacity-20 group">
-                      <div className="h-px w-full bg-gradient-to-r from-transparent via-border to-transparent mb-6 scale-x-50 group-hover:scale-x-100 transition-transform duration-1000" />
-                      <Cpu size={24} className="mx-auto mb-3 text-muted-foreground" />
-                      <p className="text-[8px] font-black uppercase tracking-[0.4em] text-muted-foreground">Neural Sync Active</p>
+                    <div className="pt-8 text-center opacity-20">
+                      <div className="h-px w-full bg-gradient-to-r from-transparent via-border to-transparent mb-6" />
+                      <Cpu size={24} className="mx-auto mb-3" />
+                      <p className="text-[8px] font-black uppercase tracking-[0.4em]">End of Log Archive</p>
                     </div>
                   </div>
 
-                  <div className="relative group/input mt-auto pb-2">
-                    <div className="absolute -inset-1 bg-gradient-to-b from-primary/20 to-transparent blur-xl opacity-0 group-hover/input:opacity-100 transition-opacity duration-500" />
-                    <div className="relative">
-                      <textarea 
-                        placeholder="Dite sua ordem..." 
-                        className="w-full bg-muted/50 border border-border rounded-2xl p-4 text-[11px] font-bold focus:outline-none focus:border-primary/40 min-h-[80px] max-h-[150px] resize-none placeholder:text-muted-foreground/50 tracking-tight transition-all shadow-sm"
-                      />
-                      <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                        <Button size="icon" className="h-8 w-8 bg-primary hover:opacity-90 rounded-xl shadow-lg transition-all active:scale-90 group/btn text-primary-foreground">
-                          <Zap size={14} fill="white" className="group-hover:scale-110 transition-transform" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
+                  <Button className="mt-4 w-full bg-primary text-primary-foreground font-black text-[10px] uppercase tracking-widest py-6 rounded-2xl">
+                    <History className="mr-2 h-4 w-4" /> Restaurar Versão Anterior
+                  </Button>
                 </TabsContent>
               </div>
             </Tabs>

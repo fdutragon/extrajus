@@ -1,267 +1,308 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { 
-  PenTool, 
-  Clock, 
-  CheckCircle2, 
-  Download, 
-  Search, 
-  ChevronRight,
-  Filter,
-  ArrowRight,
-  Send,
-  MoreVertical,
-  Activity,
-  History
-} from "lucide-react";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableRow 
-} from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { 
+  FileText, 
+  Lock, 
+  Zap, 
+  ShieldCheck, 
+  History,
+  ArrowRight,
+  KeyRound,
+  AlertCircle,
+  Check
+} from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
-export default function SignaturesPage() {
+export default function PactsPage() {
+  const [pendingPacts, setPendingPacts] = useState<any[]>([]);
+  const [sentPacts, setSentPacts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [signatures, setSignatures] = useState<any[]>([]);
-  const [profile, setProfile] = useState<any>(null);
+  const [sealingCode, setSealingCode] = useState("");
+  const [selectedPact, setSelectedPact] = useState<any | null>(null);
+  const [isSealing, setIsSealing] = useState(false);
+  const [activeView, setActiveView] = useState<"received" | "sent">("received");
   const supabase = createClient();
-  const router = useRouter();
 
   useEffect(() => {
-    async function fetchData() {
+    fetchPacts();
+  }, []);
+
+  async function fetchPacts() {
+    setLoading(true);
+    try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Fetch Profile for credits
-      const { data: profData } = await supabase
-        .from('profiles')
-        .select('credits')
-        .eq('id', user.id)
-        .single();
-      
-      setProfile(profData);
+      // 1. Buscar títulos de contratos para mapeamento
+      const { data: allContracts } = await supabase
+        .from('contracts')
+        .select('id, title, user_id');
 
-      // Fetch Signatures joined with Contracts
-      const { data: sigData, error } = await supabase
+      const contractMap: Record<string, any> = {};
+      allContracts?.forEach(c => contractMap[c.id] = c);
+
+      // 2. Buscar TODAS as assinaturas
+      const { data: allSignatures, error } = await supabase
         .from('signatures')
-        .select(`
-          *,
-          contracts (
-            title
-          )
-        `)
-        .order('created_at', { ascending: false });
+        .select('*');
 
-      if (sigData) setSignatures(sigData);
+      if (error) throw error;
+
+      // 3. Filtrar Pactos Recebidos (Onde sou signatário)
+      const received = allSignatures?.filter((sig: any) => 
+        sig.signers?.some((s: any) => s.email.toLowerCase().trim() === user.email?.toLowerCase().trim())
+      ).map(sig => ({
+        ...sig,
+        contracts: contractMap[sig.contract_id] || { title: "Contrato sem Título" }
+      })) || [];
+
+      // 4. Filtrar Pactos Enviados (Onde sou o dono do contrato)
+      const sent = allSignatures?.filter((sig: any) => {
+        const contract = contractMap[sig.contract_id];
+        return contract?.user_id === user.id;
+      }).map(sig => ({
+        ...sig,
+        contracts: contractMap[sig.contract_id] || { title: "Contrato sem Título" }
+      })) || [];
+
+      // 5. Autotransição para 'analyzing' para os recebidos
+      await Promise.all(received.map(async (pact) => {
+        if (pact.status === 'pending') {
+          await supabase.from('signatures').update({ status: 'analyzing' }).eq('contract_id', pact.contract_id);
+          pact.status = 'analyzing';
+        }
+      }));
+
+      setPendingPacts(received);
+      setSentPacts(sent);
+    } catch (error: any) {
+      console.error("Pacts Fetch Error:", error);
+      toast.error("Falha ao invocar pactos.");
+    } finally {
       setLoading(false);
     }
+  }
 
-    fetchData();
-  }, []);
+  const handleSealPact = async () => {
+    if (!selectedPact || !sealingCode) return;
+    setIsSealing(true);
+    try {
+      const response = await fetch("/api/sign/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          contractId: selectedPact.contract_id, 
+          sealingCode 
+        })
+      });
 
-  const pendingSignatures = signatures.filter(s => s.status === 'pending');
-  const signedDocuments = signatures.filter(s => s.status === 'signed');
+      const result = await response.json();
+      if (result.error) throw new Error(result.error);
 
-  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    toast.loading(`Importando ${file.name}...`, { id: "import" });
-
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      toast.error("Você precisa estar logado.", { id: "import" });
-      return;
+      toast.success("Pacto selado com sucesso.");
+      setSelectedPact(null);
+      setSealingCode("");
+      fetchPacts(); // Refresh list
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setIsSealing(false);
     }
-
-    // 1. Create a new contract
-    const { data: contract, error } = await supabase
-      .from('contracts')
-      .insert({
-        user_id: user.id,
-        title: file.name.replace(/\.[^/.]+$/, ""), // Remove extension
-        status: 'draft'
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error("Error creating contract:", error);
-      toast.error("Erro ao importar documento.", { id: "import" });
-      return;
-    }
-
-    toast.success("Documento pronto para edição!", { id: "import" });
-
-    // 2. Redirect to editor
-    router.push(`/editor?room=${contract.id}`);
   };
 
+  if (loading) return <div className="p-20 text-center animate-pulse text-xs font-black uppercase tracking-widest text-muted-foreground">Invocando Pactos...</div>
+
   return (
-    <div className="space-y-10 animate-in fade-in duration-700">
-      <input 
-        type="file" 
-        id="import-doc" 
-        className="hidden" 
-        accept=".pdf,.docx,.doc,.txt,.html"
-        onChange={handleImport}
-      />
-      {/* Header Area */}
+    <div className="max-w-5xl mx-auto space-y-10 animate-in fade-in duration-700 pb-20 px-4 md:px-0">
       <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-border pb-8">
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2 py-0">Pipeline</Badge>
-            <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase italic">Execution Queue</span>
+            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2 py-0">Ritual</Badge>
+            <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase italic">Sovereign Pacts Management</span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Fila de Execução</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground italic uppercase">Arsenal de Pactos</h1>
           <p className="text-[13px] text-muted-foreground max-w-md leading-relaxed">
-            Monitore a formalização e colha as assinaturas eletrônicas com segurança criptográfica de nível militar.
+            Gerencie convocações e sele documentos soberanos. Monitore o progresso do ritual em tempo real.
           </p>
         </div>
-
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <Button variant="outline" className="h-10 px-4 border-border hover:bg-muted rounded-lg text-[13px] font-medium">
-            <Filter size={14} className="mr-2" /> Filtrar
-          </Button>
-          <Button 
-            onClick={() => document.getElementById('import-doc')?.click()}
-            className="h-10 bg-primary text-primary-foreground hover:opacity-90 font-bold rounded-lg px-5 text-[13px]"
+        
+        <div className="bg-muted p-1 rounded-xl border border-border flex gap-1">
+          <button
+            onClick={() => { setActiveView("received"); setSelectedPact(null); }}
+            className={cn(
+              "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2",
+              activeView === "received" ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-background"
+            )}
           >
-            Importar Documento
-          </Button>
+            <Zap size={12} /> Para Selar ({pendingPacts.length})
+          </button>
+          <button
+            onClick={() => { setActiveView("sent"); setSelectedPact(null); }}
+            className={cn(
+              "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2",
+              activeView === "sent" ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-background"
+            )}
+          >
+            <History size={12} /> Enviados ({sentPacts.length})
+          </button>
         </div>
       </div>
 
-      <div className="bg-card border border-border rounded-2xl overflow-hidden">
-        <Tabs defaultValue="pending" className="w-full">
-          <div className="px-6 py-4 border-b border-border">
-            <TabsList className="bg-muted rounded-lg p-1 h-9">
-              <TabsTrigger value="pending" className="rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground text-[12px] font-bold px-6 transition-all h-full">
-                <Activity size={12} className="mr-1.5" /> Pendentes ({pendingSignatures.length})
-              </TabsTrigger>
-              <TabsTrigger value="signed" className="rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground text-[12px] font-bold px-6 transition-all h-full">
-                <History size={12} className="mr-1.5" /> Assinados ({signedDocuments.length})
-              </TabsTrigger>
-            </TabsList>
-          </div>
-
-          <TabsContent value="pending" className="mt-0">
-            {loading ? (
-              <div className="p-20 text-center text-muted-foreground text-xs font-bold uppercase tracking-widest animate-pulse">Sincronizando com os Oráculos...</div>
-            ) : pendingSignatures.length === 0 ? (
-              <div className="p-20 text-center text-muted-foreground text-xs font-bold uppercase tracking-widest">Nenhum ritual pendente no momento.</div>
-            ) : (
-              <Table>
-                <TableBody>
-                  {pendingSignatures.map((doc) => (
-                    <TableRow key={doc.id} className="border-border group hover:bg-accent transition-all cursor-pointer">
-                      <TableCell className="w-16 pl-8">
-                        <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary/10 transition-colors">
-                          <Clock size={18} className="animate-pulse" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="md:col-span-2 space-y-4">
+           {(activeView === "received" ? pendingPacts : sentPacts).length === 0 ? (
+             <Card className="p-12 text-center border-dashed bg-muted/20">
+                <ShieldCheck size={48} className="mx-auto text-muted-foreground/20 mb-4" />
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Nenhum pacto {activeView === "received" ? "recebido" : "enviado"} no seu radar.</p>
+             </Card>
+           ) : (
+             (activeView === "received" ? pendingPacts : sentPacts).map((pact) => (
+               <Card 
+                 key={pact.contract_id} 
+                 className={cn(
+                   "p-6 cursor-pointer transition-all border-border hover:border-primary/30 group relative overflow-hidden",
+                   selectedPact?.contract_id === pact.contract_id && "border-primary bg-primary/5 ring-1 ring-primary/20"
+                 )}
+                 onClick={() => setSelectedPact(pact)}
+               >
+                  <div className="flex items-center justify-between">
+                     <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                           <FileText size={20} />
                         </div>
-                      </TableCell>
-                      <TableCell className="py-6">
-                        <div className="text-[13px] font-bold tracking-tight">{doc.contracts?.title || 'Contrato sem Título'}</div>
-                        <div className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1 font-bold">
-                          {doc.signers?.length || 0} Signatários • Enviado em {new Date(doc.created_at).toLocaleDateString()}
+                        <div>
+                           <h3 className="text-sm font-black uppercase tracking-tight text-foreground">{pact.contracts.title || "Contrato Sem Nome"}</h3>
+                           <div className="flex items-center gap-2 mt-1">
+                              {pact.status === 'analyzing' ? (
+                                <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-[8px] font-black uppercase tracking-widest px-1.5 h-4">Analisando</Badge>
+                              ) : pact.status === 'signed' ? (
+                                <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[8px] font-black uppercase tracking-widest px-1.5 h-4">Selado</Badge>
+                              ) : (
+                                <Badge className="bg-primary/10 text-primary border-primary/20 text-[8px] font-black uppercase tracking-widest px-1.5 h-4">Convocado</Badge>
+                              )}
+                              <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest opacity-50">• Ritual Digital</span>
+                           </div>
                         </div>
-                      </TableCell>
-                      <TableCell className="w-1/4">
-                        <div className="flex flex-col gap-2.5">
-                          <div className="flex justify-between items-end text-[10px] font-bold uppercase tracking-tighter">
-                            <span className="text-primary">Pendente</span>
-                            <span className="text-muted-foreground">ID: {doc.external_id?.slice(0, 8)}...</span>
-                          </div>
-                          <div className="h-1 w-full bg-muted overflow-hidden rounded-full">
-                            <div className="h-full bg-primary w-1/3 transition-all duration-1000" />
-                          </div>
+                     </div>
+                     <div className="text-right">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
+                           {activeView === "sent" ? "Destinatários" : "Remetente"}
+                        </p>
+                        <div className="flex -space-x-2 justify-end">
+                           {pact.signers.slice(0, 3).map((s: any, i: number) => (
+                             <div key={i} className="w-6 h-6 rounded-full bg-muted border-2 border-background flex items-center justify-center text-[8px] font-black text-primary uppercase" title={s.email}>
+                                {s.name[0]}
+                             </div>
+                           ))}
                         </div>
-                      </TableCell>
-                      <TableCell className="w-48 text-right pr-8">
-                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button variant="ghost" size="sm" className="h-8 rounded-lg text-[11px] font-bold text-muted-foreground">
-                            Detalhes
-                          </Button>
-                          <Button size="sm" className="h-8 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 font-bold text-[11px] px-4 border border-primary/20">
-                            <Send size={12} className="mr-1.5" /> Notificar
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </TabsContent>
-
-          <TabsContent value="signed" className="mt-0">
-            {signedDocuments.length === 0 ? (
-              <div className="p-20 text-center text-muted-foreground text-xs font-bold uppercase tracking-widest">Ainda não há contratos selados.</div>
-            ) : (
-              <Table>
-                <TableBody>
-                  {signedDocuments.map((doc) => (
-                    <TableRow key={doc.id} className="border-border group hover:bg-accent transition-all cursor-pointer">
-                      <TableCell className="w-16 pl-8">
-                        <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary">
-                          <CheckCircle2 size={18} />
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-6">
-                        <div className="text-[13px] font-bold tracking-tight">{doc.contracts?.title}</div>
-                        <div className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1 font-bold">Assinado em {new Date(doc.updated_at).toLocaleDateString()}</div>
-                      </TableCell>
-                      <TableCell className="w-1/4">
-                         <div className="text-[10px] text-muted-foreground font-mono flex items-center gap-2">
-                           <span className="w-1.5 h-1.5 rounded-full bg-primary" /> Protocolo: {doc.external_id}
-                         </div>
-                      </TableCell>
-                      <TableCell className="w-48 text-right pr-8">
-                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground">
-                            <MoreVertical size={16} />
-                          </Button>
-                          <Button variant="outline" size="sm" className="h-8 rounded-lg border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground text-[11px] font-bold gap-1.5 px-3 transition-all">
-                            <Download size={14} /> Download
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </TabsContent>
-        </Tabs>
-      </div>
-      
-      {/* Footer Info / Credits */}
-      <div className="bg-muted/30 border border-border rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-primary/10 text-primary rounded-xl border border-primary/20">
-            <Activity size={24} />
-          </div>
-          <div className="space-y-1">
-            <div className="text-[13px] font-bold tracking-tight">Capacidade de Execução</div>
-            <div className="text-[11px] text-muted-foreground font-medium">Você possui <span className="text-foreground font-bold font-mono text-[12px]">{profile?.credits || 0}</span> créditos de assinatura restantes.</div>
-          </div>
+                     </div>
+                  </div>
+               </Card>
+             ))
+           )}
         </div>
-        <Button variant="outline" className="h-10 px-6 border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground font-bold rounded-lg text-[12px] transition-all">
-          Recarregar Créditos
-        </Button>
+
+        <div className="space-y-6">
+           {selectedPact ? (
+             <div className="space-y-6 animate-in slide-in-from-right-4 duration-500">
+               {activeView === "received" && selectedPact.status !== 'signed' ? (
+                 <Card className="p-8 border-primary/20 bg-primary/[0.02] sticky top-6">
+                    <div className="space-y-6">
+                       <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                             <KeyRound size={16} />
+                          </div>
+                          <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Ritual de Selamento</h4>
+                       </div>
+                       
+                       <p className="text-xs text-muted-foreground leading-relaxed italic">
+                          "Para selar este pacto soberano, insira o código de 6 dígitos que foi enviado para sua caixa de entrada."
+                       </p>
+
+                       <div className="space-y-2">
+                          <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Código Ritual</label>
+                          <input 
+                            type="text" 
+                            maxLength={6}
+                            placeholder="000000"
+                            value={sealingCode}
+                            onChange={(e) => setSealingCode(e.target.value)}
+                            className="w-full h-14 bg-background border border-primary/30 rounded-2xl text-center text-2xl font-black tracking-[0.5em] text-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all placeholder:text-muted-foreground/10"
+                          />
+                       </div>
+
+                       <Button 
+                         disabled={isSealing || sealingCode.length < 6}
+                         onClick={handleSealPact}
+                         className="w-full h-14 bg-primary text-primary-foreground font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95"
+                       >
+                         {isSealing ? "Selando Pacto..." : "Confirmar Selamento"}
+                       </Button>
+
+                       <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                          <AlertCircle size={14} className="text-amber-500 shrink-0" />
+                          <p className="text-[9px] text-amber-500 font-bold leading-tight uppercase">Ação Irreversível: O selamento gera evidências digitais definitivas.</p>
+                       </div>
+                    </div>
+                 </Card>
+               ) : (
+                 <Card className="p-8 border-border bg-muted/10 sticky top-6">
+                    <div className="space-y-6">
+                       <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-muted text-foreground flex items-center justify-center border border-border">
+                             <ShieldCheck size={16} />
+                          </div>
+                          <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Manifesto Digital</h4>
+                       </div>
+
+                       <div className="space-y-4">
+                          <div className="space-y-1">
+                             <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Status do Ritual</span>
+                             <p className="text-xs font-bold text-foreground flex items-center gap-2">
+                                {selectedPact.status === 'signed' ? <Check className="text-emerald-500" size={14} /> : <Zap className="text-primary" size={14} />}
+                                {selectedPact.status === 'signed' ? 'Pacto Integralmente Selado' : 'Aguardando Signatários'}
+                             </p>
+                          </div>
+
+                          <div className="space-y-1">
+                             <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Código Ritual de Acesso</span>
+                             <p className="text-sm font-mono font-black text-primary tracking-widest">{selectedPact.protocolo}</p>
+                          </div>
+
+                          <div className="pt-4 border-t border-border space-y-3">
+                             <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Signatários do Pacto</span>
+                             {selectedPact.signers.map((s: any, i: number) => (
+                               <div key={i} className="flex items-center justify-between">
+                                  <span className="text-[10px] font-bold text-foreground">{s.name}</span>
+                                  <Badge className="h-4 text-[7px] font-black uppercase px-1 bg-muted text-muted-foreground border-none">Convocado</Badge>
+                               </div>
+                             ))}
+                          </div>
+
+                          {selectedPact.status === 'signed' && (
+                            <Button variant="outline" className="w-full h-12 rounded-xl text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5">
+                               Baixar Certificado de Soberania
+                            </Button>
+                          )}
+                       </div>
+                    </div>
+                 </Card>
+               )}
+             </div>
+           ) : (
+             <div className="p-8 text-center border border-dashed rounded-3xl border-border">
+                <Zap size={24} className="mx-auto text-muted-foreground/20 mb-3" />
+                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Selecione um pacto para ver os detalhes táticos.</p>
+             </div>
+           )}
+        </div>
       </div>
     </div>
   );
 }
-
