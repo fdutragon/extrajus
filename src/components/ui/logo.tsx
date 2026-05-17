@@ -78,14 +78,14 @@ export function Logo({ className, showText = true, iconSize = 32, ...props }: Lo
       {showText && (
         <div className="flex flex-col items-start leading-none">
           <span className={cn(
-            "font-black tracking-[0.25em] uppercase text-foreground",
-            isLarge ? "text-lg" : isMedium ? "text-base" : "text-sm"
+            "font-serif tracking-[0.2em] uppercase text-foreground",
+            isLarge ? "text-base" : isMedium ? "text-sm" : "text-xs"
           )}>
-            Extra<span className="text-primary font-bold">Jus</span>
+            Extra<span className="text-primary font-medium">Jus</span>
           </span>
           <span className={cn(
-            "font-bold tracking-[0.45em] text-muted-foreground uppercase mt-1",
-            isLarge ? "text-[9.5px]" : isMedium ? "text-[8.5px]" : "text-[7.5px]"
+            "font-serif tracking-[0.4em] text-muted-foreground uppercase mt-0.5",
+            isLarge ? "text-[8.5px]" : isMedium ? "text-[7.5px]" : "text-[6.5px]"
           )}>
             Skynet Intel
           </span>
