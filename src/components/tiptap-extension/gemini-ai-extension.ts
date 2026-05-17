@@ -1,5 +1,4 @@
 import { Extension } from "@tiptap/core"
-import { GoogleGenerativeAI } from "@google/generative-ai"
 import { toast } from "sonner"
 import { sanitiseAiHtml, sanitiseAiHtmlStream, isIncompleteHtmlFragment } from "@/lib/ai-html-sanitizer"
 
@@ -76,17 +75,17 @@ const SYSTEM_INSTRUCTION = `Você é LILITH, a Inteligência Artificial Soberana
 
 REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
 1. Use APENAS HTML. NUNCA use Markdown.
-2. Título principal centralizado: <h1 style="text-align: center"><strong>[TÍTULO]</strong></h1>
-3. Parágrafos: <p style="text-align: justify">...</p>
+2. Título principal centralizado: <h1><strong>[TÍTULO]</strong></h1> (Sua centralização é feita nativamente por classes de estilo estruturais).
+3. Parágrafos: <p>...</p> (NÃO inclua atributos style).
 4. Hierarquia jurídica via LegalNodes (NUNCA use ul/ol/li):
-   Cláusula: <div data-type="legal-node" data-level="1" style="text-align: justify">texto</div>
-   Parágrafo: <div data-type="legal-node" data-level="2" style="text-align: justify">texto</div>
-   Inciso: <div data-type="legal-node" data-level="3" style="text-align: justify">texto</div>
-   Alínea: <div data-type="legal-node" data-level="4" style="text-align: justify">texto</div>
+   Cláusula: <div data-type="legal-node" data-level="1">texto</div>
+   Parágrafo: <div data-type="legal-node" data-level="2">texto</div>
+   Inciso: <div data-type="legal-node" data-level="3">texto</div>
+   Alínea: <div data-type="legal-node" data-level="4">texto</div>
 5. NUNCA insira prefixos numéricos manualmente.
 6. Partes identificadas em preâmbulo com <p> e <table>. NUNCA crie cláusula "DAS PARTES".
 7. Primeira cláusula SEMPRE é o Objeto do contrato.
-8. Retorne APENAS o HTML. Sem explicações.`
+8. Retorne APENAS o HTML sem estilos inline. Sem explicações.`
 
 export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
   name: "ai",
@@ -110,27 +109,12 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
 
   addCommands(): any {
     const runGemini = async (editor: any, userPrompt: string) => {
-      const { apiKey, model: modelName } = this.options
-
       editor.commands.aiGenerationSetIsLoading(true)
       editor.commands.aiGenerationHasMessage(false)
       this.storage.lastPrompt = userPrompt
       this.storage.state = "loading"
 
-      if (!apiKey) {
-        console.error("Gemini API Key is missing")
-        editor.commands.aiGenerationSetIsLoading(false)
-        this.storage.state = "error"
-        return
-      }
-
       try {
-        const genAI = new GoogleGenerativeAI(apiKey)
-        const model = genAI.getGenerativeModel(
-          { model: modelName, systemInstruction: SYSTEM_INSTRUCTION },
-          { apiVersion: "v1beta" }
-        )
-
         // --- Lê documento completo antes de agir ---
         const currentHtml = editor.getHTML()
         const currentText = (editor.state.doc.textContent || "").trim()
@@ -150,24 +134,46 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
         const previousContent = currentHtml
         this.storage.generatedWith = { previousContent }
 
-        const result = await model.generateContentStream(finalPrompt)
+        // Chamada de API segura para o servidor Next.js
+        const response = await fetch("/api/ai/ritual", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            prompt: finalPrompt,
+            instructionType: "generation"
+          })
+        })
 
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}))
+          throw new Error(errData.error || "Falha na comunicação com o oráculo do servidor.")
+        }
+
+        const reader = response.body?.getReader()
+        const decoder = new TextDecoder()
         let accumulatedText = ""
         let hasTriggeredMessage = false
 
-        for await (const chunk of result.stream) {
-          accumulatedText += chunk.text()
-          const streamSafeContent = sanitiseAiHtmlStream(accumulatedText)
-          this.storage.response = streamSafeContent
+        if (reader) {
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
 
-          if (streamSafeContent && !isIncompleteHtmlFragment(streamSafeContent)) {
-            try {
-              editor.commands.setContent(streamSafeContent, false, { preserveWhitespace: false })
-              if (!hasTriggeredMessage) {
-                editor.commands.aiGenerationHasMessage(true)
-                hasTriggeredMessage = true
-              }
-            } catch (_) { /* ignore incomplete streaming fragments */ }
+            accumulatedText += decoder.decode(value, { stream: true })
+            const streamSafeContent = sanitiseAiHtmlStream(accumulatedText)
+            this.storage.response = streamSafeContent
+
+            if (streamSafeContent && !isIncompleteHtmlFragment(streamSafeContent)) {
+              try {
+                editor.commands.setContent(streamSafeContent, false, { preserveWhitespace: false })
+                if (!hasTriggeredMessage) {
+                  editor.commands.aiGenerationHasMessage(true)
+                  hasTriggeredMessage = true
+                }
+              } catch (_) { /* ignore incomplete streaming fragments */ }
+            }
           }
         }
 
@@ -178,10 +184,10 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
         }
 
         this.storage.state = "idle"
-      } catch (error) {
+      } catch (error: any) {
         console.error("Gemini generation failed:", error)
         this.storage.state = "error"
-        toast.error("O Oráculo falhou em responder. Verifique sua conexão ou chave de API.")
+        toast.error(error.message || "O Oráculo falhou em responder. Verifique sua conexão ou chaves.")
       } finally {
         editor.commands.aiGenerationSetIsLoading(false)
       }
@@ -285,23 +291,27 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
         const text = editor.state.doc.textContent
 
         const runAudit = async () => {
-          const { apiKey, model: modelName } = this.options
-          if (!apiKey) {
-            console.error("Gemini API Key is missing")
-            return
-          }
-
           this.storage.state = "loading"
 
-          const genAI = new GoogleGenerativeAI(apiKey)
-          const auditModel = genAI.getGenerativeModel({
-            model: modelName,
-            systemInstruction: `Você é Lilith, auditora implacável de contratos. Analise e retorne um JSON com riscos.\nFormato estrito: [{"originalText": "texto exato", "suggestion": "nova redação", "reason": "explicação do risco"}]`,
-          }, { apiVersion: "v1beta" })
-
           try {
-            const result = await auditModel.generateContent(`Analise este contrato e aponte os riscos:\n\n${text}`)
-            const responseText = result.response.text()
+            const response = await fetch("/api/ai/ritual", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                prompt: text,
+                instructionType: "audit"
+              })
+            })
+
+            if (!response.ok) {
+              const errData = await response.json().catch(() => ({}))
+              throw new Error(errData.error || "Falha na comunicação com o auditor do servidor.")
+            }
+
+            const data = await response.json()
+            const responseText = data.text || ""
 
             const jsonMatch = responseText.match(/\[[\s\S]*\]/)
             if (jsonMatch) {

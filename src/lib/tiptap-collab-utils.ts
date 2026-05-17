@@ -8,7 +8,7 @@ export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || ""
 export const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
 
 // Gemini
-export const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || ""
+export const GEMINI_API_KEY = "server_managed"
 
 export const USE_JWT_TOKEN_API_ENDPOINT =
   process.env.NEXT_PUBLIC_USE_JWT_TOKEN_API_ENDPOINT || ""

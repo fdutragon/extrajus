@@ -1,15 +1,42 @@
-import { createClient } from "@/utils/supabase/server";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import crypto from "crypto";
 
 export async function POST(request: Request) {
   try {
+    const bodyClone = request.clone();
     const payload = await request.json();
     console.log("[Webhook GG Pix] Recebido:", payload);
+
+    // Validação de segurança e origem do Webhook
+    const signature = request.headers.get("X-GG-Signature");
+    const authorization = request.headers.get("Authorization");
+    const secret = process.env.GGPIX_WEBHOOK_SECRET || process.env.GGPIX_API_KEY || "";
+
+    if (secret) {
+      const isSimpleToken = authorization === secret || authorization === `Bearer ${secret}` || signature === secret;
+      
+      let isHmacValid = false;
+      if (signature && !isSimpleToken) {
+        const bodyText = await bodyClone.text();
+        const hash = crypto.createHmac("sha256", secret).update(bodyText).digest("hex");
+        isHmacValid = signature === hash;
+      }
+
+      if (!isSimpleToken && !isHmacValid) {
+        console.warn("[Webhook GG Pix] Bloqueada tentativa de requisição falsa sem assinatura válida.");
+        return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+      }
+    }
 
     const { status, externalId, amount } = payload;
 
     if (status === "COMPLETE" && externalId) {
-      const supabase = await createClient();
+      // Criar o cliente Admin usando a Service Role Key para contornar RLS no webhook
+      const supabase = createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
 
       // 1. Buscar a transação pendente
       const { data: transaction, error: fetchError } = await supabase

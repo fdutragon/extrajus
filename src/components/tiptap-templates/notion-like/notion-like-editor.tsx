@@ -277,10 +277,10 @@ export function EditorContentArea() {
     <EditorContent
       editor={editor}
       role="presentation"
-      className="notion-like-editor-content"
-      style={{
-        cursor: isDragging ? "grabbing" : "auto",
-      }}
+      className={cn(
+        "notion-like-editor-content",
+        isDragging ? "cursor-grabbing" : "cursor-default"
+      )}
     >
       <DragContextMenu />
       <SlashDropdownMenu />
@@ -320,6 +320,7 @@ export function EditorLayout() {
   const { state, updateState } = useAiMenuState()
   const { editor } = useContext(EditorContext)!
   const { provider, room } = useCollab()
+  const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
     if (typeof window === "undefined") return
@@ -586,7 +587,6 @@ export function EditorLayout() {
   // Fetch dynamic content for Biblioteca and Logs
   useEffect(() => {
     const fetchArsenal = async () => {
-      const supabase = createClient()
       
       // Fetch Active Contract Title
       const { data: currentContract } = await supabase
@@ -637,7 +637,7 @@ export function EditorLayout() {
     }
 
     fetchArsenal()
-  }, [room])
+  }, [room, supabase])
 
   // Debounced auto-save of filename to Supabase
   useEffect(() => {
@@ -647,7 +647,6 @@ export function EditorLayout() {
     if (fileName === "Contrato_Imperial_Alpha") return
 
     const delayDebounceFn = setTimeout(async () => {
-      const supabase = createClient()
       const { error } = await supabase
         .from('contracts')
         .update({ title: fileName })
@@ -667,7 +666,7 @@ export function EditorLayout() {
     }, 1000) // 1s debounce
 
     return () => clearTimeout(delayDebounceFn)
-  }, [fileName, room, readOnly])
+  }, [fileName, room, readOnly, supabase])
 
   // Scroll to the top of the A4 paper on mount/room change to prevent starting at the bottom
   useEffect(() => {

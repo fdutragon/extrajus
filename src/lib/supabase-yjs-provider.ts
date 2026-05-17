@@ -133,10 +133,7 @@ export class SupabaseYjsProvider extends Observable<string> {
 
     try {
       // Optimized hex conversion
-      let hex = ""
-      for (let i = 0; i < update.length; i++) {
-        hex += update[i].toString(16).padStart(2, "0")
-      }
+      const hex = Array.from(update, (byte) => byte.toString(16).padStart(2, "0")).join("")
       
       const { error } = await this.supabase.from("yjs_updates").insert({
         contract_id: this.contractId,
@@ -145,11 +142,23 @@ export class SupabaseYjsProvider extends Observable<string> {
 
       if (error) {
         console.error("[SupabaseYjsProvider] Error saving debounced update:", error.message)
+        // Restore updates so we do not lose them
+        if (this.pendingUpdate) {
+          this.pendingUpdate = Y.mergeUpdates([update, this.pendingUpdate])
+        } else {
+          this.pendingUpdate = update
+        }
       } else {
         console.log(`[SupabaseYjsProvider] Debounced update saved for ${this.contractId}`)
       }
     } catch (e) {
       console.error("[SupabaseYjsProvider] Unexpected error saving update:", e)
+      // Restore updates so we do not lose them
+      if (this.pendingUpdate) {
+        this.pendingUpdate = Y.mergeUpdates([update, this.pendingUpdate])
+      } else {
+        this.pendingUpdate = update
+      }
     }
   }
 
@@ -176,10 +185,7 @@ export class SupabaseYjsProvider extends Observable<string> {
     }
 
     try {
-      let hex = ""
-      for (let i = 0; i < update.length; i++) {
-        hex += update[i].toString(16).padStart(2, "0")
-      }
+      const hex = Array.from(update, (byte) => byte.toString(16).padStart(2, "0")).join("")
       
       const { error } = await this.supabase.from("yjs_updates").insert({
         contract_id: this.contractId,

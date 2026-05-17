@@ -34,7 +34,16 @@ export async function POST(request: Request) {
 
     if (dbError) throw dbError;
 
-    // 2. Chamar a API GG Pix
+    // 2. Buscar o CPF/CNPJ do perfil do usuário de forma dinâmica
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("document")
+      .eq("id", user.id)
+      .single();
+
+    const payerDocument = profile?.document || "00000000000";
+
+    // 3. Chamar a API GG Pix
     const response = await fetch(GGPIX_API_URL, {
       method: "POST",
       headers: {
@@ -45,7 +54,7 @@ export async function POST(request: Request) {
         amountCents,
         description: description || "Créditos ExtraJus",
         payerName: user.user_metadata?.full_name || user.email,
-        payerDocument: "00000000000", // Placeholder ou coletar do perfil
+        payerDocument,
         externalId,
         webhookUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/ggpix`,
       }),

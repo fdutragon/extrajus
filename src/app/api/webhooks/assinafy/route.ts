@@ -1,12 +1,39 @@
-import { createClient } from '@/utils/supabase/server'
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { NextResponse } from 'next/server'
+import crypto from "crypto";
 
 export async function POST(request: Request) {
-  const supabase = await createClient()
+  // Criar o cliente Admin usando a Service Role Key para contornar RLS no webhook
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
   
   try {
+    const bodyClone = request.clone();
     const payload = await request.json()
     console.log("[Webhook Assinafy] Received payload:", payload)
+
+    // Validação de segurança e origem do Webhook Assinafy
+    const signature = request.headers.get("X-Assinafy-Signature");
+    const authorization = request.headers.get("Authorization");
+    const secret = process.env.ASSINAFY_WEBHOOK_SECRET || process.env.ASSINAFY_API_KEY || "";
+
+    if (secret) {
+      const isSimpleToken = authorization === secret || authorization === `Bearer ${secret}` || signature === secret;
+      
+      let isHmacValid = false;
+      if (signature && !isSimpleToken) {
+        const bodyText = await bodyClone.text();
+        const hash = crypto.createHmac("sha256", secret).update(bodyText).digest("hex");
+        isHmacValid = signature === hash;
+      }
+
+      if (!isSimpleToken && !isHmacValid) {
+        console.warn("[Webhook Assinafy] Bloqueada tentativa de requisição falsa sem assinatura válida.");
+        return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+      }
+    }
 
     const { id: documentId, status } = payload
 
@@ -19,7 +46,7 @@ export async function POST(request: Request) {
     const mappedStatus = status === 'completed' || status === 'signed' ? 'signed' : status
 
     // 1. Update Signatures table
-    const { data: signature, error: sigError } = await supabase
+    const { data: updatedSignature, error: sigError } = await supabase
       .from('signatures')
       .update({ status: mappedStatus, updated_at: new Date().toISOString() })
       .eq('external_id', documentId)
@@ -32,11 +59,11 @@ export async function POST(request: Request) {
     }
 
     // 2. Update Contracts table
-    if (signature?.contract_id) {
+    if (updatedSignature?.contract_id) {
       const { error: contractError } = await supabase
         .from('contracts')
         .update({ status: mappedStatus, updated_at: new Date().toISOString() })
-        .eq('id', signature.contract_id)
+        .eq('id', updatedSignature.contract_id)
 
       if (contractError) {
         console.error("[Webhook Assinafy] Error updating contract:", contractError)
