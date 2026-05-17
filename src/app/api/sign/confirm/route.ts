@@ -8,14 +8,20 @@ export async function POST(request: Request) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
-    if (!user) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
-    }
-
-    const { contractId, sealingCode } = await request.json();
+    const body = await request.json();
+    const { contractId, sealingCode, email } = body;
 
     if (!contractId || !sealingCode) {
       return NextResponse.json({ error: 'ID do contrato e código são obrigatórios' }, { status: 400 })
+    }
+
+    let authorizedEmail = user?.email;
+    if (!authorizedEmail && email) {
+      authorizedEmail = email;
+    }
+
+    if (!authorizedEmail) {
+      return NextResponse.json({ error: 'Você precisa estar autenticado ou informar seu e-mail para selar o pacto.' }, { status: 401 })
     }
 
     // 1. Validar se o pacto existe e se o código está correto
@@ -34,10 +40,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Este pacto já foi selado.' }, { status: 400 });
     }
 
-    // 2. Verificar se o usuário logado está na lista de signatários do pacto
-    const isSigner = signature.signers.some((s: any) => s.email.toLowerCase() === user.email?.toLowerCase());
+    // 2. Verificar se o e-mail autorizado está na lista de signatários do pacto
+    const isSigner = signature.signers.some((s: any) => s.email.toLowerCase().trim() === authorizedEmail.toLowerCase().trim());
     if (!isSigner) {
-      return NextResponse.json({ error: 'Você não tem permissão para selar este pacto.' }, { status: 403 });
+      return NextResponse.json({ error: 'Este e-mail não faz parte da lista de signatários autorizados para este pacto.' }, { status: 403 });
     }
 
     // 3. Captura de Evidências Finais
@@ -52,7 +58,7 @@ export async function POST(request: Request) {
       evidence: {
         ip_address: ip,
         user_agent: userAgent,
-        authorized_email: user.email
+        authorized_email: authorizedEmail
       },
       status: "COMPLETED_RITUAL"
     };

@@ -9,21 +9,40 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PU
 
 const supabase = createClient(supabaseUrl, supabaseKey)
 
-async function checkProfessionals() {
-  console.log('🔍 Checking professionals table in Supabase...')
-  const { data, error, count } = await supabase
+async function runDiscovery() {
+  console.log('⚡ Inserting mock professional with expertise to probe further...')
+  
+  // 1. Insert a temporary record with name and expertise
+  const { data: inserted, error: insertError } = await supabase
     .from('professionals')
-    .select('*')
-    .limit(1)
+    .insert({ 
+      id: '00000000-0000-0000-0000-000000000000', 
+      name: 'Lilith Cripto-Advogada',
+      expertise: 'Cripto-Direito'
+    })
+    .select()
 
-  if (error) {
-    console.error('❌ Error fetching from professionals:', error.message)
+  if (insertError) {
+    console.error('❌ Insert failed:', insertError)
+    return
+  }
+
+  console.log('✅ Temporary professional inserted successfully!')
+  console.log('🔑 Exact columns/schema found in record:')
+  console.log(inserted[0])
+
+  // 2. Clean up and delete the record
+  console.log('🧹 Cleaning up database, deleting temporary record...')
+  const { error: deleteError } = await supabase
+    .from('professionals')
+    .delete()
+    .eq('id', '00000000-0000-0000-0000-000000000000')
+
+  if (deleteError) {
+    console.error('❌ Failed to delete temporary record:', deleteError.message)
   } else {
-    console.log('✅ Connected to professionals table successfully!')
-    console.log('📊 Count of records:', data ? data.length : 0)
-    console.log('🔑 Columns/Keys:', data[0] ? Object.keys(data[0]) : 'No rows found')
-    console.log('📄 Sample row:', data[0] || 'No row found')
+    console.log('✨ Cleanup finished. Database is pristine.')
   }
 }
 
-checkProfessionals()
+runDiscovery()

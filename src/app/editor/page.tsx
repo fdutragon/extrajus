@@ -69,8 +69,10 @@ function EditorContent() {
   const searchParams = useSearchParams()
   const room = searchParams.get("room") || "extrajus-draft-001"
   const templateSlug = searchParams.get("template")
+  const mode = searchParams.get("mode")
+  const readOnly = mode === "preview" || searchParams.get("readOnly") === "true"
 
-  return <NotionEditor room={room} templateSlug={templateSlug} />
+  return <NotionEditor room={room} templateSlug={templateSlug} readOnly={readOnly} />
 }
 
 export default function EditorPage() {

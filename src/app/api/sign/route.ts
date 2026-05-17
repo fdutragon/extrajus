@@ -82,12 +82,12 @@ export async function POST(request: Request) {
               </div>
 
               <p style="font-size: 13px; line-height: 1.6; opacity: 0.8;">
-                Para selar este pacto, acesse sua conta no ExtraJus e insira o código no painel de <strong>Pactos Pendentes</strong>. Se você ainda não possui um nó na rede, crie sua conta com este e-mail para visualizar o documento.
+                Para visualizar e selar este pacto, clique no link abaixo. Você poderá ver o documento completo em modo de somente leitura e inserir seu código para assinar digitalmente.
               </p>
 
-              <a href="${process.env.NEXT_PUBLIC_SITE_URL}/signatures" 
+              <a href="${process.env.NEXT_PUBLIC_SITE_URL}/editor?room=${contractId}&mode=preview" 
                  style="display: inline-block; background: #c0ff00; color: #000; text-decoration: none; padding: 15px 30px; font-weight: bold; border-radius: 5px; margin-top: 20px; text-transform: uppercase; font-size: 12px;">
-                Acessar Painel de Selamento
+                Visualizar e Selar Pacto
               </a>
 
               <p style="margin-top: 50px; font-size: 10px; opacity: 0.3; text-align: center;">

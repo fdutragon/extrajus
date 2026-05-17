@@ -31,12 +31,25 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Protect /dashboard and /editor routes
-  if (
-    !user &&
-    (request.nextUrl.pathname.startsWith('/dashboard') ||
-      request.nextUrl.pathname.startsWith('/editor'))
-  ) {
+  // List of protected routes that require authentication
+  const protectedRoutes = [
+    '/dashboard',
+    '/editor',
+    '/brain',
+    '/signatures',
+    '/settings',
+    '/admin',
+    '/contracts',
+    '/arsenal'
+  ]
+
+  const isProtectedRoute = protectedRoutes.some(route => 
+    request.nextUrl.pathname === route || request.nextUrl.pathname.startsWith(route + '/')
+  )
+
+  const isPreview = request.nextUrl.searchParams.get('mode') === 'preview' || request.nextUrl.searchParams.get('readOnly') === 'true';
+
+  if (!user && isProtectedRoute && !isPreview) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)

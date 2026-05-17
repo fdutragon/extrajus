@@ -106,6 +106,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
 import { Separator } from "../../../components/tiptap-ui-primitive/separator"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useSearchParams } from "next/navigation"
 import { CollaborationUsers } from "../../../components/tiptap-templates/notion-like/notion-like-editor-collaboration-users"
 import { SignModal } from "../../../components/tiptap-ui/sign-modal/sign-modal"
 import { cn } from "@/lib/utils"
@@ -171,6 +172,7 @@ export interface NotionEditorProps {
   room: string
   placeholder?: string
   templateSlug?: string | null
+  readOnly?: boolean
 }
 
 export interface EditorProviderProps {
@@ -179,6 +181,7 @@ export interface EditorProviderProps {
   placeholder?: string
   geminiKey: string | null
   templateSlug?: string | null
+  readOnly?: boolean
 }
 
 /**
@@ -306,6 +309,55 @@ export function EditorLayout() {
   const { editor } = useContext(EditorContext)!
   const { provider, room } = useCollab()
 
+  const searchParams = useSearchParams()
+  const readOnly = searchParams?.get("mode") === "preview" || searchParams?.get("readOnly") === "true"
+
+  const [signerEmail, setSignerEmail] = useState("")
+  const [sealingCode, setSealingCode] = useState("")
+  const [consentCheck, setConsentCheck] = useState(false)
+  const [isSealing, setIsSealing] = useState(false)
+
+  const handleConfirmSignature = async () => {
+    if (!sealingCode) {
+      toast.error("Por favor, insira o código de selamento de 6 dígitos.")
+      return
+    }
+    if (!consentCheck) {
+      toast.error("Você precisa aceitar os termos de consentimento digital.")
+      return
+    }
+
+    setIsSealing(true)
+    const toastId = toast.loading("Validando evidências e selando pacto...")
+
+    try {
+      const res = await fetch("/api/sign/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contractId: room,
+          sealingCode,
+          email: signerEmail || undefined
+        })
+      })
+
+      const result = await res.json()
+      if (!res.ok) {
+        throw new Error(result.error || "Erro desconhecido")
+      }
+
+      toast.success("PACTO SELADO COM SUCESSO! A integridade foi gravada.", { id: toastId })
+      setTimeout(() => {
+        window.location.reload()
+      }, 1500)
+    } catch (error: any) {
+      console.error(error)
+      toast.error(error.message || "Falha no ritual de selamento.", { id: toastId })
+    } finally {
+      setIsSealing(false)
+    }
+  }
+
   // Fetch dynamic content for Biblioteca
   useEffect(() => {
     const fetchArsenal = async () => {
@@ -344,11 +396,19 @@ export function EditorLayout() {
       {/* Sovereign Header - The Command Monolith */}
       <header className="fixed top-0 left-0 w-full h-12 border-b border-border bg-background/60 backdrop-blur-2xl flex items-center justify-between px-6 z-[100] transition-all duration-500 hover:bg-background/80 group">
         <div className="flex items-center gap-6">
-          <Link href="/dashboard">
-            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-300 group/back">
-              <ChevronLeft size={18} className="group-hover/back:-translate-x-0.5 transition-transform" />
-            </Button>
-          </Link>
+          {!readOnly ? (
+            <Link href="/dashboard">
+              <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-300 group/back">
+                <ChevronLeft size={18} className="group-hover/back:-translate-x-0.5 transition-transform" />
+              </Button>
+            </Link>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] bg-red-500/10 text-red-400 border border-red-500/20 px-2.5 py-1 rounded-lg">
+                Somente Leitura
+              </span>
+            </div>
+          )}
           <div className="flex flex-col">
             <div className="flex items-baseline gap-2 group/brand cursor-default">
               <span className="text-[11px] font-black uppercase tracking-[0.4em] text-primary transition-all">ExtraJus</span>
@@ -358,58 +418,63 @@ export function EditorLayout() {
         </div>
 
         {/* Neural Action Center: Symmetrical Command Bridge */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-8 z-[110]">
-          
-          {/* Left Wing: Structure & Weight */}
-          <div className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity duration-500">
-            <MarkButton type="bold" />
-            <MarkButton type="italic" />
-            <MarkButton type="underline" />
-            <MarkButton type="strike" />
-            <ResetAllFormattingButton />
-          </div>
+        {!readOnly && (
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-8 z-[110]">
+            
+            {/* Left Wing: Structure & Weight */}
+            <div className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity duration-500">
+              <MarkButton type="bold" />
+              <MarkButton type="italic" />
+              <MarkButton type="underline" />
+              <MarkButton type="strike" />
+              <ResetAllFormattingButton />
+            </div>
 
-          <div 
-            className="relative flex items-center justify-center px-3 h-10 rounded-none cursor-default group/ia transition-all overflow-hidden border border-primary/10 gap-2"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 transition-all" />
-            <BrainCircuit size={14} className="text-primary/60 relative z-10 animate-pulse" />
-            <span className="text-[12px] font-black uppercase tracking-[0.2em] relative z-10 text-primary/80">IA</span>
-          </div>
+            <div 
+              className="relative flex items-center justify-center px-3 h-10 rounded-none cursor-default group/ia transition-all overflow-hidden border border-primary/10 gap-2"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 transition-all" />
+              <BrainCircuit size={14} className="text-primary/60 relative z-10 animate-pulse" />
+              <span className="text-[12px] font-black uppercase tracking-[0.2em] relative z-10 text-primary/80">IA</span>
+            </div>
 
-          {/* Right Wing: Refinement & Style */}
-          <div className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity duration-500">
-            <ListButton type="bulletList" />
-            <TextAlignButton align="left" />
-            <TextAlignButton align="center" />
-            <TextAlignButton align="right" />
-            <TextAlignButton align="justify" />
-            <div className="h-4 w-px bg-border mx-1" />
-            <LinkPopover autoOpenOnLinkActive={false} orientation="horizontal" />
-            <ColorTextPopover orientation="horizontal" />
+            {/* Right Wing: Refinement & Style */}
+            <div className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity duration-500">
+              <ListButton type="bulletList" />
+              <TextAlignButton align="left" />
+              <TextAlignButton align="center" />
+              <TextAlignButton align="right" />
+              <TextAlignButton align="justify" />
+              <div className="h-4 w-px bg-border mx-1" />
+              <LinkPopover autoOpenOnLinkActive={false} orientation="horizontal" />
+              <ColorTextPopover orientation="horizontal" />
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 pr-4 border-r border-border/50">
-            <InviteButton room={room || ""} />
+            {!readOnly && <InviteButton room={room || ""} />}
             <div className="flex items-center gap-3 ml-2">
               <CollaborationUsers />
               <ThemeToggle />
             </div>
           </div>
-          <div className="flex items-center gap-2 pl-2">
-            <ExportButton />
-            <SignModal />
-          </div>
+          {!readOnly && (
+            <div className="flex items-center gap-2 pl-2">
+              <ExportButton />
+              <SignModal />
+            </div>
+          )}
         </div>
       </header>
 
       <div className="flex-1 flex pt-12 relative overflow-hidden">
         
         {/* Fixed Left: O Códice (The War Library) */}
-        <div className="absolute left-6 top-12 z-40 hidden lg:block animate-in slide-in-from-left-12 duration-1000 mt-6">
-          <div className="w-96 h-[calc(100vh-96px)] bg-card border border-border rounded-[2rem] overflow-hidden flex flex-col group/library">
+        {!readOnly && (
+          <div className="absolute left-6 top-12 z-40 hidden lg:block animate-in slide-in-from-left-12 duration-1000 mt-6">
+            <div className="w-96 h-[calc(100vh-96px)] bg-card border border-border rounded-[2rem] overflow-hidden flex flex-col group/library">
             
             <div className="p-8 pb-4">
               <div className="flex items-center gap-4 mb-2">
@@ -474,6 +539,7 @@ export function EditorLayout() {
             </div>
           </div>
         </div>
+      )}
 
         {/* Central Sanctuary - The Infinite Paper */}
         <main className="flex-1 overflow-y-auto custom-scrollbar bg-transparent pt-6 pb-6 px-4 relative z-10">
@@ -485,7 +551,8 @@ export function EditorLayout() {
                <input 
                  value={fileName}
                  onChange={(e) => setFileName(e.target.value)}
-                 className="w-full bg-transparent border-none text-xl md:text-2xl font-black tracking-tight focus:outline-none focus:ring-0 placeholder:text-muted-foreground/20 text-foreground uppercase italic"
+                 disabled={readOnly}
+                 className="w-full bg-transparent border-none text-xl md:text-2xl font-black tracking-tight focus:outline-none focus:ring-0 placeholder:text-muted-foreground/20 text-foreground uppercase italic disabled:opacity-80 disabled:cursor-default"
                  placeholder="Título do Documento..."
                />
                <div className="flex items-center gap-2 mt-0.5 opacity-0 group-hover/title:opacity-100 transition-opacity">
@@ -501,113 +568,189 @@ export function EditorLayout() {
              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-32 bg-primary/5 blur-[80px] pointer-events-none rounded-full" />
 
              <div className="relative z-10 selection:bg-primary/30">
-               <BubbleMenu editor={editor} />
+               {!readOnly && <BubbleMenu editor={editor} />}
                <EditorContentArea />
              </div>
               {/* Fixed Transparent AI Command Center */}
-              <div className="fixed bottom-20 left-1/2 -translate-x-1/2 w-full max-w-[600px] z-[100] px-4 animate-in slide-in-from-bottom-10 duration-1000">
-                 <AiMenu plain={true} />
-              </div>
+              {!readOnly && (
+                <div className="fixed bottom-20 left-1/2 -translate-x-1/2 w-full max-w-[600px] z-[100] px-4 animate-in slide-in-from-bottom-10 duration-1000">
+                   <AiMenu plain={true} />
+                </div>
+              )}
           </div>
         </main>
 
-        {/* Fixed Right: A Alquimia (The Oracle of Lilith) */}
+        {/* Fixed Right: A Alquimia (The Oracle of Lilith) or Sealing Panel */}
         <div className="absolute right-6 top-12 z-40 hidden xl:block animate-in slide-in-from-right-12 duration-1000 mt-6">
-          <div className="w-96 h-[calc(100vh-96px)] bg-card border border-border rounded-[2rem] flex flex-col overflow-hidden group/oracle">
-            <Tabs value={oracleTab} onValueChange={setOracleTab} className="w-full h-full flex flex-col">
-              <div className="px-8 pt-8 mb-6">
-                <TabsList className="grid w-full grid-cols-2 bg-muted rounded-2xl h-10 p-1 border border-border items-center">
-                  <TabsTrigger value="insights" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all h-full flex items-center justify-center">
-                    Insights
-                  </TabsTrigger>
-                  <TabsTrigger value="logs" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all h-full flex items-center justify-center">
-                    Logs
-                  </TabsTrigger>
-                </TabsList>
+          {readOnly ? (
+            <div className="w-96 h-[calc(100vh-96px)] bg-card border border-border rounded-[2rem] flex flex-col p-8 justify-between relative group/oracle">
+              <div className="space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                    <ShieldCheck size={20} className="text-primary animate-pulse" />
+                  </div>
+                  <div>
+                    <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Selamento de Pacto</h3>
+                    <span className="text-[8px] text-primary font-bold uppercase tracking-widest font-black">Painel do Signatário</span>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <p className="text-[11px] leading-relaxed text-muted-foreground font-medium">
+                    Você foi convidado para selar digitalmente este pacto soberano. Revise o documento à esquerda (somente leitura) e preencha as credenciais de autenticação para assinar.
+                  </p>
+
+                  <div className="h-px bg-border my-2" />
+
+                  <div className="space-y-3">
+                    <label className="text-[9px] font-black text-muted-foreground uppercase tracking-wider">E-mail Convidado</label>
+                    <input 
+                      type="email"
+                      value={signerEmail}
+                      onChange={(e) => setSignerEmail(e.target.value)}
+                      placeholder="Seu e-mail de convocação..."
+                      className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 text-xs text-foreground focus:outline-none focus:border-primary transition-all font-semibold"
+                    />
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-[9px] font-black text-muted-foreground uppercase tracking-wider">Código de Selamento (6 dígitos)</label>
+                    <input 
+                      type="text"
+                      maxLength={6}
+                      value={sealingCode}
+                      onChange={(e) => setSealingCode(e.target.value.replace(/\D/g, ''))}
+                      placeholder="Ex: 123456"
+                      className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 text-center text-lg font-black tracking-[0.5em] text-foreground focus:outline-none focus:border-primary transition-all"
+                    />
+                  </div>
+
+                  <div className="flex items-start gap-3 mt-4">
+                    <input 
+                      type="checkbox"
+                      id="consent"
+                      checked={consentCheck}
+                      onChange={(e) => setConsentCheck(e.target.checked)}
+                      className="mt-0.5 rounded border-border text-primary focus:ring-0"
+                    />
+                    <label htmlFor="consent" className="text-[9px] text-muted-foreground leading-normal font-semibold cursor-pointer">
+                      Declaro que li e concordo com os termos deste pacto e dou meu consentimento digital irrevogável sob as penas da lei.
+                    </label>
+                  </div>
+                </div>
               </div>
 
-              <div className="flex-1 overflow-hidden px-8 pb-8">
-                <TabsContent value="insights" className="h-full m-0 flex flex-col space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 border-none">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
-                      <BrainCircuit size={20} className="text-primary animate-pulse" />
-                    </div>
-                    <div>
-                      <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Alquimia AI</h3>
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                        <div className="w-1 h-1 rounded-full bg-green-500 animate-ping" />
-                        <span className="text-[8px] text-green-500 font-bold uppercase tracking-widest">Sincronizada</span>
-                      </div>
-                    </div>
-                  </div>
+              <div className="space-y-4">
+                <Button 
+                  onClick={handleConfirmSignature}
+                  disabled={isSealing || !consentCheck || !sealingCode}
+                  className="w-full bg-primary hover:opacity-90 text-primary-foreground font-black text-[10px] uppercase tracking-widest py-6 rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(var(--primary-rgb),0.1)] active:scale-95"
+                >
+                  {isSealing ? "Selando Instrumento..." : "Selar Instrumento Jurídico"}
+                </Button>
 
-                  <div className="space-y-8">
-                    <div className="space-y-4">
-                      <h4 className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.25em] border-l-2 border-primary pl-3">Score de Dominação</h4>
-                      <div className="flex items-baseline gap-3">
-                        <div className="text-5xl font-black tracking-tighter text-foreground">{ORACLE_INSIGHTS.score}</div>
-                        <div className="text-xl font-bold text-primary">%</div>
-                      </div>
-                      <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
-                        <div className="w-[92%] h-full bg-gradient-to-r from-primary to-primary/60" />
-                      </div>
-                      <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest flex items-center gap-2">
-                        <ShieldCheck size={12} /> {ORACLE_INSIGHTS.status}
-                      </p>
-                      <div className="space-y-4 pt-4 border-t border-border">
-                       <h4 className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.25em]">Vulnerabilidades</h4>
-                       <div className="bg-primary/[0.03] border border-primary/10 rounded-2xl p-5 space-y-4 group/card hover:border-primary/30 transition-all">
-                         <p className="text-[11px] leading-relaxed italic text-muted-foreground font-medium">
-                           {ORACLE_INSIGHTS.vulnerabilityMsg}
-                         </p>
-                         <Button size="sm" className="w-full bg-primary hover:opacity-90 text-primary-foreground text-[9px] font-black uppercase tracking-widest h-9 rounded-xl transition-all active:scale-95">
-                           Aplicar Blindagem
-                         </Button>
-                       </div>
-                      </div>
-                    </div>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="logs" className="h-full m-0 flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700 border-none">
-                  <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
-                    <div className="flex items-center justify-between mb-4">
-                      <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                        <History size={12} className="text-primary" />
-                        Histórico de Versões
-                      </h4>
-                    </div>
-                    
-                    {ORACLE_LOGS.map((log) => (
-                      <div key={log.id} className="p-4 rounded-2xl bg-muted/30 border border-border hover:border-primary/30 transition-all group/log cursor-pointer">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-[10px] font-black text-primary uppercase tracking-widest">{log.version}</span>
-                          <span className="text-[8px] font-bold text-muted-foreground uppercase">{log.time}</span>
-                        </div>
-                        <p className="text-[12px] font-bold text-foreground mb-1 group-hover/log:text-primary transition-colors">{log.action}</p>
-                        <div className="flex items-center gap-2">
-                           <div className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center text-[8px] font-black text-primary">
-                             {log.user[0]}
-                           </div>
-                           <span className="text-[10px] font-medium text-muted-foreground">{log.user}</span>
-                        </div>
-                      </div>
-                    ))}
-
-                    <div className="pt-8 text-center opacity-20">
-                      <div className="h-px w-full bg-gradient-to-r from-transparent via-border to-transparent mb-6" />
-                      <Cpu size={24} className="mx-auto mb-3" />
-                      <p className="text-[8px] font-black uppercase tracking-[0.4em]">End of Log Archive</p>
-                    </div>
-                  </div>
-
-                  <Button className="mt-4 w-full bg-primary text-primary-foreground font-black text-[10px] uppercase tracking-widest py-6 rounded-2xl">
-                    <History className="mr-2 h-4 w-4" /> Restaurar Versão Anterior
-                  </Button>
-                </TabsContent>
+                <div className="text-center">
+                  <span className="text-[7px] text-muted-foreground uppercase tracking-widest opacity-50 font-black">ExtraJus AI • Ritual Sovereign Protocol</span>
+                </div>
               </div>
-            </Tabs>
-          </div>
+            </div>
+          ) : (
+            <div className="w-96 h-[calc(100vh-96px)] bg-card border border-border rounded-[2rem] flex flex-col overflow-hidden group/oracle">
+              <Tabs value={oracleTab} onValueChange={setOracleTab} className="w-full h-full flex flex-col">
+                <div className="px-8 pt-8 mb-6">
+                  <TabsList className="grid w-full grid-cols-2 bg-muted rounded-2xl h-10 p-1 border border-border items-center">
+                    <TabsTrigger value="insights" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all h-full flex items-center justify-center">
+                      Insights
+                    </TabsTrigger>
+                    <TabsTrigger value="logs" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all h-full flex items-center justify-center">
+                      Logs
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
+
+                <div className="flex-1 overflow-hidden px-8 pb-8">
+                  <TabsContent value="insights" className="h-full m-0 flex flex-col space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 border-none">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                        <BrainCircuit size={20} className="text-primary animate-pulse" />
+                      </div>
+                      <div>
+                        <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Alquimia AI</h3>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <div className="w-1 h-1 rounded-full bg-green-500 animate-ping" />
+                          <span className="text-[8px] text-green-500 font-bold uppercase tracking-widest">Sincronizada</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-8">
+                      <div className="space-y-4">
+                        <h4 className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.25em] border-l-2 border-primary pl-3">Score de Dominação</h4>
+                        <div className="flex items-baseline gap-3">
+                          <div className="text-5xl font-black tracking-tighter text-foreground">{ORACLE_INSIGHTS.score}</div>
+                          <div className="text-xl font-bold text-primary">%</div>
+                        </div>
+                        <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div className="w-[92%] h-full bg-gradient-to-r from-primary to-primary/60" />
+                        </div>
+                        <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest flex items-center gap-2">
+                          <ShieldCheck size={12} /> {ORACLE_INSIGHTS.status}
+                        </p>
+                        <div className="space-y-4 pt-4 border-t border-border">
+                         <h4 className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.25em]">Vulnerabilidades</h4>
+                         <div className="bg-primary/[0.03] border border-primary/10 rounded-2xl p-5 space-y-4 group/card hover:border-primary/30 transition-all">
+                           <p className="text-[11px] leading-relaxed italic text-muted-foreground font-medium">
+                             {ORACLE_INSIGHTS.vulnerabilityMsg}
+                           </p>
+                           <Button size="sm" className="w-full bg-primary hover:opacity-90 text-primary-foreground text-[9px] font-black uppercase tracking-widest h-9 rounded-xl transition-all active:scale-95">
+                             Aplicar Blindagem
+                           </Button>
+                         </div>
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="logs" className="h-full m-0 flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700 border-none">
+                    <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
+                          <History size={12} className="text-primary" />
+                          Histórico de Versões
+                        </h4>
+                      </div>
+                      
+                      {ORACLE_LOGS.map((log) => (
+                        <div key={log.id} className="p-4 rounded-2xl bg-muted/30 border border-border hover:border-primary/30 transition-all group/log cursor-pointer">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-[10px] font-black text-primary uppercase tracking-widest">{log.version}</span>
+                            <span className="text-[8px] font-bold text-muted-foreground uppercase">{log.time}</span>
+                          </div>
+                          <p className="text-[12px] font-bold text-foreground mb-1 group-hover/log:text-primary transition-colors">{log.action}</p>
+                          <div className="flex items-center gap-2">
+                             <div className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center text-[8px] font-black text-primary">
+                               {log.user[0]}
+                             </div>
+                             <span className="text-[10px] font-medium text-muted-foreground">{log.user}</span>
+                          </div>
+                        </div>
+                      ))}
+
+                      <div className="pt-8 text-center opacity-20">
+                        <div className="h-px w-full bg-gradient-to-r from-transparent via-border to-transparent mb-6" />
+                        <Cpu size={24} className="mx-auto mb-3" />
+                        <p className="text-[8px] font-black uppercase tracking-[0.4em]">End of Log Archive</p>
+                      </div>
+                    </div>
+
+                    <Button className="mt-4 w-full bg-primary text-primary-foreground font-black text-[10px] uppercase tracking-widest py-6 rounded-2xl">
+                      <History className="mr-2 h-4 w-4" /> Restaurar Versão Anterior
+                    </Button>
+                  </TabsContent>
+                </div>
+              </Tabs>
+            </div>
+          )}
         </div>
       </div>
 
@@ -616,13 +759,14 @@ export function EditorLayout() {
 }
 
 export function EditorProvider(props: EditorProviderProps) {
-  const { provider, ydoc, placeholder = "Comece a redigir a cláusula...", geminiKey, templateSlug } = props
+  const { provider, ydoc, placeholder = "Comece a redigir a cláusula...", geminiKey, templateSlug, readOnly } = props
 
   const { user } = useUser()
   const { setTocContent } = useToc()
 
   const editor = useEditor({
     immediatelyRender: false,
+    editable: !readOnly,
     editorProps: {
       attributes: {
         class: "notion-like-editor",
@@ -740,6 +884,12 @@ export function EditorProvider(props: EditorProviderProps) {
     ],
   })
 
+  // Enforce readOnly/editable state dynamically
+  useEffect(() => {
+    if (!editor) return
+    editor.setEditable(!readOnly)
+  }, [editor, readOnly])
+
   // Template Pre-population Logic
   useEffect(() => {
     if (!editor || !templateSlug) return
@@ -788,6 +938,7 @@ export function NotionEditor({
   room,
   placeholder = "Start writing...",
   templateSlug,
+  readOnly,
 }: NotionEditorProps) {
   return (
     <UserProvider>
@@ -795,7 +946,7 @@ export function NotionEditor({
         <AiProvider>
           <TocProvider>
             <AiMenuStateProvider>
-              <NotionEditorContent placeholder={placeholder} templateSlug={templateSlug} />
+              <NotionEditorContent placeholder={placeholder} templateSlug={templateSlug} readOnly={readOnly} />
             </AiMenuStateProvider>
           </TocProvider>
         </AiProvider>
@@ -809,10 +960,12 @@ export function NotionEditor({
  */
 export function NotionEditorContent({ 
   placeholder, 
-  templateSlug 
+  templateSlug,
+  readOnly
 }: { 
   placeholder?: string, 
-  templateSlug?: string | null 
+  templateSlug?: string | null,
+  readOnly?: boolean
 }) {
   const { provider, ydoc, setupError: collabSetupError } = useCollab()
   const { geminiKey, setupError: aiSetupError } = useAi()
@@ -838,6 +991,7 @@ export function NotionEditorContent({
       placeholder={placeholder}
       geminiKey={geminiKey}
       templateSlug={templateSlug}
+      readOnly={readOnly}
     />
   )
 }
