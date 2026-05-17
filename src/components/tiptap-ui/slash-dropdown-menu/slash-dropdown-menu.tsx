@@ -82,6 +82,7 @@ const Item = (props: {
   }, [isSelected])
 
   const BadgeIcon = item.badge
+  const indentLevel = (item as any).indent || 0
 
   return (
     <Button
@@ -89,6 +90,7 @@ const Item = (props: {
       variant="ghost"
       data-active-state={isSelected ? "on" : "off"}
       onClick={onSelect}
+      style={{ paddingLeft: `${indentLevel * 12 + 8}px` }}
     >
       {BadgeIcon && <BadgeIcon className="tiptap-button-icon" />}
       <div className="tiptap-button-text">{item.title}</div>

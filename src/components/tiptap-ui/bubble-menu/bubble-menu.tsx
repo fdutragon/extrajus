@@ -8,9 +8,11 @@ import {
   Underline, 
   Strikethrough, 
   Code,
-  Sparkles,
-  ShieldAlert,
-  MessageSquarePlus
+  MessageSquarePlus,
+  Heading1,
+  Heading2,
+  Heading3,
+  Type
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -28,6 +30,41 @@ export function BubbleMenu({ editor }: BubbleMenuProps) {
       className="flex items-center gap-1 p-1 bg-card border border-border rounded-xl shadow-2xl backdrop-blur-md"
     >
       <div className="flex items-center gap-0.5 border-r border-border pr-1 mr-1">
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn("h-8 w-8 rounded-lg transition-all", editor.isActive("heading", { level: 1 }) && "bg-primary/10 text-primary")}
+          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+        >
+          <Heading1 size={14} />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn("h-8 w-8 rounded-lg transition-all", editor.isActive("heading", { level: 2 }) && "bg-primary/10 text-primary")}
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+        >
+          <Heading2 size={14} />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn("h-8 w-8 rounded-lg transition-all", editor.isActive("heading", { level: 3 }) && "bg-primary/10 text-primary")}
+          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+        >
+          <Heading3 size={14} />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn("h-8 w-8 rounded-lg transition-all", editor.isActive("paragraph") && "bg-primary/10 text-primary")}
+          onClick={() => editor.chain().focus().setParagraph().run()}
+        >
+          <Type size={14} />
+        </Button>
+      </div>
+
+      <div className="flex items-center gap-0.5">
         <Button
           variant="ghost"
           size="icon"
@@ -51,26 +88,6 @@ export function BubbleMenu({ editor }: BubbleMenuProps) {
           onClick={() => editor.chain().focus().toggleUnderline().run()}
         >
           <Underline size={14} />
-        </Button>
-      </div>
-
-      <div className="flex items-center gap-1 pl-1">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 px-3 gap-2 text-primary hover:bg-primary/10 rounded-lg transition-all"
-          onClick={() => (editor.commands as any).aiAsk?.()}
-        >
-          <Sparkles size={14} />
-          <span className="text-[10px] font-black uppercase tracking-widest">Lilith Audit</span>
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 px-3 gap-2 text-primary/60 hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
-        >
-          <ShieldAlert size={14} />
-          <span className="text-[10px] font-black uppercase tracking-widest">Blindar</span>
         </Button>
       </div>
     </TiptapBubbleMenu>

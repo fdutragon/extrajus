@@ -188,7 +188,7 @@ export function isExtensionAvailable(
     : [extensionNames]
 
   const found = names.some((name) =>
-    editor.extensionManager.extensions.some((ext) => ext.name === name)
+    editor.extensionManager?.extensions?.some((ext) => ext.name === name)
   )
 
   if (!found) {

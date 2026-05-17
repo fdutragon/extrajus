@@ -8,11 +8,10 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-
   --color-gold: #c5a880;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: Outfit, sans-serif;
+  --font-sans: "Inter", "Outfit", sans-serif;
   --font-mono: monospace;
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -85,8 +84,8 @@
   --card-foreground: oklch(0.2046 0 0);
   --popover: oklch(0.9911 0 0);
   --popover-foreground: oklch(0.4386 0 0);
-  --primary: oklch(0.8348 0.1302 160.9080);
-  --primary-foreground: oklch(0.2626 0.0147 166.4589);
+  --primary: oklch(0.55 0.15 160);
+  --primary-foreground: oklch(0.98 0.01 160);
   --secondary: oklch(0.9940 0 0);
   --secondary-foreground: oklch(0.2046 0 0);
   --muted: oklch(0.9461 0 0);
@@ -96,8 +95,8 @@
   --destructive: oklch(0.5523 0.1927 32.7272);
   --border: oklch(0.9037 0 0);
   --input: oklch(0.9731 0 0);
-  --ring: oklch(0.8348 0.1302 160.9080);
-  --chart-1: oklch(0.8348 0.1302 160.9080);
+  --ring: oklch(0.55 0.15 160);
+  --chart-1: oklch(0.55 0.15 160);
   --chart-2: oklch(0.6231 0.1880 259.8145);
   --chart-3: oklch(0.6056 0.2189 292.7172);
   --chart-4: oklch(0.7686 0.1647 70.0804);
@@ -105,14 +104,14 @@
   --radius: 0.5rem;
   --sidebar: oklch(0.9911 0 0);
   --sidebar-foreground: oklch(0.5452 0 0);
-  --sidebar-primary: oklch(0.8348 0.1302 160.9080);
-  --sidebar-primary-foreground: oklch(0.2626 0.0147 166.4589);
+  --sidebar-primary: oklch(0.55 0.15 160);
+  --sidebar-primary-foreground: oklch(0.98 0.01 160);
   --sidebar-accent: oklch(0.9461 0 0);
-  --sidebar-accent-foreground: oklch(0.2435 0 0);
+  --sidebar-accent-foreground: oklch(0.2435 0.02 160);
   --sidebar-border: oklch(0.9037 0 0);
-  --sidebar-ring: oklch(0.8348 0.1302 160.9080);
+  --sidebar-ring: oklch(0.55 0.15 160);
   --destructive-foreground: oklch(0.9934 0.0032 17.2118);
-  --font-sans: Outfit, sans-serif;
+  --font-sans: "Inter", "Outfit", sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: monospace;
   --shadow-color: #000000;
@@ -121,7 +120,7 @@
   --shadow-spread: 0px;
   --shadow-offset-x: 0px;
   --shadow-offset-y: 1px;
-  --letter-spacing: 0.025em;
+  --letter-spacing: 0.01em;
   --spacing: 0.25rem;
   --shadow-2xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.09);
   --shadow-xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.09);
@@ -131,7 +130,7 @@
   --shadow-lg: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 4px 6px -1px hsl(0 0% 0% / 0.17);
   --shadow-xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 8px 10px -1px hsl(0 0% 0% / 0.17);
   --shadow-2xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.43);
-  --tracking-normal: 0.025em;
+  --tracking-normal: 0.01em;
 }
 
 .dark {
@@ -168,7 +167,7 @@
   --sidebar-ring: oklch(0.8003 0.1821 151.7110);
   --destructive-foreground: oklch(0.9368 0.0045 34.3092);
   --radius: 0.5rem;
-  --font-sans: Outfit, sans-serif;
+  --font-sans: "Inter", "Outfit", sans-serif;
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: monospace;
   --shadow-color: #000000;
@@ -177,7 +176,7 @@
   --shadow-spread: 0px;
   --shadow-offset-x: 0px;
   --shadow-offset-y: 1px;
-  --letter-spacing: 0.025em;
+  --letter-spacing: 0.01em;
   --spacing: 0.25rem;
   --shadow-2xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.09);
   --shadow-xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.09);
@@ -195,12 +194,14 @@
   }
 
   body {
-    @apply bg-background text-foreground selection:bg-primary/30;
+    @apply bg-background text-foreground selection:bg-primary/30 antialiased;
     letter-spacing: var(--tracking-normal);
+    line-height: 1.6;
   }
 
   html {
     @apply font-sans;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
   /* Custom Scrollbar */
@@ -246,12 +247,10 @@
 }
 
 @keyframes float {
-
   0%,
   100% {
     transform: translateY(0) rotate(0);
   }
-
   50% {
     transform: translateY(-20px) rotate(2deg);
   }
@@ -263,15 +262,12 @@
     offset-path: path("M 100 100 L 400 400");
     opacity: 0;
   }
-
   10% {
     opacity: 1;
   }
-
   90% {
     opacity: 1;
   }
-
   100% {
     offset-distance: 100%;
     offset-path: path("M 100 100 L 400 400");
@@ -285,15 +281,12 @@
     offset-path: path("M 700 100 L 400 400");
     opacity: 0;
   }
-
   10% {
     opacity: 1;
   }
-
   90% {
     opacity: 1;
   }
-
   100% {
     offset-distance: 100%;
     offset-path: path("M 700 100 L 400 400");
@@ -307,15 +300,12 @@
     offset-path: path("M 400 400 L 700 700");
     opacity: 0;
   }
-
   10% {
     opacity: 1;
   }
-
   90% {
     opacity: 1;
   }
-
   100% {
     offset-distance: 100%;
     offset-path: path("M 400 400 L 700 700");

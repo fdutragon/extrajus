@@ -1,7 +1,14 @@
 "use client"
 
-import { useContext, useEffect, useMemo } from "react"
-import { EditorContent, EditorContext, useEditor } from "@tiptap/react"
+import React, { useContext, useEffect, useMemo, useState } from "react"
+import { EditorContent, EditorContext as TiptapEditorContext, useEditor, type Editor } from "@tiptap/react"
+
+export const EditorContext = React.createContext<{ 
+  editor: Editor | null,
+  addLocalAction?: (action: string) => void
+}>({ 
+  editor: null 
+})
 import type { Doc as YDoc } from "yjs"
 import { createPortal } from "react-dom"
 import { SupabaseYjsProvider } from "../../../lib/supabase-yjs-provider"
@@ -1293,6 +1300,27 @@ export function EditorProvider(props: EditorProviderProps) {
 
   const { user } = useUser()
   const { setTocContent } = useToc()
+  const [localActions, setLocalActions] = useState<any[]>([])
+
+  const addLocalAction = (action: string) => {
+    const newAction = {
+      id: Date.now(),
+      user: user?.name || "Você",
+      action,
+      time: "Agora",
+      version: "Local",
+      isLocal: true
+    }
+    setLocalActions(prev => [newAction, ...prev])
+  }
+
+  const handleUndoLocalAction = (actionId: number) => {
+    if (editor) {
+      editor.commands.undo()
+      setLocalActions(prev => prev.filter(a => a.id !== actionId))
+      toast.success("Ação revertida.")
+    }
+  }
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -1300,6 +1328,30 @@ export function EditorProvider(props: EditorProviderProps) {
     editorProps: {
       attributes: {
         class: "notion-like-editor",
+      },
+      handleKeyDown: (view, event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          const { selection } = editor!.state
+          const { $from } = selection
+          const parentNode = $from.parent
+          const isLegalNode = parentNode.type.name === "legalNode"
+          const legalLevel = parentNode.attrs.level
+
+          setTimeout(() => {
+            if (editor?.isDestroyed) return
+            const { $from: newFrom } = editor.state.selection
+            
+            if (isLegalNode && newFrom.parent.type.name === "legalNode") {
+              const levelNames = ["", "Cláusula", "Parágrafo", "Inciso", "Alínea"]
+              addLocalAction(`Novo ${levelNames[legalLevel]} continuado (Enter).`)
+            }
+
+            if (newFrom.parent.content.size === 0) {
+              editor.chain().focus().insertContent("/").run()
+            }
+          }, 10)
+        }
+        return false
       },
       // Prevent automatic scroll into view when editor is focused
       // This is crucial for header buttons to work without jumping the page

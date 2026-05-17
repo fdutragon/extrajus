@@ -1,22 +1,21 @@
 "use client"
 
-import { useCallback } from "react"
+import { useCallback, useContext } from "react"
+import { EditorContext } from "@/components/tiptap-templates/notion-like/notion-like-editor"
 import type { Editor } from "@tiptap/react"
 
 // --- Icons ---
-import { HeadingOneIcon } from "../../../components/tiptap-icons/heading-one-icon"
-import { HeadingTwoIcon } from "../../../components/tiptap-icons/heading-two-icon"
-import { HeadingThreeIcon } from "../../../components/tiptap-icons/heading-three-icon"
-import { ImageIcon } from "../../../components/tiptap-icons/image-icon"
-import { ListIcon } from "../../../components/tiptap-icons/list-icon"
-import { ListOrderedIcon } from "../../../components/tiptap-icons/list-ordered-icon"
-import { BlockquoteIcon } from "../../../components/tiptap-icons/blockquote-icon"
-import { AiSparklesIcon } from "../../../components/tiptap-icons/ai-sparkles-icon"
-import { MinusIcon } from "../../../components/tiptap-icons/minus-icon"
-import { TypeIcon } from "../../../components/tiptap-icons/type-icon"
-import { TableIcon } from "../../../components/tiptap-icons/table-icon"
-import { ListIndentedIcon } from "../../../components/tiptap-icons/list-indented-icon"
-import { AtSignIcon } from "../../../components/tiptap-icons/at-sign-icon"
+import { 
+  Zap, 
+  Scale, 
+  Pilcrow, 
+  Layers, 
+  ChevronRight,
+  Users,
+  Type,
+  PenTool,
+  Minus
+} from "lucide-react"
 
 // --- Lib ---
 import {
@@ -42,249 +41,146 @@ export interface SlashMenuConfig {
 
 const texts = {
 
-  // Style
+  // Básico
+  texto_simples: {
+    title: "Texto Simples",
+    subtext: "Parágrafo sem formatação jurídica",
+    keywords: ["texto", "simples", "p", "paragrafo"],
+    badge: Type,
+    group: "Básico",
+  },
+
+  // AI
+  ai_continue: {
+    title: "Escrever Próxima Cláusula",
+    subtext: "Lilith redige o próximo item lógico",
+    keywords: ["ai", "escrever", "proxima", "clausula", "continuar"],
+    badge: Zap,
+    group: "Inteligência",
+  },
+
+  // Jurídico
+  add_preamble: {
+    title: "Adicionar Preâmbulo",
+    subtext: "Inserir preâmbulo e Cláusula 1ª (Objeto)",
+    keywords: ["preambulo", "inicio", "partes", "objeto"],
+    badge: Users,
+    group: "Jurídico",
+  },
   clausula: {
     title: "Cláusula",
     subtext: "Nova cláusula contratual",
     keywords: ["clausula", "legal"],
-    badge: HeadingOneIcon,
+    badge: Scale,
     group: "Jurídico",
+    indent: 0,
   },
   paragrafo_legal: {
     title: "Parágrafo",
     subtext: "Parágrafo de cláusula",
     keywords: ["paragrafo", "legal", "$"],
-    badge: HeadingTwoIcon,
+    badge: Pilcrow,
     group: "Jurídico",
+    indent: 1,
   },
   inciso: {
     title: "Inciso",
     subtext: "Inciso (I, II, III...)",
     keywords: ["inciso", "legal"],
-    badge: HeadingThreeIcon,
+    badge: Layers,
     group: "Jurídico",
+    indent: 2,
   },
   alinea: {
     title: "Alínea",
     subtext: "Alínea (a, b, c...)",
     keywords: ["alinea", "legal"],
-    badge: ListIcon,
+    badge: Minus,
     group: "Jurídico",
+    indent: 3,
   },
-  text: {
-    title: "Texto Padrão",
-    subtext: "Parágrafo de texto regular",
-    keywords: ["p", "paragrafo", "texto"],
-    badge: TypeIcon,
-    group: "Estrutura",
-  },
-  heading_1: {
-    title: "Título 1",
-    subtext: "Título de seção principal",
-    keywords: ["h", "titulo1", "h1"],
-    badge: HeadingOneIcon,
-    group: "Estrutura",
-  },
-  heading_2: {
-    title: "Título 2",
-    subtext: "Título de subseção",
-    keywords: ["h2", "titulo2"],
-    badge: HeadingTwoIcon,
-    group: "Estrutura",
-  },
-  heading_3: {
-    title: "Título 3",
-    subtext: "Título de grupo menor",
-    keywords: ["h3", "titulo3"],
-    badge: HeadingThreeIcon,
-    group: "Estrutura",
-  },
-  bullet_list: {
-    title: "Lista de Marcadores",
-    subtext: "Lista não ordenada",
-    keywords: ["ul", "li", "lista", "marcadores"],
-    badge: ListIcon,
-    group: "Estrutura",
-  },
-  ordered_list: {
-    title: "Lista Numerada",
-    subtext: "Lista com itens ordenados",
-    keywords: ["ol", "li", "lista", "numerada"],
-    badge: ListOrderedIcon,
-    group: "Estrutura",
-  },
-  quote: {
-    title: "Citação",
-    subtext: "Bloco de citação destacada",
-    keywords: ["citacao", "quote", "blockquote"],
-    badge: BlockquoteIcon,
-    group: "Estrutura",
-  },
-
-  // Insert
-  variable: {
-    title: "Variável",
-    subtext: "Inserir tag dinâmica (ex: {{NOME}})",
-    keywords: ["variavel", "tag", "dinamica"],
-    badge: AtSignIcon,
-    group: "Automação",
-  },
-  table: {
-    title: "Tabela",
-    subtext: "Inserir tabela estruturada",
-    aliases: ["tabela", "inserirTabela"],
-    badge: TableIcon,
-    group: "Inserir",
-  },
-  divider: {
-    title: "Separador",
-    subtext: "Linha horizontal para separar conteúdo",
-    keywords: ["hr", "linha", "separador"],
-    badge: MinusIcon,
-    group: "Inserir",
-  },
-  toc: {
-    title: "Índice",
-    subtext: "Inserir sumário dinâmico",
-    keywords: ["indice", "sumario", "toc"],
-    badge: ListIndentedIcon,
-    group: "Inserir",
-  },
-
-  // Upload
-  image: {
-    title: "Imagem",
-    subtext: "Anexar imagem ao documento",
-    keywords: [
-      "imagem",
-      "upload",
-      "img",
-      "foto",
-    ],
-    badge: ImageIcon,
-    group: "Anexos",
+  add_signature: {
+    title: "Campo Assinatura",
+    subtext: "Inserir linhas de assinatura",
+    keywords: ["assinatura", "firmar", "final", "pacto"],
+    badge: PenTool,
+    group: "Jurídico",
   },
 }
 
 export type SlashMenuItemType = keyof typeof texts
 
-const getItemImplementations = () => {
+const getItemImplementations = (addLocalAction?: (action: string) => void) => {
   return {
 
-    // Style
+    // Básico
+    texto_simples: {
+      check: (editor: Editor) => isNodeInSchema("paragraph", editor),
+      action: ({ editor }: { editor: Editor }) => {
+        editor.chain().focus().setParagraph().run()
+      },
+    },
+
+    // AI
+    ai_continue: {
+      check: (editor: Editor) => isExtensionAvailable("ai", editor),
+      action: ({ editor }: { editor: Editor }) => {
+        ;(editor.commands as any).aiComplete()
+      },
+    },
+
+    // Jurídico
+    add_preamble: {
+      check: (editor: Editor) => {
+        const hasPreamble = editor.getText().includes("CONTRATO DE")
+        return !hasPreamble && isNodeInSchema("legalNode", editor)
+      },
+      action: ({ editor }: { editor: Editor }) => {
+        editor
+          .chain()
+          .focus()
+          .insertContent('<h1 data-node-text-align="center"><strong>CONTRATO DE [PREENCHER TIPO DE CONTRATO]</strong></h1><p data-node-text-align="justify"><strong>CONTRATANTE:</strong> [NOME/RAZÃO SOCIAL], [NACIONALIDADE], [ESTADO CIVIL], [PROFISSÃO], inscrito no CPF/CNPJ sob o nº [000.000.000-00], residente e domiciliado em [ENDEREÇO COMPLETO].</p><p data-node-text-align="justify"><strong>CONTRATADO:</strong> [NOME/RAZÃO SOCIAL], [NACIONALIDADE], [ESTADO CIVIL], [PROFISSÃO], inscrito no CPF/CNPJ sob o nº [000.000.000-00], residente e domiciliado em [ENDEREÇO COMPLETO].</p><p data-node-text-align="justify">As partes acima identificadas têm, entre si, justo e acertado o presente Contrato, que se regerá pelas cláusulas seguintes e pelas condições descritas abaixo.</p><p></p><div data-type="legal-node" data-level="1" data-node-text-align="justify"><strong>CLÁUSULA PRIMEIRA - DO OBJETO</strong></div><div data-type="legal-node" data-level="2" data-node-text-align="justify">O presente instrumento tem como objeto [DESCREVER O OBJETO DO CONTRATO COM PRECISÃO].</div>')
+          .run()
+        addLocalAction?.("Preâmbulo e Cláusula 1ª inseridos.")
+      },
+    },
+    add_signature: {
+      check: (editor: Editor) => isNodeInSchema("paragraph", editor),
+      action: ({ editor }: { editor: Editor }) => {
+        editor
+          .chain()
+          .focus()
+          .insertContent('<p></p><p data-node-text-align="center">__________________________________________</p><p data-node-text-align="center"><strong>CONTRATANTE</strong></p><p data-node-text-align="center">__________________________________________</p><p data-node-text-align="center"><strong>CONTRATADO</strong></p>')
+          .run()
+        addLocalAction?.("Campo de assinatura inserido.")
+      },
+    },
     clausula: {
       check: (editor: Editor) => isNodeInSchema("legalNode", editor),
       action: ({ editor }: { editor: Editor }) => {
         ;(editor.chain() as any).focus().setLegalNode(1).run()
+        addLocalAction?.("Nova Cláusula inserida.")
       },
     },
     paragrafo_legal: {
       check: (editor: Editor) => isNodeInSchema("legalNode", editor),
       action: ({ editor }: { editor: Editor }) => {
         ;(editor.chain() as any).focus().setLegalNode(2).run()
+        addLocalAction?.("Novo Parágrafo Jurídico inserido.")
       },
     },
     inciso: {
       check: (editor: Editor) => isNodeInSchema("legalNode", editor),
       action: ({ editor }: { editor: Editor }) => {
         ;(editor.chain() as any).focus().setLegalNode(3).run()
+        addLocalAction?.("Novo Inciso inserido.")
       },
     },
     alinea: {
       check: (editor: Editor) => isNodeInSchema("legalNode", editor),
       action: ({ editor }: { editor: Editor }) => {
         ;(editor.chain() as any).focus().setLegalNode(4).run()
-      },
-    },
-    text: {
-      check: (editor: Editor) => isNodeInSchema("paragraph", editor),
-      action: ({ editor }: { editor: Editor }) => {
-        editor.chain().focus().setParagraph().run()
-      },
-    },
-    heading_1: {
-      check: (editor: Editor) => isNodeInSchema("heading", editor),
-      action: ({ editor }: { editor: Editor }) => {
-        editor.chain().focus().toggleHeading({ level: 1 }).run()
-      },
-    },
-    heading_2: {
-      check: (editor: Editor) => isNodeInSchema("heading", editor),
-      action: ({ editor }: { editor: Editor }) => {
-        editor.chain().focus().toggleHeading({ level: 2 }).run()
-      },
-    },
-    heading_3: {
-      check: (editor: Editor) => isNodeInSchema("heading", editor),
-      action: ({ editor }: { editor: Editor }) => {
-        editor.chain().focus().toggleHeading({ level: 3 }).run()
-      },
-    },
-    bullet_list: {
-      check: (editor: Editor) => isNodeInSchema("bulletList", editor),
-      action: ({ editor }: { editor: Editor }) => {
-        editor.chain().focus().toggleBulletList().run()
-      },
-    },
-    ordered_list: {
-      check: (editor: Editor) => isNodeInSchema("orderedList", editor),
-      action: ({ editor }: { editor: Editor }) => {
-        editor.chain().focus().toggleOrderedList().run()
-      },
-    },
-    quote: {
-      check: (editor: Editor) => isNodeInSchema("blockquote", editor),
-      action: ({ editor }: { editor: Editor }) => {
-        editor.chain().focus().toggleBlockquote().run()
-      },
-    },
-
-    // Insert
-    variable: {
-      check: (editor: Editor) => isNodeInSchema("variable", editor),
-      action: ({ editor }: { editor: Editor }) => {
-        const name = prompt("Nome da Variável (ex: CONTRATANTE):") || "VARIAVEL"
-        ;(editor.chain() as any).focus().insertVariable(name.toUpperCase()).run()
-      },
-    },
-    divider: {
-      check: (editor: Editor) => isNodeInSchema("horizontalRule", editor),
-      action: ({ editor }: { editor: Editor }) => {
-        editor.chain().focus().setHorizontalRule().run()
-      },
-    },
-    toc: {
-      check: (editor: Editor) => isNodeInSchema("tocNode", editor),
-      action: ({ editor }: { editor: Editor }) => {
-        editor.chain().focus().insertTocNode().run()
-      },
-    },
-    table: {
-      check: (editor: Editor) => isNodeInSchema("table", editor),
-      action: ({ editor }: { editor: Editor }) => {
-        editor
-          .chain()
-          .focus()
-          .insertTable({
-            rows: 3,
-            cols: 3,
-            withHeaderRow: false,
-          })
-          .run()
-      },
-    },
-
-    // Upload
-    image: {
-      check: (editor: Editor) => isNodeInSchema("image", editor),
-      action: ({ editor }: { editor: Editor }) => {
-        editor
-          .chain()
-          .focus()
-          .insertContent({
-            type: "imageUpload",
-          })
-          .run()
+        addLocalAction?.("Nova Alínea inserida.")
       },
     },
   }
@@ -322,6 +218,9 @@ function organizeItemsByGroups(
  * Custom hook for slash dropdown menu functionality
  */
 export function useSlashDropdownMenu(config?: SlashMenuConfig) {
+  const context = useContext(EditorContext)
+  const addLocalAction = (context as any)?.addLocalAction
+
   const getSlashMenuItems = useCallback(
     (editor: Editor) => {
       const items: SuggestionItem[] = []
@@ -330,7 +229,7 @@ export function useSlashDropdownMenu(config?: SlashMenuConfig) {
         config?.enabledItems || (Object.keys(texts) as SlashMenuItemType[])
       const showGroups = config?.showGroups !== false
 
-      const itemImplementations = getItemImplementations()
+      const itemImplementations = getItemImplementations(addLocalAction)
 
       enabledItems.forEach((itemType) => {
         const itemImpl = itemImplementations[itemType]
@@ -359,7 +258,7 @@ export function useSlashDropdownMenu(config?: SlashMenuConfig) {
       // Reorganize items by groups to ensure keyboard navigation works correctly
       return organizeItemsByGroups(items, showGroups)
     },
-    [config]
+    [config, addLocalAction]
   )
 
   return {
