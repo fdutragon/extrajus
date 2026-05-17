@@ -2,6 +2,9 @@ import { createClient } from '@/utils/supabase/server'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import crypto from 'crypto'
+import { Resend } from 'resend'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request: Request) {
   try {
@@ -109,6 +112,74 @@ export async function POST(request: Request) {
         .eq('id', contractId);
 
       if (contractUpdateError) throw contractUpdateError;
+
+      // Buscar título do contrato para o e-mail
+      const { data: contractData } = await supabaseAdmin
+        .from('contracts')
+        .select('title')
+        .eq('id', contractId)
+        .single();
+
+      const contractTitle = contractData?.title || 'Contrato Sem Título';
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
+      // Enviar o Certificado de Selamento por e-mail para todos os signatários simultaneamente
+      if (process.env.RESEND_API_KEY && updatedSigners.length > 0) {
+        const emailPromises = updatedSigners.map((signer: any) => 
+          resend.emails.send({
+            from: 'ExtraJus <assinaturas@extrajus.pro>',
+            to: signer.email,
+            subject: `🔥 Ritual Concluído: Certificado de Assinatura Digital de ${contractTitle}`,
+            html: `
+              <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #000; color: #fff; padding: 40px; border: 1px solid #111;">
+                <h1 style="color: #c0ff00; font-size: 24px; text-transform: uppercase; letter-spacing: 4px;">ExtraJus</h1>
+                <p style="font-size: 14px; opacity: 0.7; border-bottom: 1px solid #222; padding-bottom: 20px;">CERTIFICADO DE ASSINATURA DIGITAL CONCLUÍDO</p>
+                
+                <p style="margin-top: 30px;">Saudações, <strong>${signer.name}</strong>.</p>
+                <p>Temos a honra de informar que o pacto soberano <strong>${contractTitle}</strong> foi <strong>INTEGRALMENTE SELADO</strong> por todos os signatários convocados.</p>
+                
+                <div style="background: #0a0a0a; border: 1px dashed #c0ff00; padding: 25px; margin: 30px 0;">
+                  <p style="font-size: 10px; color: #c0ff00; text-transform: uppercase; margin-bottom: 5px; font-weight: bold;">Protocolo de Selamento</p>
+                  <code style="font-size: 18px; font-weight: bold; color: #fff;">${signature.protocolo}</code>
+                  
+                  <p style="font-size: 10px; color: #c0ff00; text-transform: uppercase; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Chancela Digital de Conclusão</p>
+                  <code style="font-size: 12px; color: #fff;">${timestamp}</code>
+                  
+                  <p style="font-size: 10px; color: #c0ff00; text-transform: uppercase; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Hash de Integridade do Documento (SHA-256)</p>
+                  <code style="font-size: 11px; color: #888; word-break: break-all;">${signature.manifesto?.document_hash || 'Integridade Confirmada'}</code>
+                </div>
+
+                <h3 style="color: #c0ff00; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; margin-top: 40px; border-bottom: 1px solid #222; padding-bottom: 10px;">Signatários e Evidências</h3>
+                
+                <div style="margin-top: 20px;">
+                  ${updatedSigners.map((s: any) => `
+                    <div style="background: #0d0d0f; border-left: 3px solid #c0ff00; padding: 15px; margin-bottom: 15px;">
+                      <p style="margin: 0; font-size: 13px; font-weight: bold; color: #fff;">${s.name.toUpperCase()}</p>
+                      <p style="margin: 3px 0 0 0; font-size: 11px; color: #a1a1aa;">Email: ${s.email}</p>
+                      <p style="margin: 3px 0 0 0; font-size: 10px; color: #71717a;">Selado em: ${s.signed_at || timestamp}</p>
+                      <p style="margin: 5px 0 0 0; font-size: 9px; font-family: monospace; color: #52525b;">IP NODE: ${s.evidence?.ip_address || '127.0.0.1'} | NODE SECURE</p>
+                    </div>
+                  `).join('')}
+                </div>
+
+                <div style="text-align: center; margin-top: 40px;">
+                  <a href="${siteUrl}/editor?room=${contractId}&mode=preview" 
+                     style="display: inline-block; background: #c0ff00; color: #000; text-decoration: none; padding: 15px 30px; font-weight: bold; border-radius: 5px; text-transform: uppercase; font-size: 12px;">
+                    Visualizar Documento Concluído
+                  </a>
+                </div>
+
+                <p style="margin-top: 50px; font-size: 10px; opacity: 0.3; text-align: center;">
+                  ExtraJus AI © 2026 • Ritual Sovereign Protocol
+                </p>
+              </div>
+            `
+          })
+        );
+
+        // Dispara todos os envios simultaneamente em paralelo
+        await Promise.all(emailPromises);
+      }
     } else {
       // Opcionalmente marcar contrato como parcialmente assinado
       await supabaseAdmin
