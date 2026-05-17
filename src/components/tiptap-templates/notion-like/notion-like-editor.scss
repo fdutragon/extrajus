@@ -85,3 +85,12 @@ body {
     }
   }
 }
+
+// Anti-Print Screen / Anti-Print Safeguard
+@media print {
+  html, body, #__next, .notion-like-editor-wrapper, .notion-like-editor-content, .tiptap.ProseMirror {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+}

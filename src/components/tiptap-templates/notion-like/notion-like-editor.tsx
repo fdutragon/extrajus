@@ -96,7 +96,11 @@ import {
   ArrowRight,
   ShieldAlert,
   Command,
-  Cpu
+  Cpu,
+  PanelLeft,
+  PanelRight,
+  Search,
+  Save
 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
@@ -311,10 +315,125 @@ export function EditorLayout() {
   const [auditResults, setAuditResults] = useState<any[]>([])
   const [isAuditing, setIsAuditing] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [isFocused, setIsFocused] = useState(true)
+  const { user } = useUser()
 
   const { state, updateState } = useAiMenuState()
   const { editor } = useContext(EditorContext)!
   const { provider, room } = useCollab()
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+
+    // 1. Prevent copy, cut, paste events completely
+    const handleCopy = (e: ClipboardEvent) => {
+      e.preventDefault()
+      toast.error("Cópia de segurança proibida sob as leis soberanas do ExtraJus.")
+    }
+
+    const handleCut = (e: ClipboardEvent) => {
+      e.preventDefault()
+      toast.error("Remoção ou corte de segurança proibido sob as leis soberanas do ExtraJus.")
+    }
+
+    const handlePaste = (e: ClipboardEvent) => {
+      e.preventDefault()
+      toast.error("Colagem proibida. Redija seu pacto de forma pura.")
+    }
+
+    // 2. Prevent key combinations for copying, pasting, and printing
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isCtrlOrCmd = e.ctrlKey || e.metaKey
+
+      // Ctrl+C / Cmd+C (Copy)
+      if (isCtrlOrCmd && e.key?.toLowerCase() === "c") {
+        e.preventDefault()
+        toast.error("Cópia de segurança proibida.")
+      }
+
+      // Ctrl+V / Cmd+V (Paste)
+      if (isCtrlOrCmd && e.key?.toLowerCase() === "v") {
+        e.preventDefault()
+        toast.error("Colagem de segurança proibida.")
+      }
+
+      // Ctrl+X / Cmd+X (Cut)
+      if (isCtrlOrCmd && e.key?.toLowerCase() === "x") {
+        e.preventDefault()
+        toast.error("Corte de segurança proibido.")
+      }
+
+      // Ctrl+P / Cmd+P (Print)
+      if (isCtrlOrCmd && e.key?.toLowerCase() === "p") {
+        e.preventDefault()
+        toast.error("Impressão física ou digital proibida.")
+      }
+
+      // Detect Shift + Windows/Cmd + S (Windows Snipping Tool / Mac selection)
+      if (e.shiftKey && e.metaKey && e.key?.toLowerCase() === "s") {
+        e.preventDefault()
+        setIsFocused(false)
+        toast.error("Tentativa de captura de tela detectada. Bloqueando conteúdo.")
+      }
+
+      // Mac screenshot combinations: Cmd + Shift + 3 or Cmd + Shift + 4
+      if (e.metaKey && e.shiftKey && (e.key === "3" || e.key === "4")) {
+        e.preventDefault()
+        setIsFocused(false)
+        toast.error("Tentativa de captura de tela detectada. Bloqueando conteúdo.")
+      }
+    }
+
+    // 3. Prevent PrintScreen screen grabs by clearing the clipboard immediately
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === "PrintScreen" || e.key === "PrtScn") {
+        e.preventDefault()
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText("Acesso não autorizado. Pacto de segurança do ExtraJus ativo.")
+        }
+        toast.error("Captura de tela detectada. Pacto de segurança inviolável acionado.")
+      }
+    }
+
+    // 4. Block dragging selection or text blocks to copy externally
+    const handleDragStart = (e: DragEvent) => {
+      e.preventDefault()
+      toast.error("Movimentação de texto desativada por segurança.")
+    }
+
+    // 5. Block standard browser right-click context menu (which has Copy/Paste)
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault()
+      toast.error("Menu de contexto bloqueado pelas diretrizes de confidencialidade.")
+    }
+
+    const handleFocus = () => setIsFocused(true)
+    const handleBlur = () => setIsFocused(false)
+
+    window.addEventListener("focus", handleFocus)
+    window.addEventListener("blur", handleBlur)
+
+    // Use CAPTURE phase (true) for absolute interception supremacy
+    document.addEventListener("copy", handleCopy, true)
+    document.addEventListener("cut", handleCut, true)
+    document.addEventListener("paste", handlePaste, true)
+    document.addEventListener("keydown", handleKeyDown, true)
+    window.addEventListener("keyup", handleKeyUp, true)
+    document.addEventListener("dragstart", handleDragStart, true)
+    document.addEventListener("contextmenu", handleContextMenu, true)
+
+    return () => {
+      window.removeEventListener("focus", handleFocus)
+      window.removeEventListener("blur", handleBlur)
+      document.removeEventListener("copy", handleCopy, true)
+      document.removeEventListener("cut", handleCut, true)
+      document.removeEventListener("paste", handlePaste, true)
+      document.removeEventListener("keydown", handleKeyDown, true)
+      window.removeEventListener("keyup", handleKeyUp, true)
+      document.removeEventListener("dragstart", handleDragStart, true)
+      document.removeEventListener("contextmenu", handleContextMenu, true)
+    }
+  }, [])
 
   const searchParams = useSearchParams()
   const readOnly = searchParams?.get("mode") === "preview" || searchParams?.get("readOnly") === "true"
@@ -323,6 +442,57 @@ export function EditorLayout() {
   const [sealingCode, setSealingCode] = useState("")
   const [consentCheck, setConsentCheck] = useState(false)
   const [isSealing, setIsSealing] = useState(false)
+
+  const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
+  const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
+
+  const handleManualSave = async () => {
+    if (!provider) {
+      toast.error("Erro: Provedor de colaboração não está pronto.")
+      return
+    }
+    
+    setIsSaving(true)
+    const toastId = toast.loading("Selando progresso no banco...")
+    
+    try {
+      const result = await provider.forceSave()
+      if (result.saved) {
+        toast.success(result.message, { id: toastId })
+      } else {
+        toast.success(result.message, { id: toastId })
+      }
+    } catch (e: any) {
+      toast.error(`Erro ao salvar pacto: ${e.message || e}`, { id: toastId })
+    } finally {
+      setIsSaving(false)
+    }
+  }
+  const [searchQuery, setSearchQuery] = useState("")
+
+  const text = editor?.getText() || ""
+  const wordCount = useMemo(() => {
+    return text.trim() ? text.trim().split(/\s+/).length : 0
+  }, [text])
+  const charCount = useMemo(() => {
+    return text.length
+  }, [text])
+  const readTime = useMemo(() => {
+    return Math.max(1, Math.ceil(wordCount / 200))
+  }, [wordCount])
+
+  const filteredContracts = useMemo(() => {
+    return userContracts.filter(c => 
+      c.title?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  }, [userContracts, searchQuery])
+
+  const filteredTemplates = useMemo(() => {
+    return templates.filter(t => 
+      t.title?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  }, [templates, searchQuery])
 
   const runAudit = async () => {
     if (!editor) return
@@ -356,6 +526,17 @@ export function EditorLayout() {
     const fetchArsenal = async () => {
       const supabase = createClient()
       
+      // Fetch Active Contract Title
+      const { data: currentContract } = await supabase
+        .from('contracts')
+        .select('title')
+        .eq('id', room)
+        .single()
+      
+      if (currentContract && currentContract.title) {
+        setFileName(currentContract.title)
+      }
+
       // Fetch User Contracts
       const { data: contracts } = await supabase
         .from('contracts')
@@ -396,6 +577,59 @@ export function EditorLayout() {
     fetchArsenal()
   }, [room])
 
+  // Debounced auto-save of filename to Supabase
+  useEffect(() => {
+    if (!room || readOnly) return
+    
+    // Skip saving the default initial value if it hasn't loaded yet
+    if (fileName === "Contrato_Imperial_Alpha") return
+
+    const delayDebounceFn = setTimeout(async () => {
+      const supabase = createClient()
+      const { error } = await supabase
+        .from('contracts')
+        .update({ title: fileName })
+        .eq('id', room)
+      
+      if (error) {
+        console.error("Erro ao salvar título do pacto:", error.message)
+      } else {
+        // Also refresh userContracts sidebar list to show updated title immediately!
+        const { data: contracts } = await supabase
+          .from('contracts')
+          .select('id, title, status')
+          .order('updated_at', { ascending: false })
+          .limit(10)
+        if (contracts) setUserContracts(contracts)
+      }
+    }, 1000) // 1s debounce
+
+    return () => clearTimeout(delayDebounceFn)
+  }, [fileName, room, readOnly])
+
+  // Scroll to the top of the A4 paper on mount/room change to prevent starting at the bottom
+  useEffect(() => {
+    const mainEl = document.querySelector('main')
+    if (mainEl) {
+      mainEl.scrollTop = 0
+    }
+
+    const timer1 = setTimeout(() => {
+      const mainEl = document.querySelector('main')
+      if (mainEl) mainEl.scrollTop = 0
+    }, 100)
+
+    const timer2 = setTimeout(() => {
+      const mainEl = document.querySelector('main')
+      if (mainEl) mainEl.scrollTop = 0
+    }, 500)
+
+    return () => {
+      clearTimeout(timer1)
+      clearTimeout(timer2)
+    }
+  }, [room])
+
   return (
     <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden relative font-sans selection:bg-primary/30">
       
@@ -429,13 +663,15 @@ export function EditorLayout() {
 
       {/* Sovereign Header - The Command Monolith */}
       <header className="fixed top-0 left-0 w-full h-12 border-b border-border bg-background/60 backdrop-blur-2xl flex items-center justify-between px-6 z-[100] transition-all duration-500 hover:bg-background/80 group">
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
           {!readOnly ? (
-            <Link href="/dashboard">
-              <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-300 group/back">
-                <ChevronLeft size={18} className="group-hover/back:-translate-x-0.5 transition-transform" />
-              </Button>
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link href="/dashboard">
+                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-300 group/back">
+                  <ChevronLeft size={18} className="group-hover/back:-translate-x-0.5 transition-transform" />
+                </Button>
+              </Link>
+            </div>
           ) : (
             <div className="flex items-center gap-2">
               <span className="text-[9px] font-black uppercase tracking-[0.2em] bg-red-500/10 text-red-400 border border-red-500/20 px-2.5 py-1 rounded-lg">
@@ -465,7 +701,7 @@ export function EditorLayout() {
             </div>
 
             <div 
-              className="relative flex items-center justify-center px-3 h-10 rounded-none cursor-default group/ia transition-all overflow-hidden border border-primary/10 gap-2"
+              className="relative flex items-center justify-center px-3 h-12 rounded-none cursor-default group/ia transition-all overflow-hidden border-x border-primary/10 gap-2"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 transition-all" />
               <BrainCircuit size={14} className="text-primary/60 relative z-10 animate-pulse" />
@@ -496,6 +732,16 @@ export function EditorLayout() {
           </div>
           {!readOnly && (
             <div className="flex items-center gap-2 pl-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleManualSave}
+                disabled={isSaving}
+                className="h-8 border-primary/20 hover:border-primary hover:bg-primary/5 text-primary text-[11px] font-bold uppercase tracking-wider gap-1.5 rounded-lg px-3 transition-all duration-300"
+              >
+                <Save className={cn("w-3.5 h-3.5", isSaving && "animate-spin")} />
+                {isSaving ? "Gravando..." : "Salvar"}
+              </Button>
               <ExportButton />
               <SignModal title={fileName} />
             </div>
@@ -503,121 +749,163 @@ export function EditorLayout() {
         </div>
       </header>
 
-      <div className="flex-1 flex pt-12 relative overflow-hidden">
+      {!isFocused && (
+        <div className="absolute inset-0 top-12 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[5px] z-[99999] transition-all duration-500 select-none pointer-events-none">
+          <div className="text-center p-8 bg-background/90 border border-primary/20 rounded-3xl max-w-md shadow-2xl backdrop-blur-md">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4 animate-pulse">
+              <ShieldAlert className="w-6 h-6 text-primary" />
+            </div>
+            <h2 className="text-sm font-black uppercase tracking-[0.2em] text-foreground mb-2">Escudo Confidencial Ativo</h2>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-widest leading-relaxed">
+              O foco da tela foi perdido. O conteúdo foi ocultado automaticamente sob a diretiva de proteção de segredo ExtraJus.
+            </p>
+          </div>
+        </div>
+      )}
+
+      <div className={cn(
+        "flex-1 flex pt-12 relative overflow-hidden h-full transition-all duration-700",
+        !isFocused && "filter blur-[45px] select-none pointer-events-none"
+      )}>
         
-        {/* Fixed Left: O Códice (The War Library) */}
+        {/* Left Sidebar: O Códice (The War Library) */}
         {!readOnly && (
-          <div className="absolute left-6 top-12 z-40 hidden lg:block animate-in slide-in-from-left-12 duration-1000 mt-6">
-            <div className="w-96 h-[calc(100vh-96px)] bg-card border border-border rounded-[2rem] overflow-hidden flex flex-col group/library">
-            
-            <div className="p-8 pb-4">
-              <div className="flex items-center gap-4 mb-2">
-                <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm">
-                  <Library size={20} className="text-primary" />
+          <div 
+            className={cn(
+              "h-full border-r border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30",
+              leftSidebarOpen ? "w-80 opacity-100" : "w-0 opacity-0 pointer-events-none overflow-hidden"
+            )}
+          >
+            <div className="p-6 flex flex-col h-full">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm">
+                  <Library size={16} className="text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Biblioteca</h3>
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Biblioteca</h3>
                   <p className="text-[8px] font-bold text-primary/60 uppercase tracking-widest">Arsenal Ativo</p>
                 </div>
               </div>
-            </div>
-            
-            <div className="flex-1 overflow-hidden px-4">
-              <ScrollArea className="h-full pr-4 custom-scrollbar">
-                <div className="space-y-8 py-4 px-2">
-                  
+
+              {/* Search Box - Live Filtering */}
+              <div className="relative mb-6">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={12} />
+                <input 
+                  type="text"
+                  placeholder="Filtrar arsenal..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-muted/30 border border-border/60 hover:border-primary/20 focus:border-primary rounded-xl pl-8 pr-3 py-2 text-[10px] text-foreground focus:outline-none transition-all placeholder:text-muted-foreground/40 font-semibold"
+                />
+              </div>
+
+              <ScrollArea className="flex-1 -mx-2 px-2 custom-scrollbar">
+                <div className="space-y-6 pb-6">
                   {/* Seus Pactos (User Contracts) */}
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between border-b border-border pb-2">
-                      <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.25em]">Seus Pactos</p>
-                      <span className="text-[10px] grayscale opacity-50 text-primary">🛡️</span>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between border-b border-border pb-1.5">
+                      <p className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.25em]">Seus Pactos</p>
+                      <span className="text-[9px] opacity-40">🛡️</span>
                     </div>
-                    <div className="space-y-1">
-                      {userContracts.length > 0 ? userContracts.map(contract => (
-                        <Link key={contract.id} href={`/editor?room=${contract.id}`} className="w-full text-left text-xs py-2.5 px-3 hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-300 group/item flex items-center justify-between font-bold text-foreground/70">
+                    <div className="space-y-0.5">
+                      {filteredContracts.length > 0 ? filteredContracts.map(contract => (
+                        <Link key={contract.id} href={`/editor?room=${contract.id}`} className="w-full text-left text-[11px] py-2 px-2.5 hover:bg-primary/5 hover:text-primary rounded-lg transition-all duration-300 group/item flex items-center justify-between font-bold text-foreground/70">
                           <span className="truncate">{contract.title || "Documento Sem Nome"}</span>
                           <Zap size={10} className={cn("opacity-0 group-hover/item:opacity-100 transition-opacity", contract.status === 'signed' ? "text-emerald-500" : "text-primary")} />
                         </Link>
                       )) : (
-                        <p className="text-[9px] text-muted-foreground px-3 py-2 italic font-medium">Nenhum pacto selado ainda...</p>
+                        <p className="text-[9px] text-muted-foreground px-2 py-1.5 italic font-semibold">Nenhum pacto encontrado...</p>
                       )}
                     </div>
                   </div>
 
                   {/* Arsenal de Modelos (Global Templates) */}
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between border-b border-border pb-2">
-                      <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.25em]">Arsenal de Modelos</p>
-                      <span className="text-[10px] grayscale opacity-50">📖</span>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between border-b border-border pb-1.5">
+                      <p className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.25em]">Modelos Soberanos</p>
+                      <span className="text-[9px] opacity-40">📖</span>
                     </div>
-                    <div className="space-y-1">
-                      {templates.length > 0 ? templates.map(template => (
-                        <Link key={template.id} href={`/editor?template=${template.slug}`} className="w-full text-left text-xs py-2.5 px-3 hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-300 group/item flex items-center justify-between font-bold text-foreground/70">
+                    <div className="space-y-0.5">
+                      {filteredTemplates.length > 0 ? filteredTemplates.map(template => (
+                        <Link key={template.id} href={`/editor?template=${template.slug}`} className="w-full text-left text-[11px] py-2 px-2.5 hover:bg-primary/5 hover:text-primary rounded-lg transition-all duration-300 group/item flex items-center justify-between font-bold text-foreground/70">
                           <span className="truncate">{template.title}</span>
                           <ArrowRight size={10} className="opacity-0 group-hover/item:opacity-100 transition-opacity text-primary" />
                         </Link>
                       )) : (
-                        <p className="text-[9px] text-muted-foreground px-3 py-2 italic font-medium">Carregando arsenal...</p>
+                        <p className="text-[9px] text-muted-foreground px-2 py-1.5 italic font-semibold">Nenhum modelo encontrado...</p>
                       )}
                     </div>
                   </div>
-
                 </div>
               </ScrollArea>
-            </div>
 
-            <div className="p-6 mt-auto bg-muted/50 border-t border-border">
-               <Button onClick={() => setShowSettings(true)} variant="ghost" className="w-full justify-center text-[10px] font-black uppercase tracking-widest h-10 hover:bg-primary/10 hover:text-primary rounded-xl transition-all text-muted-foreground">
-                 <Settings2 size={14} className="mr-2" /> Arsenal Config
-               </Button>
+              <div className="pt-4 border-t border-border mt-auto">
+                 <Button onClick={() => setShowSettings(true)} variant="ghost" className="w-full justify-center text-[8px] font-black uppercase tracking-widest h-9 hover:bg-primary/5 hover:text-primary rounded-xl transition-all text-muted-foreground">
+                   <Settings2 size={12} className="mr-2" /> Arsenal Config
+                 </Button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
         {/* Central Sanctuary - The Infinite Paper */}
-        <main className="flex-1 overflow-y-auto custom-scrollbar bg-transparent pt-6 pb-6 px-4 relative z-10">
-          <div className="w-full max-w-[880px] mx-auto min-h-[calc(100vh-96px)] bg-card border border-border/50 rounded-3xl p-20 md:pt-16 md:pb-20 md:px-32 relative animate-in fade-in zoom-in-95 duration-1000">
+        <main className="flex-1 overflow-y-auto custom-scrollbar bg-transparent px-8 py-8 relative z-10">
+          <div className="w-full max-w-[840px] mx-auto bg-card border border-border/40 rounded-3xl px-16 md:px-28 py-16 md:py-24 relative shadow-[0_4px_30px_rgba(0,0,0,0.2)] animate-in fade-in zoom-in-95 duration-1000 min-h-[800px] md:min-h-[1188px]">
              
-             {/* Document Title Header */}
-             <div className="mb-6 group/title relative">
-               <div className="absolute -left-8 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-primary/0 group-hover/title:bg-primary/20 transition-all rounded-full" />
-               <input 
-                 value={fileName}
-                 onChange={(e) => setFileName(e.target.value)}
-                 disabled={readOnly}
-                 className="w-full bg-transparent border-none text-xl md:text-2xl font-black tracking-tight focus:outline-none focus:ring-0 placeholder:text-muted-foreground/20 text-foreground uppercase italic disabled:opacity-80 disabled:cursor-default"
-                 placeholder="Título do Documento..."
-               />
-               <div className="flex items-center gap-2 mt-0.5 opacity-0 group-hover/title:opacity-100 transition-opacity">
-                  <FileText size={8} className="text-primary" />
-                  <span className="text-[7px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Documento Soberano • v2.4.0</span>
-               </div>
-             </div>
-
              {/* Premium Paper Texture */}
              <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-3xl" />
              
              {/* Focus Light Effect */}
              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-32 bg-primary/5 blur-[80px] pointer-events-none rounded-full" />
 
+             {/* Document Header Metadata */}
+             <div className="mb-6 border-b border-border/40 pb-5 flex flex-col gap-4">
+               <div className="flex items-center justify-between">
+                 <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+                   <span className="bg-primary/10 text-primary px-2.5 py-0.5 rounded-full border border-primary/20">Documento Soberano</span>
+                   <span>v2.4.0</span>
+                 </div>
+                 {/* Live Document Stats HUD */}
+                 <div className="flex items-center gap-4 text-[9px] font-bold text-muted-foreground/60 tracking-wider">
+                   <span className="flex items-center gap-1.5"><FileText size={10} /> {wordCount} palavras</span>
+                   <span className="flex items-center gap-1.5"><Cpu size={10} /> {readTime} min de leitura</span>
+                 </div>
+               </div>
+
+               <div className="group/title relative">
+                 <input 
+                   value={fileName}
+                   onChange={(e) => setFileName(e.target.value)}
+                   disabled={readOnly}
+                   className="w-full bg-transparent border-none text-2xl md:text-3xl font-black tracking-tight focus:outline-none focus:ring-0 placeholder:text-muted-foreground/20 text-foreground uppercase italic disabled:opacity-80 disabled:cursor-default"
+                   placeholder="Título do Documento..."
+                 />
+               </div>
+             </div>
+
              <div className="relative z-10 selection:bg-primary/30">
                {!readOnly && <BubbleMenu editor={editor} />}
                <EditorContentArea />
              </div>
-              {/* Fixed Transparent AI Command Center */}
-              {!readOnly && (
-                <div className="fixed bottom-20 left-1/2 -translate-x-1/2 w-full max-w-[600px] z-[100] px-4 animate-in slide-in-from-bottom-10 duration-1000">
-                   <AiMenu plain={true} />
-                </div>
-              )}
+
+             {/* Fixed Transparent AI Command Center */}
+             {!readOnly && (
+               <div className="fixed bottom-12 left-1/2 -translate-x-1/2 w-full max-w-[540px] z-[100] px-4 animate-in slide-in-from-bottom-10 duration-1000">
+                  <AiMenu plain={true} />
+               </div>
+             )}
           </div>
         </main>
 
-        {/* Fixed Right: A Alquimia (The Oracle of Lilith) or Sealing Panel */}
-        <div className="absolute right-6 top-12 z-40 hidden xl:block animate-in slide-in-from-right-12 duration-1000 mt-6">
+        {/* Right Sidebar: A Alquimia (The Oracle of Lilith) or Sealing Panel */}
+        <div 
+          className={cn(
+            "h-full border-l border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30",
+            rightSidebarOpen ? "w-96 opacity-100" : "w-0 opacity-0 pointer-events-none overflow-hidden"
+          )}
+        >
           {readOnly ? (
-            <div className="w-96 h-[calc(100vh-96px)] bg-card border border-border rounded-[2rem] flex flex-col p-8 justify-between relative group/oracle">
+            <div className="p-6 flex flex-col h-full justify-between relative group/oracle">
               <div className="space-y-6">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
@@ -643,7 +931,7 @@ export function EditorLayout() {
                       value={signerEmail}
                       onChange={(e) => setSignerEmail(e.target.value)}
                       placeholder="Seu e-mail de convocação..."
-                      className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 text-xs text-foreground focus:outline-none focus:border-primary transition-all font-semibold"
+                      className="w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-xs text-foreground focus:outline-none focus:border-primary transition-all font-semibold"
                     />
                   </div>
 
@@ -655,7 +943,7 @@ export function EditorLayout() {
                       value={sealingCode}
                       onChange={(e) => setSealingCode(e.target.value.replace(/\D/g, ''))}
                       placeholder="Ex: 123456"
-                      className="w-full bg-muted border border-border rounded-xl px-4 py-2.5 text-center text-lg font-black tracking-[0.5em] text-foreground focus:outline-none focus:border-primary transition-all"
+                      className="w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-center text-lg font-black tracking-[0.5em] text-foreground focus:outline-none focus:border-primary transition-all"
                     />
                   </div>
 
@@ -674,7 +962,7 @@ export function EditorLayout() {
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-4 mt-auto">
                 <Button 
                   onClick={handleConfirmSignature}
                   disabled={isSealing || !consentCheck || !sealingCode}
@@ -689,126 +977,132 @@ export function EditorLayout() {
               </div>
             </div>
           ) : (
-            <div className="w-96 h-[calc(100vh-96px)] bg-card border border-border rounded-[2rem] flex flex-col overflow-hidden group/oracle">
+            <div className="p-6 flex flex-col h-full overflow-hidden group/oracle">
               <Tabs value={oracleTab} onValueChange={setOracleTab} className="w-full h-full flex flex-col">
-                <div className="px-8 pt-8 mb-6">
-                  <TabsList className="grid w-full grid-cols-2 bg-muted rounded-2xl h-10 p-1 border border-border items-center">
-                    <TabsTrigger value="insights" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all h-full flex items-center justify-center">
-                      Insights
-                    </TabsTrigger>
-                    <TabsTrigger value="logs" className="rounded-xl text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all h-full flex items-center justify-center">
-                      Logs
-                    </TabsTrigger>
-                  </TabsList>
-                </div>
+                <TabsList className="grid w-full grid-cols-2 bg-muted/40 rounded-xl h-9 p-0.5 border border-border items-center mb-6">
+                  <TabsTrigger value="insights" className="rounded-lg text-[9px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all h-full flex items-center justify-center">
+                    Insights
+                  </TabsTrigger>
+                  <TabsTrigger value="logs" className="rounded-lg text-[9px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all h-full flex items-center justify-center">
+                    Logs
+                  </TabsTrigger>
+                </TabsList>
 
-                <div className="flex-1 overflow-hidden px-8 pb-8">
-                  <TabsContent value="insights" className="h-full m-0 flex flex-col space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 border-none">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
-                        <BrainCircuit size={20} className={cn("text-primary", isAuditing && "animate-pulse")} />
-                      </div>
-                      <div>
-                        <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Alquimia AI</h3>
-                        <div className="flex items-center gap-1.5 mt-0.5">
-                          <div className={cn("w-1 h-1 rounded-full", isAuditing ? "bg-amber-500 animate-ping" : "bg-green-500")} />
-                          <span className={cn("text-[8px] font-bold uppercase tracking-widest", isAuditing ? "text-amber-500" : "text-green-500")}>
-                            {isAuditing ? "Auditoria em Curso" : "Sincronizada"}
-                          </span>
+                <div className="flex-1 overflow-hidden">
+                  <TabsContent value="insights" className="h-full m-0 flex flex-col space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 border-none">
+                    <div className="flex items-center justify-between border-b border-border/40 pb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                          <BrainCircuit size={16} className={cn("text-primary", isAuditing && "animate-pulse")} />
+                        </div>
+                        <div>
+                          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Alquimia AI</h3>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <div className={cn("w-1.5 h-1.5 rounded-full", isAuditing ? "bg-amber-500 animate-ping" : "bg-green-500")} />
+                            <span className={cn("text-[7px] font-bold uppercase tracking-widest", isAuditing ? "text-amber-500" : "text-green-500")}>
+                              {isAuditing ? "Auditoria em Curso" : "Sincronizada"}
+                            </span>
+                          </div>
                         </div>
                       </div>
+
+                      <Button 
+                        onClick={runAudit}
+                        disabled={isAuditing}
+                        variant="outline" 
+                        size="sm" 
+                        className="h-7 px-3 text-[9px] font-black uppercase tracking-widest text-primary border-primary/20 hover:bg-primary/5 hover:border-primary/40 rounded-lg transition-all"
+                      >
+                        <Zap size={10} className="mr-1.5" /> Auditoria
+                      </Button>
                     </div>
 
-                    <div className="space-y-8 overflow-y-auto custom-scrollbar pr-2">
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.25em] border-l-2 border-primary pl-3">Score de Risco</h4>
-                          <Button 
-                            onClick={runAudit}
-                            disabled={isAuditing}
-                            variant="ghost" 
-                            size="sm" 
-                            className="h-7 px-3 text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/10 rounded-lg"
-                          >
-                            <Zap size={12} className="mr-1.5" /> Rodar Auditoria
-                          </Button>
-                        </div>
-                        
-                        {auditResults.length > 0 ? (
-                          <div className="space-y-4">
-                            <div className="flex items-baseline gap-3">
-                              <div className="text-5xl font-black tracking-tighter text-foreground">
-                                {Math.max(0, 100 - (auditResults.length * 12))}
+                    <ScrollArea className="flex-1 -mx-2 px-2 custom-scrollbar">
+                      <div className="space-y-6 pb-6">
+                        <div className="space-y-3">
+                          <h4 className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.25em] border-l-2 border-primary pl-2.5">Score de Risco</h4>
+                          
+                          {auditResults.length > 0 ? (
+                            <div className="space-y-4">
+                              <div className="flex items-baseline gap-2">
+                                <div className="text-4xl font-black tracking-tighter text-foreground">
+                                  {Math.max(0, 100 - (auditResults.length * 12))}
+                                </div>
+                                <div className="text-sm font-bold text-primary">%</div>
+                                <span className="text-[9px] font-bold text-muted-foreground uppercase ml-auto bg-muted/60 px-2 py-0.5 rounded border border-border">
+                                  {auditResults.length * 12 > 40 ? "Risco Alto ⚠️" : "Risco Baixo ✅"}
+                                </span>
                               </div>
-                              <div className="text-xl font-bold text-primary">%</div>
+                              <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-gradient-to-r from-primary to-primary/60 transition-all duration-1000" 
+                                  style={{ width: `${Math.max(0, 100 - (auditResults.length * 12))}%` }} 
+                                />
+                              </div>
+                              <div className="space-y-3 pt-2">
+                                 {auditResults.map((risk) => (
+                                   <div key={risk.id} className="p-4 rounded-2xl bg-red-500/[0.02] border border-red-500/10 space-y-2 group/risk hover:border-red-500/25 transition-all">
+                                     <p className="text-[9px] font-black text-red-400 uppercase tracking-widest flex items-center gap-1.5">
+                                       <ShieldAlert size={10} /> Cláusula de Risco
+                                     </p>
+                                     <p className="text-[10px] font-bold text-foreground italic">"{risk.originalText}"</p>
+                                     <p className="text-[9px] text-muted-foreground leading-relaxed">{risk.reason}</p>
+                                     <Button size="sm" className="w-full bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground text-[8px] font-black uppercase tracking-widest h-8 rounded-xl transition-all">
+                                        Aplicar Sugestão
+                                     </Button>
+                                   </div>
+                                 ))}
+                              </div>
                             </div>
-                            <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
-                              <div 
-                                className="h-full bg-gradient-to-r from-primary to-primary/60 transition-all duration-1000" 
-                                style={{ width: `${Math.max(0, 100 - (auditResults.length * 12))}%` }} 
-                              />
+                          ) : (
+                            <div className="py-16 text-center space-y-3 opacity-20 border border-dashed border-border rounded-2xl">
+                              <Brain size={24} className="mx-auto" />
+                              <p className="text-[8px] font-black uppercase tracking-widest max-w-[160px] mx-auto leading-relaxed">Nenhuma vulnerabilidade detectada.<br />Execute o escaneamento.</p>
                             </div>
-                            <div className="space-y-3 pt-4">
-                               {auditResults.map((risk) => (
-                                 <div key={risk.id} className="p-4 rounded-2xl bg-red-500/[0.03] border border-red-500/10 space-y-2 group/risk hover:border-red-500/30 transition-all">
-                                   <p className="text-[10px] font-black text-red-400 uppercase tracking-widest flex items-center gap-2">
-                                     <ShieldAlert size={12} /> Risco Detectado
-                                   </p>
-                                   <p className="text-[11px] font-bold text-foreground italic">"{risk.originalText}"</p>
-                                   <p className="text-[10px] text-muted-foreground leading-relaxed">{risk.reason}</p>
-                                   <Button size="sm" className="w-full bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground text-[8px] font-black uppercase tracking-widest h-8 rounded-xl transition-all">
-                                      Aplicar Sugestão
-                                   </Button>
-                                 </div>
-                               ))}
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="py-12 text-center space-y-4 opacity-30">
-                            <Brain size={32} className="mx-auto" />
-                            <p className="text-[10px] font-bold uppercase tracking-widest max-w-[150px] mx-auto">Nenhuma vulnerabilidade detectada. Execute a auditoria.</p>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
-                    </div>
+                    </ScrollArea>
                   </TabsContent>
 
-                  <TabsContent value="logs" className="h-full m-0 flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-700 border-none">
-                    <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
-                          <History size={12} className="text-primary" />
-                          Histórico do Pacto
-                        </h4>
-                      </div>
-                      
-                      {historyLogs.length > 0 ? historyLogs.map((log) => (
-                        <div key={log.id} className="p-4 rounded-2xl bg-muted/30 border border-border hover:border-primary/30 transition-all group/log cursor-pointer">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-[10px] font-black text-primary uppercase tracking-widest">{log.version}</span>
-                            <span className="text-[8px] font-bold text-muted-foreground uppercase">{log.time}</span>
-                          </div>
-                          <p className="text-[12px] font-bold text-foreground mb-1 group-hover/log:text-primary transition-colors">{log.action}</p>
-                          <div className="flex items-center gap-2">
-                             <div className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center text-[8px] font-black text-primary">
-                               {log.user[0]}
-                             </div>
-                             <span className="text-[10px] font-medium text-muted-foreground">{log.user}</span>
-                          </div>
+                  <TabsContent value="logs" className="h-full m-0 flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-500 border-none">
+                    <ScrollArea className="flex-1 -mx-2 px-2 custom-scrollbar">
+                      <div className="space-y-4 pb-6">
+                        <div className="flex items-center justify-between mb-4 border-b border-border/40 pb-2">
+                          <h4 className="text-[8px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
+                            <History size={10} className="text-primary" />
+                            Histórico do Pacto
+                          </h4>
                         </div>
-                      )) : (
-                        <div className="py-12 text-center space-y-4 opacity-30">
-                          <History size={32} className="mx-auto" />
-                          <p className="text-[10px] font-bold uppercase tracking-widest">Nenhum log de alteração encontrado.</p>
-                        </div>
-                      )}
+                        
+                        {historyLogs.length > 0 ? historyLogs.map((log) => (
+                          <div key={log.id} className="p-4 rounded-2xl bg-muted/30 border border-border hover:border-primary/30 transition-all group/log cursor-pointer">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-[10px] font-black text-primary uppercase tracking-widest">{log.version}</span>
+                              <span className="text-[8px] font-bold text-muted-foreground uppercase">{log.time}</span>
+                            </div>
+                            <p className="text-[12px] font-bold text-foreground mb-1 group-hover/log:text-primary transition-colors">{log.action}</p>
+                            <div className="flex items-center gap-2">
+                               <div className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center text-[8px] font-black text-primary">
+                                 {log.user[0]}
+                               </div>
+                               <span className="text-[10px] font-medium text-muted-foreground">{log.user}</span>
+                            </div>
+                          </div>
+                        )) : (
+                          <div className="py-16 text-center space-y-3 opacity-20 border border-dashed border-border rounded-2xl">
+                            <History size={24} className="mx-auto" />
+                            <p className="text-[8px] font-black uppercase tracking-widest">Nenhum log de alteração encontrado.</p>
+                          </div>
+                        )}
 
-                      <div className="pt-8 text-center opacity-20">
-                        <div className="h-px w-full bg-gradient-to-r from-transparent via-border to-transparent mb-6" />
-                        <Cpu size={24} className="mx-auto mb-3" />
-                        <p className="text-[8px] font-black uppercase tracking-[0.4em]">End of Log Archive</p>
+                        <div className="pt-8 text-center opacity-20">
+                          <div className="h-px w-full bg-gradient-to-r from-transparent via-border to-transparent mb-6" />
+                          <Cpu size={24} className="mx-auto mb-3" />
+                          <p className="text-[8px] font-black uppercase tracking-[0.4em]">End of Log Archive</p>
+                        </div>
                       </div>
-                    </div>
+                    </ScrollArea>
                   </TabsContent>
                 </div>
               </Tabs>
@@ -848,7 +1142,7 @@ export function EditorProvider(props: EditorProviderProps) {
         },
       }),
       HorizontalRule,
-      TextAlign.configure({ types: ["heading", "paragraph"] }),
+      TextAlign.configure({ types: ["heading", "paragraph", "legalNode"] }),
       Collaboration.configure({ document: ydoc }),
       CollaborationCaret.configure({
         provider,

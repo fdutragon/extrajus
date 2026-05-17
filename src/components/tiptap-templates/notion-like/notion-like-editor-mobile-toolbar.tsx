@@ -402,18 +402,6 @@ function DropdownMenuActions({ editor }: DropdownMenuActionsProps) {
         <DropdownMenuItem asChild>
           <DuplicateButton text="Duplicate node" showShortcut={!isMobile} />
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <CopyToClipboardButton
-            text="Copy to clipboard"
-            showShortcut={!isMobile}
-          />
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <CopyAnchorLinkButton
-            text="Copy anchor link"
-            showShortcut={!isMobile}
-          />
-        </DropdownMenuItem>
       </DropdownMenuGroup>
 
       <Separator orientation="horizontal" />

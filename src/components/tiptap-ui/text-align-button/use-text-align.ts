@@ -190,29 +190,42 @@ export function useTextAlign(config: UseTextAlignConfig) {
 
   const { editor } = useTiptapEditor(providedEditor)
   const [isVisible, setIsVisible] = useState<boolean>(true)
+  const [, setUpdateTrigger] = useState<number>(0)
+
   const canAlign = canSetTextAlign(editor, align)
   const isActive = isTextAlignActive(editor, align)
 
   useEffect(() => {
     if (!editor) return
 
-    const handleSelectionUpdate = () => {
+    const handleUpdate = () => {
+      setUpdateTrigger((prev) => prev + 1)
       setIsVisible(shouldShowButton({ editor, align, hideWhenUnavailable }))
     }
 
-    handleSelectionUpdate()
+    handleUpdate()
 
-    editor.on("selectionUpdate", handleSelectionUpdate)
+    editor.on("transaction", handleUpdate)
 
     return () => {
-      editor.off("selectionUpdate", handleSelectionUpdate)
+      editor.off("transaction", handleUpdate)
     }
   }, [editor, hideWhenUnavailable, align])
 
   const handleTextAlign = useCallback(() => {
     if (!editor) return false
 
+    const mainScroll = typeof document !== "undefined" ? document.querySelector("main") : null
+    const scrollPos = mainScroll ? mainScroll.scrollTop : null
+
     const success = setTextAlign(editor, align)
+
+    if (scrollPos !== null && mainScroll) {
+      setTimeout(() => {
+        mainScroll.scrollTop = scrollPos
+      }, 0)
+    }
+
     if (success) {
       onAligned?.()
     }

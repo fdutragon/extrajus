@@ -153,6 +153,54 @@ export class SupabaseYjsProvider extends Observable<string> {
     }
   }
 
+  public async forceSave(): Promise<{ saved: boolean; message: string }> {
+    if (this.saveTimeout) {
+      clearTimeout(this.saveTimeout)
+      this.saveTimeout = null
+    }
+
+    if (!this.pendingUpdate) {
+      return { saved: false, message: "Todos os dados já estão totalmente sincronizados com o banco." }
+    }
+
+    const update = this.pendingUpdate
+    this.pendingUpdate = null
+
+    if (!this.contractId) {
+      return { saved: false, message: "Erro: ID do contrato ausente." }
+    }
+
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(this.contractId || "")
+    if (!isUuid) {
+      return { saved: false, message: "Erro: ID do contrato inválido." }
+    }
+
+    try {
+      let hex = ""
+      for (let i = 0; i < update.length; i++) {
+        hex += update[i].toString(16).padStart(2, "0")
+      }
+      
+      const { error } = await this.supabase.from("yjs_updates").insert({
+        contract_id: this.contractId,
+        update: `\\x${hex}`
+      })
+
+      if (error) {
+        console.error("[SupabaseYjsProvider] Error saving update:", error.message)
+        throw error
+      }
+      
+      console.log(`[SupabaseYjsProvider] Manual update saved successfully for ${this.contractId}`)
+      return { saved: true, message: "Pacto soberano guardado com sucesso na eternidade do banco!" }
+    } catch (e: any) {
+      console.error("[SupabaseYjsProvider] Manual save failed:", e)
+      // Restore pendingUpdate so we don't lose it on retry
+      this.pendingUpdate = update
+      return { saved: false, message: `Falha ao salvar progresso: ${e.message || e}` }
+    }
+  }
+
   private async init() {
     // Load initial state from database if contractId exists and is a valid UUID
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(this.contractId || "")

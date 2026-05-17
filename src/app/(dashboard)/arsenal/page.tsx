@@ -142,7 +142,7 @@ export default function ArsenalPage() {
       <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-border pb-8">
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2 py-0">Modelos Forjados</Badge>
+            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2.5 py-1 h-fit flex items-center justify-center leading-none">Modelos Forjados</Badge>
             <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase italic">Master Library</span>
           </div>
           <h1 className="text-3xl font-bold tracking-tight">Arsenal Jurídico</h1>
@@ -210,7 +210,7 @@ export default function ArsenalPage() {
               
               <CardContent className="p-6 flex flex-col h-full">
                 <div className="flex justify-between items-start mb-6">
-                  <Badge variant="outline" className="text-[9px] uppercase font-bold tracking-widest border-border text-muted-foreground group-hover:border-primary/30 group-hover:text-primary transition-colors">
+                  <Badge variant="outline" className="text-[9px] uppercase font-bold tracking-widest border-border text-muted-foreground group-hover:border-primary/30 group-hover:text-primary transition-colors h-fit py-1 flex items-center justify-center leading-none">
                     {tpl.category}
                   </Badge>
                   <button className="p-1.5 text-muted-foreground hover:text-primary transition-colors">
@@ -301,7 +301,7 @@ export default function ArsenalPage() {
             <div className="p-8 border-b border-border bg-muted/30">
               <DialogHeader>
                 <div className="flex items-center gap-3 mb-2">
-                  <Badge variant="outline" className="text-[10px] uppercase font-bold border-primary/30 text-primary bg-primary/5">{previewTemplate?.category}</Badge>
+                  <Badge variant="outline" className="text-[10px] uppercase font-bold border-primary/30 text-primary bg-primary/5 h-fit py-1 flex items-center justify-center leading-none">{previewTemplate?.category}</Badge>
                   <span className="text-[10px] text-muted-foreground font-mono uppercase">Estrutura de Elite</span>
                 </div>
                 <DialogTitle className="text-2xl font-bold tracking-tight text-foreground">{previewTemplate?.title}</DialogTitle>
@@ -316,7 +316,7 @@ export default function ArsenalPage() {
               />
             </ScrollArea>
 
-            <div className="p-6 border-t border-border bg-muted/30 flex justify-end gap-3">
+            <div className="p-6 border-t border-border bg-muted/30 flex justify-center gap-3">
               <Button variant="ghost" onClick={() => setPreviewTemplate(null)} className="h-10 px-6 font-bold text-[10px] uppercase text-muted-foreground hover:text-foreground transition-colors">Fechar Análise</Button>
               <Button 
                 onClick={() => {

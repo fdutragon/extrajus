@@ -8,6 +8,7 @@ export type User = {
   name: string
   color: string
   avatar: string
+  email?: string
 }
 
 export type UserContextValue = {
@@ -15,7 +16,7 @@ export type UserContextValue = {
 }
 
 export const UserContext = createContext<UserContextValue>({
-  user: { color: "", id: "", name: "", avatar: "" },
+  user: { color: "", id: "", name: "", avatar: "", email: "" },
 })
 
 import { createClient } from "@/utils/supabase/client"
@@ -26,6 +27,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     name: getUsernameFromLocalStorage(),
     id: getUserIdFromLocalStorage(),
     avatar: getAvatar(getUsernameFromLocalStorage()),
+    email: undefined,
   })
 
   useEffect(() => {
@@ -41,6 +43,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           name: fullName,
           id: supabaseUser.id,
           avatar: getAvatar(fullName),
+          email: supabaseUser.email,
         }
         
         setUser(authenticatedUser)

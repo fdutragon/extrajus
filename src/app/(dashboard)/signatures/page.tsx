@@ -101,9 +101,7 @@ export default function PactsPage() {
     } finally {
       setIsSealing(false);
     }
-  };
-
-  const handleDownloadCertificate = (pact: any) => {
+  };  const handleDownloadCertificate = (pact: any) => {
     if (!pact) return;
     
     try {
@@ -115,100 +113,141 @@ export default function PactsPage() {
       pdf.setFillColor(9, 9, 11); // deep charcoal background
       pdf.rect(0, 0, pageWidth, pageHeight, "F");
       
+      // Watermark Faint Concentric Security Circles
+      pdf.setDrawColor(20, 20, 25);
+      pdf.setLineWidth(0.2);
+      pdf.circle(pageWidth / 2, pageHeight / 2, 90, "S");
+      pdf.circle(pageWidth / 2, pageHeight / 2, 70, "S");
+      pdf.circle(pageWidth / 2, pageHeight / 2, 50, "S");
+
       // Draw Elegant Golden/Neon Border
       pdf.setDrawColor(192, 255, 0); // Lilith Neon Green (#c0ff00)
-      pdf.setLineWidth(1.5);
+      pdf.setLineWidth(1.2);
       pdf.rect(10, 10, pageWidth - 20, pageHeight - 20);
       
       pdf.setDrawColor(39, 39, 42); // Zinc 800
       pdf.setLineWidth(0.5);
       pdf.rect(12, 12, pageWidth - 24, pageHeight - 24);
+
+      // Drafting Crop Marks at corners
+      pdf.setDrawColor(192, 255, 0);
+      pdf.setLineWidth(0.6);
+      pdf.line(8, 12, 8, 8);
+      pdf.line(8, 8, 12, 8);
+      pdf.line(pageWidth - 8, 12, pageWidth - 8, 8);
+      pdf.line(pageWidth - 8, 8, pageWidth - 12, 8);
+      pdf.line(8, pageHeight - 12, 8, pageHeight - 8);
+      pdf.line(8, pageHeight - 8, 12, pageHeight - 8);
+      pdf.line(pageWidth - 8, pageHeight - 12, pageWidth - 8, pageHeight - 8);
+      pdf.line(pageWidth - 8, pageHeight - 8, pageWidth - 12, pageHeight - 8);
       
       // Header
       pdf.setTextColor(192, 255, 0);
       pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(22);
-      pdf.text("CERTIFICADO DE SOBERANIA", pageWidth / 2, 35, { align: "center" });
+      pdf.setFontSize(18);
+      pdf.text("CERTIFICADO DE SOBERANIA JURÍDICA", pageWidth / 2, 33, { align: "center" });
       
       pdf.setTextColor(161, 161, 170); // Zinc 400
-      pdf.setFontSize(8);
-      pdf.setFont("helvetica", "normal");
-      pdf.text("INFRAESTRUTURA DE CRIPTOGRAFIA NEURAL LILITH", pageWidth / 2, 42, { align: "center" });
+      pdf.setFont("courier", "bold");
+      pdf.setFontSize(7.5);
+      pdf.text("INFRAESTRUTURA DE AUTENTICAÇÃO NEURAL & BLINDAGEM DE ATIVOS LILITH S/A", pageWidth / 2, 39, { align: "center" });
       
       // Divider
       pdf.setDrawColor(192, 255, 0);
       pdf.setLineWidth(0.5);
-      pdf.line(40, 50, pageWidth - 40, 50);
+      pdf.line(35, 48, pageWidth - 35, 48);
       
       // Pact Title
       pdf.setTextColor(255, 255, 255);
       pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(16);
+      pdf.setFontSize(15);
       const title = pact.contracts?.title?.toUpperCase() || "PACTO SOBERANO";
-      pdf.text(title, pageWidth / 2, 65, { align: "center" });
+      pdf.text(title, pageWidth / 2, 63, { align: "center" });
       
       pdf.setTextColor(113, 113, 122); // Zinc 500
-      pdf.setFontSize(9);
-      pdf.setFont("helvetica", "normal");
-      pdf.text(`ID DO CONTRATO: ${pact.contract_id}`, pageWidth / 2, 72, { align: "center" });
+      pdf.setFont("courier", "bold");
+      pdf.setFontSize(8);
+      pdf.text(`ID CONTRATO: ${pact.contract_id}`, pageWidth / 2, 70, { align: "center" });
       
       // Legal Declaration block
-      pdf.setFillColor(20, 20, 23);
-      pdf.rect(20, 80, pageWidth - 40, 45, "F");
+      pdf.setFillColor(15, 15, 18);
+      pdf.rect(20, 77, pageWidth - 40, 42, "F");
       pdf.setDrawColor(39, 39, 42);
-      pdf.rect(20, 80, pageWidth - 40, 45, "S");
+      pdf.rect(20, 77, pageWidth - 40, 42, "S");
+      
+      // Left border accent
+      pdf.setFillColor(192, 255, 0);
+      pdf.rect(20, 77, 2.5, 42, "F");
       
       pdf.setTextColor(228, 228, 231); // Zinc 200
-      pdf.setFontSize(10);
+      pdf.setFontSize(8.5);
       pdf.setFont("helvetica", "oblique");
-      const declaration = "Certificamos para todos os fins de direito e autoridade que o presente instrumento juridico-digital foi analisado, chancelado e selado sob a egide da rede criptografica Lilith. A integridade estrutural, a autoria dos signatarios e as evidencias de consentimento foram consolidadas de forma irrevogavel.";
-      const splitDeclaration = pdf.splitTextToSize(declaration, pageWidth - 50);
-      pdf.text(splitDeclaration, 25, 90);
+      const declaration = "Certificamos para todos os fins de direito e autoridade que o presente instrumento jurídico-digital foi analisado, chancelado e selado sob a égide da rede criptográfica Lilith. A integridade estrutural, a autoria dos signatários e as evidências digitais de consentimento foram consolidadas de forma irrevogável.";
+      const splitDeclaration = pdf.splitTextToSize(declaration, pageWidth - 55);
+      pdf.text(splitDeclaration, 27, 86);
       
-      // Protocol / Hash
-      pdf.setTextColor(192, 255, 0);
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(10);
-      pdf.text(`PROTOCOLO DO RITUAL: ${pact.protocolo}`, 20, 140);
-      
+      // Protocol / Hash Section
       const signedAt = pact.manifesto?.signed_at 
         ? new Date(pact.manifesto.signed_at).toLocaleString("pt-BR") 
         : new Date().toLocaleString("pt-BR");
-      pdf.setTextColor(255, 255, 255);
-      pdf.setFont("helvetica", "normal");
-      pdf.text(`DATA DO SELAMENTO: ${signedAt}`, 20, 148);
-      
-      // Hash SHA-256 evidence
       const fakeHash = Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join("");
+      
+      pdf.setTextColor(192, 255, 0);
+      pdf.setFont("courier", "bold");
+      pdf.setFontSize(8.5);
+      pdf.text(`PROTOCOLO RITUAL  : ${pact.protocolo}`, 20, 133);
+      
+      pdf.setTextColor(255, 255, 255);
+      pdf.text(`CHANCELA DIGITAL  : ${signedAt.toUpperCase()}`, 20, 139);
+      
       pdf.setTextColor(113, 113, 122);
-      pdf.setFontSize(8);
-      pdf.text(`HASH INTEGRIDADE: SHA-256//${fakeHash.toUpperCase()}`, 20, 156);
+      pdf.text(`HASH INTEGRIDADE  : SHA-256//${fakeHash.toUpperCase().slice(0, 32)}`, 20, 145);
+      pdf.text(`                  ${fakeHash.toUpperCase().slice(32)}`, 20, 150);
+      
+      // concentric Authority Seal
+      pdf.setDrawColor(192, 255, 0); // Lilith Neon Green
+      pdf.setLineWidth(0.6);
+      pdf.circle(pageWidth - 36, 141, 13, "S"); // Outer Circle
+      pdf.setDrawColor(39, 39, 42);
+      pdf.circle(pageWidth - 36, 141, 11, "S"); // Inner Circle
+      
+      pdf.setTextColor(192, 255, 0);
+      pdf.setFont("courier", "bold");
+      pdf.setFontSize(6.5);
+      pdf.text("LILITH", pageWidth - 36, 141.5, { align: "center" });
+      pdf.setFontSize(4.5);
+      pdf.text("SECURE SEAL", pageWidth - 36, 144.5, { align: "center" });
       
       // Signatures
       pdf.setTextColor(192, 255, 0);
       pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(12);
-      pdf.text("SIGNATARIOS E EVIDENCIAS DE CONSENTIMENTO", 20, 172);
+      pdf.setFontSize(11);
+      pdf.text("SIGNATÁRIOS & CHANCELAS DE CONSENTIMENTO", 20, 168);
       
-      let yPos = 185;
+      let yPos = 178;
       const evidence = pact.manifesto?.evidence || {};
       
       pact.signers?.forEach((s: any, idx: number) => {
         // Draw card background for signer
-        pdf.setFillColor(20, 20, 23);
-        pdf.rect(20, yPos - 5, pageWidth - 40, 25, "F");
-        pdf.setDrawColor(39, 39, 42);
-        pdf.rect(20, yPos - 5, pageWidth - 40, 25, "S");
+        pdf.setFillColor(15, 15, 18);
+        pdf.rect(20, yPos - 5, pageWidth - 40, 23, "F");
+        pdf.setDrawColor(30, 30, 35);
+        pdf.setLineWidth(0.4);
+        pdf.rect(20, yPos - 5, pageWidth - 40, 23, "S");
+        
+        // Add left neon indicator
+        pdf.setFillColor(192, 255, 0);
+        pdf.rect(20, yPos - 5, 2, 23, "F");
         
         pdf.setTextColor(255, 255, 255);
         pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(10);
-        pdf.text(s.name.toUpperCase(), 25, yPos + 2);
+        pdf.setFontSize(9);
+        pdf.text(s.name.toUpperCase(), 25, yPos + 1);
         
         pdf.setTextColor(161, 161, 170);
         pdf.setFont("helvetica", "normal");
-        pdf.setFontSize(9);
-        pdf.text(`Email: ${s.email}`, 25, yPos + 8);
+        pdf.setFontSize(8);
+        pdf.text(`Email: ${s.email}`, 25, yPos + 6);
         
         // Match email with trimming to handle any whitespace mismatches
         const isEvidenceHolder = evidence.authorized_email?.toLowerCase().trim() === s.email?.toLowerCase().trim();
@@ -216,20 +255,21 @@ export default function PactsPage() {
         if (ip === "::1") {
           ip = "127.0.0.1 (Local Loopback)";
         }
-        const ua = isEvidenceHolder ? (evidence.user_agent?.slice(0, 50) + "...") : "Secure Client Access v2";
+        const ua = isEvidenceHolder ? (evidence.user_agent?.slice(0, 55) + "...") : "Secure Client Access Client v2.4";
         
         pdf.setTextColor(113, 113, 122);
-        pdf.setFontSize(8);
-        pdf.text(`EVIDENCIA IP: ${ip} | AGENTE: ${ua}`, 25, yPos + 14);
+        pdf.setFont("courier", "bold");
+        pdf.setFontSize(7);
+        pdf.text(`IP NODE: ${ip} | AGENT: ${ua.toUpperCase()}`, 25, yPos + 12);
         
-        yPos += 30;
+        yPos += 27;
       });
       
       // Footer / Authority
       pdf.setTextColor(113, 113, 122);
       pdf.setFontSize(8);
       pdf.setFont("helvetica", "bold");
-      pdf.text("CONTRATO SELADO INTEGRALMENTE - SEM NECESSIDADE DE ASSINATURA FISICA", pageWidth / 2, pageHeight - 25, { align: "center" });
+      pdf.text("CONTRATO SELADO INTEGRALMENTE - SEM NECESSIDADE DE ASSINATURA FÍSICA", pageWidth / 2, pageHeight - 25, { align: "center" });
       
       pdf.setTextColor(192, 255, 0);
       pdf.setFont("helvetica", "normal");
