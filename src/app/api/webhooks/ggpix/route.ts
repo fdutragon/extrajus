@@ -11,6 +11,14 @@ export async function POST(request: Request) {
     // Validação de segurança e origem do Webhook
     const signature = request.headers.get("X-GG-Signature");
     const authorization = request.headers.get("Authorization");
+
+    // LOG TEMPORÁRIO PARA DEBBUG NA VERCEL (MASCARADO PARA SEGURANÇA)
+    console.log("[DEBUG GG PIX WEBHOOK HEADERS]:", {
+      signature: signature ? `${signature.substring(0, 6)}...${signature.substring(signature.length - 4)}` : "null",
+      authorization: authorization ? `${authorization.substring(0, 13)}...${authorization.substring(authorization.length - 4)}` : "null",
+      contentType: request.headers.get("content-type")
+    });
+
     const secret = process.env.GGPIX_WEBHOOK_SECRET || process.env.GGPIX_API_KEY || "";
 
     if (secret) {
