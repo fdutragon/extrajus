@@ -104,13 +104,12 @@ export default function AdminDashboard() {
         setChartData(formattedChartData);
       }
 
-      // 3. Fetch Users List
-      const { data: usersList } = await supabase
-        .from('profiles')
-        .select('id, full_name, email, credits, updated_at')
-        .order('updated_at', { ascending: false });
-      
-      if (usersList) setUsers(usersList);
+      // 3. Fetch Users List via backend API to bypass RLS
+      const usersRes = await fetch("/api/admin/users");
+      const usersData = await usersRes.json();
+      if (usersRes.ok && usersData.success) {
+        setUsers(usersData.users || []);
+      }
       
       // Carregar saques cripto integrados
       fetchWithdrawals();
@@ -202,14 +201,19 @@ export default function AdminDashboard() {
 
     try {
       const newCredits = (currentCredits || 0) + parseInt(amount);
-      const { error } = await supabase
-        .from('profiles')
-        .update({ credits: newCredits })
-        .eq('id', userId);
+      const res = await fetch("/api/admin/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, newCredits })
+      });
       
-      if (error) throw error;
-      toast.success(`${amount} créditos injetados com sucesso.`);
-      fetchData(); // Refresh
+      const data = await res.json();
+      if (res.ok && data.success) {
+        toast.success(`${amount} créditos injetados com sucesso.`);
+        fetchData(); // Refresh
+      } else {
+        toast.error(data.error || "Falha na injeção de créditos.");
+      }
     } catch (error) {
       toast.error("Falha na injeção de créditos.");
     }
