@@ -399,37 +399,17 @@ export default function PactsPage() {
                        </div>
                        
                        <p className="text-xs text-muted-foreground leading-relaxed italic">
-                          "Para selar este pacto soberano, insira o código de 6 dígitos que foi enviado para sua caixa de entrada."
+                          "Para selar este pacto soberano, clique no botão abaixo para abrir o documento em modo de visualização segura e realizar a selagem do ritual."
                        </p>
 
                        <Link 
                           href={`/editor?room=${selectedPact.contract_id}&mode=preview`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-full flex items-center justify-center gap-2 h-12 border border-primary/20 hover:border-primary/50 bg-primary/5 hover:bg-primary/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-primary transition-all active:scale-95"
+                          className="w-full h-14 bg-primary text-primary-foreground flex items-center justify-center font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95"
                        >
-                          <Eye size={12} /> Visualizar Documento Completo
+                          Confirmar Selamento
                        </Link>
-
-                       <div className="space-y-2">
-                          <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Código Ritual</label>
-                          <input 
-                            type="text" 
-                            maxLength={6}
-                            placeholder="000000"
-                            value={sealingCode}
-                            onChange={(e) => setSealingCode(e.target.value)}
-                            className="w-full h-14 bg-background border border-primary/30 rounded-2xl text-center text-2xl font-black tracking-[0.5em] text-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all placeholder:text-muted-foreground/10"
-                          />
-                       </div>
-
-                       <Button 
-                         disabled={isSealing || sealingCode.length < 6}
-                         onClick={handleSealPact}
-                         className="w-full h-14 bg-primary text-primary-foreground font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95"
-                       >
-                         {isSealing ? "Selando Pacto..." : "Confirmar Selamento"}
-                       </Button>
 
                        <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
                           <AlertCircle size={14} className="text-amber-500 shrink-0" />
