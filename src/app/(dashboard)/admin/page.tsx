@@ -410,36 +410,6 @@ export default function AdminDashboard() {
            </div>
         </Card>
       </div>
-           <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block mb-2">Recrutas Totais</span>
-           <div className="flex items-baseline gap-2">
-              <span className="text-4xl font-black text-foreground">{stats.totalUsers}</span>
-              <span className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-1">
-                 <ArrowUpRight size={10} /> +12%
-              </span>
-           </div>
-        </Card>
-
-        <Card className="bg-card border-border rounded-2xl p-6 relative overflow-hidden group">
-           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <TrendingUp size={64} />
-           </div>
-           <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block mb-2">Receita Acumulada</span>
-           <div className="flex items-baseline gap-2">
-              <span className="text-4xl font-black text-primary">R$ {(stats.totalRevenue / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-           </div>
-        </Card>
-
-        <Card className="bg-card border-primary/10 rounded-2xl p-6 relative overflow-hidden bg-primary/[0.02]">
-           <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary text-xl font-black">$</div>
-              <span className="text-[10px] font-black text-foreground uppercase tracking-widest">Lucro Operacional</span>
-           </div>
-           <div className="flex items-baseline gap-2">
-              <span className="text-4xl font-black text-foreground">R$ {((stats.totalRevenue * 0.94) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">Net</span>
-           </div>
-        </Card>
-      </div>
 
       {/* Chart Section - The War Room Graph */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
