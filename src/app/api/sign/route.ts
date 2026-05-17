@@ -62,6 +62,8 @@ export async function POST(request: Request) {
     await supabase.from('contracts').update({ status: 'pending' }).eq('id', contractId);
 
     // 3. Enviar Convocação via Resend
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
     if (process.env.RESEND_API_KEY) {
       for (const signer of signers) {
         await resend.emails.send({
@@ -85,7 +87,7 @@ export async function POST(request: Request) {
                 Para visualizar e selar este pacto, clique no link abaixo. Você poderá ver o documento completo em modo de somente leitura e inserir seu código para assinar digitalmente.
               </p>
 
-              <a href="${process.env.NEXT_PUBLIC_SITE_URL}/editor?room=${contractId}&mode=preview" 
+              <a href="${siteUrl}/editor?room=${contractId}&mode=preview" 
                  style="display: inline-block; background: #c0ff00; color: #000; text-decoration: none; padding: 15px 30px; font-weight: bold; border-radius: 5px; margin-top: 20px; text-transform: uppercase; font-size: 12px;">
                 Visualizar e Selar Pacto
               </a>

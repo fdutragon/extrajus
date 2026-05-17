@@ -4,23 +4,29 @@ import path from 'path'
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') })
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+)
 
-const supabase = createClient(supabaseUrl, supabaseKey)
-
-async function getColumns() {
+async function testJoinQuery() {
+  console.log("--- Testing combined left join query ---")
   const { data, error } = await supabase
     .from('signatures')
-    .select('*')
-    .limit(1)
+    .select('*, contracts(id, title, user_id)')
 
   if (error) {
-    console.error('Error fetching signatures:', error)
+    console.error("Join Query Error:", error)
   } else {
-    console.log('Signatures columns/keys:', data[0] ? Object.keys(data[0]) : 'No records found')
-    console.log('Sample record:', data[0])
+    console.log("Success! Total signatures fetched:", data.length)
+    if (data[0]) {
+      console.log("Sample merged row:", {
+        id: data[0].id,
+        status: data[0].status,
+        contract: data[0].contracts
+      })
+    }
   }
 }
 
-getColumns()
+testJoinQuery()

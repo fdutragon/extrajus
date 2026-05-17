@@ -19,7 +19,7 @@ import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
-export function SignModal() {
+export function SignModal({ title = "Contrato de Guerra" }: { title?: string }) {
   const { editor } = useTiptapEditor()
   const searchParams = useSearchParams()
   const contractId = searchParams.get("room")
@@ -64,7 +64,7 @@ export function SignModal() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contractId,
-          title: "Contrato de Guerra - ExtraJus",
+          title,
           content: editor.getHTML(),
           signers: validSigners,
         }),

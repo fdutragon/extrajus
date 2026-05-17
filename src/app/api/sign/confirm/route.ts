@@ -15,12 +15,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'ID do contrato e código são obrigatórios' }, { status: 400 })
     }
 
-    let authorizedEmail = user?.email;
-    if (!authorizedEmail && email) {
-      authorizedEmail = email;
-    }
+    const checkEmail = (email || '').toLowerCase().trim();
+    const userEmail = (user?.email || '').toLowerCase().trim();
 
-    if (!authorizedEmail) {
+    if (!checkEmail && !userEmail) {
       return NextResponse.json({ error: 'Você precisa estar autenticado ou informar seu e-mail para selar o pacto.' }, { status: 401 })
     }
 
@@ -40,11 +38,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Este pacto já foi selado.' }, { status: 400 });
     }
 
-    // 2. Verificar se o e-mail autorizado está na lista de signatários do pacto
-    const isSigner = signature.signers.some((s: any) => s.email.toLowerCase().trim() === authorizedEmail.toLowerCase().trim());
-    if (!isSigner) {
+    // 2. Verificar se o e-mail informado ou da sessão está na lista de signatários do pacto
+    const matchingSigner = signature.signers.find((s: any) => {
+      const signerEmail = (s.email || '').toLowerCase().trim();
+      return (checkEmail && signerEmail === checkEmail) || (userEmail && signerEmail === userEmail);
+    });
+
+    if (!matchingSigner) {
       return NextResponse.json({ error: 'Este e-mail não faz parte da lista de signatários autorizados para este pacto.' }, { status: 403 });
     }
+
+    const authorizedEmail = matchingSigner.email;
 
     // 3. Captura de Evidências Finais
     const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';

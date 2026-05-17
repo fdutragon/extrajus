@@ -40,52 +40,50 @@ export default function PactsPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // 1. Buscar títulos de contratos para mapeamento
-      const { data: allContracts } = await supabase
-        .from('contracts')
-        .select('id, title, user_id');
+      const userEmailLower = user.email?.toLowerCase().trim() || "";
 
-      const contractMap: Record<string, any> = {};
-      allContracts?.forEach(c => contractMap[c.id] = c);
-
-      // 2. Buscar TODAS as assinaturas
+      // 1. Buscar assinaturas com join na tabela de contratos (tabela pequena e indexada)
       const { data: allSignatures, error } = await supabase
         .from('signatures')
-        .select('*');
+        .select('*, contracts(id, title, user_id)');
 
       if (error) throw error;
 
-      // 3. Filtrar Pactos Recebidos (Onde sou signatário)
-      const received = allSignatures?.filter((sig: any) => 
-        sig.signers?.some((s: any) => s.email.toLowerCase().trim() === user.email?.toLowerCase().trim())
+      // 2. Filtrar Pactos Recebidos (Onde sou signatário)
+      const received = (allSignatures || [])?.filter((sig: any) => 
+        sig.signers?.some((s: any) => s.email?.toLowerCase().trim() === userEmailLower)
       ).map(sig => ({
         ...sig,
-        contracts: contractMap[sig.contract_id] || { title: "Contrato sem Título" }
+        contracts: sig.contracts || { title: "Contrato sem Título" }
       })) || [];
 
-      // 4. Filtrar Pactos Enviados (Onde sou o dono do contrato)
-      const sent = allSignatures?.filter((sig: any) => {
-        const contract = contractMap[sig.contract_id];
-        return contract?.user_id === user.id;
-      }).map(sig => ({
+      // 3. Filtrar Pactos Enviados (Onde sou o dono do contrato)
+      const sent = (allSignatures || [])?.filter((sig: any) => 
+        sig.contracts?.user_id === user.id
+      ).map(sig => ({
         ...sig,
-        contracts: contractMap[sig.contract_id] || { title: "Contrato sem Título" }
+        contracts: sig.contracts || { title: "Contrato sem Título" }
       })) || [];
 
-      // 5. Autotransição para 'analyzing' para os recebidos
-      await Promise.all(received.map(async (pact) => {
-        if (pact.status === 'pending') {
-          await supabase.from('signatures').update({ status: 'analyzing' }).eq('contract_id', pact.contract_id);
-          pact.status = 'analyzing';
-        }
-      }));
-
+      // Exibir os pactos na tela IMEDIATAMENTE sem travar o loading
       setPendingPacts(received);
       setSentPacts(sent);
+      setLoading(false);
+
+      // 4. Autotransição silenciosa em segundo plano para 'analyzing' para os recebidos pendentes
+      const pendingPactsToUpdate = received.filter(p => p.status === 'pending');
+      if (pendingPactsToUpdate.length > 0) {
+        Promise.all(pendingPactsToUpdate.map(async (pact) => {
+          await supabase.from('signatures').update({ status: 'analyzing' }).eq('contract_id', pact.contract_id);
+          pact.status = 'analyzing';
+        })).then(() => {
+          setPendingPacts([...received]);
+        }).catch(err => console.error("Erro na autotransição silenciosa:", err));
+      }
+
     } catch (error: any) {
       console.error("Pacts Fetch Error:", error);
       toast.error("Falha ao invocar pactos.");
-    } finally {
       setLoading(false);
     }
   }
