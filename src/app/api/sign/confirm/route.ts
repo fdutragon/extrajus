@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import crypto from 'crypto'
 
@@ -56,8 +57,14 @@ export async function POST(request: Request) {
       status: "COMPLETED_RITUAL"
     };
 
-    // 5. Atualizar para Status SIGNED
-    const { error: updateError } = await supabase
+    // Criar o cliente Admin usando a Service Role Key para contornar restrições de RLS do signatário nos updates
+    const supabaseAdmin = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    // 5. Atualizar para Status SIGNED usando o cliente Admin
+    const { error: updateError } = await supabaseAdmin
       .from('signatures')
       .update({
         status: 'signed',
@@ -67,8 +74,13 @@ export async function POST(request: Request) {
 
     if (updateError) throw updateError;
 
-    // Atualizar o contrato também
-    await supabase.from('contracts').update({ status: 'signed' }).eq('id', contractId);
+    // Atualizar o contrato também usando o cliente Admin
+    const { error: contractUpdateError } = await supabaseAdmin
+      .from('contracts')
+      .update({ status: 'signed' })
+      .eq('id', contractId);
+
+    if (contractUpdateError) throw contractUpdateError;
 
     return NextResponse.json({ 
       success: true, 

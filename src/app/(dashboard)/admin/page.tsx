@@ -258,7 +258,7 @@ export default function AdminDashboard() {
                     fontWeight: '800',
                     boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
                   }}
-                  formatter={(value: number) => [`R$ ${value.toLocaleString('pt-BR')}`, 'Receita']}
+                  formatter={(value: any) => [`R$ ${Number(value || 0).toLocaleString('pt-BR')}`, 'Receita']}
                 />
                 <Area 
                   type="monotone" 

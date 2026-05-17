@@ -30,8 +30,6 @@ import { forceCollide } from "d3-force";
 
 export default function BrainPage() {
   const [selectedNode, setSelectedNode] = useState<any>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>({ contracts: [], signatures: [], profile: null });
   const supabase = createClient();
@@ -43,7 +41,7 @@ export default function BrainPage() {
 
       const [contractsRes, sigsRes, profileRes] = await Promise.all([
         supabase.from('contracts').select('id, title, status').eq('user_id', user.id),
-        supabase.from('signatures').select('id, contract_id, signer_name, status'),
+        supabase.from('signatures').select('id, contract_id, signers, status'),
         supabase.from('profiles').select('full_name').eq('id', user.id).single()
       ]);
 
@@ -57,27 +55,6 @@ export default function BrainPage() {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    if (containerRef.current) {
-      setDimensions({
-        width: containerRef.current.offsetWidth,
-        height: containerRef.current.offsetHeight,
-      });
-    }
-    
-    const handleResize = () => {
-      if (containerRef.current) {
-        setDimensions({
-          width: containerRef.current.offsetWidth,
-          height: containerRef.current.offsetHeight,
-        });
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   const graphData = useMemo(() => {
     const nodes: any[] = [];
     const links: any[] = [];
@@ -88,7 +65,7 @@ export default function BrainPage() {
       name: data.profile?.full_name?.toUpperCase() || "LILITH CORE", 
       val: 10, 
       group: "core", 
-      color: "hsl(20, 90%, 50%)" 
+      color: "#f59e0b" // Gold/Amber for the core
     });
 
     // Contract Nodes
@@ -98,7 +75,7 @@ export default function BrainPage() {
         name: c.title,
         val: 4,
         group: "contract",
-        color: "hsl(var(--primary))",
+        color: "rgb(var(--primary-rgb, 192, 255, 0))", // Fallback to Lilith Green
         status: c.status
       });
       links.push({ source: "core", target: c.id });
@@ -106,17 +83,21 @@ export default function BrainPage() {
 
     // Signatory Nodes
     data.signatures.forEach((s: any) => {
-      const sigId = `sig-${s.id}`;
-      nodes.push({
-        id: sigId,
-        name: s.signer_name,
-        val: 3,
-        group: "signer",
-        color: "hsl(var(--muted-foreground))",
-        status: s.status
-      });
-      if (s.contract_id) {
-        links.push({ source: s.contract_id, target: sigId });
+      if (Array.isArray(s.signers)) {
+        s.signers.forEach((sig: any, index: number) => {
+          const sigId = `sig-${s.id}-${index}`;
+          nodes.push({
+            id: sigId,
+            name: sig.name || sig.email || "Signatário Sem Nome",
+            val: 3,
+            group: "signer",
+            color: "#94a3b8", // Muted Slate/Blue-gray
+            status: s.status
+          });
+          if (s.contract_id) {
+            links.push({ source: s.contract_id, target: sigId });
+          }
+        });
       }
     });
 
@@ -127,16 +108,16 @@ export default function BrainPage() {
 
   useEffect(() => {
     if (fgRef.current) {
-      // Increase repulsion between nodes (negative value)
-      fgRef.current.d3Force("charge").strength(-800);
-      // Increase distance between connected nodes
-      fgRef.current.d3Force("link").distance(180);
-      // Add a slight collision force to prevent overlap
-      fgRef.current.d3Force("collide", forceCollide(30));
+      // Moderate repulsion to group nodes closer
+      fgRef.current.d3Force("charge").strength(-300);
+      // Bring connected nodes much closer to the core
+      fgRef.current.d3Force("link").distance(80);
+      // Optimize collision radius to prevent overlaps in a tighter cluster
+      fgRef.current.d3Force("collide", forceCollide(20));
 
-      // Initial Zoom and Center
+      // Initial Zoom and Center - Balanced zoom at 4.5 for the perfect cinematic overview
       setTimeout(() => {
-        fgRef.current.zoom(6, 1000);
+        fgRef.current.zoom(4.5, 1000);
         fgRef.current.centerAt(0, 0, 1000);
       }, 500);
     }
@@ -167,13 +148,12 @@ export default function BrainPage() {
         </div>
       </div>
 
-      <div className="flex-1 flex gap-8 min-h-0">
-        {/* Main Graph Island */}
+      <div className="flex flex-col lg:flex-row gap-4 w-full">
+        {/* Main Graph Island - Ensure it doesn't expand under sidebar */}
         <div 
-          ref={containerRef}
-          className="flex-1 bg-card border border-border rounded-2xl overflow-hidden relative">
+          className="w-[924px] h-[662px] bg-card border border-border rounded-2xl overflow-hidden relative shrink-0">
           {/* Legend Overlay */}
-          <div className="absolute top-6 left-6 z-10 space-y-2 p-4 bg-background/50 backdrop-blur-md rounded-xl border border-border">
+          <div className="absolute top-6 left-6 z-20 space-y-2 p-4 bg-background/50 backdrop-blur-md rounded-xl border border-border">
              <h3 className="text-xs font-black uppercase text-primary tracking-widest flex items-center gap-2">
                <Activity size={12} /> Live Processing
              </h3>
@@ -183,14 +163,16 @@ export default function BrainPage() {
           <ForceGraph2D
             ref={fgRef}
             graphData={graphData}
-            width={dimensions.width}
-            height={dimensions.height}
+            width={924}
+            height={662}
             backgroundColor="transparent"
             nodeRelSize={4}
             nodeAutoColorBy="group"
-            linkDirectionalParticles={2}
+            linkDirectionalParticles={4}
             linkDirectionalParticleSpeed={0.005}
-            linkColor={() => "hsl(var(--border))"}
+            linkDirectionalParticleColor={() => "#c0ff00"}
+            linkDirectionalParticleWidth={2}
+            linkColor={() => "rgba(255, 255, 255, 0.05)"}
             nodeCanvasObject={(node: any, ctx: CanvasRenderingContext2D, globalScale) => {
               const label = node.name;
               const fontSize = 12 / globalScale;
@@ -199,27 +181,35 @@ export default function BrainPage() {
               // Node Circle
               ctx.beginPath();
               ctx.arc(node.x, node.y, node.val / 2, 0, 2 * Math.PI, false);
-              ctx.fillStyle = node.color;
+              
+              // Force vibrant colors for the canvas fill
+              const color = node.color || "#c0ff00";
+              ctx.fillStyle = color;
               ctx.fill();
               
-              // Shadow/Glow
-              ctx.shadowColor = node.color;
+              // Shadow/Glow effect
+              ctx.shadowColor = color;
               ctx.shadowBlur = 15;
+              ctx.shadowOffsetX = 0;
+              ctx.shadowOffsetY = 0;
 
               // Label
               if (globalScale > 1.5) {
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
-                ctx.fillStyle = "hsl(var(--foreground))";
+                ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
                 ctx.fillText(label, node.x, node.y + (node.val / 2) + 6);
               }
+              
+              // Reset shadow for next draws
+              ctx.shadowBlur = 0;
             }}
             onNodeClick={(node) => setSelectedNode(node)}
           />
         </div>
 
-        {/* Info Side Panel */}
-        <div className="w-80 flex flex-col gap-4 overflow-y-auto custom-scrollbar">
+        {/* Info Side Panel - Solid layout, no overlap */}
+        <div className="w-full lg:w-[380px] flex flex-col gap-4 overflow-y-auto custom-scrollbar shrink-0 h-[662px]">
           <Card className="bg-card border-border rounded-2xl p-6">
             <h3 className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground mb-6">Métricas de Poder</h3>
 
@@ -270,20 +260,20 @@ export default function BrainPage() {
                 <div className="space-y-6 flex-1">
                    <div className="space-y-2">
                       <div className="flex justify-between items-end">
-                        <span className="text-[10px] font-bold uppercase text-muted-foreground">Total de Conexões</span>
-                        <span className="text-[10px] font-bold text-primary">{graphData.nodes.length}</span>
+                        <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Total de Conexões</span>
+                        <span className="text-[10px] font-black text-primary">{graphData.nodes.length}</span>
                       </div>
-                      <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+                      <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden border border-border/30">
                         <div className="h-full bg-primary w-[92%]" />
                       </div>
                    </div>
                    <div className="space-y-2">
                       <div className="flex justify-between items-end">
-                        <span className="text-[10px] font-bold uppercase text-muted-foreground">Densidade da Rede</span>
-                        <span className="text-[10px] font-bold text-primary/70">{graphData.links.length}</span>
+                        <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Densidade da Rede</span>
+                        <span className="text-[10px] font-black text-primary">{graphData.links.length}</span>
                       </div>
-                      <div className="h-full bg-muted rounded-full overflow-hidden">
-                        <div className="h-full bg-primary/70 w-[64%]" />
+                      <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden border border-border/30">
+                        <div className="h-full bg-primary w-[64%]" />
                       </div>
                    </div>
                 </div>

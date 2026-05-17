@@ -165,7 +165,7 @@ export default async function DashboardPage() {
                           contract.status === 'pending' ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
                         )}>
                           {contract.status === 'draft' ? 'Em Edição' : 
-                           contract.status === 'pending' ? 'Assinatura' : 'Selado'}
+                           contract.status === 'pending' ? 'Pendente' : 'Selado'}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-[11px] text-muted-foreground text-right font-mono py-5 px-6">{new Date(contract.updated_at).toLocaleDateString('pt-BR')}</TableCell>

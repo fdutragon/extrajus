@@ -105,10 +105,13 @@ export function ContractsTable({ initialContracts }: { initialContracts: any[] }
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline" className={cn(
-                    "text-[9px] uppercase font-bold tracking-widest px-2 py-0 border-none",
-                    contract.status === 'draft' ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary border border-primary/20"
+                    "text-[9px] uppercase font-bold tracking-widest px-2 py-0 border-none rounded-full",
+                    contract.status === 'signed' ? "bg-primary/10 text-primary" :
+                    contract.status === 'pending' ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
                   )}>
-                    {contract.status || 'draft'}
+                    {contract.status === 'draft' ? 'Em Edição' : 
+                     contract.status === 'pending' ? 'Pendente' : 
+                     contract.status === 'signed' ? 'Selado' : 'Rascunho'}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-[11px] text-muted-foreground font-mono">
