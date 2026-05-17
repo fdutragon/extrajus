@@ -456,26 +456,27 @@ export default function PactsPage() {
                                   )}
                                </div>
                              ))}
-                          </div>
 
-                          <Link 
-                             href={`/editor?room=${selectedPact.contract_id}&mode=preview`}
-                             target="_blank"
-                             rel="noopener noreferrer"
-                             className="w-full flex items-center justify-center gap-2 h-11 border border-border hover:border-primary/20 bg-muted/20 hover:bg-muted/30 rounded-xl text-[10px] font-black uppercase tracking-widest text-foreground transition-all active:scale-95"
-                          >
-                             <Eye size={12} /> Visualizar Documento Completo
-                          </Link>
+                              <div className="pt-2 space-y-2">
+                                 <Link 
+                                    href={`/editor?room=${selectedPact.contract_id}&mode=preview`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full flex items-center justify-center gap-2 h-12 bg-primary text-primary-foreground font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-primary/10 transition-all active:scale-95 text-[10px]"
+                                 >
+                                    <Eye size={12} /> Visualizar Documento
+                                 </Link>
 
-                          {selectedPact.status === 'signed' && (
-                            <Button 
-                               onClick={() => handleDownloadCertificate(selectedPact)}
-                               variant="outline" 
-                               className="w-full h-12 rounded-xl text-[10px] font-black uppercase tracking-widest border-primary/20 text-primary hover:bg-primary/5"
-                            >
-                               Baixar Certificado de Soberania
-                            </Button>
-                          )}
+                                 {selectedPact.status === 'signed' && (
+                                   <Button 
+                                      onClick={() => handleDownloadCertificate(selectedPact)}
+                                      className="w-full h-12 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-primary/20 text-primary bg-primary/5 hover:bg-primary/10 transition-all active:scale-95 flex items-center justify-center gap-2"
+                                   >
+                                      Baixar Certificado
+                                   </Button>
+                                 )}
+                              </div>
+                           </div>
                        </div>
                     </div>
                  </Card>
