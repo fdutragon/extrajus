@@ -42,12 +42,10 @@ export default function PactsPage() {
 
       const userEmailLower = user.email?.toLowerCase().trim() || "";
 
-      // 1. Buscar assinaturas filtrando diretamente no banco (Postgres Power)
-      // Trazemos assinaturas onde o usuário é o dono do contrato OU é um dos signatários
+      // 1. Buscar todas as assinaturas associadas ao usuário via Left Join seguro
       const { data: allSignatures, error } = await supabase
         .from('signatures')
-        .select('*, contracts!inner(id, title, user_id)')
-        .or(`contracts.user_id.eq.${user.id},signers.cs.[{"email":"${userEmailLower}"}]`);
+        .select('*, contracts(id, title, user_id)');
 
       if (error) throw error;
 

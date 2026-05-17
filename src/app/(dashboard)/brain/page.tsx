@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState, useRef, useEffect } from "react";
+import { useMemo, useState, useRef, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,8 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { createClient } from "@/utils/supabase/client";
-import { useRefRect } from "@/hooks/use-element-rect";
+
+import { cn } from "@/lib/utils";
 
 // Dynamic import to avoid SSR issues with ForceGraph
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
@@ -33,8 +34,34 @@ export default function BrainPage() {
   const [selectedNode, setSelectedNode] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>({ contracts: [], signatures: [], profile: null });
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { width, height } = useRefRect(containerRef);
+  const [dimensions, setDimensions] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
+
+  const containerRef = useCallback((node: HTMLDivElement | null) => {
+    if (resizeObserverRef.current) {
+      resizeObserverRef.current.disconnect();
+      resizeObserverRef.current = null;
+    }
+
+    if (node) {
+      const updateSize = () => {
+        setDimensions({
+          width: node.clientWidth || node.offsetWidth || 500,
+          height: node.clientHeight || node.offsetHeight || 500
+        });
+      };
+
+      updateSize();
+
+      const observer = new ResizeObserver(() => {
+        window.requestAnimationFrame(updateSize);
+      });
+      observer.observe(node);
+      resizeObserverRef.current = observer;
+    }
+  }, []);
+
+  const { width, height } = dimensions;
   const supabase = createClient();
 
   useEffect(() => {
@@ -143,7 +170,7 @@ export default function BrainPage() {
   return (
     <div className="flex flex-col space-y-10 animate-in fade-in duration-700 min-h-[85vh]">
       {/* Header Area */}
-      <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-border pb-6">
+      <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b pb-6">
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2 py-0">Neural Networking</Badge>
@@ -156,7 +183,7 @@ export default function BrainPage() {
         </div>
 
         <div className="flex items-center gap-3">
-           <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-lg border border-border">
+           <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-lg border">
              <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
              <span className="text-[10px] font-black uppercase text-primary tracking-widest">Neural Sync: 99.8%</span>
            </div>
@@ -167,72 +194,84 @@ export default function BrainPage() {
         {/* Main Graph Island - Ensure it doesn't expand under sidebar */}
         <div 
           ref={containerRef}
-          className="flex-1 min-h-[500px] lg:h-auto bg-card border border-border rounded-2xl overflow-hidden relative shrink-0">
+          className="flex-1 h-[500px] lg:h-[662px] bg-card border rounded-2xl overflow-hidden relative shrink-0">
           {/* Legend Overlay */}
-          <div className="absolute top-6 left-6 z-20 space-y-2 p-4 bg-background/50 backdrop-blur-md rounded-xl border border-border">
+          <div className="absolute top-6 left-6 z-20 space-y-2 p-4 bg-background/50 backdrop-blur-md rounded-xl border">
              <h3 className="text-xs font-black uppercase text-primary tracking-widest flex items-center gap-2">
                <Activity size={12} /> Live Processing
              </h3>
              <p className="text-[11px] text-muted-foreground font-medium max-w-[180px]">Mapeamento neural de riscos em tempo real.</p>
           </div>
 
-          <ForceGraph2D
-            ref={fgRef}
-            graphData={graphData}
-            width={width}
-            height={height}
-            backgroundColor="transparent"
-            nodeRelSize={4}
-            nodeAutoColorBy="group"
-            linkDirectionalParticles={4}
-            linkDirectionalParticleSpeed={0.005}
-            linkDirectionalParticleColor={() => "#c0ff00"}
-            linkDirectionalParticleWidth={2}
-            linkColor={() => "rgba(255, 255, 255, 0.05)"}
-            nodeCanvasObject={(node: any, ctx: CanvasRenderingContext2D, globalScale) => {
-              const label = node.name;
-              const fontSize = 12 / globalScale;
-              ctx.font = `${fontSize}px Inter`;
-              
-              // Node Circle
-              ctx.beginPath();
-              ctx.arc(node.x, node.y, node.val / 2, 0, 2 * Math.PI, false);
-              
-              // Force vibrant colors for the canvas fill
-              const color = node.color || "#c0ff00";
-              ctx.fillStyle = color;
-              ctx.fill();
-              
-              // Shadow/Glow effect
-              ctx.shadowColor = color;
-              ctx.shadowBlur = 15;
-              ctx.shadowOffsetX = 0;
-              ctx.shadowOffsetY = 0;
+          {width > 0 && height > 0 ? (
+            <ForceGraph2D
+              ref={fgRef}
+              graphData={graphData}
+              width={width}
+              height={height}
+              backgroundColor="transparent"
+              nodeRelSize={4}
+              nodeAutoColorBy="group"
+              linkDirectionalParticles={4}
+              linkDirectionalParticleSpeed={0.005}
+              linkDirectionalParticleColor={() => "#c0ff00"}
+              linkDirectionalParticleWidth={2}
+              linkColor={() => "rgba(255, 255, 255, 0.05)"}
+              nodeCanvasObject={(node: any, ctx: CanvasRenderingContext2D, globalScale) => {
+                if (node.x === undefined || node.y === undefined) return;
+                const label = node.name;
+                const fontSize = 12 / globalScale;
+                ctx.font = `${fontSize}px Inter`;
+                
+                // Node Circle
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.val / 2, 0, 2 * Math.PI, false);
+                
+                // Force vibrant colors for the canvas fill
+                const color = node.color || "#c0ff00";
+                ctx.fillStyle = color;
+                ctx.fill();
+                
+                // Shadow/Glow effect
+                ctx.shadowColor = color;
+                ctx.shadowBlur = 15;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
 
-              // Label
-              if (globalScale > 1.5) {
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-                ctx.fillText(label, node.x, node.y + (node.val / 2) + 6);
-              }
-              
-              // Reset shadow for next draws
-              ctx.shadowBlur = 0;
-            }}
-            onNodeClick={(node) => setSelectedNode(node)}
-          />
+                // Label
+                if (globalScale > 1.5) {
+                  ctx.textAlign = "center";
+                  ctx.textBaseline = "middle";
+                  ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+                  ctx.fillText(label, node.x, node.y + (node.val / 2) + 6);
+                }
+                
+                // Reset shadow for next draws
+                ctx.shadowBlur = 0;
+              }}
+              onNodeClick={(node) => setSelectedNode(node)}
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground uppercase tracking-widest font-mono">
+              Invocando Matriz Neural...
+            </div>
+          )}
         </div>
 
         {/* Info Side Panel - Solid layout, no overlap */}
         <div className="w-full lg:w-[380px] flex flex-col gap-4 overflow-y-auto custom-scrollbar shrink-0 h-[662px]">
-          <Card className="bg-card border-border rounded-2xl p-6">
+          <Card className="bg-card border rounded-2xl p-6">
             <h3 className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground mb-6">Métricas de Poder</h3>
 
             {selectedNode ? (
               <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white" style={{ backgroundColor: selectedNode.color }}>
+                  <div className={cn(
+                    "w-12 h-12 rounded-xl flex items-center justify-center text-white",
+                    selectedNode.group === "core" && "bg-amber-500 shadow-lg shadow-amber-500/20",
+                    selectedNode.group === "contract" && "bg-primary shadow-lg shadow-primary/20",
+                    selectedNode.group === "signer" && "bg-slate-500 shadow-lg shadow-slate-500/20"
+                  )}>
                      {selectedNode.group === 'contract' ? <FileText size={24} /> : <UserIcon size={24} />}
                   </div>
                   <div>
@@ -242,11 +281,11 @@ export default function BrainPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="p-3 rounded-xl bg-muted/50 border border-border">
+                  <div className="p-3 rounded-xl bg-muted/50 border">
                     <div className="text-[9px] text-muted-foreground uppercase font-black mb-1">Precisão Analítica</div>
                     <div className="text-lg font-mono font-bold text-primary">99.8%</div>
                   </div>
-                  <div className="p-3 rounded-xl bg-muted/50 border border-border">
+                  <div className="p-3 rounded-xl bg-muted/50 border">
                     <div className="text-[9px] text-muted-foreground uppercase font-black mb-1">Tokens Processados</div>
                     <div className="text-lg font-mono font-bold text-foreground">1.2M</div>
                   </div>
@@ -262,7 +301,7 @@ export default function BrainPage() {
               </div>
             ) : (
               <div className="h-64 flex flex-col items-center justify-center text-center space-y-4 opacity-40">
-                <div className="w-16 h-16 rounded-full border-2 border-dashed border-border flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full border-2 border-dashed flex items-center justify-center">
                   <Maximize2 size={24} />
                 </div>
                 <p className="text-xs font-medium max-w-[150px]">Selecione um nó no cérebro para analisar os dados.</p>
@@ -270,7 +309,7 @@ export default function BrainPage() {
             )}
           </Card>
 
-          <Card className="bg-card border border-border rounded-2xl p-6 relative overflow-hidden group flex-1">
+          <Card className="bg-card border rounded-2xl p-6 relative overflow-hidden group flex-1">
              <div className="relative z-10 flex flex-col h-full">
                 <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Neural Analytics</h3>
                 <div className="space-y-6 flex-1">
