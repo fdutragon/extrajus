@@ -44,7 +44,7 @@ export function CollaborationUsers() {
         >
           <AvatarGroup maxVisible={3}>
             {collaborationUsers.map((user) => (
-              <Avatar key={user.id} userColor={user.color}>
+              <Avatar key={user.id} userColor={user.color} title={user.name}>
                 <AvatarImage src={getAvatar(user.name)} />
                 <AvatarFallback>{user.name?.toUpperCase()[0]}</AvatarFallback>
               </Avatar>

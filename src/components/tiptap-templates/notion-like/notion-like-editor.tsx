@@ -681,8 +681,7 @@ export function EditorLayout() {
           )}
           <div className="flex flex-col">
             <div className="flex items-baseline gap-2 group/brand cursor-default">
-              <span className="text-[11px] font-black uppercase tracking-[0.4em] text-primary transition-all">ExtraJus</span>
-              <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 truncate max-w-[120px]">{fileName}.docx</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground truncate max-w-[240px]">{fileName}.docx</span>
             </div>
           </div>
         </div>

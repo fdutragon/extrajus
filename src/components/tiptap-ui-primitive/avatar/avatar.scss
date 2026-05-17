@@ -107,12 +107,29 @@
   display: inline-flex;
   align-items: center;
 
+  .tiptap-avatar {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    
+    &:hover {
+      transform: translateY(-2px) scale(1.15);
+      z-index: 10 !important;
+      
+      .tiptap-avatar-image,
+      .tiptap-avatar-fallback {
+        border-color: var(--dynamic-user-color, var(--tiptap-avatar-border-color)) !important;
+        box-shadow: 0 0 12px var(--dynamic-user-color, rgba(249, 115, 22, 0.4));
+      }
+    }
+  }
+
   .tiptap-avatar-image,
   .tiptap-avatar-fallback {
-    border: 2px solid var(--tiptap-avatar-border-color);
+    border: 1.5px solid var(--dynamic-user-color, var(--tiptap-avatar-border-color));
+    transition: all 0.3s ease;
   }
 
   .tiptap-avatar:not(:first-child) {
-    margin-left: -0.5rem;
+    margin-left: -0.45rem;
   }
 }
