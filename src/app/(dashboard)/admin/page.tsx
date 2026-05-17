@@ -15,7 +15,11 @@ import {
   Database,
   BarChart3,
   Calendar,
-  Wallet
+  Wallet,
+  Coins,
+  ArrowDownRight,
+  RefreshCw,
+  ShieldCheck
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -37,6 +41,14 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [timeRange, setTimeRange] = useState<"day" | "month" | "year">("day");
+  
+  // Estados para o Saque Cripto GGPix
+  const [withdrawals, setWithdrawals] = useState<any[]>([]);
+  const [withdrawAmountBRL, setWithdrawAmountBRL] = useState("");
+  const [withdrawWallet, setWithdrawWallet] = useState("");
+  const [submittingWithdraw, setSubmittingWithdraw] = useState(false);
+  const [loadingWithdrawals, setLoadingWithdrawals] = useState(false);
+
   const supabase = createClient();
   const router = useRouter();
 
@@ -99,6 +111,9 @@ export default function AdminDashboard() {
         .order('updated_at', { ascending: false });
       
       if (usersList) setUsers(usersList);
+      
+      // Carregar saques cripto integrados
+      fetchWithdrawals();
     } catch (error) {
       console.error("Admin Error:", error);
       toast.error("Falha ao carregar dados táticos.");
@@ -106,6 +121,80 @@ export default function AdminDashboard() {
       setLoading(false);
     }
   }
+
+  async function fetchWithdrawals() {
+    setLoadingWithdrawals(true);
+    try {
+      const response = await fetch("/api/admin/crypto/withdraw");
+      const data = await response.json();
+      if (data.success) {
+        setWithdrawals(data.withdrawals || []);
+      }
+    } catch (err) {
+      console.error("Error fetching withdrawals:", err);
+    } finally {
+      setLoadingWithdrawals(false);
+    }
+  }
+
+  const handleExecuteWithdrawal = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!withdrawAmountBRL || isNaN(parseFloat(withdrawAmountBRL))) {
+      toast.error("Por favor, informe um valor válido para saque.");
+      return;
+    }
+
+    if (!withdrawWallet || !withdrawWallet.startsWith("0x") || withdrawWallet.length !== 42) {
+      toast.error("Endereço de carteira BSC (USDT BEP-20) inválido.");
+      return;
+    }
+
+    const amountCents = Math.round(parseFloat(withdrawAmountBRL) * 100);
+
+    if (confirm(`Confirma o saque de R$ ${parseFloat(withdrawAmountBRL).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} para a carteira ${withdrawWallet}?`)) {
+      setSubmittingWithdraw(true);
+      try {
+        const res = await fetch("/api/admin/crypto/withdraw", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            amountBRLCents: amountCents,
+            walletAddress: withdrawWallet
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          toast.success("💥 Ritual de Saque Executado com Sucesso!");
+          setWithdrawAmountBRL("");
+          setWithdrawWallet("");
+          fetchWithdrawals();
+        } else {
+          toast.error(data.error || "Erro ao processar saque.");
+        }
+      } catch (err) {
+        toast.error("Falha ao executar ritual de saque.");
+      } finally {
+        setSubmittingWithdraw(false);
+      }
+    }
+  };
+
+  const handleSyncWithdrawalStatus = async (withdrawId: string) => {
+    try {
+      toast.info("Consultando status neural do saque...");
+      const res = await fetch(`/api/admin/crypto/withdraw?id=${withdrawId}`);
+      const data = await res.json();
+      if (res.ok && data.success) {
+        toast.success(`Status do saque atualizado: ${data.withdrawal.status}`);
+        fetchWithdrawals();
+      } else {
+        toast.error(data.error || "Erro ao atualizar status.");
+      }
+    } catch (err) {
+      toast.error("Falha ao consultar status.");
+    }
+  };
 
   const handleManualAddCredits = async (userId: string, currentCredits: number) => {
     const amount = prompt("Quantidade de créditos para injetar:", "100");
@@ -304,6 +393,161 @@ export default function AdminDashboard() {
                  Os dados são processados em tempo real pela rede neural Lilith para garantir precisão absoluta nas métricas de guerra.
               </p>
            </div>
+        </Card>
+      </div>
+
+      {/* Terminal de Saque Cripto - GGPix Integration */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Formulário de Saque */}
+        <Card className="bg-card border-border rounded-3xl p-8 relative overflow-hidden flex flex-col justify-between">
+           <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+              <Coins size={120} className="text-primary" />
+           </div>
+           <div>
+              <h3 className="text-sm font-black uppercase tracking-[0.3em] text-foreground mb-1 flex items-center gap-2">
+                 <Coins size={16} className="text-primary animate-pulse" /> Ritual de Saque Cripto
+              </h3>
+              <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-6">Debitar BRL e enviar USDT (BEP-20) via GGPix</p>
+              
+              <form onSubmit={handleExecuteWithdrawal} className="space-y-4">
+                 <div className="space-y-1">
+                    <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Valor do Saque (R$)</label>
+                    <div className="relative">
+                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground">R$</span>
+                       <input 
+                         type="number"
+                         step="0.01"
+                         placeholder="0.00"
+                         value={withdrawAmountBRL}
+                         onChange={(e) => setWithdrawAmountBRL(e.target.value)}
+                         className="w-full bg-muted/30 border border-border rounded-xl pl-9 pr-4 py-2.5 text-xs font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all"
+                         required
+                       />
+                    </div>
+                 </div>
+
+                 <div className="space-y-1">
+                    <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Endereço da Carteira BSC (USDT BEP-20)</label>
+                    <div className="relative">
+                       <input 
+                         type="text"
+                         placeholder="0x..."
+                         value={withdrawWallet}
+                         onChange={(e) => setWithdrawWallet(e.target.value)}
+                         className="w-full bg-muted/30 border border-border rounded-xl px-4 py-2.5 text-xs font-mono font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder:text-muted-foreground/30"
+                         required
+                       />
+                    </div>
+                 </div>
+
+                 <div className="pt-2">
+                    <Button 
+                      type="submit" 
+                      disabled={submittingWithdraw}
+                      className="w-full h-11 rounded-xl text-[10px] font-black uppercase tracking-widest bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+                    >
+                       {submittingWithdraw ? (
+                         <>
+                           <RefreshCw size={12} className="animate-spin" /> Processando Ritual...
+                         </>
+                       ) : (
+                         <>
+                           <ArrowDownRight size={12} /> Executar Saque Cripto
+                         </>
+                       )}
+                    </Button>
+                 </div>
+              </form>
+           </div>
+
+           <div className="mt-6 pt-6 border-t border-border flex items-center gap-2 text-[8px] font-black text-emerald-500 uppercase tracking-widest">
+              <ShieldCheck size={12} /> IP Whitelist e Endereço BSC Protegidos por SSL/TLS
+           </div>
+        </Card>
+
+        {/* Histórico de Saques Cripto */}
+        <Card className="lg:col-span-2 bg-card border-border rounded-3xl p-8 relative overflow-hidden flex flex-col justify-between">
+           <div>
+              <div className="flex justify-between items-center mb-6">
+                 <div>
+                    <h3 className="text-sm font-black uppercase tracking-[0.3em] text-foreground">Registro de Transações Cripto</h3>
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mt-1">Status em tempo real das chancelas GGPix</p>
+                 </div>
+                 <Button 
+                   onClick={fetchWithdrawals} 
+                   disabled={loadingWithdrawals}
+                   variant="ghost" 
+                   size="sm" 
+                   className="h-8 w-8 p-0 rounded-lg border border-border hover:bg-muted text-muted-foreground"
+                 >
+                    <RefreshCw size={12} className={cn(loadingWithdrawals && "animate-spin")} />
+                 </Button>
+              </div>
+
+              <div className="overflow-x-auto max-h-[220px] overflow-y-auto">
+                 {withdrawals.length === 0 ? (
+                   <div className="py-12 text-center text-muted-foreground font-black text-[9px] uppercase tracking-widest border border-dashed rounded-2xl border-border">
+                      Nenhum saque cripto registrado neste quadrante do império.
+                   </div>
+                 ) : (
+                   <table className="w-full text-left border-collapse text-xs">
+                      <thead>
+                         <tr className="border-b border-border/50 pb-2">
+                            <th className="pb-3 text-[8px] font-black text-muted-foreground uppercase tracking-widest">ID do Saque</th>
+                            <th className="pb-3 text-[8px] font-black text-muted-foreground uppercase tracking-widest">Destinatário (BSC)</th>
+                            <th className="pb-3 text-[8px] font-black text-muted-foreground uppercase tracking-widest text-center">BRL Débito</th>
+                            <th className="pb-3 text-[8px] font-black text-muted-foreground uppercase tracking-widest text-center">USDT (Est)</th>
+                            <th className="pb-3 text-[8px] font-black text-muted-foreground uppercase tracking-widest text-center">Status</th>
+                            <th className="pb-3 text-[8px] font-black text-muted-foreground uppercase tracking-widest text-right">Ação</th>
+                         </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border/30">
+                         {withdrawals.map((w: any) => (
+                            <tr key={w.id} className="hover:bg-primary/[0.01] transition-colors">
+                               <td className="py-3 font-mono font-bold text-foreground text-[10px]">{w.id}</td>
+                               <td className="py-3 font-mono text-[9px] text-muted-foreground" title={w.wallet || w.walletAddress}>
+                                  {(w.wallet || w.walletAddress || "0x...").slice(0, 6)}...{(w.wallet || w.walletAddress || "0x...").slice(-4)}
+                               </td>
+                               <td className="py-3 font-bold text-center">
+                                  R$ {((w.amountBRLCents || 0) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                               </td>
+                               <td className="py-3 font-bold text-primary text-center">
+                                  {w.estimatedUSDT || "0.00"} USDT
+                               </td>
+                               <td className="py-3 text-center">
+                                  {w.status === "COMPLETE" ? (
+                                    <Badge className="bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 text-[7px] font-black px-1.5 py-0.5 rounded">CONCLUÍDO</Badge>
+                                  ) : w.status === "PENDING" ? (
+                                    <Badge className="bg-amber-500/10 text-amber-500 border border-amber-500/20 text-[7px] font-black px-1.5 py-0.5 rounded animate-pulse">PENDENTE</Badge>
+                                  ) : (
+                                    <Badge className="bg-destructive/10 text-destructive border border-destructive/20 text-[7px] font-black px-1.5 py-0.5 rounded" title={w.failureReason || "Falha desconhecida"}>FALHOU</Badge>
+                                  )}
+                               </td>
+                               <td className="py-3 text-right">
+                                  <Button 
+                                    onClick={() => handleSyncWithdrawalStatus(w.id)}
+                                    size="sm" 
+                                    variant="ghost" 
+                                    className="h-7 w-7 p-0 rounded-lg hover:bg-primary/10 text-primary transition-all"
+                                    title="Sincronizar Status com GGPix"
+                                  >
+                                     <RefreshCw size={10} />
+                                  </Button>
+                               </td>
+                            </tr>
+                         ))}
+                      </tbody>
+                   </table>
+                 )}
+              </div>
+           </div>
+
+           {withdrawals.length > 0 && (
+             <div className="mt-4 pt-4 border-t border-border/50 flex justify-between items-center text-[8px] font-bold text-muted-foreground uppercase tracking-widest">
+                <span>Clique no ícone de sincronização para consultar o status on-chain.</span>
+                <span>BSC BEP-20 Network</span>
+             </div>
+           )}
         </Card>
       </div>
 
