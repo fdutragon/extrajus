@@ -21,10 +21,11 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { signOut } from "../(auth)/login/actions";
 import { createClient } from "@/utils/supabase/client";
 import { Logo } from "@/components/ui/logo";
+import { toast } from "sonner";
 export default function DashboardLayoutClient({
   children,
 }: {
@@ -33,9 +34,16 @@ export default function DashboardLayoutClient({
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [profile, setProfile] = useState<any>(null);
+  const profileRef = useRef<any>(null);
   const supabase = createClient();
 
   useEffect(() => {
+    profileRef.current = profile;
+  }, [profile]);
+
+  useEffect(() => {
+    let channel: any;
+
     async function fetchProfile() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -48,6 +56,38 @@ export default function DashboardLayoutClient({
       
       if (data) {
         setProfile(data);
+
+        // Se inscrever para atualizações em tempo real do perfil do usuário
+        if (!channel) {
+          channel = supabase
+            .channel(`profile-realtime-${user.id}`)
+            .on(
+              'postgres_changes',
+              {
+                event: 'UPDATE',
+                schema: 'public',
+                table: 'profiles',
+                filter: `id=eq.${user.id}`
+              },
+              (payload: any) => {
+                const newProfile = payload.new;
+                const oldProfile = profileRef.current;
+
+                setProfile(newProfile);
+                window.dispatchEvent(new Event('profile-updated'));
+
+                // Se o saldo de créditos aumentou, mostra a notificação mágica
+                if (oldProfile && newProfile.credits > oldProfile.credits) {
+                  const added = newProfile.credits - oldProfile.credits;
+                  toast.success(`💥 Arsenal Recarregado! +${added} Créditos adicionados!`, {
+                    description: `Confirmado via Pix. Seu novo saldo é de ${newProfile.credits} créditos de poder.`,
+                    duration: 10000,
+                  });
+                }
+              }
+            )
+            .subscribe();
+        }
       }
     }
 
@@ -55,7 +95,13 @@ export default function DashboardLayoutClient({
 
     // Listen for profile updates from settings
     window.addEventListener('profile-updated', fetchProfile);
-    return () => window.removeEventListener('profile-updated', fetchProfile);
+    
+    return () => {
+      window.removeEventListener('profile-updated', fetchProfile);
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
   }, []);
 
   // Persist sidebar state
