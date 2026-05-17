@@ -81,7 +81,7 @@ export function Logo({ className, showText = true, iconSize = 32, ...props }: Lo
             "font-serif tracking-[0.2em] uppercase text-foreground",
             isLarge ? "text-base" : isMedium ? "text-sm" : "text-xs"
           )}>
-            Extra<span className="text-primary font-medium">Jus</span>
+            Extra<span className="text-gold font-medium">Jus</span>
           </span>
           <span className={cn(
             "font-serif tracking-[0.4em] text-muted-foreground uppercase mt-0.5",
