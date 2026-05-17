@@ -1,14 +1,7 @@
 "use client"
 
-import React, { useContext, useEffect, useMemo, useState } from "react"
-import { EditorContent, EditorContext as TiptapEditorContext, useEditor, type Editor } from "@tiptap/react"
-
-export const EditorContext = React.createContext<{ 
-  editor: Editor | null,
-  addLocalAction?: (action: string) => void
-}>({ 
-  editor: null 
-})
+import { useContext, useEffect, useMemo } from "react"
+import { EditorContent, EditorContext, useEditor } from "@tiptap/react"
 import type { Doc as YDoc } from "yjs"
 import { createPortal } from "react-dom"
 import { SupabaseYjsProvider } from "../../../lib/supabase-yjs-provider"
@@ -854,8 +847,62 @@ export function EditorLayout() {
               leftSidebarOpen ? "w-80 opacity-100" : "w-0 opacity-0 pointer-events-none overflow-hidden"
             )}
           >
-            <div className="p-6 flex flex-col h-full">
-              <div className="flex items-center gap-3 mb-6">
+            <div className="p-6 flex flex-col h-full overflow-hidden min-h-0">
+              
+              {/* Tipografia Soberana - Fixed at Top */}
+              <div className="space-y-5 relative overflow-hidden group/tipografia mb-8 shrink-0">
+                <div className="flex items-center justify-between border-b border-border/40 pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+                      <Zap size={10} className="text-primary" />
+                    </div>
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground">Tipografia Soberana</span>
+                  </div>
+                  <span className="text-[10px] opacity-40">🖋️</span>
+                </div>
+                
+                {/* Font Style Selection */}
+                <div className="space-y-2">
+                  <label className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/60">Estilo de Letra</label>
+                  <div className="relative">
+                    <select
+                      value={fontFamily}
+                      onChange={(e) => setFontFamily(e.target.value)}
+                      className="w-full bg-muted/20 hover:bg-muted/40 border border-border/40 hover:border-primary/20 text-foreground text-[10px] font-black uppercase tracking-wider py-2 pl-3 pr-8 rounded-xl appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
+                    >
+                      <option value="Lora" className="text-foreground bg-background font-serif">Lora (Serifa)</option>
+                      <option value="Inter" className="text-foreground bg-background font-sans">Inter (Sans)</option>
+                      <option value="Times New Roman" className="text-foreground bg-background font-serif">Times (Formal)</option>
+                      <option value="JetBrains Mono" className="text-foreground bg-background font-mono">JetBrains (Brutal)</option>
+                    </select>
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground/60">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Font Size Selector (with Shadcn Slider) */}
+                <div className="space-y-2.5">
+                  <div className="flex justify-between items-center">
+                    <label className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/60">Tamanho da Letra</label>
+                    <span className="text-[9px] font-black text-primary bg-primary/10 px-2.5 py-0.5 rounded-full border border-primary/10">{fontSize}px</span>
+                  </div>
+                  <div className="px-1 py-1.5 flex items-center gap-3">
+                    <span className="text-[9px] font-black text-muted-foreground/40">A-</span>
+                    <Slider
+                      value={[fontSize]}
+                      onValueChange={(val) => { if (Array.isArray(val)) { setFontSize(val[0]); } else if (typeof val === "number") { setFontSize(val); } }}
+                      min={12}
+                      max={26}
+                      step={1}
+                      className="flex-1 opacity-70 hover:opacity-100 transition-opacity"
+                    />
+                    <span className="text-[9px] font-black text-muted-foreground/40">A+</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 mb-6 shrink-0 pt-10 border-t border-border/40 mt-2">
                 <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm">
                   <Library size={16} className="text-primary" />
                 </div>
@@ -866,7 +913,7 @@ export function EditorLayout() {
               </div>
 
               {/* Search Box - Live Filtering */}
-              <div className="relative mb-6">
+              <div className="relative mb-6 shrink-0">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={12} />
                 <input 
                   type="text"
@@ -877,87 +924,8 @@ export function EditorLayout() {
                 />
               </div>
 
-              <ScrollArea className="flex-1 -mx-2 px-2 custom-scrollbar">
+              <div className="flex-1 -mx-2 px-2 overflow-y-auto custom-scrollbar min-h-0">
                 <div className="space-y-6 pb-6">
-                  {/* Tipografia Soberana */}
-                  <div className="space-y-4 p-4 rounded-2xl bg-muted/30 border border-border/40 relative overflow-hidden group/tipografia">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-50" />
-                    <div className="flex items-center justify-between border-b border-border/40 pb-2">
-                      <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground">Tipografia Soberana</span>
-                      <span className="text-[10px]">🖋️</span>
-                    </div>
-                    
-                    {/* Font Style Selection */}
-                    <div className="space-y-1.5">
-                      <label className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/80">Estilo de Letra</label>
-                      <div className="grid grid-cols-2 gap-1 bg-background/40 p-0.5 rounded-xl border border-border/60">
-                        <button
-                          onClick={() => setFontFamily("Lora")}
-                          className={cn(
-                            "text-[9px] font-black uppercase py-1.5 rounded-lg transition-all duration-300",
-                            fontFamily === "Lora"
-                              ? "bg-primary text-primary-foreground shadow-[0_2px_10px_rgba(var(--primary-rgb),0.3)]"
-                              : "text-muted-foreground hover:text-foreground hover:bg-primary/5"
-                          )}
-                        >
-                          Lora (Serifa)
-                        </button>
-                        <button
-                          onClick={() => setFontFamily("Inter")}
-                          className={cn(
-                            "text-[9px] font-black uppercase py-1.5 rounded-lg transition-all duration-300",
-                            fontFamily === "Inter"
-                              ? "bg-primary text-primary-foreground shadow-[0_2px_10px_rgba(var(--primary-rgb),0.3)]"
-                              : "text-muted-foreground hover:text-foreground hover:bg-primary/5"
-                          )}
-                        >
-                          Inter (Sans)
-                        </button>
-                        <button
-                          onClick={() => setFontFamily("Times New Roman")}
-                          className={cn(
-                            "text-[9px] font-black uppercase py-1.5 rounded-lg transition-all duration-300 col-span-1",
-                            fontFamily === "Times New Roman"
-                              ? "bg-primary text-primary-foreground shadow-[0_2px_10px_rgba(var(--primary-rgb),0.3)]"
-                              : "text-muted-foreground hover:text-foreground hover:bg-primary/5"
-                          )}
-                        >
-                          Times (Formal)
-                        </button>
-                        <button
-                          onClick={() => setFontFamily("JetBrains Mono")}
-                          className={cn(
-                            "text-[9px] font-black uppercase py-1.5 rounded-lg transition-all duration-300 col-span-1",
-                            fontFamily === "JetBrains Mono"
-                              ? "bg-primary text-primary-foreground shadow-[0_2px_10px_rgba(var(--primary-rgb),0.3)]"
-                              : "text-muted-foreground hover:text-foreground hover:bg-primary/5"
-                          )}
-                        >
-                          JetBrains (Brutal)
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Font Size Selector (with Shadcn Slider) */}
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <label className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/80">Tamanho da Letra</label>
-                        <span className="text-[9px] font-black text-primary bg-primary/10 px-2.5 py-0.5 rounded-full border border-primary/20">{fontSize}px</span>
-                      </div>
-                      <div className="px-1 py-1.5 flex items-center gap-3">
-                        <span className="text-[9px] font-black text-muted-foreground/60">A-</span>
-                        <Slider
-                          value={[fontSize]}
-                          onValueChange={(val) => { if (Array.isArray(val)) { setFontSize(val[0]); } else if (typeof val === "number") { setFontSize(val); } }}
-                          min={12}
-                          max={26}
-                          step={1}
-                          className="flex-1"
-                        />
-                        <span className="text-[9px] font-black text-muted-foreground/60">A+</span>
-                      </div>
-                    </div>
-                  </div>
                   {/* Seus Pactos (User Contracts) */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between border-b border-border pb-1.5">
@@ -994,12 +962,6 @@ export function EditorLayout() {
                     </div>
                   </div>
                 </div>
-              </ScrollArea>
-
-              <div className="pt-4 border-t border-border mt-auto">
-                 <Button onClick={() => setShowSettings(true)} variant="ghost" className="w-full justify-center text-[8px] font-black uppercase tracking-widest h-9 hover:bg-primary/5 hover:text-primary rounded-xl transition-all text-muted-foreground">
-                   <Settings2 size={12} className="mr-2" /> Arsenal Config
-                 </Button>
               </div>
             </div>
           </div>
@@ -1300,27 +1262,6 @@ export function EditorProvider(props: EditorProviderProps) {
 
   const { user } = useUser()
   const { setTocContent } = useToc()
-  const [localActions, setLocalActions] = useState<any[]>([])
-
-  const addLocalAction = (action: string) => {
-    const newAction = {
-      id: Date.now(),
-      user: user?.name || "Você",
-      action,
-      time: "Agora",
-      version: "Local",
-      isLocal: true
-    }
-    setLocalActions(prev => [newAction, ...prev])
-  }
-
-  const handleUndoLocalAction = (actionId: number) => {
-    if (editor) {
-      editor.commands.undo()
-      setLocalActions(prev => prev.filter(a => a.id !== actionId))
-      toast.success("Ação revertida.")
-    }
-  }
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -1328,30 +1269,6 @@ export function EditorProvider(props: EditorProviderProps) {
     editorProps: {
       attributes: {
         class: "notion-like-editor",
-      },
-      handleKeyDown: (view, event) => {
-        if (event.key === "Enter" && !event.shiftKey) {
-          const { selection } = editor!.state
-          const { $from } = selection
-          const parentNode = $from.parent
-          const isLegalNode = parentNode.type.name === "legalNode"
-          const legalLevel = parentNode.attrs.level
-
-          setTimeout(() => {
-            if (editor?.isDestroyed) return
-            const { $from: newFrom } = editor.state.selection
-            
-            if (isLegalNode && newFrom.parent.type.name === "legalNode") {
-              const levelNames = ["", "Cláusula", "Parágrafo", "Inciso", "Alínea"]
-              addLocalAction(`Novo ${levelNames[legalLevel]} continuado (Enter).`)
-            }
-
-            if (newFrom.parent.content.size === 0) {
-              editor.chain().focus().insertContent("/").run()
-            }
-          }, 10)
-        }
-        return false
       },
       // Prevent automatic scroll into view when editor is focused
       // This is crucial for header buttons to work without jumping the page

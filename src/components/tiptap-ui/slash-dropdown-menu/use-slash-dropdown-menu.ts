@@ -1,16 +1,13 @@
 "use client"
 
-import { useCallback, useContext } from "react"
-import { EditorContext } from "@/components/tiptap-templates/notion-like/notion-like-editor"
+import { useCallback } from "react"
 import type { Editor } from "@tiptap/react"
 
 // --- Icons ---
 import { 
-  Zap, 
   Scale, 
   Pilcrow, 
   Layers, 
-  ChevronRight,
   Users,
   Type,
   PenTool,
@@ -48,15 +45,6 @@ const texts = {
     keywords: ["texto", "simples", "p", "paragrafo"],
     badge: Type,
     group: "Básico",
-  },
-
-  // AI
-  ai_continue: {
-    title: "Escrever Próxima Cláusula",
-    subtext: "Lilith redige o próximo item lógico",
-    keywords: ["ai", "escrever", "proxima", "clausula", "continuar"],
-    badge: Zap,
-    group: "Inteligência",
   },
 
   // Jurídico
@@ -110,7 +98,7 @@ const texts = {
 
 export type SlashMenuItemType = keyof typeof texts
 
-const getItemImplementations = (addLocalAction?: (action: string) => void) => {
+const getItemImplementations = () => {
   return {
 
     // Básico
@@ -118,14 +106,6 @@ const getItemImplementations = (addLocalAction?: (action: string) => void) => {
       check: (editor: Editor) => isNodeInSchema("paragraph", editor),
       action: ({ editor }: { editor: Editor }) => {
         editor.chain().focus().setParagraph().run()
-      },
-    },
-
-    // AI
-    ai_continue: {
-      check: (editor: Editor) => isExtensionAvailable("ai", editor),
-      action: ({ editor }: { editor: Editor }) => {
-        ;(editor.commands as any).aiComplete()
       },
     },
 
@@ -141,7 +121,6 @@ const getItemImplementations = (addLocalAction?: (action: string) => void) => {
           .focus()
           .insertContent('<h1 data-node-text-align="center"><strong>CONTRATO DE [PREENCHER TIPO DE CONTRATO]</strong></h1><p data-node-text-align="justify"><strong>CONTRATANTE:</strong> [NOME/RAZÃO SOCIAL], [NACIONALIDADE], [ESTADO CIVIL], [PROFISSÃO], inscrito no CPF/CNPJ sob o nº [000.000.000-00], residente e domiciliado em [ENDEREÇO COMPLETO].</p><p data-node-text-align="justify"><strong>CONTRATADO:</strong> [NOME/RAZÃO SOCIAL], [NACIONALIDADE], [ESTADO CIVIL], [PROFISSÃO], inscrito no CPF/CNPJ sob o nº [000.000.000-00], residente e domiciliado em [ENDEREÇO COMPLETO].</p><p data-node-text-align="justify">As partes acima identificadas têm, entre si, justo e acertado o presente Contrato, que se regerá pelas cláusulas seguintes e pelas condições descritas abaixo.</p><p></p><div data-type="legal-node" data-level="1" data-node-text-align="justify"><strong>CLÁUSULA PRIMEIRA - DO OBJETO</strong></div><div data-type="legal-node" data-level="2" data-node-text-align="justify">O presente instrumento tem como objeto [DESCREVER O OBJETO DO CONTRATO COM PRECISÃO].</div>')
           .run()
-        addLocalAction?.("Preâmbulo e Cláusula 1ª inseridos.")
       },
     },
     add_signature: {
@@ -152,35 +131,30 @@ const getItemImplementations = (addLocalAction?: (action: string) => void) => {
           .focus()
           .insertContent('<p></p><p data-node-text-align="center">__________________________________________</p><p data-node-text-align="center"><strong>CONTRATANTE</strong></p><p data-node-text-align="center">__________________________________________</p><p data-node-text-align="center"><strong>CONTRATADO</strong></p>')
           .run()
-        addLocalAction?.("Campo de assinatura inserido.")
       },
     },
     clausula: {
       check: (editor: Editor) => isNodeInSchema("legalNode", editor),
       action: ({ editor }: { editor: Editor }) => {
         ;(editor.chain() as any).focus().setLegalNode(1).run()
-        addLocalAction?.("Nova Cláusula inserida.")
       },
     },
     paragrafo_legal: {
       check: (editor: Editor) => isNodeInSchema("legalNode", editor),
       action: ({ editor }: { editor: Editor }) => {
         ;(editor.chain() as any).focus().setLegalNode(2).run()
-        addLocalAction?.("Novo Parágrafo Jurídico inserido.")
       },
     },
     inciso: {
       check: (editor: Editor) => isNodeInSchema("legalNode", editor),
       action: ({ editor }: { editor: Editor }) => {
         ;(editor.chain() as any).focus().setLegalNode(3).run()
-        addLocalAction?.("Novo Inciso inserido.")
       },
     },
     alinea: {
       check: (editor: Editor) => isNodeInSchema("legalNode", editor),
       action: ({ editor }: { editor: Editor }) => {
         ;(editor.chain() as any).focus().setLegalNode(4).run()
-        addLocalAction?.("Nova Alínea inserida.")
       },
     },
   }
@@ -207,8 +181,21 @@ function organizeItemsByGroups(
 
   // Flatten groups in order (this maintains the visual order for keyboard navigation)
   const organizedItems: SuggestionItem[] = []
-  Object.entries(groups).forEach(([, groupItems]) => {
-    organizedItems.push(...groupItems)
+  
+  // Define group order to ensure UI stability
+  const groupOrder = ["Básico", "Inteligência", "Jurídico", "Inserir", "Anexos"]
+  
+  groupOrder.forEach(groupName => {
+    if (groups[groupName]) {
+      organizedItems.push(...groups[groupName])
+    }
+  })
+
+  // Add any groups not in the explicit order
+  Object.entries(groups).forEach(([groupName, groupItems]) => {
+    if (!groupOrder.includes(groupName)) {
+      organizedItems.push(...groupItems)
+    }
   })
 
   return organizedItems
@@ -218,9 +205,6 @@ function organizeItemsByGroups(
  * Custom hook for slash dropdown menu functionality
  */
 export function useSlashDropdownMenu(config?: SlashMenuConfig) {
-  const context = useContext(EditorContext)
-  const addLocalAction = (context as any)?.addLocalAction
-
   const getSlashMenuItems = useCallback(
     (editor: Editor) => {
       const items: SuggestionItem[] = []
@@ -229,7 +213,7 @@ export function useSlashDropdownMenu(config?: SlashMenuConfig) {
         config?.enabledItems || (Object.keys(texts) as SlashMenuItemType[])
       const showGroups = config?.showGroups !== false
 
-      const itemImplementations = getItemImplementations(addLocalAction)
+      const itemImplementations = getItemImplementations()
 
       enabledItems.forEach((itemType) => {
         const itemImpl = itemImplementations[itemType]
@@ -258,7 +242,7 @@ export function useSlashDropdownMenu(config?: SlashMenuConfig) {
       // Reorganize items by groups to ensure keyboard navigation works correctly
       return organizeItemsByGroups(items, showGroups)
     },
-    [config, addLocalAction]
+    [config]
   )
 
   return {
