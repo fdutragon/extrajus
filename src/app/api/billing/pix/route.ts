@@ -1,9 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from "uuid";import { getSecret } from "@/utils/secrets";
 
 const GGPIX_API_URL = "https://ggpixapi.com/api/v1/pix/in";
-const API_KEY = process.env.GGPIX_API_KEY;
 
 export async function POST(request: Request) {
   try {
@@ -44,6 +43,7 @@ export async function POST(request: Request) {
     const payerDocument = profile?.document || "00000000000";
 
     // 3. Chamar a API GG Pix
+    const API_KEY = getSecret("GGPIX_API_KEY");
     const response = await fetch(GGPIX_API_URL, {
       method: "POST",
       headers: {

@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
+import { getSecret } from "@/utils/secrets";
 
 export async function GET(request: Request) {
   try {
@@ -11,7 +12,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Não autorizado." }, { status: 403 });
     }
 
-    const ggpixApiKey = process.env.GGPIX_API_KEY;
+    const ggpixApiKey = getSecret("GGPIX_API_KEY");
     if (!ggpixApiKey) {
       return NextResponse.json({ error: "Chave API GGPix não configurada no servidor." }, { status: 500 });
     }

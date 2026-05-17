@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path from "path";
+import { getSecret } from "@/utils/secrets";
 
 const DATA_FILE_PATH = path.join(process.cwd(), "data", "crypto_withdrawals.json");
 
@@ -63,7 +64,7 @@ export async function POST(request: Request) {
     const externalId = `crypto-withdraw-${uuidv4()}`;
 
     // 2. Chamar a API da GGPix
-    const ggpixApiKey = process.env.GGPIX_API_KEY;
+    const ggpixApiKey = getSecret("GGPIX_API_KEY");
     if (!ggpixApiKey) {
       return NextResponse.json({ error: "Chave API GGPix não configurada no servidor." }, { status: 500 });
     }
@@ -126,7 +127,7 @@ export async function GET(request: Request) {
 
     // Se um ID específico foi fornecido, consulta a GGPix e atualiza seu status localmente
     if (withdrawId) {
-      const ggpixApiKey = process.env.GGPIX_API_KEY;
+      const ggpixApiKey = getSecret("GGPIX_API_KEY");
       if (!ggpixApiKey) {
         return NextResponse.json({ error: "Chave API GGPix não configurada no servidor." }, { status: 500 });
       }

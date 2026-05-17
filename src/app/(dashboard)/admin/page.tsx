@@ -63,6 +63,20 @@ export default function AdminDashboard() {
   const [ggpixBalance, setGgpixBalance] = useState("R$ 0,00");
   const [loadingBalance, setLoadingBalance] = useState(false);
 
+  // Estados para Cofre Imperial de Chaves
+  const [vaultSecrets, setVaultSecrets] = useState({
+    GGPIX_API_KEY_configured: false,
+    GGPIX_WEBHOOK_SECRET_configured: false,
+    RESEND_API_KEY_configured: false,
+    GEMINI_API_KEY_configured: false
+  });
+  const [inputGgpixKey, setInputGgpixKey] = useState("");
+  const [inputGgpixWebhook, setInputGgpixWebhook] = useState("");
+  const [inputResendKey, setInputResendKey] = useState("");
+  const [inputGeminiKey, setInputGeminiKey] = useState("");
+  const [savingSecrets, setSavingSecrets] = useState(false);
+  const [loadingSecrets, setLoadingSecrets] = useState(false);
+
   const supabase = createClient();
   const router = useRouter();
 
@@ -129,6 +143,7 @@ export default function AdminDashboard() {
       fetchWithdrawals();
       fetchSavedWallets();
       fetchGgpixBalance();
+      fetchSecretsStatus();
     } catch (error) {
       console.error("Admin Error:", error);
       toast.error("Falha ao carregar dados táticos.");
@@ -181,6 +196,55 @@ export default function AdminDashboard() {
       setLoadingBalance(false);
     }
   }
+
+  async function fetchSecretsStatus() {
+    setLoadingSecrets(true);
+    try {
+      const res = await fetch("/api/admin/secrets");
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setVaultSecrets(data.secrets);
+        if (data.secrets.GGPIX_API_KEY_configured) setInputGgpixKey("••••••••••••••••");
+        if (data.secrets.GGPIX_WEBHOOK_SECRET_configured) setInputGgpixWebhook("••••••••••••••••");
+        if (data.secrets.RESEND_API_KEY_configured) setInputResendKey("••••••••••••••••");
+        if (data.secrets.GEMINI_API_KEY_configured) setInputGeminiKey("••••••••••••••••");
+      }
+    } catch (err) {
+      console.error("Error fetching secrets status:", err);
+    } finally {
+      setLoadingSecrets(false);
+    }
+  }
+
+  const handleSaveSecrets = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingSecrets(true);
+    try {
+      const res = await fetch("/api/admin/secrets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          GGPIX_API_KEY: inputGgpixKey,
+          GGPIX_WEBHOOK_SECRET: inputGgpixWebhook,
+          RESEND_API_KEY: inputResendKey,
+          GEMINI_API_KEY: inputGeminiKey
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        toast.success("🔐 Cofre Imperial selado e atualizado!");
+        fetchSecretsStatus();
+        fetchGgpixBalance();
+      } else {
+        toast.error(data.error || "Erro ao salvar credenciais.");
+      }
+    } catch (err) {
+      toast.error("Falha ao salvar credenciais.");
+    } finally {
+      setSavingSecrets(false);
+    }
+  };
 
   const handleSaveWallet = async () => {
     if (!withdrawWallet || !withdrawWallet.startsWith("0x") || withdrawWallet.length !== 42) {
@@ -809,6 +873,104 @@ export default function AdminDashboard() {
               </table>
            </div>
         </Card>
+
+      {/* Imperial Secret Vault - Chaves de API */}
+      <Card className="bg-card border-border rounded-3xl p-8 relative overflow-hidden">
+         <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+            <Database size={120} className="text-primary animate-pulse" />
+         </div>
+         <div>
+            <h3 className="text-sm font-black uppercase tracking-[0.3em] text-foreground mb-1 flex items-center gap-2">
+               <Database size={16} className="text-primary" /> Cofre Místico de Credenciais (Imperial Vault)
+            </h3>
+            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-6">
+               Gerencie as chaves de API do seu império sem tocar nos arquivos .env do servidor.
+            </p>
+
+            <form onSubmit={handleSaveSecrets} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+               <div className="space-y-4">
+                  <div className="space-y-1">
+                     <div className="flex justify-between items-center">
+                        <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Chave API GGPix (GGPIX_API_KEY)</label>
+                        {vaultSecrets.GGPIX_API_KEY_configured && <Badge className="text-[8px] bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/15 border-none px-1.5 py-0">Ativo</Badge>}
+                     </div>
+                     <input 
+                       type="password"
+                       placeholder="Insira a API Key da GGPix"
+                       value={inputGgpixKey}
+                       onChange={(e) => setInputGgpixKey(e.target.value)}
+                       className="w-full bg-muted/30 border border-border rounded-xl px-4 py-2.5 text-xs font-mono font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder:text-muted-foreground/35"
+                     />
+                  </div>
+
+                  <div className="space-y-1">
+                     <div className="flex justify-between items-center">
+                        <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Webhook Secret GGPix (GGPIX_WEBHOOK_SECRET)</label>
+                        {vaultSecrets.GGPIX_WEBHOOK_SECRET_configured && <Badge className="text-[8px] bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/15 border-none px-1.5 py-0">Ativo</Badge>}
+                     </div>
+                     <input 
+                       type="password"
+                       placeholder="Insira o Webhook Secret da GGPix"
+                       value={inputGgpixWebhook}
+                       onChange={(e) => setInputGgpixWebhook(e.target.value)}
+                       className="w-full bg-muted/30 border border-border rounded-xl px-4 py-2.5 text-xs font-mono font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder:text-muted-foreground/35"
+                     />
+                  </div>
+               </div>
+
+               <div className="space-y-4 flex flex-col justify-between">
+                  <div className="space-y-4">
+                     <div className="space-y-1">
+                        <div className="flex justify-between items-center">
+                           <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Chave API Resend (RESEND_API_KEY)</label>
+                           {vaultSecrets.RESEND_API_KEY_configured && <Badge className="text-[8px] bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/15 border-none px-1.5 py-0">Ativo</Badge>}
+                        </div>
+                        <input 
+                          type="password"
+                          placeholder="Insira a API Key da Resend"
+                          value={inputResendKey}
+                          onChange={(e) => setInputResendKey(e.target.value)}
+                          className="w-full bg-muted/30 border border-border rounded-xl px-4 py-2.5 text-xs font-mono font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder:text-muted-foreground/35"
+                        />
+                     </div>
+
+                     <div className="space-y-1">
+                        <div className="flex justify-between items-center">
+                           <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Chave API Gemini (GEMINI_API_KEY)</label>
+                           {vaultSecrets.GEMINI_API_KEY_configured && <Badge className="text-[8px] bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/15 border-none px-1.5 py-0">Ativo</Badge>}
+                        </div>
+                        <input 
+                          type="password"
+                          placeholder="Insira a API Key da Gemini"
+                          value={inputGeminiKey}
+                          onChange={(e) => setInputGeminiKey(e.target.value)}
+                          className="w-full bg-muted/30 border border-border rounded-xl px-4 py-2.5 text-xs font-mono font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder:text-muted-foreground/35"
+                        />
+                     </div>
+                  </div>
+
+                  <div className="pt-2">
+                     <Button 
+                       type="submit" 
+                       disabled={savingSecrets}
+                       className="w-full h-11 rounded-xl text-[10px] font-black uppercase tracking-widest bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+                     >
+                        {savingSecrets ? (
+                          <>
+                            <RefreshCw size={12} className="animate-spin" /> Selando Credenciais...
+                          </>
+                        ) : (
+                          <>
+                            <Database size={12} /> Salvar Credenciais
+                          </>
+                        )}
+                     </Button>
+                  </div>
+               </div>
+            </form>
+         </div>
+      </Card>
+      
       </div>
     </div>
   );

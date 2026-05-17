@@ -3,8 +3,7 @@ import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { Resend } from 'resend'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { getSecret } from "@/utils/secrets";
 
 export async function POST(request: Request) {
   try {
@@ -124,9 +123,11 @@ export async function POST(request: Request) {
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
       // Enviar o Certificado de Selamento por e-mail para todos os signatários simultaneamente
-      if (process.env.RESEND_API_KEY && updatedSigners.length > 0) {
+      const resendKey = getSecret("RESEND_API_KEY");
+      if (resendKey && updatedSigners.length > 0) {
+        const resendInstance = new Resend(resendKey);
         const emailPromises = updatedSigners.map((signer: any) => 
-          resend.emails.send({
+          resendInstance.emails.send({
             from: 'ExtraJus <assinaturas@extrajus.pro>',
             to: signer.email,
             subject: `🔥 Ritual Concluído: Certificado de Assinatura Digital de ${contractTitle}`,

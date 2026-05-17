@@ -2,8 +2,7 @@ import { createClient } from '@/utils/supabase/server'
 import { NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { Resend } from 'resend'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { getSecret } from "@/utils/secrets";
 
 interface Signer {
   name: string;
@@ -83,9 +82,11 @@ export async function POST(request: Request) {
     // 3. Enviar Convocação via Resend (Bombardeio Paralelo)
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
-    if (process.env.RESEND_API_KEY && finalSigners.length > 0) {
+    const resendKey = getSecret("RESEND_API_KEY");
+    if (resendKey && finalSigners.length > 0) {
+      const resendInstance = new Resend(resendKey);
       const emailPromises = finalSigners.map(signer => 
-        resend.emails.send({
+        resendInstance.emails.send({
           from: 'ExtraJus <assinaturas@extrajus.pro>',
           to: signer.email,
           subject: `📜 Convocação para Selamento: ${title || 'Novo Pacto'}`,

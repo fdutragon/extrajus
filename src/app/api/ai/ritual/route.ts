@@ -1,6 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
+import { getSecret } from "@/utils/secrets";
+
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
@@ -8,7 +10,7 @@ export async function POST(request: Request) {
     const { prompt, instructionType } = await request.json();
 
     // Priorizar a variável de ambiente segura no servidor
-    const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    const apiKey = getSecret("GEMINI_API_KEY") || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
     if (!apiKey) {
       console.error("[API Gemini Server] Chave de API ausente nas variáveis de ambiente do servidor.");
       return NextResponse.json({ error: "Chave de API do Gemini não configurada no servidor." }, { status: 500 });
