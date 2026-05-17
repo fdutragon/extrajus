@@ -49,6 +49,11 @@ export default function AdminDashboard() {
   const [submittingWithdraw, setSubmittingWithdraw] = useState(false);
   const [loadingWithdrawals, setLoadingWithdrawals] = useState(false);
 
+  // Estados para Carteiras Salvas
+  const [savedWallets, setSavedWallets] = useState<any[]>([]);
+  const [newWalletLabel, setNewWalletLabel] = useState("");
+  const [loadingWallets, setLoadingWallets] = useState(false);
+
   const supabase = createClient();
   const router = useRouter();
 
@@ -111,8 +116,9 @@ export default function AdminDashboard() {
         setUsers(usersData.users || []);
       }
       
-      // Carregar saques cripto integrados
+      // Carregar saques cripto integrados e carteiras salvas
       fetchWithdrawals();
+      fetchSavedWallets();
     } catch (error) {
       console.error("Admin Error:", error);
       toast.error("Falha ao carregar dados táticos.");
@@ -135,6 +141,75 @@ export default function AdminDashboard() {
       setLoadingWithdrawals(false);
     }
   }
+
+  async function fetchSavedWallets() {
+    setLoadingWallets(true);
+    try {
+      const response = await fetch("/api/admin/crypto/wallets");
+      const data = await response.json();
+      if (data.success) {
+        setSavedWallets(data.wallets || []);
+      }
+    } catch (err) {
+      console.error("Error fetching saved wallets:", err);
+    } finally {
+      setLoadingWallets(false);
+    }
+  }
+
+  const handleSaveWallet = async () => {
+    if (!withdrawWallet || !withdrawWallet.startsWith("0x") || withdrawWallet.length !== 42) {
+      toast.error("Por favor, digite um endereço BSC válido primeiro.");
+      return;
+    }
+    if (!newWalletLabel.trim()) {
+      toast.error("Por favor, digite um nome identificador para a carteira.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/admin/crypto/wallets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          label: newWalletLabel.trim(),
+          address: withdrawWallet
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        toast.success("Carteira salva com sucesso!");
+        setNewWalletLabel("");
+        fetchSavedWallets();
+      } else {
+        toast.error(data.error || "Erro ao salvar carteira.");
+      }
+    } catch (err) {
+      toast.error("Falha ao salvar carteira.");
+    }
+  };
+
+  const handleDeleteWallet = async (address: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirm("Deseja realmente remover esta carteira salva?")) {
+      try {
+        const res = await fetch(`/api/admin/crypto/wallets?address=${address}`, {
+          method: "DELETE"
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          toast.success("Carteira removida.");
+          fetchSavedWallets();
+        } else {
+          toast.error(data.error || "Erro ao remover carteira.");
+        }
+      } catch (err) {
+        toast.error("Falha ao remover carteira.");
+      }
+    }
+  };
 
   const handleExecuteWithdrawal = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -413,55 +488,129 @@ export default function AdminDashboard() {
               </h3>
               <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mb-6">Debitar BRL e enviar USDT (BEP-20) via GGPix</p>
               
-              <form onSubmit={handleExecuteWithdrawal} className="space-y-4">
-                 <div className="space-y-1">
-                    <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Valor do Saque (R$)</label>
-                    <div className="relative">
-                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground">R$</span>
-                       <input 
-                         type="number"
-                         step="0.01"
-                         placeholder="0.00"
-                         value={withdrawAmountBRL}
-                         onChange={(e) => setWithdrawAmountBRL(e.target.value)}
-                         className="w-full bg-muted/30 border border-border rounded-xl pl-9 pr-4 py-2.5 text-xs font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all"
-                         required
-                       />
-                    </div>
-                 </div>
+                             <form onSubmit={handleExecuteWithdrawal} className="space-y-4">
+                  <div className="space-y-1">
+                     <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Valor do Saque (R$)</label>
+                     <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground">R$</span>
+                        <input 
+                          type="number"
+                          step="0.01"
+                          placeholder="0.00"
+                          value={withdrawAmountBRL}
+                          onChange={(e) => setWithdrawAmountBRL(e.target.value)}
+                          className="w-full bg-muted/30 border border-border rounded-xl pl-9 pr-4 py-2.5 text-xs font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all"
+                          required
+                        />
+                     </div>
+                  </div>
 
-                 <div className="space-y-1">
-                    <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Endereço da Carteira BSC (USDT BEP-20)</label>
-                    <div className="relative">
-                       <input 
-                         type="text"
-                         placeholder="0x..."
+                  {/* Carteiras Salvas Dropdown */}
+                  {savedWallets.length > 0 && (
+                    <div className="space-y-1">
+                       <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest flex justify-between">
+                          <span>Carteiras Salvas</span>
+                          <span className="text-[8px] text-primary/80 lowercase cursor-pointer">clique para preencher</span>
+                       </label>
+                       <select
+                         onChange={(e) => {
+                           if (e.target.value) {
+                             setWithdrawWallet(e.target.value);
+                           }
+                         }}
                          value={withdrawWallet}
-                         onChange={(e) => setWithdrawWallet(e.target.value)}
-                         className="w-full bg-muted/30 border border-border rounded-xl px-4 py-2.5 text-xs font-mono font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder:text-muted-foreground/30"
-                         required
-                       />
+                         className="w-full bg-muted/30 border border-border rounded-xl px-3 py-2 text-xs font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all"
+                       >
+                          <option value="" className="bg-card text-muted-foreground">Selecionar carteira salva...</option>
+                          {savedWallets.map((w, idx) => (
+                            <option key={idx} value={w.address} className="bg-card text-foreground">
+                               {w.label} ({w.address.slice(0, 6)}...{w.address.slice(-4)})
+                            </option>
+                          ))}
+                       </select>
                     </div>
-                 </div>
+                  )}
 
-                 <div className="pt-2">
-                    <Button 
-                      type="submit" 
-                      disabled={submittingWithdraw}
-                      className="w-full h-11 rounded-xl text-[10px] font-black uppercase tracking-widest bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
-                    >
-                       {submittingWithdraw ? (
-                         <>
-                           <RefreshCw size={12} className="animate-spin" /> Processando Ritual...
-                         </>
-                       ) : (
-                         <>
-                           <ArrowDownRight size={12} /> Executar Saque Cripto
-                         </>
-                       )}
-                    </Button>
-                 </div>
-              </form>
+                  <div className="space-y-1">
+                     <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Endereço da Carteira BSC (USDT BEP-20)</label>
+                     <div className="relative">
+                        <input 
+                          type="text"
+                          placeholder="0x..."
+                          value={withdrawWallet}
+                          onChange={(e) => setWithdrawWallet(e.target.value)}
+                          className="w-full bg-muted/30 border border-border rounded-xl px-4 py-2.5 text-xs font-mono font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder:text-muted-foreground/30"
+                          required
+                        />
+                     </div>
+                  </div>
+
+                  {/* Salvar Carteira Atual Form */}
+                  {withdrawWallet && withdrawWallet.startsWith("0x") && withdrawWallet.length === 42 && !savedWallets.some(w => w.address.toLowerCase() === withdrawWallet.toLowerCase()) && (
+                    <div className="pt-1.5 space-y-1.5 border border-border/40 rounded-xl p-2.5 bg-muted/10 transition-all duration-300 animate-fadeIn">
+                       <label className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block">Salvar esta carteira no painel?</label>
+                       <div className="flex gap-1.5">
+                          <input 
+                            type="text"
+                            placeholder="Apelido (Ex: Trust Principal)"
+                            value={newWalletLabel}
+                            onChange={(e) => setNewWalletLabel(e.target.value)}
+                            className="flex-1 bg-muted/35 border border-border rounded-lg px-2.5 py-1 text-[10px] font-bold focus:ring-1 focus:ring-primary/10 outline-none transition-all"
+                          />
+                          <Button
+                            type="button"
+                            onClick={handleSaveWallet}
+                            className="h-7 px-3 text-[9px] font-black uppercase tracking-widest rounded-lg bg-primary/10 text-primary border border-primary/20 hover:bg-primary hover:text-primary-foreground transition-all"
+                          >
+                             Salvar
+                          </Button>
+                       </div>
+                    </div>
+                  )}
+
+                  {/* Lista com exclusão das carteiras salvas */}
+                  {savedWallets.length > 0 && (
+                    <div className="pt-2 border-t border-border/30 space-y-1.5">
+                       <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block">Gerenciar Carteiras</span>
+                       <div className="space-y-1 max-h-[80px] overflow-y-auto pr-1">
+                          {savedWallets.map((w, idx) => (
+                             <div key={idx} className="flex justify-between items-center bg-muted/20 hover:bg-muted/40 rounded-lg p-1.5 transition-all text-[9px] font-bold">
+                                <span className="text-foreground truncate max-w-[120px]" title={w.label}>{w.label}</span>
+                                <div className="flex items-center gap-1.5 font-mono text-[8px] text-muted-foreground">
+                                   <span>{w.address.slice(0, 4)}...{w.address.slice(-4)}</span>
+                                   <button
+                                     type="button"
+                                     onClick={(e) => handleDeleteWallet(w.address, e)}
+                                     className="text-destructive hover:text-destructive/80 transition-all font-black px-1"
+                                     title="Remover Carteira"
+                                   >
+                                      ✕
+                                   </button>
+                                </div>
+                             </div>
+                          ))}
+                       </div>
+                    </div>
+                  )}
+
+                  <div className="pt-2">
+                     <Button 
+                       type="submit" 
+                       disabled={submittingWithdraw}
+                       className="w-full h-11 rounded-xl text-[10px] font-black uppercase tracking-widest bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+                     >
+                        {submittingWithdraw ? (
+                          <>
+                            <RefreshCw size={12} className="animate-spin" /> Processando Ritual...
+                          </>
+                        ) : (
+                          <>
+                            <ArrowDownRight size={12} /> Executar Saque Cripto
+                          </>
+                        )}
+                     </Button>
+                  </div>
+               </form>
            </div>
 
            <div className="mt-6 pt-6 border-t border-border flex items-center gap-2 text-[8px] font-black text-emerald-500 uppercase tracking-widest">
