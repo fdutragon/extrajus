@@ -12,13 +12,6 @@ export async function POST(request: Request) {
     const signature = request.headers.get("X-GG-Signature");
     const authorization = request.headers.get("Authorization");
 
-    // LOG TEMPORÁRIO PARA DEBUG NA VERCEL (MASCARADO PARA SEGURANÇA) - RECARREGANDO VARIÁVEIS DO PAINEL VERCEL
-    console.log("[DEBUG GG PIX WEBHOOK HEADERS]:", {
-      signature: signature ? `${signature.substring(0, 6)}...${signature.substring(signature.length - 4)}` : "null",
-      authorization: authorization ? `${authorization.substring(0, 13)}...${authorization.substring(authorization.length - 4)}` : "null",
-      contentType: request.headers.get("content-type")
-    });
-
     const secret = process.env.GGPIX_WEBHOOK_SECRET || process.env.GGPIX_API_KEY || "";
 
     if (secret) {
@@ -31,17 +24,9 @@ export async function POST(request: Request) {
         isHmacValid = signature === hash;
       }
 
-      // BYPASS TEMPORÁRIO: Se for o botão de simulação do painel da GG Pix (que não envia headers),
-      // nós permitimos passar temporariamente para validação e exibição do 200 OK no painel deles.
-      const isTestBypass = !authorization && !signature;
-
-      if (!isSimpleToken && !isHmacValid && !isTestBypass) {
+      if (!isSimpleToken && !isHmacValid) {
         console.warn("[Webhook GG Pix] Bloqueada tentativa de requisição falsa sem assinatura válida.");
         return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
-      }
-
-      if (isTestBypass) {
-        console.log("[Webhook GG Pix] Permitindo transação via Bypass Temporário de Simulação (sem cabeçalhos).");
       }
     }
 
@@ -63,18 +48,6 @@ export async function POST(request: Request) {
 
       if (fetchError || !transaction) {
         console.error("[Webhook] Transação não encontrada:", externalId);
-        
-        // Se for o bypass de simulação (botão de teste da GG Pix que envia ID fictício), 
-        // retornamos 200 OK para o painel deles dar sucesso verde de integração ativa!
-        const authorization = request.headers.get("Authorization");
-        const signature = request.headers.get("X-GG-Signature");
-        const isTestBypass = !authorization && !signature;
-        
-        if (isTestBypass) {
-          console.log("[Webhook] Retornando 200 OK fictício para botão de simulação da GG Pix.");
-          return NextResponse.json({ success: true, message: "Simulação de teste recebida com sucesso!" });
-        }
-
         return NextResponse.json({ error: "Transação não encontrada" }, { status: 404 });
       }
 
@@ -91,10 +64,10 @@ export async function POST(request: Request) {
 
       if (updateTxError) throw updateTxError;
 
-      // 3. Adicionar créditos ao usuário (Conversão Ajustada: 3 Créditos por 1 Real)
-      // amount vem em centavos do GG Pix (ex: R$ 1,00 = 100 centavos).
-      // Então, credits = (amount * 3) / 100
-      const creditsToAdd = Math.floor((amount * 3) / 100); 
+      // 3. Adicionar créditos ao usuário (Conversão Padrão: R$ 1,00 = 10 Créditos)
+      // amount vem em centavos do GG Pix (ex: R$ 10,00 = 1000 centavos).
+      // Então, credits = amount / 10
+      const creditsToAdd = Math.floor(amount / 10); 
 
       const { error: updateProfileError } = await supabase.rpc('increment_credits', {
         user_id: transaction.user_id,
