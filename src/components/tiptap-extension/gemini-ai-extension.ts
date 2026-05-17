@@ -1,6 +1,7 @@
 import { Extension, GlobalAttributes } from "@tiptap/core"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { toast } from "sonner"
+import { sanitiseAiHtml, sanitiseAiHtmlStream, isIncompleteHtmlFragment } from "@/lib/ai-html-sanitizer"
 
 export type Language =
   | "en" | "ko" | "zh" | "ja" | "es" | "ru" | "fr" | "pt" | "de" | "it" | "nl" | "id" | "vi" | "tr" | "ar"
@@ -138,44 +139,81 @@ TOM DE VOZ:
         const result = await model.generateContentStream(prompt)
 
         let accumulatedText = ""
-        const { from } = editor.state.selection
+        const { from: selFrom } = editor.state.selection
+
+        // If the doc is empty (cursor in the only empty paragraph at start),
+        // we'll use setContent after streaming instead of insertContentAt,
+        // to avoid invalid cross-boundary ProseMirror positions.
+        const $fromNode = editor.state.selection.$from
+        const isDocEmpty =
+          $fromNode.depth === 1 &&
+          $fromNode.parent.type.name === "paragraph" &&
+          $fromNode.parent.nodeSize === 2 &&
+          editor.state.doc.childCount === 1
+
+        // Safe insertion anchor — always inside valid content range
+        const insertFrom = isDocEmpty ? $fromNode.pos : selFrom
         let hasTriggeredMessage = false
 
         for await (const chunk of result.stream) {
           const chunkText = chunk.text()
           accumulatedText += chunkText
 
-          // Limpeza agressiva de ruídos do modelo
-          const cleanedContent = accumulatedText
-            .replace(/```html\s?/gi, "")
-            .replace(/```\s?/gi, "")
-            .replace(/<!DOCTYPE.*?>/gi, "")
-            .replace(/<html>/gi, "")
-            .replace(/<\/html>/gi, "")
-            .replace(/<body>/gi, "")
-            .replace(/<\/body>/gi, "")
-            .replace(/\n{2,}/g, "\n")
-            .replace(/(<br\s*\/?>\s*){2,}/gi, "<br>")
-            .replace(/<p>\s*<\/p>/gi, "")
-            .trim()
+          // Stream-safe lightweight sanitisation pass
+          const streamSafeContent = sanitiseAiHtmlStream(accumulatedText)
 
-          this.storage.response = cleanedContent
+          this.storage.response = streamSafeContent
 
-          if (cleanedContent && !cleanedContent.endsWith('<') && !cleanedContent.endsWith('</')) {
+          // Guard: skip insertion if fragment is still incomplete HTML
+          if (streamSafeContent && !isIncompleteHtmlFragment(streamSafeContent)) {
             try {
-              editor.chain()
-                .insertContentAt({ from, to: editor.state.selection.to }, cleanedContent)
-                .run()
+              if (isDocEmpty) {
+                // For empty doc: replace full content cleanly
+                editor.commands.setContent(streamSafeContent, false, {
+                  preserveWhitespace: false,
+                })
+              } else {
+                editor.chain()
+                  .insertContentAt(
+                    { from: insertFrom, to: editor.state.selection.to },
+                    streamSafeContent,
+                    { parseOptions: { preserveWhitespace: false } }
+                  )
+                  .run()
+              }
 
               if (!hasTriggeredMessage) {
                 editor.commands.aiGenerationHasMessage(true)
                 hasTriggeredMessage = true
               }
             } catch (schemaError) {
-              // Ignore incomplete HTML fragments during streaming
+              // Ignore schema errors on incomplete streaming fragments
             }
           }
         }
+
+        // Final clean pass: apply full deep sanitisation on the complete output
+        const finalContent = sanitiseAiHtml(accumulatedText)
+        if (finalContent) {
+          try {
+            if (isDocEmpty) {
+              editor.commands.setContent(finalContent, false, {
+                preserveWhitespace: false,
+              })
+            } else {
+              editor.chain()
+                .insertContentAt(
+                  { from: insertFrom, to: editor.state.selection.to },
+                  finalContent,
+                  { parseOptions: { preserveWhitespace: false } }
+                )
+                .run()
+            }
+          } catch (e) {
+            console.error("Final AI content insertion failed:", e)
+          }
+        }
+
         this.storage.state = "idle"
       } catch (error) {
         console.error("Gemini generation failed:", error)
@@ -295,7 +333,7 @@ TOM DE VOZ:
           const model = genAI.getGenerativeModel({
             model: modelName,
             systemInstruction: "Você é Lilith, uma IA auditora de contratos implacável. Analise o texto e retorne um JSON com uma lista de riscos. Regras:\n1. Identifique cláusulas leoninas, termos ambíguos ou perigosos.\n2. Retorne estritamente um array JSON de objetos.\n3. Formato: [{\"originalText\": \"texto exato encontrado\", \"suggestion\": \"nova redação proposta\", \"reason\": \"explicação do risco\"}]",
-          }, { apiVersion: "v1" })
+          }, { apiVersion: "v1beta" })
 
           try {
             const prompt = `Analise este contrato e aponte os riscos:\n\n${text}`

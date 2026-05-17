@@ -3,7 +3,7 @@
 
   .legal-node {
     display: flex;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
     position: relative;
     
     .legal-node-counter {
@@ -21,7 +21,7 @@
     &.legal-node-level-1 {
       counter-increment: clausula;
       counter-reset: paragrafo inciso;
-      margin-top: 1rem;
+      margin-top: 0.6rem;
       
       .legal-node-counter::before {
         content: "Cláusula " counter(clausula) "ª.";

@@ -23,6 +23,8 @@ export const metadata: Metadata = {
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export default function RootLayout({
   children,
@@ -44,6 +46,8 @@ export default function RootLayout({
         >
           <TooltipProvider>
             {children}
+            <Analytics />
+            <SpeedInsights />
           </TooltipProvider>
         </ThemeProvider>
       </body>
