@@ -19,15 +19,23 @@ export async function POST(request: Request) {
     const userEmail = (user?.email || '').toLowerCase().trim();
 
     if (!checkEmail && !userEmail) {
-      return NextResponse.json({ error: 'Você precisa estar autenticado ou informar seu e-mail para selar o pacto.' }, { status: 401 })
+      return NextResponse.json({ error: 'Você precisa estar autenticado para selar o pacto.' }, { status: 401 })
     }
+
+    // [SEGURANÇA] Se o usuário está logado, ele SÓ pode assinar com o próprio e-mail da sessão.
+    // Isso evita que alguém assine por outro sabendo o código e o e-mail.
+    if (user && checkEmail && userEmail !== checkEmail) {
+      return NextResponse.json({ error: 'Tentativa de usurpação de identidade detectada. Você só pode selar com seu próprio e-mail autenticado.' }, { status: 403 });
+    }
+
+    const emailToVerify = userEmail || checkEmail;
 
     // 1. Validar se o pacto existe e se o código está correto
     const { data: signature, error: sigError } = await supabase
       .from('signatures')
       .select('*')
       .eq('contract_id', contractId)
-      .eq('protocolo', sealingCode) // O protocolo agora é o código de 6 dígitos
+      .eq('protocolo', sealingCode)
       .single();
 
     if (sigError || !signature) {
@@ -35,62 +43,86 @@ export async function POST(request: Request) {
     }
 
     if (signature.status === 'signed') {
-      return NextResponse.json({ error: 'Este pacto já foi selado.' }, { status: 400 });
+      return NextResponse.json({ error: 'Este pacto já foi totalmente selado.' }, { status: 400 });
     }
 
-    // 2. Verificar se o e-mail informado ou da sessão está na lista de signatários do pacto
-    const matchingSigner = signature.signers.find((s: any) => {
+    // 2. Verificar se o e-mail está na lista de signatários e se já não assinou
+    const matchingSignerIndex = signature.signers.findIndex((s: any) => {
       const signerEmail = (s.email || '').toLowerCase().trim();
-      return (checkEmail && signerEmail === checkEmail) || (userEmail && signerEmail === userEmail);
+      return signerEmail === emailToVerify;
     });
 
-    if (!matchingSigner) {
+    if (matchingSignerIndex === -1) {
       return NextResponse.json({ error: 'Este e-mail não faz parte da lista de signatários autorizados para este pacto.' }, { status: 403 });
     }
 
-    const authorizedEmail = matchingSigner.email;
+    if (signature.signers[matchingSignerIndex].signed) {
+      return NextResponse.json({ error: 'Você já selou este pacto anteriormente.' }, { status: 400 });
+    }
 
     // 3. Captura de Evidências Finais
     const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
     const userAgent = request.headers.get('user-agent') || 'Unknown';
     const timestamp = new Date().toISOString();
 
-    // 4. Ritual de Selamento Final (Certificação)
-    const finalManifesto = {
-      ...signature.manifesto,
-      signed_at: timestamp,
-      evidence: {
-        ip_address: ip,
-        user_agent: userAgent,
-        authorized_email: authorizedEmail
-      },
-      status: "COMPLETED_RITUAL"
+    const evidence = {
+      ip_address: ip,
+      user_agent: userAgent,
+      authorized_email: emailToVerify
     };
 
-    // Criar o cliente Admin usando a Service Role Key para contornar restrições de RLS do signatário nos updates
+    // 4. Ritual de Selamento Incremental
+    const updatedSigners = [...signature.signers];
+    updatedSigners[matchingSignerIndex] = {
+      ...updatedSigners[matchingSignerIndex],
+      signed: true,
+      signed_at: timestamp,
+      evidence
+    };
+
+    const allSigned = updatedSigners.every((s: any) => s.signed);
+    const finalStatus = allSigned ? 'signed' : 'partially_signed';
+
+    const finalManifesto = {
+      ...signature.manifesto,
+      last_activity: timestamp,
+      latest_evidence: evidence,
+      version: "3.0.2-INCREMENTAL"
+    };
+
+    // Criar o cliente Admin usando a Service Role Key
     const supabaseAdmin = createSupabaseClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
 
-    // 5. Atualizar para Status SIGNED usando o cliente Admin
+    // 5. Atualizar Registro de Assinatura
     const { error: updateError } = await supabaseAdmin
       .from('signatures')
       .update({
-        status: 'signed',
+        status: finalStatus,
+        signers: updatedSigners,
         manifesto: finalManifesto
       })
       .eq('contract_id', contractId);
 
     if (updateError) throw updateError;
 
-    // Atualizar o contrato também usando o cliente Admin
-    const { error: contractUpdateError } = await supabaseAdmin
-      .from('contracts')
-      .update({ status: 'signed' })
-      .eq('id', contractId);
+    // Atualizar o contrato apenas se todos assinaram
+    if (allSigned) {
+      const { error: contractUpdateError } = await supabaseAdmin
+        .from('contracts')
+        .update({ status: 'signed' })
+        .eq('id', contractId);
 
-    if (contractUpdateError) throw contractUpdateError;
+      if (contractUpdateError) throw contractUpdateError;
+    } else {
+      // Opcionalmente marcar contrato como parcialmente assinado
+      await supabaseAdmin
+        .from('contracts')
+        .update({ status: 'partially_signed' })
+        .eq('id', contractId);
+    }
 
     return NextResponse.json({ 
       success: true, 

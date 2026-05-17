@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useMemo, useState, useRef, useEffect } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { createClient } from "@/utils/supabase/client";
+import { useRefRect } from "@/hooks/use-element-rect";
 
 // Dynamic import to avoid SSR issues with ForceGraph
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
@@ -32,6 +33,8 @@ export default function BrainPage() {
   const [selectedNode, setSelectedNode] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>({ contracts: [], signatures: [], profile: null });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { width, height } = useRefRect(containerRef);
   const supabase = createClient();
 
   useEffect(() => {
@@ -39,21 +42,33 @@ export default function BrainPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      const userEmailLower = user.email?.toLowerCase().trim() || "";
+
+      // 1. Buscar dados essenciais em paralelo
+      // Nota: signatures são filtradas via RLS, mas aqui garantimos que trazemos apenas o relevante
       const [contractsRes, sigsRes, profileRes] = await Promise.all([
         supabase.from('contracts').select('id, title, status').eq('user_id', user.id),
         supabase.from('signatures').select('id, contract_id, signers, status'),
         supabase.from('profiles').select('full_name').eq('id', user.id).single()
       ]);
 
+      // 2. Filtro de segurança adicional para signatures (caso RLS não esteja 100% restrito)
+      const filteredSignatures = (sigsRes.data || []).filter((sig: any) => {
+        // Sou o dono do contrato ou sou um dos signatários
+        const isOwner = data.contracts?.some((c: any) => c.id === sig.contract_id);
+        const isSigner = sig.signers?.some((s: any) => s.email?.toLowerCase().trim() === userEmailLower);
+        return isOwner || isSigner;
+      });
+
       setData({
         contracts: contractsRes.data || [],
-        signatures: sigsRes.data || [],
+        signatures: filteredSignatures,
         profile: profileRes.data
       });
       setLoading(false);
     }
     fetchData();
-  }, []);
+  }, [supabase]);
 
   const graphData = useMemo(() => {
     const nodes: any[] = [];
@@ -148,10 +163,11 @@ export default function BrainPage() {
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-4 w-full">
+      <div className="flex flex-col lg:flex-row gap-4 w-full flex-1">
         {/* Main Graph Island - Ensure it doesn't expand under sidebar */}
         <div 
-          className="w-[924px] h-[662px] bg-card border border-border rounded-2xl overflow-hidden relative shrink-0">
+          ref={containerRef}
+          className="flex-1 min-h-[500px] lg:h-auto bg-card border border-border rounded-2xl overflow-hidden relative shrink-0">
           {/* Legend Overlay */}
           <div className="absolute top-6 left-6 z-20 space-y-2 p-4 bg-background/50 backdrop-blur-md rounded-xl border border-border">
              <h3 className="text-xs font-black uppercase text-primary tracking-widest flex items-center gap-2">
@@ -163,8 +179,8 @@ export default function BrainPage() {
           <ForceGraph2D
             ref={fgRef}
             graphData={graphData}
-            width={924}
-            height={662}
+            width={width}
+            height={height}
             backgroundColor="transparent"
             nodeRelSize={4}
             nodeAutoColorBy="group"

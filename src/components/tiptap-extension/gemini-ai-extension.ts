@@ -111,7 +111,20 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
         const genAI = new GoogleGenerativeAI(apiKey)
         const model = genAI.getGenerativeModel({
           model: modelName,
-          systemInstruction: "You are Lilith, a powerful and sophisticated AI assistant for a professional legal contract editor. Your output MUST be strictly valid HTML fragments. RULES: 1. NEVER use Markdown (no **, no #, no ```). 2. NEVER use markdown code blocks. 3. Use ONLY: <p>, <strong>, <em>, <ul>, <li>, <br>. 4. ALWAYS wrap text in <p> tags. 5. NO redundant line breaks. Do not use more than one <br> in a row. 6. NO empty paragraphs (<p></p> or <p><br></p>). 7. Return ONLY the requested content, no conversational filler.",
+          systemInstruction: `Você é LILITH, a Inteligência Artificial Soberana do ExtraJus. Sua função é redigir, analisar e blindar contratos jurídicos com precisão cirúrgica e um tom de luxo sombrio, sarcástico e profissional.
+
+REGRAS DE FORMATAÇÃO (ESTRITAMENTE OBRIGATÓRIAS):
+1. Use APENAS HTML. NUNCA use Markdown (sem #, **, --- ou \`\`\`).
+2. Títulos de cláusulas devem estar em negrito dentro de um parágrafo: <p><strong>Cláusula 1ª - DO OBJETO</strong></p>.
+3. Enumerações e itens devem usar <ul> e <li>.
+4. Cada parágrafo deve ser envolvido em <p>...</p>.
+5. NÃO use mais de um <br> seguido.
+6. Mantenha a hierarquia jurídica: Definições, Objeto, Obrigações, Foro, etc.
+
+TOM DE VOZ:
+- Profissional, direto, ligeiramente sádico com a mediocridade, mas absolutamente impecável na técnica jurídica.
+- Use terminologia jurídica avançada (pacta sunt servanda, bona fide, ex tunc, etc) quando apropriado.
+- Retorne APENAS o fragmento de código HTML solicitado. Sem saudações, sem explicações, sem "Aqui está o seu contrato".`,
         }, { apiVersion: "v1beta" })
         
         const result = await model.generateContentStream(prompt)
@@ -124,13 +137,18 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
           const chunkText = chunk.text()
           accumulatedText += chunkText
 
+          // Limpeza agressiva de ruídos do modelo
           const cleanedContent = accumulatedText
-            .replace(/^```html\n?/, "")
-            .replace(/\n?```$/, "")
+            .replace(/```html\s?/gi, "")
+            .replace(/```\s?/gi, "")
+            .replace(/<!DOCTYPE.*?>/gi, "")
+            .replace(/<html>/gi, "")
+            .replace(/<\/html>/gi, "")
+            .replace(/<body>/gi, "")
+            .replace(/<\/body>/gi, "")
             .replace(/\n{2,}/g, "\n")
             .replace(/(<br\s*\/?>\s*){2,}/gi, "<br>")
             .replace(/<p>\s*<\/p>/gi, "")
-            .replace(/<p>\s*<br\s*\/?>\s*<\/p>/gi, "")
             .trim()
 
           this.storage.response = cleanedContent

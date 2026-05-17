@@ -42,14 +42,16 @@ export default function PactsPage() {
 
       const userEmailLower = user.email?.toLowerCase().trim() || "";
 
-      // 1. Buscar assinaturas com join na tabela de contratos (tabela pequena e indexada)
+      // 1. Buscar assinaturas filtrando diretamente no banco (Postgres Power)
+      // Trazemos assinaturas onde o usuário é o dono do contrato OU é um dos signatários
       const { data: allSignatures, error } = await supabase
         .from('signatures')
-        .select('*, contracts(id, title, user_id)');
+        .select('*, contracts!inner(id, title, user_id)')
+        .or(`contracts.user_id.eq.${user.id},signers.cs.[{"email":"${userEmailLower}"}]`);
 
       if (error) throw error;
 
-      // 2. Filtrar Pactos Recebidos (Onde sou signatário)
+      // 2. Separar Pactos Recebidos vs Enviados de forma eficiente
       const received = (allSignatures || [])?.filter((sig: any) => 
         sig.signers?.some((s: any) => s.email?.toLowerCase().trim() === userEmailLower)
       ).map(sig => ({
@@ -57,7 +59,6 @@ export default function PactsPage() {
         contracts: sig.contracts || { title: "Contrato sem Título" }
       })) || [];
 
-      // 3. Filtrar Pactos Enviados (Onde sou o dono do contrato)
       const sent = (allSignatures || [])?.filter((sig: any) => 
         sig.contracts?.user_id === user.id
       ).map(sig => ({
@@ -69,17 +70,6 @@ export default function PactsPage() {
       setPendingPacts(received);
       setSentPacts(sent);
       setLoading(false);
-
-      // 4. Autotransição silenciosa em segundo plano para 'analyzing' para os recebidos pendentes
-      const pendingPactsToUpdate = received.filter(p => p.status === 'pending');
-      if (pendingPactsToUpdate.length > 0) {
-        Promise.all(pendingPactsToUpdate.map(async (pact) => {
-          await supabase.from('signatures').update({ status: 'analyzing' }).eq('contract_id', pact.contract_id);
-          pact.status = 'analyzing';
-        })).then(() => {
-          setPendingPacts([...received]);
-        }).catch(err => console.error("Erro na autotransição silenciosa:", err));
-      }
 
     } catch (error: any) {
       console.error("Pacts Fetch Error:", error);

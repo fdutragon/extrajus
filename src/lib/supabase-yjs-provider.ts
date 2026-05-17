@@ -35,6 +35,8 @@ export class SupabaseYjsProvider extends Observable<string> {
   private channelName: string
   private supabase: SupabaseClient
   private contractId: string | null = null
+  private pendingUpdate: Uint8Array | null = null
+  private saveTimeout: any = null
 
   constructor(
     supabase: SupabaseClient,
@@ -75,38 +77,15 @@ export class SupabaseYjsProvider extends Observable<string> {
     })
 
     // 2. Handle Yjs updates
-    this.doc.on("update", async (update, origin) => {
+    this.doc.on("update", (update, origin) => {
       if (origin !== this) {
         const encoder = encoding.createEncoder()
         encoding.writeVarUint(encoder, messageSync)
         syncProtocol.writeUpdate(encoder, update)
         this.broadcast(encoding.toUint8Array(encoder))
 
-        // PERSISTENCE: Save to database if it's a valid UUID
-        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(this.contractId || "")
-        
-        if (this.contractId && isUuid) {
-          try {
-            // Optimized hex conversion
-            let hex = ""
-            for (let i = 0; i < update.length; i++) {
-              hex += update[i].toString(16).padStart(2, "0")
-            }
-            
-            const { error } = await this.supabase.from("yjs_updates").insert({
-              contract_id: this.contractId,
-              update: `\\x${hex}`
-            })
-
-            if (error) {
-              console.error("[SupabaseYjsProvider] Error saving update:", error.message, error.details)
-            } else {
-              console.log(`[SupabaseYjsProvider] Update saved to DB for ${this.contractId}`)
-            }
-          } catch (e) {
-            console.error("[SupabaseYjsProvider] Unexpected error saving update:", e)
-          }
-        }
+        // PERSISTENCE: Queue for debounced save
+        this.queueUpdate(update)
       }
     })
 
@@ -126,6 +105,52 @@ export class SupabaseYjsProvider extends Observable<string> {
 
     // 5. Load initial data and connect
     this.init()
+  }
+
+  private queueUpdate(update: Uint8Array) {
+    if (this.pendingUpdate) {
+      this.pendingUpdate = Y.mergeUpdates([this.pendingUpdate, update])
+    } else {
+      this.pendingUpdate = update
+    }
+
+    if (this.saveTimeout) {
+      clearTimeout(this.saveTimeout)
+    }
+
+    this.saveTimeout = setTimeout(() => this.saveToDb(), 2000)
+  }
+
+  private async saveToDb() {
+    if (!this.pendingUpdate || !this.contractId) return
+    
+    const update = this.pendingUpdate
+    this.pendingUpdate = null
+    this.saveTimeout = null
+
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(this.contractId || "")
+    if (!isUuid) return
+
+    try {
+      // Optimized hex conversion
+      let hex = ""
+      for (let i = 0; i < update.length; i++) {
+        hex += update[i].toString(16).padStart(2, "0")
+      }
+      
+      const { error } = await this.supabase.from("yjs_updates").insert({
+        contract_id: this.contractId,
+        update: `\\x${hex}`
+      })
+
+      if (error) {
+        console.error("[SupabaseYjsProvider] Error saving debounced update:", error.message)
+      } else {
+        console.log(`[SupabaseYjsProvider] Debounced update saved for ${this.contractId}`)
+      }
+    } catch (e) {
+      console.error("[SupabaseYjsProvider] Unexpected error saving update:", e)
+    }
   }
 
   private async init() {

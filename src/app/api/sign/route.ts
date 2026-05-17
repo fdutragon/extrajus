@@ -32,10 +32,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'ID do contrato é obrigatório' }, { status: 400 })
     }
 
-    // 1. Geração de Código de Selamento Único (6 Dígitos) para cada signatário
-    // Para simplificar agora, vamos gerar um protocolo global para o pacto,
-    // mas o destinatário precisa estar logado para usá-lo.
-    const sealingCode = Math.floor(100000 + Math.random() * 900000).toString();
+    // 1. Geração de Código de Selamento Único (6 Dígitos) Inviolável
+    const sealingCode = crypto.randomInt(100000, 999999).toString();
     
     const timestamp = new Date().toISOString();
     const documentHash = crypto
@@ -48,11 +46,11 @@ export async function POST(request: Request) {
       contract_id: contractId,
       status: 'pending',
       signers: signers,
-      protocolo: sealingCode, // Agora usamos o código de 6 dígitos como protocolo de entrada
+      protocolo: sealingCode,
       manifesto: { 
         invited_at: timestamp,
         document_hash: documentHash,
-        version: "3.0.0-RITUAL"
+        version: "3.0.1-SECURE"
       }
     }, { onConflict: 'contract_id' });
 
@@ -61,12 +59,12 @@ export async function POST(request: Request) {
     // Atualizar status do contrato
     await supabase.from('contracts').update({ status: 'pending' }).eq('id', contractId);
 
-    // 3. Enviar Convocação via Resend
+    // 3. Enviar Convocação via Resend (Bombardeio Paralelo)
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
-    if (process.env.RESEND_API_KEY) {
-      for (const signer of signers) {
-        await resend.emails.send({
+    if (process.env.RESEND_API_KEY && signers.length > 0) {
+      const emailPromises = signers.map(signer => 
+        resend.emails.send({
           from: 'ExtraJus <onboarding@resend.dev>',
           to: signer.email,
           subject: `📜 Convocação para Selamento: ${title || 'Novo Pacto'}`,
@@ -97,8 +95,11 @@ export async function POST(request: Request) {
               </p>
             </div>
           `
-        });
-      }
+        })
+      );
+
+      // Dispara todas as convocações simultaneamente
+      await Promise.all(emailPromises);
     }
 
     return NextResponse.json({ success: true, message: "Convites enviados e pacto em estado pendente." });
