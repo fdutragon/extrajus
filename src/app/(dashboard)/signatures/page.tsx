@@ -5,6 +5,7 @@ import { createClient } from "@/utils/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 import { 
   FileText, 
   Lock, 
@@ -14,7 +15,8 @@ import {
   ArrowRight,
   KeyRound,
   AlertCircle,
-  Check
+  Check,
+  Eye
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -400,6 +402,15 @@ export default function PactsPage() {
                           "Para selar este pacto soberano, insira o código de 6 dígitos que foi enviado para sua caixa de entrada."
                        </p>
 
+                       <Link 
+                          href={`/editor?room=${selectedPact.contract_id}&mode=preview`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full flex items-center justify-center gap-2 h-12 border border-primary/20 hover:border-primary/50 bg-primary/5 hover:bg-primary/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-primary transition-all active:scale-95"
+                       >
+                          <Eye size={12} /> Visualizar Documento Completo
+                       </Link>
+
                        <div className="space-y-2">
                           <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Código Ritual</label>
                           <input 
@@ -466,6 +477,15 @@ export default function PactsPage() {
                                </div>
                              ))}
                           </div>
+
+                          <Link 
+                             href={`/editor?room=${selectedPact.contract_id}&mode=preview`}
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             className="w-full flex items-center justify-center gap-2 h-11 border border-border hover:border-primary/20 bg-muted/20 hover:bg-muted/30 rounded-xl text-[10px] font-black uppercase tracking-widest text-foreground transition-all active:scale-95"
+                          >
+                             <Eye size={12} /> Visualizar Documento Completo
+                          </Link>
 
                           {selectedPact.status === 'signed' && (
                             <Button 
