@@ -54,6 +54,10 @@ export default function AdminDashboard() {
   const [newWalletLabel, setNewWalletLabel] = useState("");
   const [loadingWallets, setLoadingWallets] = useState(false);
 
+  // Estados para Saldo GGPix
+  const [ggpixBalance, setGgpixBalance] = useState("R$ 0,00");
+  const [loadingBalance, setLoadingBalance] = useState(false);
+
   const supabase = createClient();
   const router = useRouter();
 
@@ -119,6 +123,7 @@ export default function AdminDashboard() {
       // Carregar saques cripto integrados e carteiras salvas
       fetchWithdrawals();
       fetchSavedWallets();
+      fetchGgpixBalance();
     } catch (error) {
       console.error("Admin Error:", error);
       toast.error("Falha ao carregar dados táticos.");
@@ -154,6 +159,21 @@ export default function AdminDashboard() {
       console.error("Error fetching saved wallets:", err);
     } finally {
       setLoadingWallets(false);
+    }
+  }
+
+  async function fetchGgpixBalance() {
+    setLoadingBalance(true);
+    try {
+      const response = await fetch("/api/admin/crypto/balance");
+      const data = await response.json();
+      if (data.success) {
+        setGgpixBalance(data.balanceFormatted || `R$ ${(data.balance / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`);
+      }
+    } catch (err) {
+      console.error("Error fetching GGPix balance:", err);
+    } finally {
+      setLoadingBalance(false);
     }
   }
 
@@ -342,11 +362,54 @@ export default function AdminDashboard() {
       </div>
 
       {/* Primary Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="bg-card border-border rounded-2xl p-6 relative overflow-hidden group">
            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
               <Users size={64} />
            </div>
+           <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block mb-2">Recrutas Totais</span>
+           <div className="flex items-baseline gap-2">
+              <span className="text-4xl font-black text-foreground">{stats.totalUsers}</span>
+              <span className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-1">
+                 <ArrowUpRight size={10} /> +12%
+              </span>
+           </div>
+        </Card>
+
+        <Card className="bg-card border-border rounded-2xl p-6 relative overflow-hidden group">
+           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <TrendingUp size={64} />
+           </div>
+           <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block mb-2">Receita Acumulada</span>
+           <div className="flex items-baseline gap-2">
+              <span className="text-4xl font-black text-primary">R$ {(stats.totalRevenue / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+           </div>
+        </Card>
+
+        <Card className="bg-card border-border rounded-2xl p-6 relative overflow-hidden bg-primary/[0.01]">
+           <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary text-xl font-black">$</div>
+              <span className="text-[10px] font-black text-foreground uppercase tracking-widest">Lucro Operacional</span>
+           </div>
+           <div className="flex items-baseline gap-2">
+              <span className="text-4xl font-black text-foreground">R$ {((stats.totalRevenue * 0.94) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">Net</span>
+           </div>
+        </Card>
+
+        <Card className="bg-card border-emerald-500/10 rounded-2xl p-6 relative overflow-hidden bg-emerald-500/[0.02] group">
+           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <Wallet size={64} className="text-emerald-500" />
+           </div>
+           <div className="flex items-center gap-2 mb-2">
+              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block">Saldo GGPix (BRL)</span>
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+           </div>
+           <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-black text-emerald-400">{ggpixBalance}</span>
+           </div>
+        </Card>
+      </div>
            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block mb-2">Recrutas Totais</span>
            <div className="flex items-baseline gap-2">
               <span className="text-4xl font-black text-foreground">{stats.totalUsers}</span>
