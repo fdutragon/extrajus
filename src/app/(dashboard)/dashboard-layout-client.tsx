@@ -99,19 +99,19 @@ export default function DashboardLayoutClient({
         "fixed inset-y-1 left-1 rounded-xl",
         isCollapsed ? "-translate-x-full w-0 opacity-0" : "translate-x-0 w-72 opacity-100",
         // Desktop (lg)
-        "lg:static lg:translate-x-0 lg:opacity-100 lg:w-72 lg:rounded-l-xl lg:rounded-r-none lg:border-r border-border lg:inset-auto",
+        "lg:static lg:translate-x-0 lg:opacity-100 lg:w-72 lg:rounded-l-xl lg:rounded-r-none lg:border border-r-0 lg:inset-auto",
         isCollapsed ? "lg:w-12" : "lg:w-72"
       )}>
         {/* Subtle texture overlay */}
         <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
 
         {/* Organization Switcher / Logo Area */}
-        <div className="h-14 px-3 flex items-center overflow-hidden shrink-0 border-b border-border relative z-10">
+        <div className="h-12 px-3 flex items-center overflow-hidden shrink-0 border-b border-border relative z-10">
           <div className={cn(
             "flex items-center gap-2 animate-in fade-in slide-in-from-left-2 duration-500",
             isCollapsed && "justify-center w-full"
           )}>
-            <Logo showText={!isCollapsed} iconSize={32} />
+            <Logo showText={!isCollapsed} iconSize={22} />
           </div>
         </div>
 
