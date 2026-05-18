@@ -36,6 +36,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Toaster } from "sonner";
+import { SinapsesPlansModal } from "@/components/ui/sinapses-plans-modal";
 
 export default function RootLayout({
   children,
@@ -46,6 +47,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
+      data-scroll-behavior="smooth"
       className={`${sansFont.variable} ${headingFont.variable} h-full antialiased`}
     >
       <head />
@@ -58,6 +60,7 @@ export default function RootLayout({
           <TooltipProvider>
             {children}
             <Toaster richColors closeButton theme="dark" position="bottom-right" />
+            <SinapsesPlansModal />
             <Analytics />
             <SpeedInsights />
           </TooltipProvider>

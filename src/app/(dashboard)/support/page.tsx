@@ -107,7 +107,7 @@ export default function SupportPage() {
       <div className="space-y-3">
          <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Portal do Recruta</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Suporte ExtraJus</span>
          </div>
          <h1 className="text-3xl font-black tracking-tight text-foreground uppercase italic">
             Suporte & Forja Customizada

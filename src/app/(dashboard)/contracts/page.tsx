@@ -59,9 +59,6 @@ export default async function ContractsPage() {
               <Plus size={16} className="mr-2" /> Novo Contrato
             </Button>
           </form>
-          <Button variant="outline" className="h-10 px-4 border-border hover:bg-muted rounded-lg text-[13px] font-medium">
-            <Download size={14} className="mr-2" /> Exportar Todos
-          </Button>
         </div>
       </div>
 

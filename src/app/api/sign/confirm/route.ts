@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     const checkEmail = (email || '').toLowerCase().trim();
 
     if (!checkEmail) {
-      return NextResponse.json({ error: 'O e-mail do signatário é obrigatório para selar o pacto.' }, { status: 400 })
+      return NextResponse.json({ error: 'O e-mail do signatário é obrigatório para assinar o documento.' }, { status: 400 })
     }
 
     const emailToVerify = checkEmail;
@@ -34,11 +34,11 @@ export async function POST(request: Request) {
       .single();
 
     if (sigError || !signature) {
-      return NextResponse.json({ error: 'Código de selamento inválido para este pacto.' }, { status: 403 });
+      return NextResponse.json({ error: 'Código de assinatura inválido para este documento.' }, { status: 403 });
     }
 
     if (signature.status === 'signed') {
-      return NextResponse.json({ error: 'Este pacto já foi totalmente selado.' }, { status: 400 });
+      return NextResponse.json({ error: 'Este documento já foi totalmente assinado.' }, { status: 400 });
     }
 
     // 2. Verificar se o e-mail está na lista de signatários e se já não assinou
@@ -48,11 +48,11 @@ export async function POST(request: Request) {
     });
 
     if (matchingSignerIndex === -1) {
-      return NextResponse.json({ error: 'Este e-mail não faz parte da lista de signatários autorizados para este pacto.' }, { status: 403 });
+      return NextResponse.json({ error: 'Este e-mail não faz parte da lista de signatários autorizados para este documento.' }, { status: 403 });
     }
 
     if (signature.signers[matchingSignerIndex].signed) {
-      return NextResponse.json({ error: 'Você já selou este pacto anteriormente.' }, { status: 400 });
+      return NextResponse.json({ error: 'Você já assinou este documento anteriormente.' }, { status: 400 });
     }
 
     // 3. Captura de Evidências Finais
@@ -130,20 +130,20 @@ export async function POST(request: Request) {
           resendInstance.emails.send({
             from: 'ExtraJus <assinaturas@extrajus.pro>',
             to: signer.email,
-            subject: `🔥 Ritual Concluído: Certificado de Assinatura Digital de ${contractTitle}`,
+            subject: `Assinatura Concluída: Certificado de Assinatura Digital de ${contractTitle}`,
             html: `
               <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #000; color: #fff; padding: 40px; border: 1px solid #111;">
                 <h1 style="color: #c0ff00; font-size: 24px; text-transform: uppercase; letter-spacing: 4px;">ExtraJus</h1>
                 <p style="font-size: 14px; opacity: 0.7; border-bottom: 1px solid #222; padding-bottom: 20px;">CERTIFICADO DE ASSINATURA DIGITAL CONCLUÍDO</p>
                 
                 <p style="margin-top: 30px;">Saudações, <strong>${signer.name}</strong>.</p>
-                <p>Temos a honra de informar que o pacto soberano <strong>${contractTitle}</strong> foi <strong>INTEGRALMENTE SELADO</strong> por todos os signatários convocados.</p>
+                <p>Temos a honra de informar que o documento <strong>${contractTitle}</strong> foi <strong>INTEGRALMENTE ASSINADO</strong> por todos os signatários convocados.</p>
                 
                 <div style="background: #0a0a0a; border: 1px dashed #c0ff00; padding: 25px; margin: 30px 0;">
-                  <p style="font-size: 10px; color: #c0ff00; text-transform: uppercase; margin-bottom: 5px; font-weight: bold;">Protocolo de Selamento</p>
+                  <p style="font-size: 10px; color: #c0ff00; text-transform: uppercase; margin-bottom: 5px; font-weight: bold;">Protocolo de Assinatura</p>
                   <code style="font-size: 18px; font-weight: bold; color: #fff;">${signature.protocolo}</code>
                   
-                  <p style="font-size: 10px; color: #c0ff00; text-transform: uppercase; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Chancela Digital de Conclusão</p>
+                  <p style="font-size: 10px; color: #c0ff00; text-transform: uppercase; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Assinatura Eletrônica</p>
                   <code style="font-size: 12px; color: #fff;">${timestamp}</code>
                   
                   <p style="font-size: 10px; color: #c0ff00; text-transform: uppercase; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Hash de Integridade do Documento (SHA-256)</p>
@@ -157,7 +157,7 @@ export async function POST(request: Request) {
                     <div style="background: #0d0d0f; border-left: 3px solid #c0ff00; padding: 15px; margin-bottom: 15px;">
                       <p style="margin: 0; font-size: 13px; font-weight: bold; color: #fff;">${s.name.toUpperCase()}</p>
                       <p style="margin: 3px 0 0 0; font-size: 11px; color: #a1a1aa;">Email: ${s.email}</p>
-                      <p style="margin: 3px 0 0 0; font-size: 10px; color: #71717a;">Selado em: ${s.signed_at || timestamp}</p>
+                      <p style="margin: 3px 0 0 0; font-size: 10px; color: #71717a;">Assinado em: ${s.signed_at || timestamp}</p>
                       <p style="margin: 5px 0 0 0; font-size: 9px; font-family: monospace; color: #52525b;">IP NODE: ${s.evidence?.ip_address || '127.0.0.1'} | NODE SECURE</p>
                     </div>
                   `).join('')}
@@ -171,7 +171,7 @@ export async function POST(request: Request) {
                 </div>
 
                 <p style="margin-top: 50px; font-size: 10px; opacity: 0.3; text-align: center;">
-                  ExtraJus AI © 2026 • Ritual Sovereign Protocol
+                  ExtraJus AI © 2026 • Secure Signature Protocol
                 </p>
               </div>
             `
@@ -191,7 +191,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ 
       success: true, 
-      message: "Pacto selado com sucesso. A integridade digital foi garantida." 
+      message: "Documento assinado com sucesso. A integridade digital foi garantida." 
     });
 
   } catch (error: any) {

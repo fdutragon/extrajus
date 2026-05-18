@@ -315,12 +315,71 @@ export function EditorLayout() {
   const [isAuditing, setIsAuditing] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [isFocused, setIsFocused] = useState(true)
+  const [credits, setCredits] = useState<number | null>(null)
+  const [contractStatus, setContractStatus] = useState<string | null>(null)
   const { user } = useUser()
 
   const { state, updateState } = useAiMenuState()
   const { editor } = useContext(EditorContext)!
   const { provider, room } = useCollab()
   const supabase = useMemo(() => createClient(), [])
+
+  useEffect(() => {
+    let active = true
+    let channel: any = null
+
+    const fetchProfile = async () => {
+      const { data: { user: currentUser } } = await supabase.auth.getUser()
+      if (!currentUser || !active) return
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("credits")
+        .eq("id", currentUser.id)
+        .single()
+
+      if (profile && active) {
+        setCredits(profile.credits)
+      }
+
+      channel = supabase
+        .channel(`editor-layout-profile-realtime-${currentUser.id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'profiles',
+            filter: `id=eq.${currentUser.id}`
+          },
+          (payload: any) => {
+            if (active) {
+              setCredits(payload.new.credits)
+            }
+          }
+        )
+        .subscribe()
+    }
+
+    fetchProfile()
+
+    const handleProfileUpdated = () => {
+      fetchProfile()
+    }
+    window.addEventListener('profile-updated', handleProfileUpdated)
+
+    return () => {
+      active = false
+      window.removeEventListener('profile-updated', handleProfileUpdated)
+      if (channel) {
+        supabase.removeChannel(channel)
+      }
+    }
+  }, [supabase])
+
+  const handleOpenPlans = () => {
+    window.dispatchEvent(new Event("open-plans-modal"))
+  }
 
   useEffect(() => {
     if (typeof window === "undefined") return
@@ -426,7 +485,7 @@ export function EditorLayout() {
   }, [])
 
   const searchParams = useSearchParams()
-  const readOnly = searchParams?.get("mode") === "preview" || searchParams?.get("readOnly") === "true"
+  const readOnly = searchParams?.get("mode") === "preview" || searchParams?.get("readOnly") === "true" || !editor || !editor.isEditable
 
   const [signerEmail, setSignerEmail] = useState("")
   const [sealingCode, setSealingCode] = useState("")
@@ -436,9 +495,10 @@ export function EditorLayout() {
 
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
+  const [aiPromptOpen, setAiPromptOpen] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
-  const [fontSize, setFontSize] = useState<number>(18)
-  const [fontFamily, setFontFamily] = useState<string>("Lora")
+  const [fontSize, setFontSize] = useState<number>(16)
+  const [fontFamily, setFontFamily] = useState<string>("Cambria")
   const [isFontDropdownOpen, setIsFontDropdownOpen] = useState(false)
 
   const handleManualSave = async () => {
@@ -499,12 +559,29 @@ export function EditorLayout() {
 
   const runAudit = async () => {
     if (!editor) return
-    setIsAuditing(true)
-    const toastId = toast.loading("Analisando conformidade e riscos...")
+
+    const docText = editor.getText().trim();
+    if (docText.length < 150) {
+      toast.warning("🔒 O instrumento de pacto é muito curto! Digite ou forje pelo menos 150 caracteres para que o Radar Analítico possa escanear e auditar os riscos jurídicos.");
+      return;
+    }
+
+    setIsAuditing(true);
+    setAuditResults([]);
+    setHasAudited(false);
+    const toastId = toast.loading("Analisando conformidade e riscos...");
     
     try {
       await (editor.commands as any).aiAuditRisk()
       setTimeout(() => {
+        const state = (editor.storage as any).ai.state
+        if (state === "error") {
+          setIsAuditing(false)
+          setAuditResults([])
+          setHasAudited(false)
+          toast.dismiss(toastId)
+          return
+        }
         const results = (editor.storage as any).ai.auditResults
         setAuditResults(results || [])
         setHasAudited(true)
@@ -622,8 +699,9 @@ export function EditorLayout() {
 
   useEffect(() => {
     const fetchArsenal = async () => {
-      const { data: currentContract } = await supabase.from('contracts').select('title').eq('id', room).single()
+      const { data: currentContract } = await supabase.from('contracts').select('title, status').eq('id', room).single()
       if (currentContract?.title) setFileName(currentContract.title)
+      if (currentContract?.status) setContractStatus(currentContract.status)
 
       const { data: contracts } = await supabase.from('contracts').select('id, title, status').order('updated_at', { ascending: false }).limit(10)
       if (contracts) setUserContracts(contracts)
@@ -727,7 +805,7 @@ export function EditorLayout() {
     <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden relative font-sans selection:bg-primary/30">
       <style dangerouslySetInnerHTML={{ __html: `
         .tiptap.ProseMirror {
-          font-family: ${fontFamily === "Lora" ? '"Lora", serif' : fontFamily === "Inter" ? '"Inter", sans-serif' : fontFamily === "Times New Roman" ? '"Times New Roman", serif' : '"JetBrains Mono", monospace'} !important;
+          font-family: ${fontFamily === "Cambria" ? '"Cambria", "Georgia", serif' : fontFamily === "Inter" ? '"Inter", sans-serif' : fontFamily === "Times New Roman" ? '"Times New Roman", serif' : '"JetBrains Mono", monospace'} !important;
           font-size: ${fontSize}px !important;
         }
         .scrollbar-minimalist::-webkit-scrollbar {
@@ -788,11 +866,24 @@ export function EditorLayout() {
               <MarkButton type="strike" />
               <ResetAllFormattingButton />
             </div>
-            <div className="relative flex items-center justify-center px-3 h-12 rounded-none cursor-default border-x border-primary/10 gap-2 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10" />
-              <BrainCircuit size={14} className="text-primary/60 relative z-10 animate-pulse" />
-              <span className="text-[12px] font-black uppercase tracking-[0.2em] relative z-10 text-primary/80">IA</span>
-            </div>
+            <Button
+              variant="ghost"
+              onClick={() => setAiPromptOpen(prev => !prev)}
+              className={cn(
+                "relative flex items-center justify-center px-5 h-12 rounded-none border-x border-primary/10 gap-2 overflow-hidden hover:bg-primary/5 transition-all select-none group/ai-toggle",
+                aiPromptOpen && "bg-primary/[0.04]"
+              )}
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/5 group-hover/ai-toggle:from-primary/5 group-hover/ai-toggle:to-primary/10 transition-all" />
+              <BrainCircuit 
+                size={14} 
+                className={cn(
+                  "text-primary/60 relative z-10 transition-transform group-hover/ai-toggle:scale-110", 
+                  (isAuditing || aiPromptOpen) && "animate-pulse text-primary"
+                )} 
+              />
+              <span className={cn("text-[12px] font-black uppercase tracking-[0.2em] relative z-10 transition-colors", aiPromptOpen ? "text-primary" : "text-muted-foreground/60 group-hover/ai-toggle:text-primary/80")}>IA</span>
+            </Button>
             <div className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity duration-500">
               <TextAlignButton align="left" />
               <TextAlignButton align="center" />
@@ -804,15 +895,28 @@ export function EditorLayout() {
         )}
 
         <div className="flex-none flex items-center gap-2">
-          <div className="flex items-center gap-1.5 pr-4 border-r border-border/50">
-            <ThemeToggle />
-          </div>
           {!readOnly && (
-            <div className="flex items-center gap-2 pl-2">
+            <div className="flex items-center gap-2 pr-4 border-r border-border/50">
               <ExportButton />
               <SignModal title={fileName} />
             </div>
           )}
+
+          {!readOnly && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleOpenPlans}
+              className="h-8 gap-1.5 px-3.5 rounded-xl text-primary hover:bg-primary/10 transition-all font-bold text-[9px] uppercase tracking-widest flex items-center border border-primary/20 bg-primary/5 hover:border-primary/45 shadow-sm shadow-primary/5 group"
+            >
+              <Brain size={12} className="text-primary animate-pulse shrink-0 group-hover:scale-110 transition-transform" />
+              <span>{credits !== null ? `${credits} Sinapses` : "..."}</span>
+            </Button>
+          )}
+
+          <div className="flex items-center gap-1.5 pl-2">
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
@@ -847,7 +951,7 @@ export function EditorLayout() {
                       className="w-full bg-muted/30 border border-border/60 text-foreground text-[10px] font-bold py-2.5 px-3 rounded-xl flex items-center justify-between transition-all outline-none focus:ring-2 focus:ring-primary/20 hover:border-primary/20 text-left"
                     >
                       <span>
-                        {fontFamily === "Lora" && "Lora (Serifa)"}
+                        {fontFamily === "Cambria" && "Cambria (Serifa)"}
                         {fontFamily === "Inter" && "Inter (Sans)"}
                         {fontFamily === "Times New Roman" && "Times (Formal)"}
                         {fontFamily === "JetBrains Mono" && "JetBrains (Mono)"}
@@ -863,7 +967,7 @@ export function EditorLayout() {
                         />
                         <div className="absolute left-0 mt-1.5 w-full bg-card border border-border rounded-xl shadow-2xl z-50 p-1.5 space-y-1 animate-in fade-in slide-in-from-top-1 duration-200">
                           {[
-                            { value: "Lora", label: "Lora (Serifa)" },
+                            { value: "Cambria", label: "Cambria (Serifa)" },
                             { value: "Inter", label: "Inter (Sans)" },
                             { value: "Times New Roman", label: "Times (Formal)" },
                             { value: "JetBrains Mono", label: "JetBrains (Mono)" }
@@ -926,45 +1030,74 @@ export function EditorLayout() {
         )}
 
         <main className="flex-1 overflow-y-auto custom-scrollbar bg-transparent px-8 py-8 relative z-10">
-          <div className="w-full max-w-[840px] mx-auto bg-card border border-border/40 rounded-3xl px-16 md:px-28 pt-10 pb-16 md:pt-16 md:pb-24 relative shadow-2xl animate-in fade-in duration-1000 min-h-[800px] md:min-h-[1188px]">
-             <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-3xl" />
+          {/* Subtle occult background glow behind the sheet */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/3 dark:bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse duration-[6000ms]" />
+
+          <div className="w-full max-w-[840px] mx-auto bg-card/90 dark:bg-card/75 backdrop-blur-xl border border-border/60 rounded-[32px] px-16 md:px-28 pt-16 pb-16 md:pt-20 md:pb-24 relative shadow-2xl transition-all duration-500 animate-in fade-in duration-1000 min-h-[800px] md:min-h-[1188px]">
+             {/* Grain overlay for paper feel */}
+             <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-[32px]" />
+
              <div className="relative z-10">
                {!readOnly && <BubbleMenu editor={editor} />}
                <EditorContentArea />
              </div>
-             {!readOnly && (
-               <div className="fixed bottom-12 left-1/2 -translate-x-1/2 w-full max-w-[540px] z-[100] px-4">
-                  <AiMenu plain={true} />
-               </div>
-             )}
           </div>
         </main>
+        {!readOnly && aiPromptOpen && (
+          <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-full max-w-[540px] z-[100] px-4 transition-all duration-500 animate-in fade-in slide-in-from-bottom-5">
+             <AiMenu plain={true} />
+          </div>
+        )}
 
         <aside className={cn("h-full border-l border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", rightSidebarOpen ? "w-96" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
           {readOnly ? (
             <div className="p-6 flex flex-col h-full justify-between">
-              <div className="space-y-6">
-                <div className="flex items-center gap-4">
-                  <ShieldCheck size={20} className="text-primary animate-pulse" />
-                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em]">Assinatura Digital</h3>
+              {contractStatus === 'signed' ? (
+                <div className="space-y-6 flex flex-col h-full justify-center items-center text-center">
+                  <div className="p-4 bg-emerald-500/10 rounded-full border border-emerald-500/30 animate-pulse mb-2">
+                    <ShieldCheck size={48} className="text-emerald-400" />
+                  </div>
+                  <h3 className="text-sm font-black uppercase tracking-[0.2em] text-emerald-400">Contrato Selado</h3>
+                  <div className="space-y-4 max-w-xs">
+                    <p className="text-[11px] leading-relaxed text-muted-foreground">
+                      Este instrumento jurídico foi totalmente assinado e selado digitalmente.
+                    </p>
+                    <div className="p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
+                      <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest block mb-1">Status da Assinatura</span>
+                      <span className="text-[10px] font-bold text-white">IMUTÁVEL & REGISTRADO</span>
+                    </div>
+                    <p className="text-[9px] text-muted-foreground/60 italic leading-normal">
+                      Qualquer tentativa de edição foi bloqueada para preservar a integridade jurídica das assinaturas.
+                    </p>
+                  </div>
+                  <div className="h-10" />
                 </div>
-                <div className="space-y-4">
-                  <p className="text-[11px] leading-relaxed text-muted-foreground">Revise o documento e preencha as credenciais para assinar.</p>
-                  <div className="space-y-3">
-                    <label className="text-[9px] font-black text-muted-foreground uppercase">E-mail</label>
-                    <input type="email" value={signerEmail} onChange={(e) => setSignerEmail(e.target.value)} placeholder="Seu e-mail..." className="w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-xs font-semibold" />
+              ) : (
+                <div className="space-y-6">
+                  <div className="flex items-center gap-4">
+                    <ShieldCheck size={20} className="text-primary animate-pulse" />
+                    <h3 className="text-[11px] font-black uppercase tracking-[0.2em]">Assinatura Digital</h3>
                   </div>
-                  <div className="space-y-3">
-                    <label className="text-[9px] font-black text-muted-foreground uppercase">Código (6 dígitos)</label>
-                    <input type="text" maxLength={6} value={sealingCode} onChange={(e) => setSealingCode(e.target.value.replace(/\D/g, ''))} placeholder="123456" className="w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-center text-lg font-black tracking-[0.5em]" />
-                  </div>
-                  <div className="flex items-start gap-3 mt-4">
-                    <input type="checkbox" id="consent" checked={consentCheck} onChange={(e) => setConsentCheck(e.target.checked)} className="mt-0.5 rounded text-primary focus:ring-0" />
-                    <label htmlFor="consent" className="text-[9px] text-muted-foreground leading-normal font-semibold cursor-pointer">Declaro que li e concordo com os termos.</label>
+                  <div className="space-y-4">
+                    <p className="text-[11px] leading-relaxed text-muted-foreground">Revise o documento e preencha as credenciais para assinar.</p>
+                    <div className="space-y-3">
+                      <label className="text-[9px] font-black text-muted-foreground uppercase">E-mail</label>
+                      <input type="email" value={signerEmail} onChange={(e) => setSignerEmail(e.target.value)} placeholder="Seu e-mail..." className="w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-xs font-semibold" />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[9px] font-black text-muted-foreground uppercase">Código (6 dígitos)</label>
+                      <input type="text" maxLength={6} value={sealingCode} onChange={(e) => setSealingCode(e.target.value.replace(/\D/g, ''))} placeholder="123456" className="w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-center text-lg font-black tracking-[0.5em]" />
+                    </div>
+                    <div className="flex items-start gap-3 mt-4">
+                      <input type="checkbox" id="consent" checked={consentCheck} onChange={(e) => setConsentCheck(e.target.checked)} className="mt-0.5 rounded text-primary focus:ring-0" />
+                      <label htmlFor="consent" className="text-[9px] text-muted-foreground leading-normal font-semibold cursor-pointer">Declaro que li e concordo com os termos.</label>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <Button onClick={handleConfirmSignature} disabled={isSealing || !consentCheck} className="w-full bg-primary py-6 rounded-2xl font-black text-[10px] uppercase">Assinar Instrumento</Button>
+              )}
+              {contractStatus !== 'signed' && (
+                <Button onClick={handleConfirmSignature} disabled={isSealing || !consentCheck} className="w-full bg-primary py-6 rounded-2xl font-black text-[10px] uppercase">Assinar Instrumento</Button>
+              )}
             </div>
           ) : (
             <div className="p-6 flex flex-col h-full overflow-hidden min-h-0 space-y-6">
@@ -1204,9 +1337,24 @@ export function NotionEditor({ room, placeholder = "Comece a redigir...", templa
   )
 }
 
-export function NotionEditorContent({ placeholder, templateSlug, readOnly }: { placeholder?: string, templateSlug?: string | null, readOnly?: boolean }) {
-  const { provider, ydoc, setupError: collabSetupError } = useCollab()
+export function NotionEditorContent({ placeholder, templateSlug, readOnly: propReadOnly }: { placeholder?: string, templateSlug?: string | null, readOnly?: boolean }) {
+  const { provider, ydoc, setupError: collabSetupError, room } = useCollab()
   const { geminiKey, setupError: aiSetupError } = useAi()
+  const [contractStatus, setContractStatus] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!room) return
+    const fetchStatus = async () => {
+      const supabase = createClient()
+      const { data } = await supabase.from('contracts').select('status').eq('id', room).single()
+      if (data?.status) {
+        setContractStatus(data.status)
+      }
+    }
+    fetchStatus()
+  }, [room])
+
+  const readOnly = propReadOnly || (contractStatus !== null && contractStatus !== 'draft')
 
   if (collabSetupError || aiSetupError) return <SetupErrorMessage aiSetupError={aiSetupError} collabSetupError={collabSetupError} />
   if (!provider || !geminiKey) return <LoadingSpinner />

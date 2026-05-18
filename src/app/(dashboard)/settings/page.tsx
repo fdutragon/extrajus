@@ -62,6 +62,9 @@ export default function SettingsPage() {
       if (data) {
         setProfile(data);
         setFullName(data.full_name || "");
+        if (data.occupation) {
+          setOccupation(data.occupation);
+        }
       }
       setLoading(false);
     }
@@ -98,6 +101,7 @@ export default function SettingsPage() {
         .from('profiles')
         .update({ 
           full_name: fullName,
+          occupation: occupation,
           updated_at: new Date().toISOString()
         })
         .eq('id', user.id);

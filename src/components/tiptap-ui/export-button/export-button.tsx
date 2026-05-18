@@ -13,12 +13,12 @@ export function ExportButton() {
   const handleExport = async () => {
     const editorElement = document.querySelector(".notion-like-editor-content") as HTMLElement
     if (!editorElement) {
-      toast.error("Arsenal não encontrado para exportação.")
+      toast.error("Documento não encontrado para exportação.")
       return
     }
 
     setIsExporting(true)
-    const exportToast = toast.loading("Selando documento para exportação...", {
+    const exportToast = toast.loading("Preparando documento para exportação...", {
       style: { background: '#09090b', border: '1px solid rgba(255,255,255,0.05)', color: 'white' }
     })
 
@@ -93,7 +93,7 @@ export function ExportButton() {
             }
             body, html { background: #ffffff !important; color: #1a1a1a !important; }
             .notion-like-editor-content {
-              font-family: 'Georgia', 'Times New Roman', serif !important;
+              font-family: 'Cambria', 'Georgia', 'Times New Roman', serif !important;
               font-size: 12pt !important;
               line-height: 1.75 !important;
               color: #1a1a1a !important;
@@ -113,13 +113,42 @@ export function ExportButton() {
             p { color: #1a1a1a !important; background: transparent !important; text-align: justify !important; margin-bottom: 8px !important; }
             strong, b { color: #111111 !important; font-weight: 700 !important; }
             em, i { color: #1a1a1a !important; }
-            .legal-node { color: #1a1a1a !important; background: transparent !important; }
-            .legal-node.legal-node-level-1 { color: #111111 !important; font-weight: 700 !important; font-size: 12.5pt !important; }
-            .legal-node.legal-node-level-2 { color: #1a1a1a !important; font-size: 12pt !important; }
-            .legal-node.legal-node-level-3 { color: #1a1a1a !important; font-size: 11.5pt !important; }
-            .legal-node.legal-node-level-4 { color: #333333 !important; font-size: 11pt !important; }
-            .legal-node-counter { color: #111111 !important; font-weight: 700 !important; }
-            .legal-node-content { color: #1a1a1a !important; }
+            .legal-node {
+              display: flex !important;
+              align-items: flex-start !important;
+              color: #1a1a1a !important;
+              background: transparent !important;
+              margin-bottom: 0.6rem !important;
+            }
+            .legal-node, p, blockquote, tr, li {
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+            }
+            .legal-node.legal-node-level-1 { color: #111111 !important; font-weight: 700 !important; font-size: 12.5pt !important; margin-top: 0.5rem !important; }
+            .legal-node.legal-node-level-1 .legal-node-counter { margin-right: 0.5rem !important; }
+            .legal-node.legal-node-level-2 { color: #1a1a1a !important; font-size: 12pt !important; margin-left: 2rem !important; }
+            .legal-node.legal-node-level-2 .legal-node-counter { min-width: 2.2rem !important; }
+            .legal-node.legal-node-level-3 { color: #1a1a1a !important; font-size: 11.5pt !important; margin-left: 4rem !important; }
+            .legal-node.legal-node-level-3 .legal-node-counter { min-width: 2.2rem !important; }
+            .legal-node.legal-node-level-4 { color: #333333 !important; font-size: 11pt !important; margin-left: 6rem !important; }
+            .legal-node.legal-node-level-4 .legal-node-counter { min-width: 1.8rem !important; }
+            .legal-node-counter {
+              color: #111111 !important;
+              font-weight: 700 !important;
+              margin-right: 0.75rem !important;
+              display: inline-block !important;
+              flex-shrink: 0 !important;
+            }
+            .legal-node-content {
+              color: #1a1a1a !important;
+              flex: 1 !important;
+              text-align: justify !important;
+            }
+            .legal-node-content p, .legal-node-content div {
+              margin: 0 !important;
+              padding: 0 !important;
+              text-align: justify !important;
+            }
             table { width: 100% !important; border-collapse: collapse !important; background: transparent !important; }
             td, th { border: 1px solid #9ca3af !important; padding: 10px 14px !important; color: #1a1a1a !important; background: transparent !important; }
             button, [role="toolbar"], header, nav, .fixed, .sticky,
@@ -222,11 +251,11 @@ export function ExportButton() {
         drawPage(p, srcY, srcH)
       }
 
-      pdf.save(`extrajus-pacto-${new Date().getTime()}.pdf`)
+      pdf.save(`extrajus-documento-${new Date().getTime()}.pdf`)
       toast.success(`Documento exportado — ${totalPages} página(s).`, { id: exportToast })
     } catch (error) {
       console.error("Export error:", error)
-      toast.error("Falha na exportação do ritual.", { id: exportToast })
+      toast.error("Falha na exportação do documento.", { id: exportToast })
     } finally {
       if (scrollParent) {
         scrollParent.style.overflow = originalOverflow

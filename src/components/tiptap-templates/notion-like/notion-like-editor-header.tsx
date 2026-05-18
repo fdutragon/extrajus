@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { 
   ChevronLeft, 
   FileText, 
   UserPlus, 
   Check, 
-  Download 
+  Download,
+  Brain
 } from "lucide-react"
 import Link from "next/link"
 import { useCollab } from "../../../contexts/collab-context"
@@ -18,10 +19,66 @@ import { CollaborationUsers } from "../../../components/tiptap-templates/notion-
 import { cn } from "@/lib/utils"
 import "../../../components/tiptap-templates/notion-like/notion-like-editor-header.scss"
 import { SignModal } from "../../../components/tiptap-ui/sign-modal/sign-modal"
+import { createClient } from "@/utils/supabase/client"
 
 export function NotionEditorHeader() {
   const { room } = useCollab()
   const [copied, setCopied] = useState(false)
+  const [credits, setCredits] = useState<number | null>(null)
+  const supabase = createClient()
+
+  useEffect(() => {
+    let active = true
+    let channel: any = null
+
+    const fetchProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user || !active) return
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("credits")
+        .eq("id", user.id)
+        .single()
+
+      if (profile && active) {
+        setCredits(profile.credits)
+      }
+
+      channel = supabase
+        .channel(`header-profile-realtime-${user.id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'profiles',
+            filter: `id=eq.${user.id}`
+          },
+          (payload: any) => {
+            if (active) {
+              setCredits(payload.new.credits)
+            }
+          }
+        )
+        .subscribe()
+    }
+
+    fetchProfile()
+
+    const handleProfileUpdated = () => {
+      fetchProfile()
+    }
+    window.addEventListener('profile-updated', handleProfileUpdated)
+
+    return () => {
+      active = false
+      window.removeEventListener('profile-updated', handleProfileUpdated)
+      if (channel) {
+        supabase.removeChannel(channel)
+      }
+    }
+  }, [supabase])
 
   const handleInvite = () => {
     if (typeof window === "undefined") return
@@ -30,6 +87,10 @@ export function NotionEditorHeader() {
     navigator.clipboard.writeText(url.toString())
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleOpenPlans = () => {
+    window.dispatchEvent(new Event("open-plans-modal"))
   }
 
   return (
@@ -67,6 +128,17 @@ export function NotionEditorHeader() {
       {/* Right: Collaboration & The Ritual */}
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2 pr-2 border-r border-border">
+          {/* Sinapses Balance Pill */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleOpenPlans}
+            className="h-7 gap-1.5 px-3 rounded-lg text-primary hover:bg-primary/10 transition-all font-bold text-[9px] uppercase tracking-widest flex items-center border border-primary/20 bg-primary/5 hover:border-primary/45 shadow-sm shadow-primary/5 group"
+          >
+            <Brain size={12} className="text-primary animate-pulse shrink-0 group-hover:scale-110 transition-transform" />
+            <span>{credits !== null ? `${credits} Sinapses` : "..."}</span>
+          </Button>
+
           <Button 
             variant="ghost" 
             size="sm" 

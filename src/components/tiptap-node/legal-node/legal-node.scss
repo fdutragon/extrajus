@@ -1,93 +1,113 @@
 .notion-like-editor-content {
   counter-reset: clausula;
+}
 
-  .legal-node {
-    display: flex;
-    margin-top: 0;
-    margin-bottom: 0.25rem;
-    position: relative;
-    
-    .legal-node-counter {
-      user-select: none;
-      font-weight: 700;
-      margin-right: 0.5rem;
-      white-space: nowrap;
-    }
+// Regras globais para os legal-nodes para garantir renderização idêntica no Editor, Previews e Exportações de PDF
+.legal-node {
+  display: flex;
+  margin-top: 0;
+  margin-bottom: 0.25rem;
+  position: relative;
+  align-items: flex-start; // Garante que o contador alinhe perfeitamente no topo com a primeira linha do texto
+  
+  .legal-node-counter {
+    user-select: none;
+    font-weight: 700;
+    margin-right: 0.75rem;
+    white-space: nowrap;
+    display: inline-block;
+    flex-shrink: 0;
+  }
 
-    .legal-node-content {
-      flex: 1;
-      text-align: inherit;
-    }
+  .legal-node-content {
+    flex: 1;
+    text-align: justify !important;
+    text-justify: inter-word;
 
-    &.legal-node-level-1 {
-      counter-increment: clausula;
-      counter-reset: paragrafo inciso;
-      margin-top: 0;
-      margin-bottom: 0.9rem;
-      font-weight: 700;
-      font-size: 1.2em;
-      
-      .legal-node-counter::before {
-        content: "Cláusula " counter(clausula) " -";
-      }
-    }
-
-    &.legal-node-level-2 {
-      counter-increment: paragrafo;
-      counter-reset: inciso;
-      margin-left: 2rem;
-      margin-top: 0;
-      margin-bottom: 0.8rem;
-      font-size: 1.08em;
-      
-      .legal-node-counter {
-        font-weight: 600;
-      }
-      
-      .legal-node-counter::before {
-        content: "§ " counter(paragrafo) "º";
-      }
-    }
-
-    &.legal-node-level-3 {
-      counter-increment: inciso;
-      counter-reset: alinea;
-      margin-left: 4rem;
-      margin-top: 0;
-      margin-bottom: 1.2rem;
-      font-size: 1.0em;
-      
-      .legal-node-counter {
-        font-weight: 500;
-      }
-
-      .legal-node-counter::before {
-        content: counter(inciso, upper-roman) " -";
-      }
-    }
-
-    &.legal-node-level-4 {
-      counter-increment: alinea;
-      margin-left: 6rem;
-      margin-top: 0;
-      margin-bottom: 1.2rem;
-      font-size: 0.92em;
-      
-      .legal-node-counter {
-        font-weight: 400;
-      }
-
-      .legal-node-counter::before {
-        content: counter(alinea, lower-alpha) ")";
-      }
-    }
-    
-    /* Collapse double gap: when a clausula (level-1) immediately follows
-       the last inciso (level-3) or alinea (level-4), pull it back up
-       so only one block of breathing room remains between sections. */
-    &.legal-node-level-3 + &.legal-node-level-1,
-    &.legal-node-level-4 + &.legal-node-level-1 {
-      margin-top: -0.6rem;
+    // Escudo de segurança para elementos filhos internos (ex: parágrafos e divs gerados pelo editor)
+    p, div {
+      margin: 0 !important;
+      padding: 0 !important;
+      text-align: justify !important;
+      text-justify: inter-word;
+      line-height: inherit !important;
     }
   }
+
+  &.legal-node-level-1 {
+    counter-increment: clausula;
+    counter-reset: paragrafo inciso;
+    margin-top: 0.5rem;
+    margin-bottom: 0.7rem;
+    font-weight: 700;
+    font-size: 1.0em;
+    
+    .legal-node-counter {
+      margin-right: 0.5rem;
+    }
+    
+    .legal-node-counter::before {
+      content: "Cláusula " counter(clausula) " -";
+    }
+  }
+
+  &.legal-node-level-2 {
+    counter-increment: paragrafo;
+    counter-reset: inciso;
+    margin-left: 2rem;
+    margin-top: 0;
+    margin-bottom: 0.6rem;
+    font-size: 1.0em;
+    
+    .legal-node-counter {
+      font-weight: 600;
+      min-width: 2.2rem; // Largura mínima alinha perfeitamente todos os símbolos de parágrafo (§) e textos!
+    }
+    
+    .legal-node-counter::before {
+      content: "§ " counter(paragrafo) "º";
+    }
+  }
+
+  &.legal-node-level-3 {
+    counter-increment: inciso;
+    counter-reset: alinea;
+    margin-left: 4rem;
+    margin-top: 0;
+    margin-bottom: 0.6rem;
+    font-size: 1.0em;
+    
+    .legal-node-counter {
+      font-weight: 500;
+      min-width: 2.2rem; // Largura mínima alinha perfeitamente algarismos romanos curtos e longos (I, VIII, XII...)!
+    }
+
+    .legal-node-counter::before {
+      content: counter(inciso, upper-roman) " -";
+    }
+  }
+
+  &.legal-node-level-4 {
+    counter-increment: alinea;
+    margin-left: 6rem;
+    margin-top: 0;
+    margin-bottom: 0.6rem;
+    font-size: 1.0em;
+    
+    .legal-node-counter {
+      font-weight: 400;
+      min-width: 1.8rem; // Largura mínima alinha perfeitamente as alíneas em letras minúsculas a), b), c)...
+    }
+
+    .legal-node-counter::before {
+      content: counter(alinea, lower-alpha) ")";
+    }
+  }
+  
+  /* Evita espaçamento duplo quando uma cláusula segue imediatamente um inciso ou alínea */
+  &.legal-node-level-3 + &.legal-node-level-1,
+  &.legal-node-level-4 + &.legal-node-level-1 {
+    margin-top: -0.6rem;
+  }
 }
+

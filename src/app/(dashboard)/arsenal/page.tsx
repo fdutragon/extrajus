@@ -328,14 +328,14 @@ export default function ArsenalPage() {
             </ScrollArea>
 
             <div className="p-6 border-t border-border bg-muted/30 flex justify-center gap-3">
-              <Button variant="ghost" onClick={() => setPreviewTemplate(null)} className="h-10 px-6 font-bold text-[10px] uppercase text-muted-foreground hover:text-foreground transition-colors">Fechar Visualização</Button>
+              <Button variant="ghost" onClick={() => setPreviewTemplate(null)} className="h-9 px-4 font-bold text-[10px] uppercase text-muted-foreground hover:text-foreground transition-colors">Fechar Visualização</Button>
               <Button 
                 onClick={() => {
                   const tpl = previewTemplate;
                   setPreviewTemplate(null);
                   handleUseTemplate(tpl);
                 }}
-                className="h-10 px-6 bg-primary text-primary-foreground font-bold rounded-lg text-[10px] uppercase hover:opacity-90 transition-all"
+                className="h-9 px-4 bg-primary text-primary-foreground font-bold rounded-lg text-[10px] uppercase hover:opacity-90 transition-all"
               >
                 Gerar com este Modelo
               </Button>

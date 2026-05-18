@@ -10,10 +10,59 @@ export async function POST(req: Request) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
+    if (!user) {
+      return NextResponse.json(
+        { error: "Acesso não autorizado. Por favor, faça login." },
+        { status: 401 }
+      );
+    }
+
     const aiRigor = user?.user_metadata?.ai_rigor ?? 8;
     const aiMode = user?.user_metadata?.ai_mode ?? "Inovador";
 
     const { prompt, instructionType } = await req.json();
+
+    // Validar e descontar créditos de Sinapses (6 para geração, 3 para auditoria, 1 para refinamento)
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("credits")
+      .eq("id", user.id)
+      .single();
+
+    const currentCredits = profile?.credits ?? 0;
+    
+    let cost = 1;
+    if (instructionType === "generation") {
+      cost = 6;
+    } else if (instructionType === "audit") {
+      cost = 3; // Auditoria completa lê o contrato inteiro
+    }
+
+    if (currentCredits < cost) {
+      return NextResponse.json(
+        { error: `Saldo de Sinapses insuficiente. Esta operação exige ${cost} Sinapses, mas você possui apenas ${currentCredits}.` },
+        { status: 403 }
+      );
+    }
+
+    // Deduzir créditos e registrar auditoria no ledger
+    await supabase
+      .from("profiles")
+      .update({ credits: currentCredits - cost })
+      .eq("id", user.id);
+
+    await supabase
+      .from("credit_ledger")
+      .insert({
+        user_id: user.id,
+        amount: -cost,
+        action_type: 
+          instructionType === "generation" 
+            ? "contract_forged" 
+            : instructionType === "audit" 
+              ? "ai_contract_audited" 
+              : "ai_ritual_refinement",
+      });
 
     const modelName = "gemini-2.5-flash";
 
@@ -91,7 +140,18 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
    Exemplo Correto:
    <div data-type="legal-node" data-level="1">DO OBJETO</div>
    <div data-type="legal-node" data-level="2">O presente contrato tem como objeto o desenvolvimento de...</div>
-5. NUNCA insira prefixos numéricos manualmente (como 'Cláusula Primeira', 'Cláusula 1ª' ou '1 -'). Escreva apenas o título (ex: 'DO OBJETO') e deixe que o editor formate a numeração. A numeração automática segue o formato 'Cláusula X - [Título]' com algarismos arábicos (como 'Cláusula 3 - '), então nunca escreva numeração por extenso (como 'Cláusula Terceira').
+5. PROIBIÇÃO ABSOLUTA DE NUMERAÇÃO E PREFIXOS MANUAIS: O editor da ExtraJus gera AUTOMATICAMENTE todas as numerações, símbolos e letras de hierarquia jurídica (cláusulas, parágrafos, incisos e alíneas). 
+   - NUNCA insira manualmente prefixos como "Cláusula Primeira", "Cláusula X", "1. ", "1 -", "1) ", "Parágrafo Único:", "§ 1º", "I -", "II -", "a)", "b)", etc.
+   - O texto de qualquer nó (div de legal-node ou p) deve começar DIRETAMENTE com a redação contratual propriamente dita. Se você inserir qualquer número, letra ou prefixo manualmente, isso causará uma quebra de linha errada e duplicará a numeração de forma horrível no editor!
+   - Exemplos Incorretos (NUNCA FAÇA):
+     * <div data-type="legal-node" data-level="2">Parágrafo único. O presente...</div>
+     * <div data-type="legal-node" data-level="2">1. O presente...</div>
+     * <div data-type="legal-node" data-level="3">I - O presente...</div>
+     * <div data-type="legal-node" data-level="4">a) O presente...</div>
+   - Exemplos Corretos (FAÇA SEMPRE):
+     * <div data-type="legal-node" data-level="2">O presente contrato tem como objeto...</div>
+     * <div data-type="legal-node" data-level="3">O desenvolvimento do software...</div>
+     * <div data-type="legal-node" data-level="4">Prazo de entrega em até...</div>
 6. Partes identificadas em preâmbulo com parágrafos (<p>). NUNCA use tabelas (<table>) no preâmbulo. Insira sempre uma linha em branco (um parágrafo <p></p>) entre a qualificação do Contratante e a do Contratado para espaçamento adequado. NUNCA crie cláusula "DAS PARTES".
 7. Primeira cláusula SEMPRE é o Objeto do contrato.
 8. Seção de Data e Assinaturas (Fim do Contrato): É OBRIGATÓRIO incluir 4 parágrafos vazios (<p></p>) antes da data para criar um espaçamento elegante. A data e os campos de assinatura devem vir centralizados (usando os atributos data-node-text-align="center" e style="text-align: center;"). Cada campo de assinatura deve conter OBRIGATORIAMENTE a linha física de assinatura exata usando caracteres normais de underline puro (__________________________________________), sem espaços e sem markdown, seguida do rótulo da parte em negrito. NÃO insira campo de testemunhas. Siga ESTRITAMENTE o exemplo de HTML abaixo para esta seção:

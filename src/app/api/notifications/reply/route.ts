@@ -34,7 +34,7 @@ export async function POST(request: Request) {
       .eq('id', user.id)
       .single();
 
-    const senderName = isSenderAdmin ? "Felipe (Admin)" : (profile?.full_name || "Recruta");
+    const senderName = isSenderAdmin ? "Felipe (Admin)" : (profile?.full_name || "Usuário");
     const senderEmail = profile?.email || user.email || "recruta@extrajus.com";
 
     // 2. Buscar dados da notificação original para saber quem é o destinatário

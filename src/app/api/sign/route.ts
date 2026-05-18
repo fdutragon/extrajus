@@ -31,6 +31,37 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'ID do contrato é obrigatório' }, { status: 400 })
     }
 
+    // Validar e descontar créditos de Sinapses para disparo de assinatura (4 Sinapses)
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('credits')
+      .eq('id', user.id)
+      .single();
+
+    const currentCredits = profile?.credits ?? 0;
+    const signatureCost = 4;
+
+    if (currentCredits < signatureCost) {
+      return NextResponse.json({ 
+        error: `Saldo de Sinapses insuficiente para enviar assinaturas. Este fluxo exige ${signatureCost} Sinapses, mas você possui apenas ${currentCredits}.` 
+      }, { status: 403 });
+    }
+
+    // Deduzir créditos e registrar auditoria no ledger
+    await supabase
+      .from('profiles')
+      .update({ credits: currentCredits - signatureCost })
+      .eq('id', user.id);
+
+    await supabase
+      .from('credit_ledger')
+      .insert({
+        user_id: user.id,
+        amount: -signatureCost,
+        action_type: 'signature_sent',
+        reference_id: contractId
+      });
+
     // Buscar perfil do criador do contrato no banco para pegar o nome oficial
     const { data: creatorProfile } = await supabase
       .from('profiles')
@@ -93,7 +124,7 @@ export async function POST(request: Request) {
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #000; color: #fff; padding: 40px; border: 1px solid #111;">
               <h1 style="color: #c0ff00; font-size: 24px; text-transform: uppercase; letter-spacing: 4px;">ExtraJus</h1>
-              <p style="font-size: 14px; opacity: 0.7; border-bottom: 1px solid #222; padding-bottom: 20px;">RITUAL DE ASSINATURA DIGITAL</p>
+              <p style="font-size: 14px; opacity: 0.7; border-bottom: 1px solid #222; padding-bottom: 20px;">PROTOCOLO DE ASSINATURA DIGITAL</p>
               
               <p style="margin-top: 30px;">Saudações, <strong>${signer.name}</strong>.</p>
               <p>Um novo contrato aguarda sua assinatura: <strong>${title || 'Sem Título'}</strong>.</p>
@@ -113,7 +144,7 @@ export async function POST(request: Request) {
               </a>
 
               <p style="margin-top: 50px; font-size: 10px; opacity: 0.3; text-align: center;">
-                ExtraJus AI © 2026 • Ritual Sovereign Protocol
+                ExtraJus AI © 2026 • Secure Signature Protocol
               </p>
             </div>
           `
@@ -124,7 +155,7 @@ export async function POST(request: Request) {
       await Promise.all(emailPromises);
     }
 
-    return NextResponse.json({ success: true, message: "Convites enviados e pacto em estado pendente." });
+    return NextResponse.json({ success: true, message: "Convites enviados e contrato em estado pendente." });
 
   } catch (error: any) {
     console.error("ExtraJus Signature API Failure:", error);

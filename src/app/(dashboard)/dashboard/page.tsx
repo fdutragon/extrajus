@@ -26,6 +26,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { createContractAction } from "@/app/actions";
+import { BuyCreditsButton } from "@/components/ui/buy-credits-button";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -84,7 +85,7 @@ export default async function DashboardPage() {
         <form action={createContractAction}>
           <Button
             type="submit"
-            className="relative bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-[0.1em] text-[10px] rounded-xl px-8 h-12 group transition-all duration-500 overflow-hidden shadow-[0_0_20px_rgba(197,168,128,0.15)] hover:shadow-[0_0_30px_rgba(197,168,128,0.3)] border border-primary/50 hover:border-primary"
+            className="relative bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-[0.1em] text-[10px] rounded-xl px-4 h-9 group transition-all duration-500 overflow-hidden shadow-[0_0_20px_rgba(197,168,128,0.15)] hover:shadow-[0_0_30px_rgba(197,168,128,0.3)] border border-primary/50 hover:border-primary"
           >
             <div className="relative z-10 flex items-center gap-2">
               <PlusCircle size={14} className="transition-transform duration-500 group-hover:rotate-90 group-hover:scale-110" />
@@ -204,7 +205,7 @@ export default async function DashboardPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="p-3 rounded-lg bg-muted/50 border border-border hover:border-primary/30 transition-all cursor-help group/item">
+                  <div className="p-3 rounded-lg bg-muted/50 border border-border hover:border-primary/30 transition-all group/item">
                     <div className="flex items-center gap-2 mb-1">
                       <Zap size={12} className="text-primary" />
                       <span className="text-[10px] font-black uppercase text-primary">Capacidade</span>
@@ -212,9 +213,10 @@ export default async function DashboardPage() {
                     <p className="text-[12px] text-muted-foreground leading-relaxed group-hover/item:text-foreground transition-colors">
                       Você ainda possui <span className="text-foreground font-bold">{profile?.credits || 0} requisições</span> de auditoria IA. Tempo de resposta médio: <span className="text-foreground font-bold">4.2s</span>.
                     </p>
+                    <BuyCreditsButton />
                   </div>
 
-                  <div className="p-3 rounded-lg bg-muted/50 border border-border hover:border-primary/30 transition-all cursor-help group/item">
+                  <div className="p-3 rounded-lg bg-muted/50 border border-border hover:border-primary/30 transition-all group/item">
                     <div className="flex items-center gap-2 mb-1">
                       <TrendingUp size={12} className="text-primary" />
                       <span className="text-[10px] font-black uppercase text-primary">Repositório</span>
@@ -222,6 +224,16 @@ export default async function DashboardPage() {
                     <p className="text-[12px] text-muted-foreground leading-relaxed group-hover/item:text-foreground transition-colors">
                       Sua conta possui <span className="text-foreground font-bold">{templateCount || 0} modelos</span> de contratos estruturados prontos para uso imediato.
                     </p>
+                    <Link href="/arsenal" className="block w-full">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-3 w-full h-8 gap-1.5 rounded-xl border-border hover:border-primary/50 bg-muted/20 hover:bg-muted text-muted-foreground hover:text-foreground font-bold text-[9px] uppercase tracking-widest transition-all duration-300 active:scale-[0.98]"
+                      >
+                        <FileText size={10} className="text-muted-foreground group-hover/item:text-primary transition-colors" />
+                        Biblioteca de Modelos
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </div>

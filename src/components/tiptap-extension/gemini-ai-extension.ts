@@ -82,7 +82,18 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
    Exemplo Correto:
    <div data-type="legal-node" data-level="1">DO OBJETO</div>
    <div data-type="legal-node" data-level="2">O presente contrato tem como objeto o desenvolvimento de...</div>
-5. NUNCA insira prefixos numéricos manualmente (como 'Cláusula Primeira', 'Cláusula 1ª' ou '1 -'). Escreva apenas o título (ex: 'DO OBJETO') e deixe que o editor formate a numeração. A numeração automática segue o formato 'Cláusula X - [Título]' com algarismos arábicos (como 'Cláusula 3 - '), então nunca escreva numeração por extenso (como 'Cláusula Terceira').
+5. PROIBIÇÃO ABSOLUTA DE NUMERAÇÃO E PREFIXOS MANUAIS: O editor da ExtraJus gera AUTOMATICAMENTE todas as numerações, símbolos e letras de hierarquia jurídica (cláusulas, parágrafos, incisos e alíneas). 
+   - NUNCA insira manualmente prefixos como "Cláusula Primeira", "Cláusula X", "1. ", "1 -", "1) ", "Parágrafo Único:", "§ 1º", "I -", "II -", "a)", "b)", etc.
+   - O texto de qualquer nó (div de legal-node ou p) deve começar DIRETAMENTE com a redação contratual propriamente dita. Se você inserir qualquer número, letra ou prefixo manualmente, isso causará uma quebra de linha errada e duplicará a numeração de forma horrível no editor!
+   - Exemplos Incorretos (NUNCA FAÇA):
+     * <div data-type="legal-node" data-level="2">Parágrafo único. O presente...</div>
+     * <div data-type="legal-node" data-level="2">1. O presente...</div>
+     * <div data-type="legal-node" data-level="3">I - O presente...</div>
+     * <div data-type="legal-node" data-level="4">a) O presente...</div>
+   - Exemplos Corretos (FAÇA SEMPRE):
+     * <div data-type="legal-node" data-level="2">O presente contrato tem como objeto...</div>
+     * <div data-type="legal-node" data-level="3">O desenvolvimento do software...</div>
+     * <div data-type="legal-node" data-level="4">Prazo de entrega em até...</div>
 6. Partes identificadas em preâmbulo com parágrafos (<p>). NUNCA use tabelas (<table>) no preâmbulo. Insira sempre uma linha em branco (um parágrafo <p></p>) entre a qualificação do Contratante e a do Contratado para espaçamento adequado. NUNCA crie cláusula "DAS PARTES".
 7. Primeira cláusula SEMPRE é o Objeto do contrato.
 8. Seção de Data e Assinaturas (Fim do Contrato): É OBRIGATÓRIO incluir 4 parágrafos vazios (<p></p>) antes da data para criar um espaçamento elegante. A data e os campos de assinatura devem vir centralizados (usando os atributos data-node-text-align="center" e style="text-align: center;"). Cada campo de assinatura deve conter OBRIGATORIAMENTE a linha física de assinatura exata usando caracteres normais de underline puro (__________________________________________), sem espaços e sem markdown, seguida do rótulo da parte em negrito. NÃO insira campo de testemunhas. Siga ESTRITAMENTE o exemplo de HTML abaixo para esta seção:
@@ -179,6 +190,13 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
 
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}))
+          if (response.status === 403) {
+            this.storage.state = "error"
+            toast.error(errData.error || "Saldo de Sinapses insuficiente para esta operação.")
+            window.dispatchEvent(new Event("open-plans-modal"));
+            editor.commands.aiGenerationSetIsLoading(false)
+            return
+          }
           throw new Error(errData.error || "Falha na comunicação com o sistema IA.")
         }
 
@@ -389,8 +407,15 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
       aiAuditRisk: () => ({ editor }: any) => {
         const text = editor.state.doc.textContent
 
+        if (text.trim().length < 150) {
+          this.storage.state = "error"
+          this.storage.auditResults = []
+          return false
+        }
+
         const runAudit = async () => {
           this.storage.state = "loading"
+          this.storage.auditResults = [];
 
           try {
             const response = await fetch("/api/ai/ritual", {
@@ -406,6 +431,13 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
 
             if (!response.ok) {
               const errData = await response.json().catch(() => ({}))
+              if (response.status === 403) {
+                this.storage.state = "error"
+                this.storage.auditResults = [];
+                toast.error(errData.error || "Saldo de Sinapses insuficiente para esta operação.")
+                window.dispatchEvent(new Event("open-plans-modal"));
+                return
+              }
               throw new Error(errData.error || "Falha na comunicação com o auditor do servidor.")
             }
 
@@ -431,6 +463,7 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
           } catch (error) {
             console.error("Gemini audit failed:", error)
             this.storage.state = "error"
+            this.storage.auditResults = [];
           }
         }
 

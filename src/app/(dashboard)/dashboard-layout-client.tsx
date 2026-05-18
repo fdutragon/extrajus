@@ -511,22 +511,46 @@ export default function DashboardLayoutClient({
               isCollapsed && "hidden lg:hidden"
             )}>
               <div className="flex items-center justify-between">
-                <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-[0.15em]">Visão Geral</span>
+                <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.18em]">Arsenal de Poder</span>
                 <div className="flex gap-1">
                   <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                   <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
                 </div>
               </div>
+
+              {/* Glowing Sinapses Credit Card */}
+              <Link 
+                href="/settings"
+                className="block bg-gradient-to-br from-primary/15 via-primary/5 to-transparent rounded-xl p-3 border border-primary/25 hover:border-primary/50 transition-all text-left shadow-lg relative group overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-xl pointer-events-none group-hover:bg-primary/10 transition-colors" />
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] text-primary font-bold uppercase tracking-wider flex items-center gap-1.5">
+                    <Brain size={12} className="text-primary animate-pulse" /> Sinapses Ativas
+                  </span>
+                  <span className="text-[8px] font-black text-primary/70 group-hover:text-primary transition-colors uppercase tracking-widest bg-primary/10 px-1.5 py-0.5 rounded-md border border-primary/20">RECARREGAR</span>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-[20px] font-mono font-black text-primary drop-shadow-[0_0_8px_rgba(var(--primary),0.3)]">
+                    {profile?.credits !== undefined ? profile.credits : "30"}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground font-medium font-mono">disponíveis</span>
+                </div>
+                <p className="text-[9px] text-muted-foreground/80 mt-1 leading-normal">
+                  Forje contratos (6) ou use Rituais de IA (1).
+                </p>
+              </Link>
+
               <div className="grid grid-cols-2 gap-2">
                 <div className="bg-muted/40 rounded-lg p-2.5 border border-border hover:bg-muted/70 transition-all text-left">
                   <div className="text-[9px] text-muted-foreground uppercase font-bold mb-0.5">Contratos</div>
-                  <div className="text-[14px] font-mono font-bold text-primary">
+                  <div className="text-[14px] font-mono font-bold text-foreground/80">
                     {contractCount !== null ? contractCount : "..."}
                   </div>
                 </div>
                 <div className="bg-muted/40 rounded-lg p-2.5 border border-border hover:bg-muted/70 transition-all text-left">
                   <div className="text-[9px] text-muted-foreground uppercase font-bold mb-0.5">Assinaturas</div>
-                  <div className="text-[14px] font-mono font-bold text-foreground/90">
+                  <div className="text-[14px] font-mono font-bold text-foreground/80">
                     {signatureCount !== null ? signatureCount : "..."}
                   </div>
                 </div>
@@ -870,6 +894,7 @@ export default function DashboardLayoutClient({
           </div>
         </div>
       )}
+
     </div>
   );
 }

@@ -31,6 +31,12 @@ span.tiptap-slash-decoration.is-empty::after {
 .tiptap-slash-card {
   overflow-y: auto;
   overflow-x: hidden;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7) !important;
+  background-color: var(--bg-card, rgba(15, 15, 15, 0.85)) !important;
+  backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 215, 0, 0.15) !important;
+  padding: 4px !important;
 
   &::-webkit-scrollbar {
     width: 4px;
@@ -49,6 +55,58 @@ span.tiptap-slash-decoration.is-empty::after {
 
   &::-webkit-scrollbar-thumb:hover {
     background: var(--tt-slash-scrollbar-hover);
+  }
+
+  // Estilização compacta e refinada dos botões (itens do menu)
+  .tiptap-button {
+    font-size: 0.775rem !important; // Mais compacto, não "muito grande"
+    height: 1.85rem !important; // Reduz a altura, mais refinado
+    padding: 0 10px !important;
+    margin: 2px 4px !important; // Adiciona margem vertical/horizontal para não ficar "grudado"
+    border-radius: 6px !important;
+    gap: 8px !important;
+    width: calc(100% - 8px) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+
+    .tiptap-button-icon {
+      width: 0.875rem !important;
+      height: 0.875rem !important;
+      opacity: 0.6;
+      transition: opacity 0.2s ease;
+    }
+
+    .tiptap-button-text {
+      font-weight: 500 !important;
+    }
+
+    // Hover e Ativo com destaque dourado elegante
+    &[data-active-state="on"],
+    &:hover {
+      background-color: rgba(255, 215, 0, 0.08) !important;
+      color: rgb(255, 215, 0) !important;
+
+      .tiptap-button-icon {
+        opacity: 1 !important;
+        color: rgb(255, 215, 0) !important;
+      }
+    }
+  }
+
+  // Estilização das labels de grupo
+  .tiptap-card-group-label {
+    padding: 8px 12px 4px !important;
+    font-size: 0.6rem !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.15em !important;
+    color: rgba(255, 255, 255, 0.35) !important;
+  }
+
+  // Linhas divisórias
+  hr, .tiptap-separator, [data-orientation="horizontal"] {
+    margin: 4px 8px !important;
+    opacity: 0.08 !important;
+    background-color: rgba(255, 255, 255, 0.5) !important;
   }
 }
 

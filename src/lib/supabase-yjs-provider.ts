@@ -198,7 +198,7 @@ export class SupabaseYjsProvider extends Observable<string> {
       }
       
       console.log(`[SupabaseYjsProvider] Manual update saved successfully for ${this.contractId}`)
-      return { saved: true, message: "Pacto soberano guardado com sucesso na eternidade do banco!" }
+      return { saved: true, message: "Documento salvo com sucesso no banco de dados!" }
     } catch (e: any) {
       console.error("[SupabaseYjsProvider] Manual save failed:", e)
       // Restore pendingUpdate so we don't lose it on retry

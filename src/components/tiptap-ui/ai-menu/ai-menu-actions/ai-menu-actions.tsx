@@ -43,7 +43,7 @@ export function AiMenuActions({
       <div className="flex items-center gap-2">
         <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
         <span className="text-[11px] font-medium text-muted-foreground">
-          {aiGenerationIsLoading ? "Canalizando..." : "Sugestão pronta"}
+          {aiGenerationIsLoading ? "Gerando..." : "Sugestão pronta"}
         </span>
       </div>
  
@@ -63,7 +63,7 @@ export function AiMenuActions({
           disabled={aiGenerationIsLoading}
         >
           <Check size={12} />
-          Aplicar pacto
+          Aplicar sugestão
         </Button>
       </div>
     </div>

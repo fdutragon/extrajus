@@ -37,11 +37,11 @@ export function ContractsTable({ initialContracts }: { initialContracts: any[] }
   );
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja destruir este ritual? Esta ação é irreversível.")) return;
+    if (!confirm("Tem certeza que deseja excluir este documento? Esta ação é irreversível.")) return;
 
     const { error } = await supabase.from('contracts').delete().eq('id', id);
     if (error) {
-      toast.error("Falha ao destruir contrato.");
+      toast.error("Falha ao excluir contrato.");
     } else {
       setContracts(prev => prev.filter(c => c.id !== id));
       toast.success("Contrato eliminado do repositório.");

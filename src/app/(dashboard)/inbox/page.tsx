@@ -561,9 +561,9 @@ export default function InboxPage() {
 
                       <div className="flex-1 overflow-y-auto max-h-[300px] space-y-4 pr-1.5 custom-scrollbar text-left min-h-[220px]">
                          
-                         <div className="flex flex-col gap-1.5 ml-auto items-end max-w-[85%] text-right animate-in fade-in slide-in-from-right-3 duration-300">
-                            <div className="bg-muted/15 border border-border/50 p-4 rounded-2xl rounded-tr-none shadow-sm backdrop-blur-sm">
-                               <p className="text-xs text-foreground font-bold whitespace-pre-wrap leading-relaxed text-right">
+                         <div className={cn("flex flex-col gap-1.5 max-w-[85%]", isAdminView ? "mr-auto items-start text-left animate-in fade-in slide-in-from-left-3 duration-300" : "ml-auto items-end text-right animate-in fade-in slide-in-from-right-3 duration-300")}>
+                            <div className={cn("p-4 rounded-2xl shadow-sm backdrop-blur-sm border transition-all", isAdminView ? "bg-muted/10 border-border/50 rounded-tl-none text-left" : "bg-primary/5 border-primary/25 rounded-tr-none text-right")}>
+                               <p className="text-xs text-foreground font-bold whitespace-pre-wrap leading-relaxed">
                                   {selectedNotification.message}
                                </p>
                             </div>
@@ -584,14 +584,14 @@ export default function InboxPage() {
                                     key={reply.id} 
                                     className={cn(
                                       "flex flex-col gap-1.5 max-w-[85%]",
-                                      isMe ? "mr-auto items-start text-left animate-in fade-in slide-in-from-left-3 duration-300" : "ml-auto items-end text-right animate-in fade-in slide-in-from-right-3 duration-300"
+                                      isMe ? "ml-auto items-end text-right animate-in fade-in slide-in-from-right-3 duration-300" : "mr-auto items-start text-left animate-in fade-in slide-in-from-left-3 duration-300"
                                     )}
                                   >
                                      <div className={cn(
                                        "p-4 rounded-2xl shadow-sm backdrop-blur-sm transition-all",
                                        isMe 
-                                         ? "bg-primary/5 border border-primary/25 rounded-tl-none text-left" 
-                                         : "bg-muted/10 border border-border/50 rounded-tr-none text-right"
+                                         ? "bg-primary/5 border border-primary/25 rounded-tr-none text-right" 
+                                         : "bg-muted/10 border border-border/50 rounded-tl-none text-left"
                                      )}>
                                         <p className="text-xs text-foreground font-bold whitespace-pre-wrap leading-relaxed">
                                            {reply.message}

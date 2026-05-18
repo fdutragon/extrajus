@@ -80,7 +80,7 @@ export function DataRoom({ editor }: DataRoomProps) {
       ;(editor.chain().focus() as any).insertVariable(newVarName).run()
       setNewVarName("")
       setIsAdding(false)
-      toast.success(`Variável {{${newVarName}}} inserida no ritual.`)
+      toast.success(`Variável {{${newVarName}}} inserida no documento.`)
     }
   }
 
@@ -95,7 +95,7 @@ export function DataRoom({ editor }: DataRoomProps) {
             <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-800 dark:text-zinc-200">Data Room</h3>
             <div className="flex items-center gap-1.5 mt-0.5 opacity-60">
                <div className="w-1 h-1 rounded-full bg-blue-500 animate-pulse" />
-               <span className="text-[8px] text-zinc-500 font-bold uppercase tracking-widest">Ritual Ativo</span>
+               <span className="text-[8px] text-zinc-500 font-bold uppercase tracking-widest">Documento Ativo</span>
             </div>
           </div>
         </div>

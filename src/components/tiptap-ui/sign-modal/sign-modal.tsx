@@ -69,6 +69,10 @@ export function SignModal({ title = "Documento Digital" }: { title?: string }) {
         }),
       });
 
+      if (response.status === 403) {
+        window.dispatchEvent(new Event("open-plans-modal"));
+      }
+
       const data = await response.json();
       if (data.success) {
         toast.success("Documento enviado. Os signatários foram notificados.", { id: signToast });
@@ -94,7 +98,7 @@ export function SignModal({ title = "Documento Digital" }: { title?: string }) {
         }
       />
       
-      <DialogContent className="sm:max-w-[480px] bg-background border-border text-foreground rounded-3xl shadow-2xl p-0 overflow-hidden ring-1 ring-border animate-in zoom-in-95 duration-300">
+      <DialogContent className="sm:max-w-[580px] bg-background border-border text-foreground rounded-3xl shadow-2xl p-0 overflow-hidden ring-1 ring-border animate-in zoom-in-95 duration-300">
         <div className="relative p-0 flex flex-col h-full max-h-[90vh]">
           {/* Top Decorative bar */}
           <div className="h-1.5 w-full bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
@@ -142,10 +146,10 @@ export function SignModal({ title = "Documento Digital" }: { title?: string }) {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-3">E-mail Corporativo</Label>
+                      <Label className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-3">E-mail</Label>
                       <Input
                         type="email"
-                        placeholder="exemplo@empresa.com"
+                        placeholder="E-mail do signatário..."
                         value={signer.email}
                         onChange={(e) => updateSigner(index, "email", e.target.value)}
                         className="bg-muted/30 border-border rounded-xl px-4 h-11 text-xs font-bold tracking-tight placeholder:text-muted-foreground/50 transition-all text-left"
@@ -180,19 +184,12 @@ export function SignModal({ title = "Documento Digital" }: { title?: string }) {
                  </div>
               </div>
 
-              <div className="flex gap-3 justify-center">
-                <button 
-                  onClick={() => setOpen(false)}
-                  disabled={isSending}
-                  className="flex-1 h-14 rounded-xl font-bold text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground hover:bg-muted transition-all border border-border"
-                >
-                  Cancelar
-                </button>
+              <div className="flex justify-center">
                 <button 
                   onClick={handleSign}
                   disabled={isSending}
                   className={cn(
-                    "flex-[2] h-14 rounded-xl font-bold text-sm tracking-tight transition-all duration-300 relative overflow-hidden group flex items-center justify-center border border-primary/20",
+                    "w-full h-14 rounded-xl font-bold text-sm tracking-tight transition-all duration-300 relative overflow-hidden group flex items-center justify-center border border-primary/20",
                     isSending 
                       ? "bg-muted text-muted-foreground cursor-not-allowed opacity-70" 
                       : "bg-primary text-primary-foreground hover:shadow-[0_0_25px_rgba(var(--primary-rgb),0.3)] hover:border-primary/50 active:scale-[0.98]"

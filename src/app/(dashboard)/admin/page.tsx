@@ -287,7 +287,7 @@ export default function AdminDashboard() {
 
         const data = await res.json();
         if (res.ok && data.success) {
-          toast.success("💥 Ritual de Saque Executado com Sucesso!");
+          toast.success("💥 Solicitação de Saque Concluída com Sucesso!");
           setWithdrawAmountBRL("");
           setWithdrawWallet("");
           fetchWithdrawals();
@@ -295,7 +295,7 @@ export default function AdminDashboard() {
           toast.error(data.error || "Erro ao processar saque.");
         }
       } catch (err) {
-        toast.error("Falha ao executar ritual de saque.");
+        toast.error("Falha ao processar solicitação de saque.");
       } finally {
         setSubmittingWithdraw(false);
       }
@@ -319,7 +319,7 @@ export default function AdminDashboard() {
   };
 
   const handleManualAddCredits = async (userId: string, currentCredits: number) => {
-    const amount = prompt("Quantidade de créditos para injetar:", "100");
+    const amount = prompt("Quantidade de créditos para injetar (use valor negativo para remover):", "100");
     if (!amount || isNaN(parseInt(amount))) return;
 
     try {
@@ -332,13 +332,55 @@ export default function AdminDashboard() {
       
       const data = await res.json();
       if (res.ok && data.success) {
-        toast.success(`${amount} créditos injetados com sucesso.`);
+        toast.success(`${amount} créditos atualizados com sucesso.`);
         fetchData(); // Refresh
       } else {
-        toast.error(data.error || "Falha na injeção de créditos.");
+        toast.error(data.error || "Falha na alteração de créditos.");
       }
     } catch (error) {
-      toast.error("Falha na injeção de créditos.");
+      toast.error("Falha na alteração de créditos.");
+    }
+  };
+
+  const handleResetCredits = async (userId: string) => {
+    if (!confirm("Deseja realmente zerar (depreciar) as Sinapses deste usuário para fins de depuração?")) return;
+
+    try {
+      const res = await fetch("/api/admin/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, newCredits: 0 })
+      });
+      
+      const data = await res.json();
+      if (res.ok && data.success) {
+        toast.success("💥 Créditos do usuário foram reduzidos a zero para depuração!");
+        fetchData(); // Refresh
+      } else {
+        toast.error(data.error || "Falha ao esgotar créditos.");
+      }
+    } catch (error) {
+      toast.error("Falha ao esgotar créditos.");
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    if (!confirm("🚨 ATENÇÃO: Deseja realmente excluir este usuário permanentemente? Todos os seus contratos e dados serão removidos do sistema.")) return;
+
+    try {
+      const res = await fetch(`/api/admin/users?userId=${userId}`, {
+        method: "DELETE"
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        toast.success("💥 Usuário e dados de infraestrutura jurídica excluídos!");
+        fetchData(); // Reload
+      } else {
+        toast.error(data.error || "Falha ao excluir usuário.");
+      }
+    } catch (err) {
+      toast.error("Falha ao excluir usuário.");
     }
   };
 
@@ -585,7 +627,7 @@ export default function AdminDashboard() {
            </div>
            <div>
               <h3 className="text-sm font-black tracking-wide text-foreground mb-1 flex items-center gap-2">
-                 <Coins size={16} className="text-primary animate-pulse" /> Ritual de Saque Cripto
+                 <Coins size={16} className="text-primary animate-pulse" /> Terminal de Saque Cripto
               </h3>
               <p className="text-[10px] text-muted-foreground font-bold tracking-wide mb-6">Debitar BRL e enviar USDT (BEP-20) via GGPix</p>
               
@@ -654,7 +696,7 @@ export default function AdminDashboard() {
                     >
                        {submittingWithdraw ? (
                          <>
-                           <RefreshCw size={12} className="animate-spin" /> Processando Ritual...
+                           <RefreshCw size={12} className="animate-spin" /> Processando Solicitação...
                          </>
                        ) : (
                          <>
@@ -894,20 +936,39 @@ export default function AdminDashboard() {
                                     <div className="flex flex-col">
                                        <span className="text-foreground text-[11px]">{u.full_name || 'Sem nome'}</span>
                                        <span className="text-[9px] text-muted-foreground font-mono">{u.email}</span>
+                                       <span className="text-[9px] text-primary/80 font-bold uppercase tracking-wider mt-0.5">{u.occupation || u.username || 'Sem Ocupação'}</span>
                                     </div>
                                  </td>
                                  <td className="py-3 font-black text-primary text-[12px]">
                                     {u.credits || 0}
                                  </td>
                                  <td className="py-3 text-right">
-                                    <Button 
-                                      onClick={() => handleManualAddCredits(u.id, u.credits)}
-                                      variant="outline" 
-                                      size="sm" 
-                                      className="h-7 rounded-lg text-[9px] font-black tracking-wide border-primary/20 hover:bg-primary/5 px-3"
-                                    >
-                                       Injetar Poder
-                                    </Button>
+                                    <div className="flex gap-2 justify-end">
+                                       <Button 
+                                         onClick={() => handleManualAddCredits(u.id, u.credits)}
+                                         variant="outline" 
+                                         size="sm" 
+                                         className="h-7 rounded-lg text-[9px] font-black tracking-wide bg-primary/10 text-primary border border-primary/30 hover:bg-primary hover:text-primary-foreground px-3 transition-all duration-200"
+                                       >
+                                          Injetar Poder
+                                       </Button>
+                                       <Button 
+                                         onClick={() => handleResetCredits(u.id)}
+                                         variant="outline" 
+                                         size="sm" 
+                                         className="h-7 rounded-lg text-[9px] font-black tracking-wide bg-amber-500/10 text-amber-500 border border-amber-500/30 hover:bg-amber-600 hover:text-white hover:border-amber-600 px-3 transition-all duration-200"
+                                       >
+                                          Zerar
+                                       </Button>
+                                       <Button 
+                                         onClick={() => handleDeleteUser(u.id)}
+                                         variant="outline" 
+                                         size="sm" 
+                                         className="h-7 rounded-lg text-[9px] font-black tracking-wide bg-red-500/15 text-red-400 border border-red-500/40 hover:bg-red-600 hover:text-white hover:border-red-600 px-3 transition-all duration-200"
+                                       >
+                                          Excluir
+                                       </Button>
+                                    </div>
                                  </td>
                               </tr>
                            ))}
