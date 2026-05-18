@@ -783,7 +783,7 @@ export default function DashboardLayoutClient({
                 </div>
               )}
             </div>
-            
+
             <div className="h-3 w-[1px] bg-border mx-1" />
 
             {/* Alternar Tema */}

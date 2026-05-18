@@ -1,51 +1,70 @@
 <svg
   width="128"
   height="128"
-  viewBox="0 0 128 128"
+  viewBox="0 0 100 100"
   fill="none"
   xmlns="http://www.w3.org/2000/svg"
 >
-  {/* Círculo/Anel Dourado Imperial de Contorno ao redor do Brasão (Trazendo o acabamento de medalha perfeito) */}
-  <circle 
-    cx="64" 
-    cy="64" 
-    r="58" 
-    stroke="#e5b567" 
-    strokeWidth="5" 
+  <defs>
+    <linearGradient id="goldGradientIcon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#fff8e7" />
+      <stop offset="30%" stopColor="#e2c9a3" />
+      <stop offset="70%" stopColor="#c5a880" />
+      <stop offset="100%" stopColor="#785e3a" />
+    </linearGradient>
+  </defs>
+
+  <polygon 
+    points="50,6 88,28 88,72 50,94 12,72 12,28" 
+    stroke="url(#goldGradientIcon)" 
+    strokeWidth="4" 
+    strokeLinejoin="round"
+  />
+  
+  <polygon 
+    points="50,12 82,31 82,69 50,88 18,69 18,31" 
+    stroke="url(#goldGradientIcon)" 
+    strokeWidth="1.5" 
+    strokeDasharray="4 6" 
+    opacity="0.4"
   />
 
-  {/* A Espada e a Balança da Justiça - Silhueta Dourada Imperial Sólida */}
-  {/* Lâmina da Espada */}
   <path 
-    d="M64 16 L71 31 L67 95 L64 102 L61 95 L57 31 Z" 
-    fill="#e5b567" 
+    d="M47 25 L23 46 L31 54 L47 46 Z" 
+    fill="url(#goldGradientIcon)" 
+    opacity="0.9" 
+  />
+  <path 
+    d="M47 49 L27 66 L35 72 L47 61 Z" 
+    fill="url(#goldGradientIcon)" 
+    opacity="0.8" 
+  />
+
+  <path 
+    d="M53 25 L77 46 L69 54 L53 46 Z" 
+    fill="url(#goldGradientIcon)" 
+    opacity="0.9" 
+  />
+  <path 
+    d="M53 49 L73 66 L65 72 L53 61 Z" 
+    fill="url(#goldGradientIcon)" 
+    opacity="0.8" 
   />
   
-  {/* Guarda-mão da Balança Estilizada */}
-  <path 
-    d="M28 58 H100" 
-    stroke="#e5b567" 
-    strokeWidth="7" 
+  <line 
+    x1="50" 
+    y1="16" 
+    x2="50" 
+    y2="84" 
+    stroke="url(#goldGradientIcon)" 
+    strokeWidth="2.8" 
     strokeLinecap="round" 
   />
-  
-  {/* Detalhes Rúnicos de Contrapeso na Balança */}
+
   <path 
-    d="M31 58 V70 M97 58 V70" 
-    stroke="#e5b567" 
-    strokeWidth="5" 
-    strokeLinecap="round" 
-  />
-  
-  {/* Pratos de Peso da Balança (Círculos Sólidos) */}
-  <circle cx="31" cy="76" r="7" fill="#e5b567" />
-  <circle cx="97" cy="76" r="7" fill="#e5b567" />
-  
-  {/* Losango de Poder no Coração do Brasão */}
-  <path 
-    d="M64 48 L73 58 L64 68 L55 58 Z" 
-    fill="#09090b" 
-    stroke="#e5b567" 
-    strokeWidth="4" 
+    d="M50,44 L56,50 L50,56 L44,50 Z" 
+    fill="url(#goldGradientIcon)" 
+    stroke="url(#goldGradientIcon)" 
+    strokeWidth="1" 
   />
 </svg>

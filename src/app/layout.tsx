@@ -17,10 +17,10 @@ export const metadata: Metadata = {
   description: "Ecossistema de alta tecnologia e inteligência artificial para redação, auditoria e blindagem contratual definitiva.",
   icons: {
     icon: [
-      { url: "/icon.svg?v=7", type: "image/svg+xml" }
+      { url: "/icon.svg?v=10", type: "image/svg+xml" }
     ],
-    shortcut: "/icon.svg?v=7",
-    apple: "/icon.svg?v=7"
+    shortcut: "/icon.svg?v=10",
+    apple: "/icon.svg?v=10"
   },
   robots: {
     index: true,

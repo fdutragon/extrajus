@@ -78,58 +78,58 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --background: oklch(0.982 0.003 60); /* Alabastro Quente / Papel Linho de Luxo */
+  --foreground: oklch(0.22 0.01 45); /* Bronze Escuro / Grafite Imperial */
+  --card: oklch(1 0 0); /* Branco Puro Soft */
+  --card-foreground: oklch(0.22 0.01 45);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.48 0.15 156); /* Professional Green */
+  --popover-foreground: oklch(0.22 0.01 45);
+  --primary: oklch(0.68 0.075 75); /* Ouro Imperial Nobre (perfeita leitura no claro) */
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.145 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.45 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.145 0 0);
-  --destructive: oklch(0.55 0.19 25);
-  --border: oklch(0.92 0 0);
-  --input: oklch(0.92 0 0);
-  --ring: oklch(0.48 0.15 156);
-  --chart-1: oklch(0.48 0.15 156);
-  --chart-2: oklch(0.6 0.15 156);
-  --chart-3: oklch(0.5 0.15 156);
-  --chart-4: oklch(0.7 0.15 156);
-  --chart-5: oklch(0.4 0.15 156);
+  --secondary: oklch(0.955 0.005 60); /* Creme Suave Secundário */
+  --secondary-foreground: oklch(0.22 0.01 45);
+  --muted: oklch(0.955 0.005 60);
+  --muted-foreground: oklch(0.48 0.015 65); /* Bronze Muted Elegante */
+  --accent: oklch(0.94 0.006 60);
+  --accent-foreground: oklch(0.22 0.01 45);
+  --destructive: oklch(0.55 0.18 25); /* Escarlate de Guerra */
+  --border: oklch(0.90 0.006 60); /* Linha Bronze Suave */
+  --input: oklch(0.90 0.006 60);
+  --ring: oklch(0.68 0.075 75);
+  --chart-1: oklch(0.68 0.075 75);
+  --chart-2: oklch(0.6 0.07 75);
+  --chart-3: oklch(0.52 0.06 75);
+  --chart-4: oklch(0.75 0.08 75);
+  --chart-5: oklch(0.45 0.05 75);
   --radius: 0.5rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.45 0 0);
-  --sidebar-primary: oklch(0.48 0.15 156);
+  --sidebar: oklch(0.972 0.004 60); /* Sidebar Alabastro Suave Sombreada */
+  --sidebar-foreground: oklch(0.38 0.012 60);
+  --sidebar-primary: oklch(0.68 0.075 75);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.96 0 0);
-  --sidebar-accent-foreground: oklch(0.145 0 0);
-  --sidebar-border: oklch(0.92 0 0);
-  --sidebar-ring: oklch(0.48 0.15 156);
+  --sidebar-accent: oklch(0.925 0.008 60);
+  --sidebar-accent-foreground: oklch(0.22 0.01 45);
+  --sidebar-border: oklch(0.90 0.006 60);
+  --sidebar-ring: oklch(0.68 0.075 75);
   --destructive-foreground: oklch(0.985 0 0);
   --font-sans: "Inter", "Segoe UI", sans-serif;
   --font-serif: ui-serif, Georgia, "Times New Roman", serif;
   --font-mono: ui-monospace, "Cascadia Code", monospace;
-  --shadow-color: #000000;
-  --shadow-opacity: 0.05;
-  --shadow-blur: 10px;
+  --shadow-color: #5c4a33; /* Sombras Bronzeadas Quentes de Alta Sofisticação */
+  --shadow-opacity: 0.06;
+  --shadow-blur: 12px;
   --shadow-spread: 0px;
   --shadow-offset-x: 0px;
-  --shadow-offset-y: 2px;
+  --shadow-offset-y: 3px;
   --letter-spacing: -0.01em;
   --spacing: 0.25rem;
-  --shadow-2xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.05);
-  --shadow-xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.05);
-  --shadow-sm: 0px 1px 3px 0px hsl(0 0% 0% / 0.1), 0px 1px 2px -1px hsl(0 0% 0% / 0.1);
-  --shadow: 0px 4px 6px -1px hsl(0 0% 0% / 0.1), 0px 2px 4px -2px hsl(0 0% 0% / 0.1);
-  --shadow-md: 0px 10px 15px -3px hsl(0 0% 0% / 0.1), 0px 4px 6px -4px hsl(0 0% 0% / 0.1);
-  --shadow-lg: 0px 20px 25px -5px hsl(0 0% 0% / 0.1), 0px 8px 10px -6px hsl(0 0% 0% / 0.1);
-  --shadow-xl: 0px 25px 50px -12px hsl(0 0% 0% / 0.25);
-  --shadow-2xl: 0px 30px 60px -15px hsl(0 0% 0% / 0.3);
+  --shadow-2xs: 0px 1px 2px 0px hsl(30 10% 20% / 0.03);
+  --shadow-xs: 0px 1px 2px 0px hsl(30 10% 20% / 0.03);
+  --shadow-sm: 0px 2px 4px 0px hsl(30 10% 20% / 0.05), 0px 1px 2px -1px hsl(30 10% 20% / 0.05);
+  --shadow: 0px 4px 8px -1px hsl(30 10% 20% / 0.06), 0px 2px 4px -2px hsl(30 10% 20% / 0.06);
+  --shadow-md: 0px 10px 18px -3px hsl(30 10% 20% / 0.07), 0px 4px 8px -4px hsl(30 10% 20% / 0.07);
+  --shadow-lg: 0px 20px 28px -5px hsl(30 10% 20% / 0.08), 0px 8px 12px -6px hsl(30 10% 20% / 0.08);
+  --shadow-xl: 0px 25px 50px -12px hsl(30 10% 20% / 0.15);
+  --shadow-2xl: 0px 30px 60px -15px hsl(30 10% 20% / 0.2);
   --tracking-normal: -0.01em;
 }
 
@@ -142,8 +142,8 @@
   --card-foreground: oklch(0.9288 0.0126 255.5078);
   --popover: oklch(0.2603 0 0);
   --popover-foreground: oklch(0.7348 0 0);
-  --primary: oklch(0.4365 0.1044 156.7556);
-  --primary-foreground: oklch(0.9213 0.0135 167.1556);
+  --primary: oklch(0.72 0.09 75); /* Ouro Líquido Luminoso (Glowing Gold) */
+  --primary-foreground: oklch(0.12 0.005 50); /* Grafite Obsidian de Alto Contraste */
   --secondary: oklch(0.2603 0 0);
   --secondary-foreground: oklch(0.9851 0 0);
   --muted: oklch(0.2393 0 0);
@@ -153,20 +153,20 @@
   --destructive: oklch(0.3123 0.0852 29.7877);
   --border: oklch(0.2809 0 0);
   --input: oklch(0.2603 0 0);
-  --ring: oklch(0.8003 0.1821 151.7110);
-  --chart-1: oklch(0.8003 0.1821 151.7110);
+  --ring: oklch(0.72 0.09 75);
+  --chart-1: oklch(0.72 0.09 75);
   --chart-2: oklch(0.7137 0.1434 254.6240);
   --chart-3: oklch(0.7090 0.1592 293.5412);
   --chart-4: oklch(0.8369 0.1644 84.4286);
   --chart-5: oklch(0.7845 0.1325 181.9120);
   --sidebar: oklch(0.1822 0 0);
   --sidebar-foreground: oklch(0.6301 0 0);
-  --sidebar-primary: oklch(0.4365 0.1044 156.7556);
-  --sidebar-primary-foreground: oklch(0.9213 0.0135 167.1556);
+  --sidebar-primary: oklch(0.72 0.09 75);
+  --sidebar-primary-foreground: oklch(0.12 0.005 50);
   --sidebar-accent: oklch(0.3132 0 0);
   --sidebar-accent-foreground: oklch(0.9851 0 0);
   --sidebar-border: oklch(0.2809 0 0);
-  --sidebar-ring: oklch(0.8003 0.1821 151.7110);
+  --sidebar-ring: oklch(0.72 0.09 75);
   --destructive-foreground: oklch(0.9368 0.0045 34.3092);
   --radius: 0.5rem;
   --font-sans: "Inter", "Outfit", sans-serif;

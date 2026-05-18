@@ -12,75 +12,99 @@ export function Logo({ className, showText = true, iconSize = 32, ...props }: Lo
   const isMedium = iconSize >= 36
 
   return (
-    <div className={cn("flex items-center gap-3 select-none", className)}>
+    <div className={cn("flex items-center gap-1.5 select-none", className)}>
       <svg
         width={iconSize}
         height={iconSize}
         viewBox="0 0 100 100"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="shrink-0 transition-transform duration-500 hover:rotate-45"
+        className="shrink-0 transition-all duration-500 hover:scale-105"
         {...props}
       >
-        {/* Metal Gradientes do Império */}
+        {/* Metal Gradientes de Luxo */}
         <defs>
           <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#c5a880" />
-            <stop offset="50%" stopColor="#e2c9a3" />
-            <stop offset="100%" stopColor="#8a7355" />
+            <stop offset="0%" stopColor="#fff8e7" /> {/* Ouro Branco */}
+            <stop offset="30%" stopColor="#e2c9a3" /> {/* Ouro Líquido */}
+            <stop offset="70%" stopColor="#c5a880" /> {/* Bronze Imperial */}
+            <stop offset="100%" stopColor="#785e3a" /> {/* Deep Gold */}
           </linearGradient>
           <linearGradient id="darkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#18181b" />
-            <stop offset="100%" stopColor="#09090b" />
+            <stop offset="0%" stopColor="#1c1c21" /> {/* Obsidian Light */}
+            <stop offset="100%" stopColor="#08080a" /> {/* Vácuo Negro */}
           </linearGradient>
         </defs>
 
-        {/* Círculo Ritualístico de Fundo (Sempre com Escudo Escuro Fixo para Contraste Supremo Chiaroscuro) */}
-        <circle 
-          cx="50" 
-          cy="50" 
-          r="46" 
+        {/* Hexágono Brutalista Selo de Força */}
+        <polygon 
+          points="50,6 88,28 88,72 50,94 12,72 12,28" 
           fill="url(#darkGradient)" 
-          stroke="url(#goldGradient)"
-          strokeWidth="1.5" 
-          opacity="0.95" 
+          stroke="url(#goldGradient)" 
+          strokeWidth="2.5" 
+          strokeLinejoin="round"
         />
         
-        {/* Círculo Externo com Orbitais Finas */}
-        <circle cx="50" cy="50" r="42" stroke="url(#goldGradient)" strokeWidth="0.75" strokeDasharray="4 8" opacity="0.5" />
-        
-        {/* Triângulo Geométrico Superior (A Ordem) */}
-        <path d="M50 15L80 67H20L50 15Z" stroke="url(#goldGradient)" strokeWidth="1" opacity="0.4" />
-        
-        {/* Triângulo Invertido Inferior (O Caos/A Blindagem) */}
-        <path d="M50 85L20 33H80L50 85Z" stroke="url(#goldGradient)" strokeWidth="1.2" opacity="0.6" />
+        {/* Portal de Conectividade Interno */}
+        <polygon 
+          points="50,12 82,31 82,69 50,88 18,69 18,31" 
+          stroke="url(#goldGradient)" 
+          strokeWidth="1.2" 
+          strokeDasharray="4 6" 
+          opacity="0.3"
+        />
 
-        {/* Espada Central da Justiça (Eixo Simétrico) */}
-        <path d="M50 22L53 30L51.5 72L50 78L48.5 72L47 30L50 22Z" fill="url(#goldGradient)" />
-        
-        {/* Guarda-mão da Espada (Balança Estilizada) */}
-        <path d="M32 46H68" stroke="url(#goldGradient)" strokeWidth="3" strokeLinecap="square" />
-        
-        {/* Detalhes Rúnicos Esotéricos na Balança */}
-        <path d="M32 46V54M68 46V54" stroke="url(#goldGradient)" strokeWidth="1.5" />
-        <circle cx="32" cy="56" r="2.5" fill="url(#goldGradient)" />
-        <circle cx="68" cy="56" r="2.5" fill="url(#goldGradient)" />
-        
-        {/* Losango de Poder no Coração (Sempre Escuro Fixo) */}
+        {/* Lâminas Sétricas de Equilíbrio / Asas Geométricas */}
+        {/* Lado Esquerdo */}
         <path 
-          d="M50 40L56 46L50 52L44 46L50 40Z" 
-          fill="url(#darkGradient)"
-          stroke="url(#goldGradient)"
+          d="M47 25 L23 46 L31 54 L47 46 Z" 
+          fill="url(#goldGradient)" 
+          opacity="0.9" 
+        />
+        <path 
+          d="M47 49 L27 66 L35 72 L47 61 Z" 
+          fill="url(#goldGradient)" 
+          opacity="0.75" 
+        />
+
+        {/* Lado Direito */}
+        <path 
+          d="M53 25 L77 46 L69 54 L53 46 Z" 
+          fill="url(#goldGradient)" 
+          opacity="0.9" 
+        />
+        <path 
+          d="M53 49 L73 66 L65 72 L53 61 Z" 
+          fill="url(#goldGradient)" 
+          opacity="0.75" 
+        />
+        
+        {/* Espada Central Vertical (Eixo da Verdade) */}
+        <line 
+          x1="50" 
+          y1="16" 
+          x2="50" 
+          y2="84" 
+          stroke="url(#goldGradient)" 
+          strokeWidth="2.2" 
+          strokeLinecap="round" 
+        />
+
+        {/* Diamante Central (Core de Inteligência) */}
+        <path 
+          d="M50,44 L56,50 L50,56 L44,50 Z" 
+          fill="#08080a" 
+          stroke="url(#goldGradient)" 
           strokeWidth="1.5" 
         />
       </svg>
 
       {showText && (
         <span className={cn(
-          "font-serif tracking-[0.2em] uppercase text-foreground leading-none",
-          isLarge ? "text-base" : isMedium ? "text-sm" : "text-xs"
+          "font-sans font-black tracking-[0.28em] text-foreground leading-none flex items-center",
+          isLarge ? "text-[13px]" : isMedium ? "text-[11.5px]" : "text-[10px]"
         )}>
-          Extra<span className="text-gold font-medium">Jus</span>
+          EXTRA<span className="text-[#e2c9a3]">JUS</span>
         </span>
       )}
     </div>
