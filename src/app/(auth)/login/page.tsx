@@ -31,7 +31,7 @@ export default async function LoginPage({
           </div>
         )}
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">E-mail Corporativo</Label>
+          <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">E-mail</Label>
           <Input 
             id="email" 
             name="email"

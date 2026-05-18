@@ -50,7 +50,7 @@ export default function ForgotPasswordPage() {
           Recuperar senha
         </h1>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Enviaremos um link seguro para o seu e-mail corporativo para você redefinir seu acesso.
+          Enviaremos um link seguro para o seu e-mail para você redefinir seu acesso.
         </p>
       </div>
 
@@ -83,7 +83,7 @@ export default function ForgotPasswordPage() {
 
         <div className="space-y-2">
           <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">
-            E-mail Corporativo
+            E-mail
           </Label>
           <Input 
             id="email" 

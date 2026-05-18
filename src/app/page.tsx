@@ -248,81 +248,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Popular Models Section */}
-      <section id="modelos" className="py-24 px-6 border-t border-border bg-muted/10 relative">
-        <div className="max-w-4xl mx-auto space-y-16">
-
-          <div className="text-center space-y-3">
-            <h2 className="text-2xl md:text-4xl font-black text-foreground tracking-tight leading-tight">
-              Modelos de Contrato Mais Procurados
-            </h2>
-            <p className="text-[13px] md:text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed font-medium">
-              Acesse o catálogo de estruturas revisadas por juristas renomados e personalize-as cirurgicamente com a nossa inteligência artificial.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              {
-                title: "Prestação de Serviços",
-                icon: <Users size={20} />,
-                desc: "Para freelancers, agências e consultorias. Defina escopo, obrigações de entrega e multas por atraso sem brechas legais."
-              },
-              {
-                title: "Contrato de Locação",
-                icon: <Layers size={20} />,
-                desc: "Residencial ou comercial. Regule prazos, vistorias, multas rescisórias e reajustes de aluguel (IGP-M/IPCA) blindados."
-              },
-              {
-                title: "NDA (Confidencialidade)",
-                icon: <ShieldCheck size={20} />,
-                desc: "Proteja segredos comerciais, propriedade intelectual e ideias estratégicas antes de reuniões com terceiros ou sócios."
-              },
-              {
-                title: "Contrato de Parceria",
-                icon: <Network size={20} />,
-                desc: "Alinhamento societário ou comercial. Esclareça divisão de lucros, deveres mútuos e regras claras de rescisão."
-              },
-              {
-                title: "Termos de Uso & Privac.",
-                icon: <FileText size={20} />,
-                desc: "Adequação completa à LGPD. Essencial para plataformas SaaS, e-commerces, websites e aplicativos móveis."
-              },
-              {
-                title: "Compra e Venda",
-                icon: <Gavel size={20} />,
-                desc: "Segurança total para transações de bens móveis, imóveis ou equipamentos comerciais, regulando sinal e parcelas."
-              }
-            ].map((model, i) => (
-              <div key={i} className="group p-8 bg-card border border-border rounded-3xl hover:border-primary/50 hover:shadow-[0_0_30px_rgba(var(--primary),0.03)] transition-all duration-300 flex flex-col justify-between h-full text-left">
-                <div>
-                  <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
-                    {model.icon}
-                  </div>
-                  <h3 className="text-sm font-black text-foreground uppercase tracking-wider mb-2">{model.title}</h3>
-                  <p className="text-[11.5px] text-muted-foreground leading-relaxed font-medium mb-6">{model.desc}</p>
-                </div>
-                <Link href="/register">
-                  <Button variant="link" className="p-0 h-auto text-primary font-black text-[9px] uppercase tracking-widest group-hover:translate-x-1 transition-all flex items-center gap-1.5 justify-start">
-                    Personalizar Modelo <ChevronRight size={12} />
-                  </Button>
-                </Link>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-center">
-            <Link href="/register">
-              <Button variant="outline" className="rounded-xl px-8 h-12 border-primary/20 hover:border-primary/50 text-primary font-black text-[10px] uppercase tracking-widest backdrop-blur-sm transition-all duration-300 active:scale-98">
-                Ver Todos os 150+ Modelos Prontos
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* Bento Features Grid */}
-      <section id="como-funciona" className="py-24 px-6 border-t border-border">
+      <section id="como-funciona" className="py-24 px-6 border-t border-border bg-muted/10 relative">
         <div className="max-w-4xl mx-auto space-y-16">
 
           <div className="text-center space-y-3">
@@ -450,6 +377,79 @@ export default function Home() {
                 </div>
               </div>
             </BentoCard>
+          </div>
+        </div>
+      </section>
+
+      {/* Popular Models Section */}
+      <section id="modelos" className="py-24 px-6 border-t border-border">
+        <div className="max-w-4xl mx-auto space-y-16">
+
+          <div className="text-center space-y-3">
+            <h2 className="text-2xl md:text-4xl font-black text-foreground tracking-tight leading-tight">
+              Modelos de Contrato Mais Procurados
+            </h2>
+            <p className="text-[13px] md:text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed font-medium">
+              Acesse o catálogo de estruturas revisadas por juristas renomados e personalize-as cirurgicamente com a nossa inteligência artificial.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                title: "Prestação de Serviços",
+                icon: <Users size={20} />,
+                desc: "Para freelancers, agências e consultorias. Defina escopo, obrigações de entrega e multas por atraso sem brechas legais."
+              },
+              {
+                title: "Contrato de Locação",
+                icon: <Layers size={20} />,
+                desc: "Residencial ou comercial. Regule prazos, vistorias, multas rescisórias e reajustes de aluguel (IGP-M/IPCA) blindados."
+              },
+              {
+                title: "NDA (Confidencialidade)",
+                icon: <ShieldCheck size={20} />,
+                desc: "Proteja segredos comerciais, propriedade intelectual e ideias estratégicas antes de reuniões com terceiros ou sócios."
+              },
+              {
+                title: "Contrato de Parceria",
+                icon: <Network size={20} />,
+                desc: "Alinhamento societário ou comercial. Esclareça divisão de lucros, deveres mútuos e regras claras de rescisão."
+              },
+              {
+                title: "Termos de Uso & Privac.",
+                icon: <FileText size={20} />,
+                desc: "Adequação completa à LGPD. Essencial para plataformas SaaS, e-commerces, websites e aplicativos móveis."
+              },
+              {
+                title: "Compra e Venda",
+                icon: <Gavel size={20} />,
+                desc: "Segurança total para transações de bens móveis, imóveis ou equipamentos comerciais, regulando sinal e parcelas."
+              }
+            ].map((model, i) => (
+              <div key={i} className="group p-8 bg-card border border-border rounded-3xl hover:border-primary/50 hover:shadow-[0_0_30px_rgba(var(--primary),0.03)] transition-all duration-300 flex flex-col justify-between h-full text-left">
+                <div>
+                  <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+                    {model.icon}
+                  </div>
+                  <h3 className="text-sm font-black text-foreground uppercase tracking-wider mb-2">{model.title}</h3>
+                  <p className="text-[11.5px] text-muted-foreground leading-relaxed font-medium mb-6">{model.desc}</p>
+                </div>
+                <Link href="/register">
+                  <Button variant="link" className="p-0 h-auto text-primary font-black text-[9px] uppercase tracking-widest group-hover:translate-x-1 transition-all flex items-center gap-1.5 justify-start">
+                    Personalizar Modelo <ChevronRight size={12} />
+                  </Button>
+                </Link>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Link href="/register">
+              <Button variant="outline" className="rounded-xl px-8 h-12 border-primary/20 hover:border-primary/50 text-primary font-black text-[10px] uppercase tracking-widest backdrop-blur-sm transition-all duration-300 active:scale-98">
+                Ver Todos os 150+ Modelos Prontos
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
