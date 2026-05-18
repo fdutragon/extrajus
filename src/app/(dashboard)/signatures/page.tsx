@@ -294,7 +294,7 @@ export default function PactsPage() {
   if (loading) return <div className="p-20 text-center animate-pulse text-xs font-black uppercase tracking-widest text-muted-foreground">Invocando Pactos...</div>
 
   return (
-    <div className="max-w-5xl mx-auto space-y-10 animate-in fade-in duration-700 pb-20 px-4 md:px-0">
+    <div className="space-y-10 animate-in fade-in duration-700 pb-20">
       <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-border pb-8">
         <div className="space-y-3">
           <div className="flex items-center gap-2">

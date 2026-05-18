@@ -43,6 +43,8 @@ export default function ArsenalPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isForaging, setIsForaging] = useState(false);
   const [previewTemplate, setPreviewTemplate] = useState<any>(null);
+  const [isForgeModalOpen, setIsForgeModalOpen] = useState(false);
+  const [forgeMessage, setForgeMessage] = useState("");
   const supabase = createClient();
   const router = useRouter();
 
@@ -110,30 +112,48 @@ export default function ArsenalPage() {
     toast.success("Contrato forjado com sucesso!", { id: "forge" });
   };
 
-  const handleForgeRequest = async () => {
-    const description = prompt("Descreva o modelo de contrato que você precisa (ex: Contrato de Investimento Anjo com Vesting):");
-    if (!description) return;
+  const handleForgeRequest = () => {
+    setIsForgeModalOpen(true);
+  };
 
-    setIsForaging(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      toast.error("Acesso negado.");
-      setIsForaging(false);
+  const handleForgeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgeMessage || !forgeMessage.trim()) {
+      toast.error("Por favor, descreva o modelo de contrato que deseja.");
       return;
     }
 
-    const { error } = await supabase.from('forge_requests').insert({
-      user_id: user.id,
-      description
-    });
+    setIsForaging(true);
+    toast.loading("Invocando arquitetos da forja...", { id: "forge" });
 
-    if (error) {
-      toast.error("Erro ao enviar solicitação.");
-    } else {
-      toast.success("Solicitação enviada! Nossos arquitetos entrarão em contato.");
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Acesso negado. Faça login novamente.", { id: "forge" });
+        setIsForaging(false);
+        return;
+      }
+
+      // Inserir na tabela de notificações para rastreamento unificado na Caixa de Entrada
+      const { error } = await supabase.from('notifications').insert({
+        user_id: user.id,
+        title: `🛠️ Solicitação de Forja: ${forgeMessage.substring(0, 30)}...`,
+        message: forgeMessage,
+        type: 'forge',
+        read: false
+      });
+
+      if (error) throw error;
+
+      toast.success("Solicitação enviada! Acompanhe o progresso na sua Caixa de Entrada.", { id: "forge" });
+      setForgeMessage("");
+      setIsForgeModalOpen(false);
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Erro ao solicitar forja.", { id: "forge" });
+    } finally {
+      setIsForaging(false);
     }
-    setIsForaging(false);
   };
 
   return (
@@ -330,6 +350,54 @@ export default function ArsenalPage() {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Forja Customizada */}
+      <Dialog open={isForgeModalOpen} onOpenChange={setIsForgeModalOpen}>
+        <DialogContent className="max-w-md bg-card/95 border border-border backdrop-blur-md rounded-2xl shadow-2xl p-6">
+          <DialogHeader className="space-y-1.5 border-b border-border pb-4 mb-4">
+            <DialogTitle className="text-lg font-black tracking-wide text-foreground uppercase italic flex items-center gap-2">
+              <Zap size={18} className="text-primary" /> Solicitar Forja sob Medida
+            </DialogTitle>
+            <DialogDescription className="text-[11px] text-muted-foreground font-medium leading-relaxed">
+              Descreva detalhadamente o modelo de documento jurídico que você precisa. Nossos arquitetos vão estruturá-lo de forma blindada e disponibilizá-lo em seu arsenal.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleForgeSubmit} className="space-y-4">
+            <div className="space-y-2 text-left">
+              <label className="text-[10px] font-black text-muted-foreground/80 block">
+                O Que Você Deseja Forjar?
+              </label>
+              <textarea 
+                placeholder="Ex: Contrato de Prestação de Serviços de TI com cláusula de proteção de PI pesada e multa de rescisão abusiva..."
+                value={forgeMessage}
+                onChange={(e) => setForgeMessage(e.target.value)}
+                rows={5}
+                className="w-full bg-muted/30 border border-border rounded-xl px-4 py-3.5 text-xs font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder:text-muted-foreground/30 resize-none min-h-[120px]"
+                required
+              />
+            </div>
+
+            <div className="flex gap-3 justify-end pt-2 border-t border-border mt-6">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setIsForgeModalOpen(false)}
+                className="h-10 px-4 rounded-xl text-xs font-bold text-muted-foreground hover:bg-muted"
+              >
+                Cancelar
+              </Button>
+              <Button 
+                type="submit"
+                disabled={isForaging}
+                className="h-10 px-5 rounded-xl text-xs font-black uppercase tracking-wider bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+              >
+                {isForaging ? "Convocando..." : "Solicitar Forja"}
+              </Button>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
     </div>

@@ -75,20 +75,22 @@ export default function BrainPage() {
       // Nota: signatures são filtradas via RLS, mas aqui garantimos que trazemos apenas o relevante
       const [contractsRes, sigsRes, profileRes] = await Promise.all([
         supabase.from('contracts').select('id, title, status').eq('user_id', user.id),
-        supabase.from('signatures').select('id, contract_id, signers, status'),
+        supabase.from('signatures').select('id, contract_id, signers, status, contracts(id, title, status)'),
         supabase.from('profiles').select('full_name').eq('id', user.id).single()
       ]);
+
+      const contracts = contractsRes.data || [];
 
       // 2. Filtro de segurança adicional para signatures (caso RLS não esteja 100% restrito)
       const filteredSignatures = (sigsRes.data || []).filter((sig: any) => {
         // Sou o dono do contrato ou sou um dos signatários
-        const isOwner = data.contracts?.some((c: any) => c.id === sig.contract_id);
+        const isOwner = contracts.some((c: any) => c.id === sig.contract_id);
         const isSigner = sig.signers?.some((s: any) => s.email?.toLowerCase().trim() === userEmailLower);
         return isOwner || isSigner;
       });
 
       setData({
-        contracts: contractsRes.data || [],
+        contracts,
         signatures: filteredSignatures,
         profile: profileRes.data
       });
@@ -126,6 +128,26 @@ export default function BrainPage() {
     // Signatory Nodes
     data.signatures.forEach((s: any) => {
       if (Array.isArray(s.signers)) {
+        const contractId = s.contract_id;
+        if (!contractId) return;
+
+        // Garantir que o nó do contrato de origem exista no grafo.
+        // Se não existir (por ex. se o contrato pertence a outro usuário mas fomos convidados a assinar),
+        // criamos um nó esqueleto para ele para evitar a exceção fatal do d3-force "node not found" e deixar a rede completa!
+        const hasContractNode = nodes.some(n => n.id === contractId);
+        if (!hasContractNode) {
+          nodes.push({
+            id: contractId,
+            name: s.contracts?.title || "Contrato Recebido",
+            val: 4,
+            group: "contract",
+            color: "rgba(var(--primary-rgb, 192, 255, 0), 0.7)", // Tom ligeiramente transparente para indicar que é externo
+            status: s.contracts?.status || s.status
+          });
+          // Conectar o contrato externo ao núcleo do usuário
+          links.push({ source: "core", target: contractId });
+        }
+
         s.signers.forEach((sig: any, index: number) => {
           const sigId = `sig-${s.id}-${index}`;
           nodes.push({
@@ -136,9 +158,7 @@ export default function BrainPage() {
             color: "#94a3b8", // Muted Slate/Blue-gray
             status: s.status
           });
-          if (s.contract_id) {
-            links.push({ source: s.contract_id, target: sigId });
-          }
+          links.push({ source: contractId, target: sigId });
         });
       }
     });

@@ -14,10 +14,12 @@ import {
   PenTool,
   Zap,
   Command,
-  Brain
+  Brain,
+  Mail,
+  HelpCircle
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -32,6 +34,7 @@ export default function DashboardLayoutClient({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [profile, setProfile] = useState<any>(null);
   const profileRef = useRef<any>(null);
@@ -107,6 +110,179 @@ export default function DashboardLayoutClient({
     };
   }, [profile?.id]);
 
+  // 3. Notificações em Tempo Real (Sino de Notificações)
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsNotificationsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!profile?.id) return;
+
+    async function fetchNotifications() {
+      try {
+        const { data } = await supabase
+          .from('notifications')
+          .select('*')
+          .eq('user_id', profile.id)
+          .order('created_at', { ascending: false });
+
+        if (data) {
+          setNotifications(data);
+          setUnreadCount(data.filter((n: any) => !n.read).length);
+        }
+      } catch (err) {
+        console.error("Notifications Fetch error:", err);
+      }
+    }
+
+    fetchNotifications();
+
+    const channel = supabase
+      .channel(`notifications-realtime-${profile.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'notifications'
+        },
+        (payload: any) => {
+          const targetUserId = payload.new?.user_id || payload.old?.user_id;
+          if (targetUserId === profile.id) {
+            fetchNotifications();
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [profile?.id]);
+
+  const handleMarkAsRead = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('id', id);
+
+      if (!error) {
+        setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+        setUnreadCount(prev => Math.max(0, prev - 1));
+        toast.success("Notificação marcada como lida.");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .delete()
+        .eq('user_id', profile.id);
+
+      if (!error) {
+        setNotifications([]);
+        setUnreadCount(0);
+        toast.success("Todas as notificações foram limpas com sucesso.");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // 4. Projetos Recentes Dinâmicos em Tempo Real
+  const [recentProjects, setRecentProjects] = useState<any[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState(true);
+
+  useEffect(() => {
+    if (!profile?.id) return;
+
+    async function fetchRecentProjects() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        
+        const userEmailLower = user.email?.toLowerCase().trim() || "";
+
+        // A. Buscar as assinaturas pendentes de selamento para este usuário
+        const { data: pendingSigs } = await supabase
+          .from('signatures')
+          .select('id, contract_id, signers, status, created_at, contracts(id, title)')
+          .eq('status', 'pending');
+
+        const pendingList = (pendingSigs || [])
+          .filter((sig: any) => 
+            sig.signers?.some((s: any) => s.email?.toLowerCase().trim() === userEmailLower && !s.signed)
+          )
+          .map((sig: any) => ({
+            id: sig.contracts?.id || sig.contract_id,
+            name: sig.contracts?.title || "Contrato Sem Título",
+            isPending: true
+          }))
+          .slice(0, 3);
+
+        if (pendingList.length > 0) {
+          setRecentProjects(pendingList);
+        } else {
+          // B. Caso não haja pendentes, carregar os 3 últimos contratos editados/criados pelo usuário
+          const { data: editedContracts } = await supabase
+            .from('contracts')
+            .select('id, title, updated_at')
+            .eq('user_id', user.id)
+            .order('updated_at', { ascending: false })
+            .limit(3);
+
+          const editedList = (editedContracts || []).map((c: any) => ({
+            id: c.id,
+            name: c.title,
+            isPending: false
+          }));
+
+          setRecentProjects(editedList);
+        }
+      } catch (err) {
+        console.error("Error loading recent projects:", err);
+      } finally {
+        setLoadingProjects(false);
+      }
+    }
+
+    fetchRecentProjects();
+
+    // Ouvir alterações em tempo real de contratos ou assinaturas para atualizar na hora!
+    const channel = supabase
+      .channel('sidebar-projects-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'contracts' }, () => {
+        fetchRecentProjects();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'signatures' }, () => {
+        fetchRecentProjects();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [profile?.id]);
+
   // Persist sidebar state
   useEffect(() => {
     const savedState = localStorage.getItem("sidebar_collapsed");
@@ -119,13 +295,21 @@ export default function DashboardLayoutClient({
     localStorage.setItem("sidebar_collapsed", JSON.stringify(isCollapsed));
   }, [isCollapsed]);
 
-  const navItems = [
-    { name: "Painel Principal", href: "/dashboard", icon: LayoutDashboard },
+  const adminEmails = ["felipedutra@outlook.com"];
+  const isAdmin = adminEmails.includes(profile?.email || '');
+
+  const baseNavItems = [
+    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Contratos", href: "/contracts", icon: FileText },
     { name: "Assinaturas", href: "/signatures", icon: PenTool },
     { name: "Arsenal", href: "/arsenal", icon: Zap },
     { name: "Cérebro", href: "/brain", icon: Brain },
+    { name: "Caixa de Entrada", href: "/inbox", icon: Mail },
   ];
+
+  const navItems = isAdmin
+    ? [{ name: "Painel de Comando", href: "/admin", icon: Command }, ...baseNavItems]
+    : baseNavItems;
 
   const secondaryItems = [
     { name: "Configurações", href: "/settings", icon: Settings },
@@ -230,16 +414,32 @@ export default function DashboardLayoutClient({
             <div className={cn("space-y-3 animate-in fade-in duration-1000 delay-300", isCollapsed && "lg:hidden")}>
               <div className="px-2 text-[9px] font-semibold text-muted-foreground uppercase tracking-[0.15em]">Projetos Recentes</div>
               <div className="space-y-1">
-                {[
-                  { name: "Holding Imperial", color: "bg-primary" },
-                  { name: "Projeto Skynet", color: "bg-primary/70" },
-                  { name: "M&A Alpha Group", color: "bg-primary/40" }
-                ].map((project) => (
-                  <button key={project.name} className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-[11.5px] text-muted-foreground hover:text-foreground transition-colors group">
-                    <div className={cn("w-1.5 h-1.5 rounded-full shrink-0 group-hover:scale-125 transition-transform", project.color)} />
-                    <span className="truncate">{project.name}</span>
-                  </button>
-                ))}
+                {loadingProjects ? (
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="h-6 mx-2 bg-muted/20 rounded animate-pulse mb-1.5" />
+                  ))
+                ) : recentProjects.length === 0 ? (
+                  <div className="px-2.5 py-1.5 text-[10px] text-muted-foreground/60 italic leading-normal">
+                    Nenhum projeto ativo ou pendente.
+                  </div>
+                ) : (
+                  recentProjects.map((project) => (
+                    <Link
+                      key={project.id}
+                      href={project.isPending ? "/signatures" : `/editor?room=${project.id}`}
+                      className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[11.5px] text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-all group"
+                    >
+                      <div className={cn(
+                        "w-1.5 h-1.5 rounded-full shrink-0 group-hover:scale-125 transition-transform",
+                        project.isPending ? "bg-amber-500 animate-pulse" : "bg-primary"
+                      )} />
+                      <span className="truncate flex-1 text-left">{project.name}</span>
+                      {project.isPending && (
+                        <span className="text-[7.5px] h-3.5 px-1 border border-amber-500/30 text-amber-500 bg-amber-500/10 rounded font-black shrink-0 uppercase tracking-wider flex items-center justify-center leading-none">SELO</span>
+                      )}
+                    </Link>
+                  ))
+                )}
               </div>
             </div>
           )}
@@ -344,6 +544,75 @@ export default function DashboardLayoutClient({
 
           <div className="flex items-center gap-3">
             <ThemeToggle />
+            <div className="h-3 w-[1px] bg-border mx-1" />
+            
+            {/* Sino de Notificações */}
+            <div className="relative" ref={dropdownRef}>
+              <button 
+                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                className="p-1.5 hover:bg-muted rounded-md text-muted-foreground hover:text-foreground transition-colors relative"
+              >
+                <Bell size={16} />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500 ring-2 ring-background animate-pulse" />
+                )}
+              </button>
+
+              {isNotificationsOpen && (
+                <div className="absolute right-0 mt-2 w-80 bg-card/95 border border-border backdrop-blur-md rounded-2xl shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-250 p-4">
+                  <div className="flex items-center justify-between border-b border-border pb-2.5 mb-2.5">
+                    <span className="text-[11px] font-bold text-foreground uppercase tracking-wider">Notificações</span>
+                    {notifications.length > 0 && (
+                      <button 
+                        onClick={handleMarkAllAsRead}
+                        className="text-[9px] font-black text-primary hover:underline uppercase tracking-widest"
+                      >
+                        Limpar Tudo
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className="max-h-64 overflow-y-auto space-y-2.5 custom-scrollbar pr-0.5">
+                    {notifications.length === 0 ? (
+                      <div className="py-8 text-center text-muted-foreground text-[11px]">
+                        Nenhuma notificação por enquanto.
+                      </div>
+                    ) : (
+                      notifications.map((n) => (
+                        <div 
+                          key={n.id}
+                          onClick={() => n.link && router.push(n.link)}
+                          className={cn(
+                            "p-2.5 rounded-xl border transition-all text-left flex flex-col gap-1 cursor-pointer",
+                            n.read 
+                              ? "bg-transparent border-transparent hover:bg-muted/30" 
+                              : "bg-primary/5 border-primary/10 hover:bg-primary/10"
+                          )}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <span className={cn("text-[11px] font-bold leading-tight", !n.read ? "text-foreground" : "text-muted-foreground")}>
+                              {n.title}
+                            </span>
+                            {!n.read && (
+                              <button 
+                                onClick={(e) => handleMarkAsRead(n.id, e)}
+                                className="w-1.5 h-1.5 rounded-full bg-primary hover:scale-125 transition-transform" 
+                                title="Marcar como lida"
+                              />
+                            )}
+                          </div>
+                          <p className="text-[10px] text-muted-foreground leading-normal">{n.message}</p>
+                          <span className="text-[8px] text-muted-foreground/60 font-mono mt-1">
+                            {new Date(n.created_at).toLocaleDateString('pt-BR')} às {new Date(n.created_at).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}
+                          </span>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+            
             <div className="h-3 w-[1px] bg-border mx-1" />
             <div className="flex items-center gap-2 pl-1 cursor-pointer group">
               <Avatar className="h-6 w-6 rounded-full border border-border ring-0 group-hover:ring-2 ring-primary/20 transition-all">
