@@ -103,9 +103,9 @@ export default function BrainPage() {
     nodes.push({ 
       id: "core", 
       name: data.profile?.full_name?.toUpperCase() || "MEU NÚCLEO", 
-      val: 10, 
+      val: 12, 
       group: "core", 
-      color: "#f59e0b" // Gold/Amber for the core
+      color: "#fbbf24" // Glowing Liquid Gold
     });
 
     // Contract Nodes
@@ -113,9 +113,9 @@ export default function BrainPage() {
       nodes.push({
         id: c.id,
         name: c.title,
-        val: 4,
+        val: 6,
         group: "contract",
-        color: "rgb(var(--primary-rgb, 72, 187, 120))", // Professional Green
+        color: "#10b981", // Glowing Emerald Green
         status: c.status
       });
       links.push({ source: "core", target: c.id });
@@ -132,9 +132,9 @@ export default function BrainPage() {
           nodes.push({
             id: contractId,
             name: s.contracts?.title || "Documento Recebido",
-            val: 4,
+            val: 6,
             group: "contract",
-            color: "rgba(var(--primary-rgb, 72, 187, 120), 0.7)", 
+            color: "#06b6d4", // Electric Cyan / Neon blue
             status: s.contracts?.status || s.status
           });
           links.push({ source: "core", target: contractId });
@@ -145,9 +145,9 @@ export default function BrainPage() {
           nodes.push({
             id: sigId,
             name: sig.name || sig.email || "Signatário Sem Nome",
-            val: 3,
+            val: 4,
             group: "signer",
-            color: "#94a3b8", // Muted Slate/Blue-gray
+            color: "#a855f7", // Radiant Violet / Purple
             status: s.status
           });
           links.push({ source: contractId, target: sigId });
@@ -216,39 +216,50 @@ export default function BrainPage() {
               width={width}
               height={height}
               backgroundColor="transparent"
-              nodeRelSize={4}
-              nodeAutoColorBy="group"
-              linkDirectionalParticles={4}
-              linkDirectionalParticleSpeed={0.005}
-              linkDirectionalParticleColor={() => "hsl(var(--primary))"}
-              linkDirectionalParticleWidth={2}
-              linkColor={() => "rgba(var(--foreground), 0.05)"}
+              nodeRelSize={5}
+              linkDirectionalParticles={6}
+              linkDirectionalParticleSpeed={0.015}
+              linkDirectionalParticleColor={(link: any) => {
+                if (link.target && link.target.group === "signer") return "#a855f7";
+                if (link.target && link.target.group === "contract") return "#10b981";
+                return "#06b6d4";
+              }}
+              linkDirectionalParticleWidth={3.5}
+              linkColor={() => "rgba(255, 255, 255, 0.15)"}
+              linkWidth={1.5}
               nodeCanvasObject={(node: any, ctx: CanvasRenderingContext2D, globalScale) => {
                 if (node.x === undefined || node.y === undefined) return;
                 const label = node.name;
-                const fontSize = 12 / globalScale;
-                ctx.font = `${fontSize}px Inter`;
+                const fontSize = 11 / globalScale;
+                ctx.font = `bold ${fontSize}px Inter`;
                 
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, node.val / 2, 0, 2 * Math.PI, false);
-                
-                const color = node.color || "hsl(var(--primary))";
-                ctx.fillStyle = color;
-                ctx.fill();
-                
-                ctx.shadowColor = color;
-                ctx.shadowBlur = 15;
+                // Draw glowing aura shadow
+                ctx.shadowColor = node.color || "#06b6d4";
+                ctx.shadowBlur = 25 / globalScale;
                 ctx.shadowOffsetX = 0;
                 ctx.shadowOffsetY = 0;
 
-                if (globalScale > 1.5) {
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.val, 0, 2 * Math.PI, false);
+                
+                const color = node.color || "#06b6d4";
+                ctx.fillStyle = color;
+                ctx.fill();
+
+                // Draw solid white center core
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.val / 2.5, 0, 2 * Math.PI, false);
+                ctx.fillStyle = "#ffffff";
+                ctx.fill();
+                
+                ctx.shadowBlur = 0; // reset shadow for labels
+
+                if (globalScale > 1.2) {
                   ctx.textAlign = "center";
                   ctx.textBaseline = "middle";
-                  ctx.fillStyle = "hsl(var(--foreground))";
-                  ctx.fillText(label, node.x, node.y + (node.val / 2) + 6);
+                  ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+                  ctx.fillText(label, node.x, node.y + node.val + 6);
                 }
-                
-                ctx.shadowBlur = 0;
               }}
               onNodeClick={(node) => setSelectedNode(node)}
             />
