@@ -162,12 +162,12 @@ export default function BrainPage() {
 
   useEffect(() => {
     if (fgRef.current) {
-      fgRef.current.d3Force("charge").strength(-300);
-      fgRef.current.d3Force("link").distance(80);
-      fgRef.current.d3Force("collide", forceCollide(20));
+      fgRef.current.d3Force("charge").strength(-600);
+      fgRef.current.d3Force("link").distance(150);
+      fgRef.current.d3Force("collide", forceCollide(30));
 
       setTimeout(() => {
-        fgRef.current.zoom(4.5, 1000);
+        fgRef.current.zoom(3.0, 1000);
         fgRef.current.centerAt(0, 0, 1000);
       }, 500);
     }
