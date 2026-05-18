@@ -152,7 +152,7 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
      * <div data-type="legal-node" data-level="2">O presente contrato tem como objeto...</div>
      * <div data-type="legal-node" data-level="3">O desenvolvimento do software...</div>
      * <div data-type="legal-node" data-level="4">Prazo de entrega em até...</div>
-6. Partes identificadas em preâmbulo com parágrafos (<p>). NUNCA use tabelas (<table>) no preâmbulo. Insira sempre uma linha em branco (um parágrafo <p></p>) entre a qualificação do Contratante e a do Contratado para espaçamento adequado. NUNCA crie cláusula "DAS PARTES".
+6. Partes identificadas em preâmbulo com parágrafos (<p>). NUNCA use tabelas (<table>) no preâmbulo. Insira sempre DUAS linhas em branco (dois parágrafos <p></p><p></p>) entre a qualificação do Contratante e a do Contratado para espaçamento adequado. NUNCA crie cláusula "DAS PARTES".
 7. Primeira cláusula SEMPRE é o Objeto do contrato.
 8. Seção de Data e Assinaturas (Fim do Contrato): É OBRIGATÓRIO incluir 4 parágrafos vazios (<p></p>) antes da data para criar um espaçamento elegante. A data e os campos de assinatura devem vir centralizados (usando os atributos data-node-text-align="center" e style="text-align: center;"). Cada campo de assinatura deve conter OBRIGATORIAMENTE a linha física de assinatura exata usando caracteres normais de underline puro (__________________________________________), sem espaços e sem markdown, seguida do rótulo da parte em negrito. NÃO insira campo de testemunhas. Siga ESTRITAMENTE o exemplo de HTML abaixo para esta seção:
    <p></p>

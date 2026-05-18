@@ -37,7 +37,7 @@
   &.legal-node-level-1 {
     counter-increment: clausula;
     counter-reset: paragrafo inciso;
-    margin-top: 0.5rem;
+    margin-top: 2.2rem; // Elevado para 2.2rem para autoridade máxima
     margin-bottom: 0.7rem;
     font-weight: 700;
     font-size: 1.0em;
@@ -72,14 +72,15 @@
   &.legal-node-level-3 {
     counter-increment: inciso;
     counter-reset: alinea;
-    margin-left: 4rem;
+    margin-left: 5rem;
     margin-top: 0;
     margin-bottom: 0.6rem;
     font-size: 1.0em;
     
     .legal-node-counter {
       font-weight: 500;
-      min-width: 2.2rem; // Largura mínima alinha perfeitamente algarismos romanos curtos e longos (I, VIII, XII...)!
+      min-width: 1.2rem; // Reduzido de 1.6rem para 1.2rem
+      margin-right: 0.4rem; // Reduzido de 0.75rem (global) para 0.4rem
     }
 
     .legal-node-counter::before {
@@ -89,14 +90,15 @@
 
   &.legal-node-level-4 {
     counter-increment: alinea;
-    margin-left: 6rem;
+    margin-left: 6.5rem; // Reduzido de 7.5rem para 6.5rem para melhor equilíbrio
     margin-top: 0;
     margin-bottom: 0.6rem;
     font-size: 1.0em;
     
     .legal-node-counter {
       font-weight: 400;
-      min-width: 1.8rem; // Largura mínima alinha perfeitamente as alíneas em letras minúsculas a), b), c)...
+      min-width: 1.2rem;
+      margin-right: 0.4rem;
     }
 
     .legal-node-counter::before {
@@ -104,10 +106,10 @@
     }
   }
   
-  /* Evita espaçamento duplo quando uma cláusula segue imediatamente um inciso ou alínea */
+  /* Evita espaçamento excessivo quando uma cláusula segue imediatamente um inciso ou alínea, mantendo o respiro solicitado */
   &.legal-node-level-3 + &.legal-node-level-1,
   &.legal-node-level-4 + &.legal-node-level-1 {
-    margin-top: -0.6rem;
+    margin-top: 1.2rem;
   }
 }
 

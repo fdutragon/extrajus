@@ -110,7 +110,7 @@ const getItemImplementations = () => {
         editor
           .chain()
           .focus()
-          .insertContent('<p></p><p data-node-text-align="center">[Cidade] - [UF], [Dia] de [Mês] de [Ano].</p><p></p><p data-node-text-align="center">__________________________________________</p><p data-node-text-align="center"><strong>CONTRATANTE</strong></p><p></p><p data-node-text-align="center">__________________________________________</p><p data-node-text-align="center"><strong>CONTRATADO</strong></p>')
+          .insertContent('<p></p><p data-node-text-align="center">[Cidade] - [UF], [Dia] de [Mês] de [Ano].</p><p></p><p data-node-text-align="center">__________________________________________</p><p data-node-text-align="center"><strong>CONTRATANTE</strong></p><p></p><p></p><p data-node-text-align="center">__________________________________________</p><p data-node-text-align="center"><strong>CONTRATADO</strong></p>')
           .run()
       },
     },
