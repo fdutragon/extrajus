@@ -1,20 +1,37 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
+import { createClient } from "@/utils/supabase/server";
 
 const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey || "");
 
 export async function POST(req: Request) {
   try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const aiRigor = user?.user_metadata?.ai_rigor ?? 8;
+    const aiMode = user?.user_metadata?.ai_mode ?? "Inovador";
+
     const { prompt, instructionType } = await req.json();
 
     const modelName = "gemini-2.5-flash";
 
     // 1. Fluxo de Auditoria de Riscos Jurídicos
     if (instructionType === "audit") {
+      let systemInstruction = `Você é a EXTRAJUS AI, assistente profissional de conformidade jurídica. Sua função é analisar minutas, identificar riscos e sugerir melhorias técnicas.\nFormato estrito: [{"originalText": "texto exato", "suggestion": "nova redação", "reason": "explicação técnica do risco ou melhoria"}]`;
+
+      systemInstruction += `\nNÍVEL DE RIGOR DE AUDITORIA ATIVO: Nível ${aiRigor}/10. ${
+        aiRigor >= 8 
+          ? "Diretriz crítica: Seja extremamente exigente, detalhista, pedante, conservador e implacável em identificar riscos contratuais, apontando até mesmo cláusulas com potencial de dubiedade mínima, pequenos desequilíbrios de responsabilidade ou ambiguidades formais." 
+          : aiRigor <= 4 
+            ? "Diretriz crítica: Concentre-se exclusivamente em apontar riscos contratuais graves e de extrema relevância jurídica estrutural. Ignore detalhes menores, preciosismo técnico ou formalismo tradicional de baixa relevância prática."
+            : "Diretriz crítica: Adote uma postura de rigor equilibrado padrão de mercado, identificando riscos contratuais típicos e cláusulas sensíveis comuns."
+      }`;
+
       const auditModel = genAI.getGenerativeModel({
         model: modelName,
-        systemInstruction: `Você é a EXTRAJUS AI, assistente profissional de conformidade jurídica. Sua função é analisar minutas, identificar riscos e sugerir melhorias técnicas.\nFormato estrito: [{"originalText": "texto exato", "suggestion": "nova redação", "reason": "explicação técnica do risco ou melhoria"}]`,
+        systemInstruction: systemInstruction,
       }, { apiVersion: "v1beta" });
 
       const result = await auditModel.generateContent(`Analise este contrato e aponte os riscos:\n\n${prompt}`);
@@ -63,7 +80,7 @@ REGRAS CRÍTICAS DE RETORNO (OBRIGATÓRIAS):
     }
  
     // 3. Fluxo de Geração / Edição de Cláusulas Jurídicas (Streaming)
-    const systemInstruction = `Você é a EXTRAJUS AI, a Inteligência Artificial especializada em Engenharia Jurídica da plataforma ExtraJus. Sua função é redigir, analisar e otimizar contratos jurídicos com precisão técnica e terminologia formal.
+    let systemInstruction = `Você é a EXTRAJUS AI, a Inteligência Artificial especializada em Engenharia Jurídica da plataforma ExtraJus. Sua função é redigir, analisar e otimizar contratos jurídicos com precisão técnica e terminologia formal.
 
 REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
 1. Use APENAS HTML. NUNCA use Markdown.
@@ -90,6 +107,14 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
    <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
    <p data-node-text-align="center" style="text-align: center;"><strong>CONTRATADO</strong></p>
 9. Retorne APENAS o HTML sem estilos inline (exceto pelos atributos obrigatórios de alinhamento e espaçamento nos elementos centralizados da regra 2 e regra 8). Sem explicações.`;
+
+    systemInstruction += `\nESTILO DE SUGESTÃO E REDAÇÃO REQUERIDO: ${aiMode}. ${
+      aiMode === "Conservador" 
+        ? "Diretriz de estilo crítica: Adote um tom extremamente clássico, altamente formal, tradicional, defensivo, conservador e focado na máxima proteção contratual e blindagem minuciosa de responsabilidades da parte protegida."
+        : aiMode === "Inovador"
+          ? "Diretriz de estilo crítica: Adote um tom moderno, focado em agilidade, flexibilidade comercial, novas práticas do ecossistema tecnológico/startups e uso de redação clara e simplificada (estilo plain language para alta velocidade de negócios)."
+          : "Diretriz de estilo crítica: Adote um tom técnico equilibrado, harmonizando a blindagem de riscos e garantias contratuais com a viabilidade e flexibilidade de negociação comercial moderna."
+    }`;
 
     const model = genAI.getGenerativeModel({
       model: modelName,

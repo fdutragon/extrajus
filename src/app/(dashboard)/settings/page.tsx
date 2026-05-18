@@ -36,6 +36,9 @@ export default function SettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isGeneratingPix, setIsGeneratingPix] = useState(false);
   const [pixData, setPixData] = useState<{ pixCode: string, pixQrCode: string } | null>(null);
+  const [aiRigor, setAiRigor] = useState<number>(8);
+  const [aiMode, setAiMode] = useState<string>("Inovador");
+  const [aiRealtime, setAiRealtime] = useState<boolean>(true);
   const supabase = createClient();
 
   useEffect(() => {
@@ -44,6 +47,10 @@ export default function SettingsPage() {
       if (!user) return;
 
       setEmail(user.email || "");
+      setUsername(user.user_metadata?.username || "");
+      setAiRigor(user.user_metadata?.ai_rigor ?? 8);
+      setAiMode(user.user_metadata?.ai_mode ?? "Inovador");
+      setAiRealtime(user.user_metadata?.ai_realtime ?? true);
 
       const { data } = await supabase
         .from('profiles')
@@ -54,7 +61,6 @@ export default function SettingsPage() {
       if (data) {
         setProfile(data);
         setFullName(data.full_name || "");
-        setUsername(data.username || "");
       }
       setLoading(false);
     }
@@ -89,14 +95,24 @@ export default function SettingsPage() {
 
       const { error: profileError } = await supabase
         .from('profiles')
-        .upsert({ 
-          id: user.id, 
+        .update({ 
           full_name: fullName,
-          username: username,
           updated_at: new Date().toISOString()
-        });
+        })
+        .eq('id', user.id);
 
       if (profileError) throw profileError;
+
+      const { error: metaError } = await supabase.auth.updateUser({
+        data: { username: username }
+      });
+      if (metaError) throw metaError;
+
+      setProfile((prev: any) => ({
+        ...prev,
+        full_name: fullName,
+        username: username
+      }));
 
       if (email !== user.email) {
         const { error: emailError } = await supabase.auth.updateUser({ email });
@@ -115,6 +131,25 @@ export default function SettingsPage() {
       window.dispatchEvent(new Event('profile-updated'));
     } catch (error: any) {
       toast.error(error.message || "Falha ao salvar configurações.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSaveAi = async () => {
+    setIsSaving(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: {
+          ai_rigor: aiRigor,
+          ai_mode: aiMode,
+          ai_realtime: aiRealtime
+        }
+      });
+      if (error) throw error;
+      toast.success("Configurações de IA salvas com sucesso.");
+    } catch (error: any) {
+      toast.error(error.message || "Falha ao salvar configurações de IA.");
     } finally {
       setIsSaving(false);
     }
@@ -290,10 +325,17 @@ export default function SettingsPage() {
                             <span className="text-sm font-bold text-foreground">Rigor de Análise</span>
                             <p className="text-xs text-muted-foreground">Define o nível de profundidade das auditorias contratuais.</p>
                           </div>
-                          <span className="text-xs font-mono font-bold text-primary text-left">NÍVEL 08</span>
+                          <span className="text-xs font-mono font-bold text-primary text-left">NÍVEL {aiRigor.toString().padStart(2, '0')}</span>
                         </div>
-                        <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden border border-border text-left">
-                          <div className="h-full w-[80%] bg-primary" />
+                        <div className="flex items-center gap-4 text-left">
+                          <input 
+                            type="range" 
+                            min="1" 
+                            max="10" 
+                            value={aiRigor} 
+                            onChange={(e) => setAiRigor(Number(e.target.value))}
+                            className="w-full accent-primary bg-muted rounded-lg h-2 cursor-pointer appearance-none border border-border"
+                          />
                         </div>
                      </div>
 
@@ -303,15 +345,18 @@ export default function SettingsPage() {
                             <span className="text-sm font-bold text-foreground">Modo de Sugestão</span>
                             <p className="text-xs text-muted-foreground">Define o estilo de redação e argumentação da IA.</p>
                           </div>
-                          <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5">Alto</Badge>
+                          <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5">
+                            {aiMode === "Conservador" ? "Alto Rigor" : aiMode === "Inovador" ? "Alta Agilidade" : "Equilibrado"}
+                          </Badge>
                         </div>
                         <div className="grid grid-cols-3 gap-3 text-left">
                           {["Conservador", "Equilibrado", "Inovador"].map((mode) => (
                             <button 
                               key={mode}
+                              onClick={() => setAiMode(mode)}
                               className={cn(
-                                "py-3 px-4 rounded-xl text-xs font-bold border transition-all",
-                                mode === "Inovador" 
+                                "py-3 px-4 rounded-xl text-xs font-bold border transition-all active:scale-95",
+                                mode === aiMode 
                                   ? "bg-primary/10 border-primary/30 text-primary" 
                                   : "bg-muted border-border text-muted-foreground hover:border-primary/20"
                               )}
@@ -329,9 +374,30 @@ export default function SettingsPage() {
                            <span className="text-sm font-bold text-foreground">Análise de Risco em Tempo Real</span>
                            <p className="text-xs text-muted-foreground text-left">Ativa o monitoramento constante de cláusulas sensíveis durante a edição.</p>
                         </div>
-                        <div className="w-10 h-5 bg-primary/20 rounded-full relative border border-primary/30">
-                           <div className="absolute right-1 top-1 w-3 h-3 bg-primary rounded-full" />
-                        </div>
+                        <button 
+                          onClick={() => setAiRealtime(!aiRealtime)}
+                          className={cn(
+                            "w-12 h-6 rounded-full relative border transition-all duration-300",
+                            aiRealtime 
+                              ? "bg-primary/20 border-primary/30" 
+                              : "bg-muted border-border"
+                          )}
+                        >
+                           <div className={cn(
+                             "absolute top-1 w-4 h-4 bg-primary rounded-full transition-all duration-300",
+                             aiRealtime ? "right-1" : "left-1"
+                           )} />
+                        </button>
+                     </div>
+                     
+                     <div className="mt-8 pt-6 border-t flex justify-end text-left">
+                       <Button 
+                         disabled={isSaving}
+                         onClick={handleSaveAi}
+                         className="bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest rounded-xl px-10 h-14 text-xs transition-all active:scale-95"
+                       >
+                         {isSaving ? "Salvando..." : "Salvar Configurações de IA"}
+                       </Button>
                      </div>
                    </div>
                  </div>
