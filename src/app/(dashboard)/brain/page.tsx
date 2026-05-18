@@ -240,7 +240,7 @@ export default function BrainPage() {
                 ctx.shadowOffsetY = 0;
 
                 ctx.beginPath();
-                ctx.arc(node.x, node.y, node.val, 0, 2 * Math.PI, false);
+                ctx.arc(node.x, node.y, node.val * 0.7, 0, 2 * Math.PI, false);
                 
                 const color = node.color || "#06b6d4";
                 ctx.fillStyle = color;
@@ -248,7 +248,7 @@ export default function BrainPage() {
 
                 // Draw solid white center core
                 ctx.beginPath();
-                ctx.arc(node.x, node.y, node.val / 2.5, 0, 2 * Math.PI, false);
+                ctx.arc(node.x, node.y, node.val * 0.3, 0, 2 * Math.PI, false);
                 ctx.fillStyle = "#ffffff";
                 ctx.fill();
                 
@@ -258,7 +258,7 @@ export default function BrainPage() {
                   ctx.textAlign = "center";
                   ctx.textBaseline = "middle";
                   ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
-                  ctx.fillText(label, node.x, node.y + node.val + 6);
+                  ctx.fillText(label, node.x, node.y + (node.val * 0.7) + 6);
                 }
               }}
               onNodeClick={(node) => setSelectedNode(node)}
