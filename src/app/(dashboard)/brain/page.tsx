@@ -343,11 +343,7 @@ export default function BrainPage() {
                       </div>
                    </div>
                 </div>
-                <div className="pt-6 mt-auto">
-                  <div className="flex items-center gap-2 p-3 bg-primary/5 rounded-xl border border-primary/10 italic text-[11px] text-muted-foreground">
-                    "Monitorando integridade de dados e conformidade..."
-                  </div>
-                </div>
+
              </div>
           </Card>
         </div>

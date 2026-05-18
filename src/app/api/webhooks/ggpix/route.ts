@@ -64,11 +64,19 @@ export async function POST(request: Request) {
 
       if (updateTxError) throw updateTxError;
 
-      // 3. Adicionar créditos ao usuário (Conversão Padrão: R$ 1,00 = 10 Créditos)
-      // amount vem em centavos do GG Pix (ex: R$ 10,00 = 1000 centavos).
-      // Então, credits = amount / 10
-      const creditsToAdd = Math.floor(amount / 10); 
-
+      // 3. Adicionar créditos ao usuário recalibrado (ou fallback original se valor customizado)
+      // R$ 29,00 (2900 centavos) -> 20 Sinapses
+      // R$ 49,00 (4900 centavos) -> 50 Sinapses
+      // R$ 69,00 (6900 centavos) -> 100 Sinapses
+      let creditsToAdd = Math.floor(amount / 10);
+      const amountCents = amount; // amount vem em centavos do GG Pix
+      if (amountCents === 2900) {
+        creditsToAdd = 20;
+      } else if (amountCents === 4900) {
+        creditsToAdd = 50;
+      } else if (amountCents === 6900) {
+        creditsToAdd = 100;
+      }
       const { error: updateProfileError } = await supabase.rpc('increment_credits', {
         user_id: transaction.user_id,
         amount: creditsToAdd

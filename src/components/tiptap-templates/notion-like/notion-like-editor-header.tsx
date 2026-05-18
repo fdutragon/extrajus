@@ -31,9 +31,9 @@ export function NotionEditorHeader() {
     let active = true
     let channel: any = null
 
-    const fetchProfile = async () => {
+    const fetchProfileData = async () => {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user || !active) return
+      if (!user || !active) return null
 
       const { data: profile } = await supabase
         .from("profiles")
@@ -44,6 +44,12 @@ export function NotionEditorHeader() {
       if (profile && active) {
         setCredits(profile.credits)
       }
+      return user
+    }
+
+    const setupRealtime = async () => {
+      const user = await fetchProfileData()
+      if (!user || !active) return
 
       channel = supabase
         .channel(`header-profile-realtime-${user.id}`)
@@ -64,10 +70,10 @@ export function NotionEditorHeader() {
         .subscribe()
     }
 
-    fetchProfile()
+    setupRealtime()
 
     const handleProfileUpdated = () => {
-      fetchProfile()
+      fetchProfileData()
     }
     window.addEventListener('profile-updated', handleProfileUpdated)
 

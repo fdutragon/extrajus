@@ -1,7 +1,9 @@
 "use client"
 
-import { useCallback, useState } from "react"
-
+import { useCallback, useState, useEffect } from "react"
+import { createClient } from "@/utils/supabase/client"
+import { toast } from "sonner"
+import { cn } from "@/lib/utils"
 // Tiptap Core Extensions
 import type { Tone } from "../../../../components/tiptap-extension/gemini-ai-extension"
 
@@ -50,7 +52,7 @@ export function AiMenuInputPlaceholder({
       <div className="tiptap-ai-prompt-input-placeholder-content">
         <AiSparklesIcon className="tiptap-ai-prompt-input-placeholder-icon" />
         <span className="tiptap-ai-prompt-input-placeholder-text">
-          Digite as alterações que deseja realizar no texto...
+          Digite instruções para criar seu contrato...
         </span>
       </div>
       <Button data-style="primary" disabled>
@@ -171,7 +173,7 @@ export function AiMenuInputTextarea({
   onPlaceholderClick,
   showPlaceholder = false,
   isLoading = false,
-  placeholder = "Digite suas instruções para a IA...",
+  placeholder = "Digite instruções para criar seu contrato...",
   autoFocus = true,
   ...props
 }: AiMenuInputTextareaProps) {
@@ -215,13 +217,58 @@ export function AiMenuInputTextarea({
     [handleBlur]
   )
 
+  const [isMaster, setIsMaster] = useState(false)
+  const [docType, setDocType] = useState<string>("contrato")
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("extrajus_ai_doc_type") || "contrato"
+      setDocType(saved)
+    }
+
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user?.email === "felipedutra@outlook.com") {
+        setIsMaster(true)
+      }
+    })
+  }, [])
+
   return (
     <div
-      className="tiptap-ai-prompt-input"
+      className="tiptap-ai-prompt-input flex flex-col"
       data-focused={isFocused}
       data-active-state={showPlaceholder || isLoading ? "off" : "on"}
       {...props}
     >
+      {isMaster && !isLoading && !showPlaceholder && (
+        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-background/50 border border-border/60 rounded-xl mb-3.5 mt-0.5 self-center mx-auto select-none z-50">
+          <span className="text-[9px] font-black text-muted-foreground/60 uppercase tracking-widest mr-1.5">Foco IA:</span>
+          {[
+            { id: "contrato", label: "Contratos" },
+            { id: "notificacao", label: "Notificações" },
+            { id: "peticao", label: "Petições" }
+          ].map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => {
+                localStorage.setItem("extrajus_ai_doc_type", opt.id)
+                setDocType(opt.id)
+                toast.success(`💥 Foco da IA alterado para: ${opt.label}`)
+              }}
+              className={cn(
+                "text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg transition-all",
+                docType === opt.id
+                  ? "bg-primary text-primary-foreground shadow-[0_0_10px_rgba(var(--primary),0.2)] border border-primary"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground border border-transparent"
+              )}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
       {isLoading ? (
         <div className="flex items-center justify-between w-full h-[3.25rem] px-4 bg-primary/5 rounded-2xl border border-primary/10 animate-pulse-subtle">
           <div className="flex items-center gap-3">

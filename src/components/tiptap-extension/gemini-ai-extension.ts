@@ -176,6 +176,9 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
         const previousContent = currentHtml
         this.storage.generatedWith = { previousContent }
 
+        // Obter tipo de documento do localStorage (Foco IA)
+        const localDocType = typeof window !== "undefined" ? window.localStorage.getItem("extrajus_ai_doc_type") || "contrato" : "contrato";
+
         // Chamada de API segura para o servidor Next.js
         const response = await fetch("/api/ai/ritual", {
           method: "POST",
@@ -184,7 +187,8 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
           },
           body: JSON.stringify({
             prompt: finalPrompt,
-            instructionType: isDocEmpty ? "generation" : "surgical"
+            instructionType: isDocEmpty ? "generation" : "surgical",
+            docType: localDocType
           })
         })
 

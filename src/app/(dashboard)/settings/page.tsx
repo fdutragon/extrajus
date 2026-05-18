@@ -24,7 +24,6 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
-import { QRCodeSVG } from "qrcode.react";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("perfil");
@@ -35,11 +34,10 @@ export default function SettingsPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [isGeneratingPix, setIsGeneratingPix] = useState(false);
-  const [pixData, setPixData] = useState<{ pixCode: string, pixQrCode: string } | null>(null);
   const [aiRigor, setAiRigor] = useState<number>(8);
   const [aiMode, setAiMode] = useState<string>("Inovador");
   const [aiRealtime, setAiRealtime] = useState<boolean>(true);
+  const [isMaster, setIsMaster] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
@@ -52,6 +50,10 @@ export default function SettingsPage() {
       setAiRigor(user.user_metadata?.ai_rigor ?? 8);
       setAiMode(user.user_metadata?.ai_mode ?? "Inovador");
       setAiRealtime(user.user_metadata?.ai_realtime ?? true);
+
+      if (user.email === "felipedutra@outlook.com") {
+        setIsMaster(true);
+      }
 
       const { data } = await supabase
         .from('profiles')
@@ -71,24 +73,11 @@ export default function SettingsPage() {
     fetchProfile();
   }, []);
 
-  const handleBuyCredits = async (amountCents: number) => {
-    setIsGeneratingPix(true);
-    setPixData(null);
-    try {
-      const response = await fetch("/api/billing/pix", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amountCents, description: "Compra de Créditos ExtraJus" })
-      });
-      const data = await response.json();
-      if (data.error) throw new Error(data.error);
-      setPixData(data);
-      toast.success("Pix gerado. Aguardando confirmação do pagamento.");
-    } catch (error: any) {
-      toast.error(error.message || "Erro ao gerar Pix.");
-    } finally {
-      setIsGeneratingPix(false);
-    }
+  const handleBuyCredits = (pkg: any) => {
+    const event = new CustomEvent("open-plans-modal", {
+      detail: { pkg }
+    });
+    window.dispatchEvent(event);
   };
 
   const handleSave = async () => {
@@ -162,7 +151,7 @@ export default function SettingsPage() {
 
   const menuItems = [
     { id: "perfil", name: "Perfil de Usuário", icon: User },
-    { id: "ai", name: "Configuração de IA", icon: Sparkles },
+    ...(isMaster ? [{ id: "ai", name: "Configuração de IA", icon: Sparkles }] : []),
     { id: "faturamento", name: "Faturamento & Créditos", icon: CreditCard },
   ];
 
@@ -309,7 +298,7 @@ export default function SettingsPage() {
             </div>
           )}
 
-          {activeTab === "ai" && (
+          {activeTab === "ai" && isMaster && (
             <div className="space-y-6 animate-in slide-in-from-bottom-2 duration-500 text-left">
               <Card className="rounded-xl p-8 relative overflow-hidden text-left">
                  <div className="relative z-10 space-y-8 text-left">
@@ -435,83 +424,65 @@ export default function SettingsPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
                     {[
-                      { credits: 100, price: 10, label: "Básico", color: "text-blue-500" },
-                      { credits: 550, price: 50, label: "Profissional", color: "text-primary", popular: true },
-                      { credits: 1200, price: 100, label: "Corporativo", color: "text-amber-500" },
+                      { 
+                        credits: 20, 
+                        price: 29, 
+                        label: "Pacto Inicial", 
+                        desc: "Ideal para testes e análises rápidas.", 
+                        popular: false,
+                        text: "text-foreground",
+                        border: "border-border hover:border-primary/30 hover:scale-[1.01]"
+                      },
+                      { 
+                        credits: 50, 
+                        price: 49, 
+                        label: "Pacto de Elite", 
+                        desc: "O preferido dos especialistas. Alta performance.", 
+                        popular: true,
+                        text: "text-primary",
+                        border: "border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.06)] hover:border-primary scale-[1.02]"
+                      },
+                      { 
+                        credits: 100, 
+                        price: 69, 
+                        label: "Pacto Soberano", 
+                        desc: "Poder absoluto e irrestrito para corporações.", 
+                        popular: false,
+                        text: "text-primary/90",
+                        border: "border-border hover:border-primary/30 hover:scale-[1.01]"
+                      },
                     ].map((pkg) => (
                       <div 
                         key={pkg.credits}
                         className={cn(
-                          "p-6 rounded-2xl border transition-all cursor-pointer group relative overflow-hidden flex flex-col h-full text-left",
-                          pkg.popular ? "bg-primary/5 border-primary/30" : "bg-muted/30 border-border hover:border-primary/20"
+                          "p-6 rounded-2xl border transition-all duration-300 cursor-pointer group relative overflow-hidden flex flex-col h-full bg-card text-card-foreground text-left",
+                          pkg.popular ? "border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.06)] hover:border-primary scale-[1.02]" : "border-border hover:border-primary/30 hover:scale-[1.01]"
                         )}
-                        onClick={() => handleBuyCredits(pkg.price * 100)}
+                        onClick={() => handleBuyCredits(pkg)}
                       >
                         {pkg.popular && (
-                          <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-[8px] font-black px-3 py-1 rounded-bl-xl uppercase tracking-widest">Destaque</div>
+                          <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-[8px] font-black px-3 py-1 rounded-bl-xl uppercase tracking-widest flex items-center gap-1 font-sans">
+                            <Sparkles size={8} /> Popular
+                          </div>
                         )}
                         <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest block mb-2 text-left">{pkg.label}</span>
-                        <div className="flex items-baseline gap-1 mb-4 text-left">
-                           <span className={cn("text-2xl font-black", pkg.color)}>{pkg.credits}</span>
-                           <span className="text-[10px] font-bold text-muted-foreground">créditos</span>
+                        <div className="flex items-baseline gap-1 mb-2 text-left">
+                           <span className={cn("text-2xl font-black font-mono tracking-tight", pkg.text)}>{pkg.credits}</span>
+                           <span className="text-[10px] font-bold text-muted-foreground">Sinapses</span>
                         </div>
+                        <p className="text-[11px] text-muted-foreground leading-relaxed font-medium mb-6">
+                          {pkg.desc}
+                        </p>
                         <div className="flex items-center justify-between mt-auto pt-4 border-t border-border/50 text-left">
-                           <span className="text-sm font-bold text-foreground">R$ {pkg.price}</span>
-                           <Button size="sm" variant="ghost" className="h-7 px-3 text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-primary hover:text-primary-foreground">Adquirir</Button>
+                           <div className="flex flex-col">
+                             <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Investimento</span>
+                             <span className="text-sm font-black text-foreground font-mono">R$ {pkg.price}</span>
+                           </div>
+                           <Button size="sm" variant="ghost" className="h-8 px-3 text-[9px] font-black uppercase tracking-widest rounded-lg border border-border group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">Adquirir</Button>
                         </div>
                       </div>
                     ))}
                   </div>
-
-                  {isGeneratingPix && (
-                    <div className="p-12 text-center border-2 border-dashed border-border rounded-3xl animate-pulse">
-                       <Zap size={32} className="mx-auto text-primary mb-4" />
-                       <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Gerando QR Code de Pagamento...</p>
-                    </div>
-                  )}
-
-                  {pixData && (
-                    <div className="p-8 bg-primary/5 border border-primary/20 rounded-3xl animate-in zoom-in-95 duration-500 text-left">
-                       <div className="flex flex-col md:flex-row gap-8 items-center text-left">
-                          <div className="w-48 h-48 bg-white p-2 rounded-2xl shadow-lg flex items-center justify-center overflow-hidden">
-                             <QRCodeSVG 
-                               value={pixData.pixQrCode}
-                               size={180}
-                               level="L"
-                               includeMargin={false}
-                             />
-                          </div>
-                          <div className="flex-1 space-y-4 text-left">
-                             <div className="space-y-1 text-left">
-                                <h4 className="text-sm font-black uppercase tracking-widest text-primary flex items-center gap-2 text-left">
-                                   <ShieldCheck size={16} /> Pagamento Seguro via Pix
-                                </h4>
-                                <p className="text-xs text-muted-foreground leading-relaxed text-left">
-                                   Aponte a câmera do seu banco para o QR Code ou utilize o código copia e cola. Os créditos serão liberados imediatamente após a confirmação.
-                                </p>
-                             </div>
-                             <div className="space-y-2 text-left">
-                                <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest text-left">Código Copia e Cola</span>
-                                <div className="flex gap-2 text-left">
-                                   <input 
-                                     readOnly 
-                                     value={pixData.pixCode} 
-                                     className="flex-1 bg-background border border-border rounded-xl px-4 py-2 text-[10px] font-mono truncate text-left"
-                                   />
-                                   <Button 
-                                     size="sm" 
-                                     className="rounded-xl font-black text-[9px] uppercase tracking-widest"
-                                     onClick={() => {
-                                        navigator.clipboard.writeText(pixData.pixCode);
-                                        toast.success("Código copiado com sucesso!");
-                                     }}
-                                   >Copiar</Button>
-                                </div>
-                             </div>
-                          </div>
-                       </div>
-                    </div>
-                  )}
                 </div>
               </Card>
             </div>

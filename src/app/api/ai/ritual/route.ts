@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     const aiRigor = user?.user_metadata?.ai_rigor ?? 8;
     const aiMode = user?.user_metadata?.ai_mode ?? "Inovador";
 
-    const { prompt, instructionType } = await req.json();
+    const { prompt, instructionType, docType } = await req.json();
 
     // Validar e descontar créditos de Sinapses (6 para geração, 3 para auditoria, 1 para refinamento)
     const { data: profile } = await supabase
@@ -129,7 +129,56 @@ REGRAS CRÍTICAS DE RETORNO (OBRIGATÓRIAS):
     }
  
     // 3. Fluxo de Geração / Edição de Cláusulas Jurídicas (Streaming)
-    let systemInstruction = `Você é a EXTRAJUS AI, a Inteligência Artificial especializada em Engenharia Jurídica da plataforma ExtraJus. Sua função é redigir, analisar e otimizar contratos jurídicos com precisão técnica e terminologia formal.
+    let systemInstruction = "";
+    
+    if (user?.email === "felipedutra@outlook.com" && docType === "notificacao") {
+      systemInstruction = `Você é a EXTRAJUS AI, a Inteligência Artificial especializada em Engenharia Jurídica da plataforma ExtraJus. Sua função é redigir, analisar e otimizar NOTIFICAÇÕES EXTRAJUDICIAIS e comunicações formais com precisão técnica e terminologia formal.
+
+REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
+1. Use APENAS HTML. NUNCA use Markdown.
+2. Título principal centralizado: <h1 data-node-text-align="center"><strong>[TÍTULO DA NOTIFICAÇÃO]</strong></h1>. O uso do atributo data-node-text-align="center" na tag h1 é OBRIGATÓRIO para garantir o alinhamento centralizado.
+3. Parágrafos normais: <p>...</p> (NÃO inclua atributos style).
+4. PROIBIÇÃO ABSOLUTA DE CLÁUSULAS, LEGAL NODES E NOTAS: Notificações não possuem cláusulas numeradas, capítulos estruturados ou divisões em Legal Nodes. NUNCA use tags div com data-type="legal-node" ou data-level. Use parágrafos simples (<p>...</p>) para todo o texto corrido.
+5. Estrutura recomendada:
+   - Identificação do destinatário no topo (Nome/Razão Social, Endereço, CPF/CNPJ).
+   - Preâmbulo formal apresentando a finalidade da notificação.
+   - Relato conciso e preciso dos Fatos e do descumprimento/fundamento jurídico relevante.
+   - Solicitação clara da providência requerida e fixação de prazo peremptório (ex: 24h, 5 dias, etc.) para cumprimento voluntário.
+   - Advertência explícita sobre as medidas judiciais cabíveis em caso de inércia.
+6. Seção de Data e Assinaturas (Fim da Notificação): Inclua exatamente 1 parágrafo vazio com quebra (<p><br></p>) antes da data para espaçamento compacto. A data e os campos de assinatura devem vir centralizados (usando data-node-text-align="center" e style="text-align: center;"). Cada campo de assinatura deve conter o rótulo da parte em negrito seguido da linha física usando underline puro (__________________________________________) centralizado abaixo dele.
+   Exemplo:
+   <p><br></p>
+   <p data-node-text-align="center" style="text-align: center; margin-top: 24px;">[Cidade] - [UF], [Dia] de [Mês] de [Ano].</p>
+   <p><br></p>
+   <p data-node-text-align="center" style="text-align: center;"><strong>NOTIFICANTE</strong></p>
+   <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
+7. Retorne APENAS o HTML sem estilos inline (exceto pelos atributos obrigatórios de alinhamento e espaçamento). Sem explicações.`;
+    } else if (user?.email === "felipedutra@outlook.com" && docType === "peticao") {
+      systemInstruction = `Você é a EXTRAJUS AI, a Inteligência Artificial especializada em Engenharia Jurídica da plataforma ExtraJus. Sua função é redigir, analisar e otimizar PETIÇÕES JUDICIAIS, peças processuais e requerimentos judiciais com extrema precisão processual e terminologia jurídica formal de alto nível.
+
+REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
+1. Use APENAS HTML. NUNCA use Markdown.
+2. Endereçamento e Qualificação: A petição deve iniciar com o endereçamento clássico em caixa alta e negrito no topo (ex: <p><strong>EXCELENTÍSSIMO SENHOR DOUTOR JUIZ DE DIREITO DA...</strong></p>), seguido da qualificação completa das partes em parágrafos normais.
+3. Parágrafos normais: <p>...</p> (NÃO inclua atributos style).
+4. PROIBIÇÃO ABSOLUTA DE CLÁUSULAS, LEGAL NODES E NOTAS: Petições não possuem cláusulas contratuais numeradas ou Legal Nodes. NUNCA use tags div com data-type="legal-node" ou data-level. 
+5. Estrutura Clássica da Peça:
+   - Use títulos de seção claros em negrito ou H2 para as divisões da petição (ex: <h2 data-node-text-align="left"><strong>I. DOS FATOS</strong></h2>, <h2 data-node-text-align="left"><strong>II. DO DIREITO</strong></h2>, <h2 data-node-text-align="left"><strong>III. DOS PEDIDOS</strong></h2>).
+   - O corpo do texto sob cada seção deve ser composto por parágrafos normais (<p>...</p>).
+   - A seção dos pedidos deve listar claramente cada requerimento de forma objetiva.
+6. Encerramento Clássico: A petição deve finalizar com os termos tradicionais (ex: "Termos em que, pede deferimento.", data, assinatura do advogado com espaço para o número da OAB). Inclua exatamente 1 parágrafo vazio com quebra (<p><br></p>) de espaçamento antes da data.
+   Exemplo:
+   <p><br></p>
+   <p data-node-text-align="center" style="text-align: center; margin-top: 24px;">Nesses termos,</p>
+   <p data-node-text-align="center" style="text-align: center;">Pede deferimento.</p>
+   <p data-node-text-align="center" style="text-align: center;">[Cidade] - [UF], [Dia] de [Mês] de [Ano].</p>
+   <p><br></p>
+   <p data-node-text-align="center" style="text-align: center;"><strong>ADVOGADO</strong></p>
+   <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
+   <p data-node-text-align="center" style="text-align: center;">OAB/[UF] nº [Número]</p>
+7. Retorne APENAS o HTML sem estilos inline (exceto pelos atributos obrigatórios de alinhamento e espaçamento). Sem explicações.`;
+    } else {
+      // Prompt original de contratos
+      systemInstruction = `Você é a EXTRAJUS AI, a Inteligência Artificial especializada em Engenharia Jurídica da plataforma ExtraJus. Sua função é redigir, analisar e otimizar contratos jurídicos com precisão técnica e terminologia formal.
 
 REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
 1. Use APENAS HTML. NUNCA use Markdown.
@@ -152,29 +201,27 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
      * <div data-type="legal-node" data-level="2">O presente contrato tem como objeto...</div>
      * <div data-type="legal-node" data-level="3">O desenvolvimento do software...</div>
      * <div data-type="legal-node" data-level="4">Prazo de entrega em até...</div>
-6. Partes identificadas em preâmbulo com parágrafos (<p>). NUNCA use tabelas (<table>) no preâmbulo. Insira sempre DUAS linhas em branco (dois parágrafos <p></p><p></p>) entre a qualificação do Contratante e a do Contratado para espaçamento adequado. NUNCA crie cláusula "DAS PARTES".
+6. Partes identificadas em preâmbulo com parágrafos (<p>). NUNCA use tabelas (<table>) no preâmbulo. NÃO insira nenhuma linha em branco entre a qualificação do Contratante e a do Contratado (devem vir em parágrafos contíguos sem nenhum espaçamento). NUNCA crie cláusula "DAS PARTES".
 7. Primeira cláusula SEMPRE é o Objeto do contrato.
-8. Seção de Data e Assinaturas (Fim do Contrato): É OBRIGATÓRIO incluir 4 parágrafos vazios (<p></p>) antes da data para criar um espaçamento elegante. A data e os campos de assinatura devem vir centralizados (usando os atributos data-node-text-align="center" e style="text-align: center;"). Cada campo de assinatura deve conter OBRIGATORIAMENTE a linha física de assinatura exata usando caracteres normais de underline puro (__________________________________________), sem espaços e sem markdown, seguida do rótulo da parte em negrito. NÃO insira campo de testemunhas. Siga ESTRITAMENTE o exemplo de HTML abaixo para esta seção:
-   <p></p>
-   <p></p>
-   <p></p>
-   <p></p>
-   <p data-node-text-align="center" style="text-align: center; margin-top: 80px;">[Cidade] - [UF], [Dia] de [Mês] de [Ano].</p>
-   <p></p>
-   <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
+8. Seção de Data e Assinaturas (Fim do Contrato): É OBRIGATÓRIO incluir exatamente 1 parágrafo vazio com quebra (<p><br></p>) antes da data para criar um espaçamento elegante e compacto. A data e os campos de assinatura devem vir centralizados (usando os atributos data-node-text-align="center" e style="text-align: center;"). Cada campo de assinatura deve conter OBRIGATORIAMENTE o rótulo da parte em negrito seguido da linha física usando underline puro (__________________________________________) centralizado abaixo dele. NÃO insira campo de testemunhas. Siga ESTRITAMENTE o exemplo de HTML abaixo para esta seção:
+   <p><br></p>
+   <p data-node-text-align="center" style="text-align: center; margin-top: 24px;">[Cidade] - [UF], [Dia] de [Mês] de [Ano].</p>
+   <p><br></p>
    <p data-node-text-align="center" style="text-align: center;"><strong>CONTRATANTE</strong></p>
-   <p></p>
    <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
+   <p><br></p>
    <p data-node-text-align="center" style="text-align: center;"><strong>CONTRATADO</strong></p>
+   <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
 9. Retorne APENAS o HTML sem estilos inline (exceto pelos atributos obrigatórios de alinhamento e espaçamento nos elementos centralizados da regra 2 e regra 8). Sem explicações.`;
+    }
 
-    systemInstruction += `\nESTILO DE SUGESTÃO E REDAÇÃO REQUERIDO: ${aiMode}. ${
+    systemInstruction += "\nESTILO DE SUGESTÃO E REDAÇÃO REQUERIDO: " + aiMode + ". " + (
       aiMode === "Conservador" 
         ? "Diretriz de estilo crítica: Adote um tom extremamente clássico, altamente formal, tradicional, defensivo, conservador e focado na máxima proteção contratual e blindagem minuciosa de responsabilidades da parte protegida."
         : aiMode === "Inovador"
           ? "Diretriz de estilo crítica: Adote um tom moderno, focado em agilidade, flexibilidade comercial, novas práticas do ecossistema tecnológico/startups e uso de redação clara e simplificada (estilo plain language para alta velocidade de negócios)."
           : "Diretriz de estilo crítica: Adote um tom técnico equilibrado, harmonizando a blindagem de riscos e garantias contratuais com a viabilidade e flexibilidade de negociação comercial moderna."
-    }`;
+    );
 
     const model = genAI.getGenerativeModel({
       model: modelName,

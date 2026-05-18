@@ -60,9 +60,10 @@ span.tiptap-slash-decoration.is-empty::after {
   }
 
   // Grupos e containers sem transbordo
-  .tiptap-card-item-group, .tiptap-slash-card-body {
+  .tiptap-card-body, .tiptap-card-item-group, .tiptap-slash-card-body {
     min-width: 0 !important;
     width: 100% !important;
+    padding: 0 !important;
     overflow-x: hidden !important;
   }
 
@@ -98,34 +99,18 @@ span.tiptap-slash-decoration.is-empty::after {
       text-overflow: ellipsis;
     }
 
-    // Hover e Ativo com destaque em Ouro Líquido (Apenas para não-básicos)
-    &[data-active-state="on"]:not([data-basic="true"]),
-    &:hover:not([data-basic="true"]) {
-      background-color: color-mix(in srgb, var(--primary), transparent 88%) !important;
-      color: var(--primary) !important;
+    // Hover e Ativo com destaque baseado 100% nas cores do tema
+    &[data-active-state="on"],
+    &:hover {
+      background-color: var(--accent) !important;
+      color: var(--accent-foreground) !important;
       opacity: 1;
       transform: translateX(2px);
 
       .tiptap-button-icon {
         opacity: 1 !important;
-        color: var(--primary) !important;
+        color: var(--accent-foreground) !important;
         transform: scale(1.1);
-      }
-    }
-
-    // Estilo Neutro para Itens Básicos (Texto Simples)
-    &[data-basic="true"] {
-      &[data-active-state="on"],
-      &:hover {
-        background-color: var(--accent) !important;
-        color: var(--foreground) !important;
-        opacity: 1;
-        transform: translateX(2px);
-
-        .tiptap-button-icon {
-          opacity: 1 !important;
-          color: var(--foreground) !important;
-        }
       }
     }
   }

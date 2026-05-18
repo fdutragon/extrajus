@@ -1,16 +1,18 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Download, FileText, Loader2 } from "lucide-react"
+import { Download, Loader2 } from "lucide-react"
 import { useState } from "react"
-import html2canvas from "html2canvas"
-import jsPDF from "jspdf"
 import { toast } from "sonner"
 
 export function ExportButton() {
   const [isExporting, setIsExporting] = useState(false)
 
-  const handleExport = async () => {
+  const handleExport = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
     const editorElement = document.querySelector(".notion-like-editor-content") as HTMLElement
     if (!editorElement) {
       toast.error("Documento não encontrado para exportação.")
@@ -18,249 +20,172 @@ export function ExportButton() {
     }
 
     setIsExporting(true)
-    const exportToast = toast.loading("Preparando documento para exportação...", {
+    const exportToast = toast.loading("Verificando saldo de Sinapses...", {
       style: { background: '#09090b', border: '1px solid rgba(255,255,255,0.05)', color: 'white' }
     })
 
-    const scrollParent = editorElement.closest("main") as HTMLElement | null
-    const originalOverflow = scrollParent?.style.overflow ?? ""
-    const originalMaxHeight = scrollParent?.style.maxHeight ?? ""
-
     try {
-      if (scrollParent) {
-        scrollParent.style.overflow = "visible"
-        scrollParent.style.maxHeight = "none"
-      }
-
-      // --- PDF layout constants (mm) ---
-      const MARGIN_H = 20
-      const MARGIN_TOP = 25
-      const MARGIN_BOT = 20
-      const CANVAS_SCALE = 2
-
-      // --- Measure clause (level-1) positions BEFORE canvas capture ---
-      // These are relative to the editor element's top, in real CSS px
-      const editorTop = editorElement.getBoundingClientRect().top
-      const clauseBreakPoints: Array<{ topPx: number; bottomPx: number }> = []
-      editorElement.querySelectorAll(".legal-node-level-1").forEach((node) => {
-        const rect = (node as HTMLElement).getBoundingClientRect()
-        clauseBreakPoints.push({
-          topPx: (rect.top - editorTop) * CANVAS_SCALE,
-          bottomPx: (rect.bottom - editorTop) * CANVAS_SCALE,
-        })
+      // 1. Chamar a rota segura de cobrança de créditos no backend (Custa exatamente 2 créditos)
+      const res = await fetch("/api/billing/charge-download", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
       })
 
-      // Returns the best canvas Y cut point that avoids splitting clauses
-      const safeCut = (rawCutPx: number): number => {
-        // Find a clause whose body straddles the raw cut
-        const hit = clauseBreakPoints.find(
-          (c) => rawCutPx > c.topPx + 10 && rawCutPx < c.bottomPx - 10
-        )
-        if (hit) {
-          // Push the cut UP to just before this clause starts (so it moves to next page)
-          return Math.max(0, hit.topPx - 4)
-        }
-        return rawCutPx
+      const data = await res.json()
+
+      if (!res.ok) {
+        // Se falhar (saldo insuficiente), abre o modal de planos de Sinapses automaticamente!
+        toast.error(data.error || "Saldo de Sinapses insuficiente para download.", { id: exportToast, duration: 5000 })
+        
+        // Disparar evento para abrir modal de planos de Sinapses
+        window.dispatchEvent(new CustomEvent("open-plans-modal"))
+        return
       }
 
-      const canvas = await html2canvas(editorElement, {
-        scale: CANVAS_SCALE,
-        useCORS: true,
-        logging: false,
-        backgroundColor: "#ffffff",
-        windowHeight: editorElement.scrollHeight,
-        height: editorElement.scrollHeight,
-        y: 0,
-        onclone: (clonedDoc, clonedEl) => {
-          // 1. Force CSS custom properties to concrete safe values on :root
-          const rootStyle = clonedDoc.createElement("style")
-          rootStyle.textContent = `
-            :root {
-              --foreground: #1a1a1a !important;
-              --background: #ffffff !important;
-              --muted-foreground: #555555 !important;
-              --primary: #1a1a1a !important;
-              --border: #d4d4d8 !important;
-              --card: #ffffff !important;
-              --card-foreground: #1a1a1a !important;
-              color-scheme: light !important;
+      // Se passou da cobrança, inicia a exportação física do DOCX
+      toast.loading("Compilando e formatando arquivo DOCX...", { id: exportToast })
+
+      // 2. Obter o HTML bruto do editor
+      const rawHtml = editorElement.innerHTML
+
+      // 3. Criar o cabeçalho específico do Word com suporte a estilos modernos e fontes elegantes
+      const wordHtml = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+        <head>
+          <meta charset="utf-8">
+          <title>Documento ExtraJus</title>
+          <!--[if gte mso 9]>
+          <xml>
+            <w:WordDocument>
+              <w:View>Print</w:View>
+              <w:Zoom>100</w:Zoom>
+              <w:DoNotOptimizeForBrowser/>
+            </w:WordDocument>
+          </xml>
+          <![endif]-->
+          <style>
+            @page Section1 {
+              size: 595.3pt 841.9pt; /* A4 */
+              margin: 72.0pt 72.0pt 72.0pt 72.0pt; /* Margens de 2.54cm (padrão) */
+              mso-header-margin: 36.0pt;
+              mso-footer-margin: 36.0pt;
+              mso-paper-source: 0;
             }
-            *, *::before, *::after {
-              box-shadow: none !important;
-              text-shadow: none !important;
-              filter: none !important;
-              -webkit-filter: none !important;
+            div.Section1 {
+              page: Section1;
             }
-            body, html { background: #ffffff !important; color: #1a1a1a !important; }
-            .notion-like-editor-content {
-              font-family: 'Cambria', 'Georgia', 'Times New Roman', serif !important;
-              font-size: 12pt !important;
-              line-height: 1.75 !important;
-              color: #1a1a1a !important;
-              background: #ffffff !important;
-              padding: 0 !important;
-              overflow: visible !important;
-              height: auto !important;
-              max-height: none !important;
+            body {
+              font-family: 'Cambria', 'Georgia', 'Times New Roman', serif;
+              font-size: 12.0pt;
+              line-height: 1.6;
+              color: #000000;
             }
             h1 {
-              font-size: 15pt !important; font-weight: 700 !important;
-              text-align: center !important; color: #111111 !important;
-              margin-bottom: 20px !important; letter-spacing: 0.04em !important;
-              text-transform: uppercase !important;
+              font-size: 16.0pt;
+              font-weight: bold;
+              text-align: center;
+              text-transform: uppercase;
+              margin-top: 12.0pt;
+              margin-bottom: 24.0pt;
+              color: #000000;
             }
-            h2, h3, h4 { color: #111111 !important; font-weight: 700 !important; }
-            p { color: #1a1a1a !important; background: transparent !important; text-align: justify !important; margin-bottom: 8px !important; }
-            strong, b { color: #111111 !important; font-weight: 700 !important; }
-            em, i { color: #1a1a1a !important; }
+            h2 {
+              font-size: 13.0pt;
+              font-weight: bold;
+              margin-top: 18.0pt;
+              margin-bottom: 6.0pt;
+              color: #000000;
+            }
+            p {
+              text-align: justify;
+              margin-bottom: 12.0pt;
+              line-height: 1.6;
+            }
+            /* Suporte completo à estrutura de Legal Nodes do ExtraJus */
             .legal-node {
-              display: flex !important;
-              align-items: flex-start !important;
-              color: #1a1a1a !important;
-              background: transparent !important;
-              margin-bottom: 0.6rem !important;
+              margin-bottom: 12.0pt;
+              text-align: justify;
             }
-            .legal-node, p, blockquote, tr, li {
-              page-break-inside: avoid !important;
-              break-inside: avoid !important;
+            .legal-node-level-1 {
+              font-weight: bold;
+              font-size: 13.0pt;
+              margin-top: 18.0pt;
+              color: #000000;
             }
-            .legal-node.legal-node-level-1 { color: #111111 !important; font-weight: 700 !important; font-size: 12.5pt !important; margin-top: 0.5rem !important; }
-            .legal-node.legal-node-level-1 .legal-node-counter { margin-right: 0.5rem !important; }
-            .legal-node.legal-node-level-2 { color: #1a1a1a !important; font-size: 12pt !important; margin-left: 2rem !important; }
-            .legal-node.legal-node-level-2 .legal-node-counter { min-width: 2.2rem !important; }
-            .legal-node.legal-node-level-3 { color: #1a1a1a !important; font-size: 11.5pt !important; margin-left: 4rem !important; }
-            .legal-node.legal-node-level-3 .legal-node-counter { min-width: 2.2rem !important; }
-            .legal-node.legal-node-level-4 { color: #333333 !important; font-size: 11pt !important; margin-left: 6rem !important; }
-            .legal-node.legal-node-level-4 .legal-node-counter { min-width: 1.8rem !important; }
+            .legal-node-level-2 {
+              margin-left: 24.0pt;
+            }
+            .legal-node-level-3 {
+              margin-left: 48.0pt;
+            }
+            .legal-node-level-4 {
+              margin-left: 72.0pt;
+            }
             .legal-node-counter {
-              color: #111111 !important;
-              font-weight: 700 !important;
-              margin-right: 0.75rem !important;
-              display: inline-block !important;
-              flex-shrink: 0 !important;
+              font-weight: bold;
+              margin-right: 8.0pt;
+              display: inline-block;
             }
             .legal-node-content {
-              color: #1a1a1a !important;
-              flex: 1 !important;
-              text-align: justify !important;
+              display: inline;
             }
-            .legal-node-content p, .legal-node-content div {
-              margin: 0 !important;
-              padding: 0 !important;
-              text-align: justify !important;
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 12.0pt;
+              margin-bottom: 12.0pt;
             }
-            table { width: 100% !important; border-collapse: collapse !important; background: transparent !important; }
-            td, th { border: 1px solid #9ca3af !important; padding: 10px 14px !important; color: #1a1a1a !important; background: transparent !important; }
-            button, [role="toolbar"], header, nav, .fixed, .sticky,
-            [data-toolbar], .tiptap-toolbar, footer { display: none !important; }
-          `
-          clonedDoc.head.appendChild(rootStyle)
+            td, th {
+              border: 1.0pt solid #000000;
+              padding: 8.0pt 10.0pt;
+              text-align: left;
+              vertical-align: top;
+            }
+            strong, b {
+              font-weight: bold;
+            }
+            em, i {
+              font-style: italic;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="Section1">
+            ${rawHtml}
+          </div>
+        </body>
+        </html>
+      `
 
-          // 2. Walk every element: apply computed color inline to override CSS vars
-          const MODERN_RE = /\b(lab|oklch|lch|oklab|color)\s*\(/i
-          clonedDoc.querySelectorAll("*").forEach((node: any) => {
-            // Compute the actual resolved color from the ORIGINAL doc and force it inline
-            const orig = document.querySelector(`[data-node-view-wrapper]`) // fallback
-            // Clear any modern color function from inline style properties
-            const COLOR_PROPS = ["color", "backgroundColor", "borderColor",
-              "borderTopColor", "borderRightColor", "borderBottomColor", "borderLeftColor",
-              "outlineColor", "textDecorationColor", "caretColor"]
-            COLOR_PROPS.forEach(prop => {
-              const val: string = node.style?.[prop] || ""
-              if (MODERN_RE.test(val)) {
-                node.style[prop] = prop.includes("background") ? "transparent" : "#1a1a1a"
-              }
-            })
-            // Force any var() usages by overriding with safe values
-            if (node.style?.color?.includes("var(")) node.style.color = "#1a1a1a"
-            if (node.style?.backgroundColor?.includes("var(")) node.style.backgroundColor = "transparent"
-            node.style.boxShadow = "none"
-            node.style.textShadow = "none"
-            node.style.filter = "none"
-          })
-        }
+      // 4. Gerar o Blob e fazer download com extensão .docx
+      const blob = new Blob(['\ufeff' + wordHtml], {
+        type: 'application/msword;charset=utf-8'
       })
+      
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `extrajus-documento-${new Date().getTime()}.docx`
+      document.body.appendChild(a)
+      a.click()
+      
+      // Cleanup
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
 
-      // --- PDF generation with margins + smart page breaks ---
-      const pdf = new jsPDF("p", "mm", "a4")
-      const pdfPageW = pdf.internal.pageSize.getWidth()
-      const pdfPageH = pdf.internal.pageSize.getHeight()
-
-      const contentW = pdfPageW - MARGIN_H * 2       // 170mm
-      const contentH = pdfPageH - MARGIN_TOP - MARGIN_BOT // 252mm
-
-      const pxPerMm = canvas.width / contentW
-      const pageContentHeightPx = contentH * pxPerMm
-
-      // Build smart cut points using safeCut
-      const cutPoints: number[] = [0]
-      let cursor = 0
-      while (cursor < canvas.height) {
-        const rawNext = cursor + pageContentHeightPx
-        if (rawNext >= canvas.height) break
-        const smartNext = safeCut(rawNext)
-        cutPoints.push(smartNext)
-        cursor = smartNext
-      }
-      cutPoints.push(canvas.height)
-
-      const totalPages = cutPoints.length - 1
-
-      const drawPage = (page: number, srcY: number, srcH: number) => {
-        if (page > 0) pdf.addPage()
-
-        pdf.setFillColor(255, 255, 255)
-        pdf.rect(0, 0, pdfPageW, pdfPageH, "F")
-
-        // Top rule
-        pdf.setDrawColor(160, 160, 160)
-        pdf.setLineWidth(0.3)
-        pdf.line(MARGIN_H, MARGIN_TOP - 5, pdfPageW - MARGIN_H, MARGIN_TOP - 5)
-
-        // Content slice
-        const pageCanvas = document.createElement("canvas")
-        pageCanvas.width = canvas.width
-        pageCanvas.height = srcH
-        const ctx = pageCanvas.getContext("2d")!
-        ctx.fillStyle = "#ffffff"
-        ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height)
-        ctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH)
-        const sliceData = pageCanvas.toDataURL("image/png")
-        const sliceHeightMm = srcH / pxPerMm
-        pdf.addImage(sliceData, "PNG", MARGIN_H, MARGIN_TOP, contentW, sliceHeightMm)
-
-        // Bottom rule
-        pdf.setDrawColor(160, 160, 160)
-        pdf.setLineWidth(0.3)
-        pdf.line(MARGIN_H, pdfPageH - MARGIN_BOT + 3, pdfPageW - MARGIN_H, pdfPageH - MARGIN_BOT + 3)
-
-        // Page number
-        pdf.setFontSize(8)
-        pdf.setTextColor(120, 120, 120)
-        pdf.text(`${page + 1} / ${totalPages}`, pdfPageW / 2, pdfPageH - MARGIN_BOT + 8, { align: "center" })
-
-        // Watermark
-        pdf.setFontSize(7)
-        pdf.setTextColor(180, 180, 180)
-        pdf.text("ExtraJus · Documento Gerado Eletronicamente", pdfPageW / 2, pdfPageH - MARGIN_BOT + 13, { align: "center" })
+      // Notificar se for você (isentado) ou usuário comum (cobrado)
+      if (data.isMaster) {
+        toast.success("Download master gratuito liberado com sucesso!", { id: exportToast })
+      } else {
+        toast.success("Download concluído! Debitadas 2 Sinapses do seu saldo.", { id: exportToast })
       }
 
-      for (let p = 0; p < totalPages; p++) {
-        const srcY = cutPoints[p]
-        const srcH = cutPoints[p + 1] - srcY
-        drawPage(p, srcY, srcH)
-      }
-
-      pdf.save(`extrajus-documento-${new Date().getTime()}.pdf`)
-      toast.success(`Documento exportado — ${totalPages} página(s).`, { id: exportToast })
+      // Emitir evento global de perfil atualizado para atualizar os saldos de créditos exibidos no header e sidebar em tempo real!
+      window.dispatchEvent(new Event("profile-updated"))
     } catch (error) {
-      console.error("Export error:", error)
-      toast.error("Falha na exportação do documento.", { id: exportToast })
+      console.error("Export DOCX error:", error)
+      toast.error("Falha ao baixar o arquivo DOCX.", { id: exportToast })
     } finally {
-      if (scrollParent) {
-        scrollParent.style.overflow = originalOverflow
-        scrollParent.style.maxHeight = originalMaxHeight
-      }
       setIsExporting(false)
     }
   }

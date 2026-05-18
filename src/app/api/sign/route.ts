@@ -122,31 +122,164 @@ export async function POST(request: Request) {
           to: signer.email,
           subject: `📜 Convocação para Assinatura: ${title || 'Novo Contrato'}`,
           html: `
-            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #000; color: #fff; padding: 40px; border: 1px solid #111;">
-              <h1 style="color: #c0ff00; font-size: 24px; text-transform: uppercase; letter-spacing: 4px;">ExtraJus</h1>
-              <p style="font-size: 14px; opacity: 0.7; border-bottom: 1px solid #222; padding-bottom: 20px;">PROTOCOLO DE ASSINATURA DIGITAL</p>
-              
-              <p style="margin-top: 30px;">Saudações, <strong>${signer.name}</strong>.</p>
-              <p>Um novo contrato aguarda sua assinatura: <strong>${title || 'Sem Título'}</strong>.</p>
-              
-              <div style="background: #0a0a0a; border: 1px dashed #c0ff00; padding: 30px; margin: 30px 0; text-align: center;">
-                <p style="font-size: 10px; color: #c0ff00; text-transform: uppercase; margin-bottom: 10px;">Seu Código de Assinatura</p>
-                <code style="font-size: 32px; font-weight: bold; letter-spacing: 10px; color: #fff;">${sealingCode}</code>
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Convocação para Assinatura</title>
+              <style>
+                body {
+                  background-color: #050505;
+                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                  margin: 0;
+                  padding: 0;
+                  -webkit-font-smoothing: antialiased;
+                }
+                .wrapper {
+                  width: 100%;
+                  background-color: #050505;
+                  padding: 40px 20px;
+                  box-sizing: border-box;
+                }
+                .container {
+                  max-width: 600px;
+                  margin: 0 auto;
+                  background-color: #0b0b0b;
+                  border: 1px solid #1f1d1a;
+                  border-radius: 24px;
+                  padding: 40px;
+                  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+                }
+                .logo {
+                  font-size: 26px;
+                  font-weight: 900;
+                  color: #ffffff;
+                  letter-spacing: 0.15em;
+                  text-transform: uppercase;
+                  text-align: center;
+                  margin-bottom: 30px;
+                }
+                .logo span {
+                  color: #c5a880;
+                }
+                .divider {
+                  height: 1px;
+                  background: linear-gradient(90deg, transparent, #c5a880 50%, transparent);
+                  margin-bottom: 30px;
+                  opacity: 0.3;
+                }
+                h1 {
+                  color: #ffffff;
+                  font-size: 24px;
+                  font-weight: 900;
+                  text-align: center;
+                  margin-top: 0;
+                  margin-bottom: 8px;
+                  letter-spacing: -0.02em;
+                }
+                .subheadline {
+                  color: #c5a880;
+                  font-size: 11px;
+                  font-weight: 900;
+                  text-transform: uppercase;
+                  letter-spacing: 0.15em;
+                  text-align: center;
+                  margin-bottom: 30px;
+                }
+                p {
+                  color: #a3a3a3;
+                  font-size: 14px;
+                  line-height: 1.6;
+                  margin-top: 0;
+                  margin-bottom: 25px;
+                }
+                .code-box {
+                  background-color: #070707;
+                  border: 1px dashed #c5a880;
+                  border-radius: 16px;
+                  padding: 30px;
+                  margin: 30px 0;
+                  text-align: center;
+                }
+                .code-label {
+                  font-size: 9px;
+                  font-weight: 900;
+                  color: #c5a880;
+                  text-transform: uppercase;
+                  letter-spacing: 0.2em;
+                  margin-bottom: 10px;
+                }
+                .code-val {
+                  font-size: 32px;
+                  font-weight: 900;
+                  letter-spacing: 10px;
+                  color: #ffffff;
+                  margin: 0;
+                  font-family: monospace;
+                }
+                .btn-container {
+                  text-align: center;
+                  margin-bottom: 35px;
+                }
+                .btn {
+                  display: inline-block;
+                  background-color: #c5a880;
+                  color: #050505 !important;
+                  text-decoration: none;
+                  font-size: 11px;
+                  font-weight: 900;
+                  text-transform: uppercase;
+                  letter-spacing: 0.15em;
+                  padding: 16px 40px;
+                  border-radius: 12px;
+                  box-shadow: 0 10px 25px rgba(197, 168, 128, 0.25);
+                  transition: all 0.3s ease;
+                }
+                .footer {
+                  font-size: 10px;
+                  color: #525252;
+                  line-height: 1.5;
+                  border-top: 1px solid #1f1d1a;
+                  padding-top: 25px;
+                  text-align: center;
+                }
+              </style>
+            </head>
+            <body>
+              <div class="wrapper">
+                <div class="container">
+                  <div class="logo">
+                    EXTRA<span>JUS</span>
+                  </div>
+                  <div class="divider"></div>
+                  <h1>Convocação de Assinatura</h1>
+                  <div class="subheadline">Protocolo de Segurança Ativo</div>
+                  
+                  <p>Saudações, <strong>${signer.name}</strong>.</p>
+                  <p>Um novo documento corporativo aguarda a sua assinatura digital: <strong>${title || 'Sem Título'}</strong>.</p>
+                  
+                  <div class="code-box">
+                    <div class="code-label">Seu Código de Assinatura Único</div>
+                    <div class="code-val">${sealingCode}</div>
+                  </div>
+
+                  <p>
+                    Para visualizar o documento na íntegra e realizar a assinatura, clique no botão abaixo. Você poderá revisar os termos em modo de leitura segura antes de validar com o seu código de selamento.
+                  </p>
+
+                  <div class="btn-container">
+                    <a href="${siteUrl}/editor?room=${contractId}&mode=preview" class="btn">Visualizar e Assinar</a>
+                  </div>
+
+                  <div class="footer">
+                    © 2026 ExtraJus S/A. Blindagem e Inteligência Corporativa.<br>
+                    Secure Signature Protocol // Evidências Criptográficas ICP-Brasil.
+                  </div>
+                </div>
               </div>
-
-              <p style="font-size: 13px; line-height: 1.6; opacity: 0.8;">
-                Para visualizar e assinar este documento, clique no link abaixo. Você poderá ver o documento completo em modo de somente leitura e inserir seu código para assinar digitalmente.
-              </p>
-
-              <a href="${siteUrl}/editor?room=${contractId}&mode=preview" 
-                 style="display: inline-block; background: #c0ff00; color: #000; text-decoration: none; padding: 15px 30px; font-weight: bold; border-radius: 5px; margin-top: 20px; text-transform: uppercase; font-size: 12px;">
-                Visualizar e Assinar
-              </a>
-
-              <p style="margin-top: 50px; font-size: 10px; opacity: 0.3; text-align: center;">
-                ExtraJus AI © 2026 • Secure Signature Protocol
-              </p>
-            </div>
+            </body>
+            </html>
           `
         })
       );

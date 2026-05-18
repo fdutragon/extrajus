@@ -132,48 +132,226 @@ export async function POST(request: Request) {
             to: signer.email,
             subject: `Assinatura Concluída: Certificado de Assinatura Digital de ${contractTitle}`,
             html: `
-              <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #000; color: #fff; padding: 40px; border: 1px solid #111;">
-                <h1 style="color: #c0ff00; font-size: 24px; text-transform: uppercase; letter-spacing: 4px;">ExtraJus</h1>
-                <p style="font-size: 14px; opacity: 0.7; border-bottom: 1px solid #222; padding-bottom: 20px;">CERTIFICADO DE ASSINATURA DIGITAL CONCLUÍDO</p>
-                
-                <p style="margin-top: 30px;">Saudações, <strong>${signer.name}</strong>.</p>
-                <p>Temos a honra de informar que o documento <strong>${contractTitle}</strong> foi <strong>INTEGRALMENTE ASSINADO</strong> por todos os signatários convocados.</p>
-                
-                <div style="background: #0a0a0a; border: 1px dashed #c0ff00; padding: 25px; margin: 30px 0;">
-                  <p style="font-size: 10px; color: #c0ff00; text-transform: uppercase; margin-bottom: 5px; font-weight: bold;">Protocolo de Assinatura</p>
-                  <code style="font-size: 18px; font-weight: bold; color: #fff;">${signature.protocolo}</code>
-                  
-                  <p style="font-size: 10px; color: #c0ff00; text-transform: uppercase; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Assinatura Eletrônica</p>
-                  <code style="font-size: 12px; color: #fff;">${timestamp}</code>
-                  
-                  <p style="font-size: 10px; color: #c0ff00; text-transform: uppercase; margin-top: 15px; margin-bottom: 5px; font-weight: bold;">Hash de Integridade do Documento (SHA-256)</p>
-                  <code style="font-size: 11px; color: #888; word-break: break-all;">${signature.manifesto?.document_hash || 'Integridade Confirmada'}</code>
-                </div>
-
-                <h3 style="color: #c0ff00; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; margin-top: 40px; border-bottom: 1px solid #222; padding-bottom: 10px;">Signatários e Evidências</h3>
-                
-                <div style="margin-top: 20px;">
-                  ${updatedSigners.map((s: any) => `
-                    <div style="background: #0d0d0f; border-left: 3px solid #c0ff00; padding: 15px; margin-bottom: 15px;">
-                      <p style="margin: 0; font-size: 13px; font-weight: bold; color: #fff;">${s.name.toUpperCase()}</p>
-                      <p style="margin: 3px 0 0 0; font-size: 11px; color: #a1a1aa;">Email: ${s.email}</p>
-                      <p style="margin: 3px 0 0 0; font-size: 10px; color: #71717a;">Assinado em: ${s.signed_at || timestamp}</p>
-                      <p style="margin: 5px 0 0 0; font-size: 9px; font-family: monospace; color: #52525b;">IP NODE: ${s.evidence?.ip_address || '127.0.0.1'} | NODE SECURE</p>
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Assinatura Concluída - Certificado Digital</title>
+                <style>
+                  body {
+                    background-color: #050505;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                    margin: 0;
+                    padding: 0;
+                    -webkit-font-smoothing: antialiased;
+                  }
+                  .wrapper {
+                    width: 100%;
+                    background-color: #050505;
+                    padding: 40px 20px;
+                    box-sizing: border-box;
+                  }
+                  .container {
+                    max-width: 600px;
+                    margin: 0 auto;
+                    background-color: #0b0b0b;
+                    border: 1px solid #1f1d1a;
+                    border-radius: 24px;
+                    padding: 40px;
+                    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+                  }
+                  .logo {
+                    font-size: 26px;
+                    font-weight: 900;
+                    color: #ffffff;
+                    letter-spacing: 0.15em;
+                    text-transform: uppercase;
+                    text-align: center;
+                    margin-bottom: 30px;
+                  }
+                  .logo span {
+                    color: #c5a880;
+                  }
+                  .divider {
+                    height: 1px;
+                    background: linear-gradient(90deg, transparent, #c5a880 50%, transparent);
+                    margin-bottom: 30px;
+                    opacity: 0.3;
+                  }
+                  h1 {
+                    color: #ffffff;
+                    font-size: 24px;
+                    font-weight: 900;
+                    text-align: center;
+                    margin-top: 0;
+                    margin-bottom: 8px;
+                    letter-spacing: -0.02em;
+                  }
+                  .subheadline {
+                    color: #c5a880;
+                    font-size: 11px;
+                    font-weight: 900;
+                    text-transform: uppercase;
+                    letter-spacing: 0.15em;
+                    text-align: center;
+                    margin-bottom: 30px;
+                  }
+                  p {
+                    color: #a3a3a3;
+                    font-size: 14px;
+                    line-height: 1.6;
+                    margin-top: 0;
+                    margin-bottom: 25px;
+                  }
+                  .cert-box {
+                    background-color: #070707;
+                    border: 1px dashed #c5a880;
+                    border-radius: 16px;
+                    padding: 25px;
+                    margin: 30px 0;
+                  }
+                  .cert-item {
+                    margin-bottom: 15px;
+                  }
+                  .cert-item:last-child {
+                    margin-bottom: 0;
+                  }
+                  .cert-label {
+                    font-size: 9px;
+                    font-weight: 900;
+                    color: #c5a880;
+                    text-transform: uppercase;
+                    letter-spacing: 0.15em;
+                    margin-bottom: 4px;
+                  }
+                  .cert-val {
+                    font-size: 12.5px;
+                    color: #ffffff;
+                    font-family: monospace;
+                    word-break: break-all;
+                  }
+                  .section-title {
+                    color: #ffffff;
+                    font-size: 12px;
+                    font-weight: 900;
+                    text-transform: uppercase;
+                    letter-spacing: 0.15em;
+                    margin-top: 40px;
+                    margin-bottom: 20px;
+                    border-bottom: 1px solid #1f1d1a;
+                    padding-bottom: 10px;
+                  }
+                  .signer-card {
+                    background-color: #0d0d0f;
+                    border-left: 3px solid #c5a880;
+                    border-radius: 4px 12px 12px 4px;
+                    padding: 20px;
+                    margin-bottom: 15px;
+                  }
+                  .signer-name {
+                    margin: 0;
+                    font-size: 13.5px;
+                    font-weight: 800;
+                    color: #ffffff;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                  }
+                  .signer-meta {
+                    margin: 4px 0 0 0;
+                    font-size: 12.5px;
+                    color: #888888;
+                  }
+                  .signer-evidence {
+                    margin: 6px 0 0 0;
+                    font-size: 10px;
+                    font-family: monospace;
+                    color: #555555;
+                  }
+                  .btn-container {
+                    text-align: center;
+                    margin-top: 40px;
+                    margin-bottom: 35px;
+                  }
+                  .btn {
+                    display: inline-block;
+                    background-color: #c5a880;
+                    color: #050505 !important;
+                    text-decoration: none;
+                    font-size: 11px;
+                    font-weight: 900;
+                    text-transform: uppercase;
+                    letter-spacing: 0.15em;
+                    padding: 16px 40px;
+                    border-radius: 12px;
+                    box-shadow: 0 10px 25px rgba(197, 168, 128, 0.25);
+                    transition: all 0.3s ease;
+                  }
+                  .footer {
+                    font-size: 10px;
+                    color: #525252;
+                    line-height: 1.5;
+                    border-top: 1px solid #1f1d1a;
+                    padding-top: 25px;
+                    text-align: center;
+                  }
+                </style>
+              </head>
+              <body>
+                <div class="wrapper">
+                  <div class="container">
+                    <div class="logo">
+                      EXTRA<span>JUS</span>
                     </div>
-                  `).join('')}
-                </div>
+                    <div class="divider"></div>
+                    <h1>Certificado de Assinatura</h1>
+                    <div class="subheadline">Selamento Concluído com Sucesso</div>
+                    
+                    <p>Saudações, <strong>${signer.name}</strong>.</p>
+                    <p>Temos a honra de informar que o documento <strong>${contractTitle}</strong> foi <strong>INTEGRALMENTE ASSINADO</strong> e selado digitalmente por todas as partes convocadas.</p>
+                    
+                    <div class="cert-box">
+                      <div class="cert-item">
+                        <div class="cert-label">Protocolo de Assinatura Único</div>
+                        <div class="cert-val" style="font-size: 18px; font-weight: bold; letter-spacing: 1px;">${signature.protocolo}</div>
+                      </div>
+                      
+                      <div class="cert-item">
+                        <div class="cert-label">Assinatura Eletrônica Registrada</div>
+                        <div class="cert-val">${timestamp}</div>
+                      </div>
+                      
+                      <div class="cert-item">
+                        <div class="cert-label">Hash SHA-256 de Integridade do Documento</div>
+                        <div class="cert-val" style="color: #888888;">${signature.manifesto?.document_hash || 'Integridade Confirmada'}</div>
+                      </div>
+                    </div>
 
-                <div style="text-align: center; margin-top: 40px;">
-                  <a href="${siteUrl}/editor?room=${contractId}&mode=preview" 
-                     style="display: inline-block; background: #c0ff00; color: #000; text-decoration: none; padding: 15px 30px; font-weight: bold; border-radius: 5px; text-transform: uppercase; font-size: 12px;">
-                    Visualizar Documento Concluído
-                  </a>
-                </div>
+                    <div class="section-title">Signatários e Evidências</div>
+                    
+                    <div style="margin-top: 20px;">
+                      ${updatedSigners.map((s: any) => `
+                        <div class="signer-card">
+                          <p class="signer-name">${s.name}</p>
+                          <p class="signer-meta">E-mail: ${s.email}</p>
+                          <p class="signer-meta">Assinado em: ${s.signed_at || timestamp}</p>
+                          <p class="signer-evidence">IP REGISTRY: ${s.evidence?.ip_address || '127.0.0.1'} | NODE SECURE CERTIFIED</p>
+                        </div>
+                      `).join('')}
+                    </div>
 
-                <p style="margin-top: 50px; font-size: 10px; opacity: 0.3; text-align: center;">
-                  ExtraJus AI © 2026 • Secure Signature Protocol
-                </p>
-              </div>
+                    <div class="btn-container">
+                      <a href="${siteUrl}/editor?room=${contractId}&mode=preview" class="btn">Visualizar Documento Concluído</a>
+                    </div>
+
+                    <div class="footer">
+                      © 2026 ExtraJus S/A. Blindagem e Inteligência Corporativa.<br>
+                      Assinatura digital em conformidade com a MP nº 2.200-2/2001.
+                    </div>
+                  </div>
+                </div>
+              </body>
+              </html>
             `
           })
         );

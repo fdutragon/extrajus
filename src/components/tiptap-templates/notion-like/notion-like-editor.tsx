@@ -312,9 +312,9 @@ export function EditorLayout() {
     let active = true
     let channel: any = null
 
-    const fetchProfile = async () => {
+    const fetchProfileData = async () => {
       const { data: { user: currentUser } } = await supabase.auth.getUser()
-      if (!currentUser || !active) return
+      if (!currentUser || !active) return null
 
       const { data: profile } = await supabase
         .from("profiles")
@@ -325,6 +325,12 @@ export function EditorLayout() {
       if (profile && active) {
         setCredits(profile.credits)
       }
+      return currentUser
+    }
+
+    const setupRealtime = async () => {
+      const currentUser = await fetchProfileData()
+      if (!currentUser || !active) return
 
       channel = supabase
         .channel(`editor-layout-profile-realtime-${currentUser.id}`)
@@ -345,10 +351,10 @@ export function EditorLayout() {
         .subscribe()
     }
 
-    fetchProfile()
+    setupRealtime()
 
     const handleProfileUpdated = () => {
-      fetchProfile()
+      fetchProfileData()
     }
     window.addEventListener('profile-updated', handleProfileUpdated)
 

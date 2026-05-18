@@ -12,34 +12,57 @@ import { QRCodeSVG } from "qrcode.react";
 export function SinapsesPlansModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [isGeneratingPix, setIsGeneratingPix] = useState(false);
-  const [pixData, setPixData] = useState<{ pixCode: string; pixQrCode: string } | null>(null);
+  const [pixData, setPixData] = useState<{ pixCode: string; pixQrCode: string; externalId: string } | null>(null);
   const [selectedPkg, setSelectedPkg] = useState<any>(null);
   const [copied, setCopied] = useState(false);
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutos em segundos
-
-  useEffect(() => {
-    // Ouvir o evento global para abrir o modal de planos
-    const handleOpenModal = () => {
-      setIsOpen(true);
-      setPixData(null);
-      setSelectedPkg(null);
-      setTimeLeft(600);
-    };
-
-    window.addEventListener("open-plans-modal", handleOpenModal);
-    return () => {
-      window.removeEventListener("open-plans-modal", handleOpenModal);
-    };
-  }, []);
+  const [isPaid, setIsPaid] = useState(false);
 
   // Contador de expiração do Pix
   useEffect(() => {
-    if (!pixData || timeLeft <= 0) return;
+    if (!pixData || timeLeft <= 0 || isPaid) return;
     const interval = setInterval(() => {
       setTimeLeft((prev) => prev - 1);
     }, 1000);
     return () => clearInterval(interval);
-  }, [pixData, timeLeft]);
+  }, [pixData, timeLeft, isPaid]);
+
+  // Polling para verificar o status do Pix em tempo real
+  useEffect(() => {
+    if (!pixData || !pixData.externalId || timeLeft <= 0 || isPaid) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/billing/status?externalId=${pixData.externalId}`);
+        const data = await response.json();
+        
+        if (data.status === "COMPLETE") {
+          setIsPaid(true);
+          clearInterval(interval);
+          
+          // Dispara o evento de conversão do Google Ads no frontend
+          if (typeof window !== "undefined" && (window as any).gtag) {
+            (window as any).gtag('event', 'conversion', {
+              'send_to': 'AW-18156533859/_9riCLjnm68cEOPw2tFD',
+              'value': selectedPkg?.price || 1.0,
+              'currency': 'BRL',
+              'transaction_id': pixData.externalId
+            });
+            console.log("[Google Ads] Conversão disparada com sucesso!", pixData.externalId);
+          }
+
+          toast.success("💥 Pacto Neural Confirmado! Suas Sinapses já foram injetadas no seu arsenal.");
+          
+          // Notifica outras partes do app para atualizar o saldo
+          window.dispatchEvent(new Event('profile-updated'));
+        }
+      } catch (err) {
+        console.error("Erro ao verificar status da transação:", err);
+      }
+    }, 3000); // Polling a cada 3 segundos
+
+    return () => clearInterval(interval);
+  }, [pixData, timeLeft, isPaid, selectedPkg]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -51,6 +74,7 @@ export function SinapsesPlansModal() {
     setSelectedPkg(pkg);
     setIsGeneratingPix(true);
     setPixData(null);
+    setIsPaid(false);
     try {
       const response = await fetch("/api/billing/pix", {
         method: "POST",
@@ -71,6 +95,30 @@ export function SinapsesPlansModal() {
       setIsGeneratingPix(false);
     }
   };
+
+  useEffect(() => {
+    // Ouvir o evento global para abrir o modal de planos
+    const handleOpenModal = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      const pkg = customEvent.detail?.pkg;
+
+      setIsOpen(true);
+      setPixData(null);
+      setSelectedPkg(null);
+      setTimeLeft(600);
+      setIsPaid(false);
+
+      if (pkg) {
+        // Se um pacote específico foi enviado, dispara a geração do Pix direto!
+        handleBuyCredits(pkg);
+      }
+    };
+
+    window.addEventListener("open-plans-modal", handleOpenModal);
+    return () => {
+      window.removeEventListener("open-plans-modal", handleOpenModal);
+    };
+  }, []);
 
   const handleCopy = () => {
     if (pixData?.pixCode) {
@@ -96,11 +144,13 @@ export function SinapsesPlansModal() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="text-[9px] uppercase tracking-widest font-black border-primary/30 text-primary bg-primary/5 px-2.5 py-0.5 rounded-full">
-                Energia Esgotada
+                {isPaid ? "Pacto Confirmado" : "Energia Esgotada"}
               </Badge>
-              <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">Needs Charge</span>
+              <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">
+                {isPaid ? "Ritual Complete" : "Needs Charge"}
+              </span>
             </div>
-            {pixData && (
+            {pixData && !isPaid && (
               <Badge variant="outline" className="text-[9px] font-mono border-emerald-500/30 text-emerald-500 bg-emerald-500/5 px-2.5 py-0.5 animate-pulse">
                 🕒 Expira em {formatTime(timeLeft)}
               </Badge>
@@ -109,23 +159,29 @@ export function SinapsesPlansModal() {
           
           <DialogTitle className="text-2xl font-black tracking-tight text-foreground flex items-center gap-2.5">
             <Brain className="text-primary animate-pulse shrink-0 w-7 h-7 filter drop-shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
-            Adquirir <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">Sinapses de Poder</span>
+            {isPaid ? (
+              <span>Sinapses <span className="bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-400 bg-clip-text text-transparent">Injetadas no Arsenal</span></span>
+            ) : (
+              <span>Adquirir <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">Sinapses de Poder</span></span>
+            )}
           </DialogTitle>
           
           <DialogDescription className="text-[12.5px] text-muted-foreground leading-relaxed font-medium">
-            Você esgotou seu saldo de Sinapses. Escolha um dos pacotes de alta performance abaixo para adquirir créditos via Pix e continuar gerando seus contratos.
+            {isPaid 
+              ? "Sua transação de alta performance foi confirmada. O ritual foi concluído e suas sinapses extras estão ativas."
+              : "Você esgotou seu saldo de Sinapses. Escolha um dos pacotes de alta performance abaixo para adquirir créditos via Pix e continuar gerando seus contratos."}
           </DialogDescription>
         </DialogHeader>
 
         <div className="mt-7 space-y-6 relative z-10 text-left">
           
           {/* PACOTES DISPONÍVEIS */}
-          {!pixData && !isGeneratingPix && (
+          {!pixData && !isGeneratingPix && !isPaid && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
                 { 
-                  credits: 100, 
-                  price: 10, 
+                  credits: 20, 
+                  price: 29, 
                   label: "Pacto Inicial", 
                   desc: "Ideal para testes e análises rápidas.", 
                   popular: false,
@@ -133,8 +189,8 @@ export function SinapsesPlansModal() {
                   border: "border-border hover:border-primary/30 hover:scale-[1.01]"
                 },
                 { 
-                  credits: 550, 
-                  price: 50, 
+                  credits: 50, 
+                  price: 49, 
                   label: "Pacto de Elite", 
                   desc: "O preferido dos especialistas do direito. Alta performance.", 
                   popular: true,
@@ -142,8 +198,8 @@ export function SinapsesPlansModal() {
                   border: "border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.06)] hover:border-primary scale-[1.02]"
                 },
                 { 
-                  credits: 1200, 
-                  price: 100, 
+                  credits: 100, 
+                  price: 69, 
                   label: "Pacto Soberano", 
                   desc: "Poder absoluto e irrestrito para corporações.", 
                   popular: false,
@@ -187,8 +243,8 @@ export function SinapsesPlansModal() {
                       className={cn(
                         "h-8 px-3 text-[9px] font-black uppercase tracking-widest rounded-lg border transition-all duration-300",
                         pkg.popular
-                          ? "bg-primary text-primary-foreground border-primary hover:bg-primary/95"
-                          : "border-border text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary"
+                          ? "bg-primary text-primary-foreground border-primary hover:!bg-primary/90 hover:!text-primary-foreground"
+                          : "border-border text-muted-foreground hover:!bg-primary hover:!text-primary-foreground hover:!border-primary"
                       )}
                     >
                       Adquirir <ArrowRight size={10} className="ml-1 shrink-0" />
@@ -200,7 +256,7 @@ export function SinapsesPlansModal() {
           )}
 
           {/* GERADOR DE PIX / LOADER */}
-          {isGeneratingPix && (
+          {isGeneratingPix && !isPaid && (
             <div className="p-16 text-center border border-dashed border-primary/20 rounded-3xl bg-primary/[0.01] animate-pulse flex flex-col items-center justify-center space-y-4">
               <Loader2 className="text-primary animate-spin w-10 h-10" />
               <div className="space-y-1">
@@ -211,7 +267,7 @@ export function SinapsesPlansModal() {
           )}
 
           {/* TELA DE CHECKOUT PIX PREMIUM */}
-          {pixData && selectedPkg && (
+          {pixData && selectedPkg && !isPaid && (
             <div className="p-6 bg-muted/20 border border-border rounded-3xl animate-in zoom-in-95 duration-300 text-left relative overflow-hidden">
               
               {/* Efeito bioluminescente interno */}
@@ -260,7 +316,7 @@ export function SinapsesPlansModal() {
                       />
                       <Button 
                         size="sm" 
-                        className="rounded-xl font-black text-[9px] uppercase tracking-widest h-9 bg-primary text-primary-foreground hover:bg-primary/90 px-4 shrink-0"
+                        className="rounded-xl font-black text-[9px] uppercase tracking-widest h-9 bg-primary text-primary-foreground hover:!bg-primary/90 hover:!text-primary-foreground px-4 shrink-0"
                         onClick={handleCopy}
                       >
                         {copied ? <Check size={12} className="mr-1" /> : <Copy size={12} className="mr-1" />}
@@ -269,6 +325,59 @@ export function SinapsesPlansModal() {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* TELA DE PACTO CONCLUÍDO (SUCESSO) */}
+          {isPaid && selectedPkg && (
+            <div className="p-8 text-center border border-emerald-500/20 rounded-3xl bg-emerald-500/[0.02] space-y-6 animate-in zoom-in-95 duration-500 relative overflow-hidden">
+              {/* Efeito bioluminescente verde esmeralda místico */}
+              <div className="absolute -top-16 -right-16 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+              
+              <div className="flex justify-center">
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)] animate-pulse">
+                    <Brain className="text-emerald-500 w-8 h-8 filter drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
+                  </div>
+                  <div className="absolute -top-1 -right-1">
+                    <Sparkles className="text-emerald-400 w-5 h-5 animate-bounce" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="text-xl font-black uppercase tracking-widest text-emerald-500 bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-400 bg-clip-text text-transparent animate-pulse">
+                  Pacto Neural Concluído!
+                </h3>
+                <p className="text-[12.0px] text-muted-foreground max-w-md mx-auto leading-relaxed font-medium">
+                  Seu ritual de recarga foi aceito com sucesso. Suas novas **{selectedPkg.credits} Sinapses de Poder** já estão disponíveis no seu arsenal para forjar contratos perfeitos.
+                </p>
+              </div>
+
+              <div className="max-w-xs mx-auto bg-muted/40 border border-border rounded-2xl p-4 space-y-2 text-[11px] font-mono text-left">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Pacote Invocado:</span>
+                  <span className="font-bold text-foreground">{selectedPkg.label}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Energia Adquirida:</span>
+                  <span className="font-bold text-emerald-500">{selectedPkg.credits} Sinapses</span>
+                </div>
+                <div className="flex justify-between border-t border-border/60 pt-2 mt-2">
+                  <span className="text-muted-foreground">ID da Transação:</span>
+                  <span className="font-bold text-foreground/85 text-[9px] truncate w-32 text-right">{pixData?.externalId}</span>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <Button 
+                  onClick={() => setIsOpen(false)}
+                  className="bg-emerald-600 text-white hover:bg-emerald-500 border border-emerald-500/30 rounded-2xl px-8 py-3 text-[10px] font-black uppercase tracking-widest transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.15)]"
+                >
+                  Canalizar Energia e Fechar
+                </Button>
               </div>
             </div>
           )}

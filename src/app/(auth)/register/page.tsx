@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
-import { UserPlus } from "lucide-react";
+import { UserPlus, AlertTriangle } from "lucide-react";
 import { signup } from "./actions";
 
 import { BrandSVG } from "@/components/brand-svg";
@@ -20,8 +20,14 @@ export default async function RegisterPage({
 
       <form className="space-y-4" action={signup}>
         {error && (
-          <div className="p-3 text-sm text-destructive-foreground bg-destructive font-bold border border-destructive/20 rounded-xl">
-            {error}
+          <div className="flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl animate-in fade-in slide-in-from-top-2 duration-300">
+            <AlertTriangle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+            <div className="space-y-1 text-left">
+              <h4 className="text-xs font-black uppercase tracking-wider text-red-500">Erro de Cadastro</h4>
+              <p className="text-xs text-muted-foreground font-medium leading-relaxed">
+                {error}
+              </p>
+            </div>
           </div>
         )}
         <div className="space-y-2">
