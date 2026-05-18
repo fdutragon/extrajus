@@ -67,18 +67,7 @@ export default async function LoginPage({
         </Button>
       </form>
 
-      <div className="relative my-10">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-border opacity-50" />
-        </div>
-        <div className="relative flex justify-center text-[10px] font-black uppercase tracking-[0.2em]">
-          <span className="bg-background px-6 text-muted-foreground">Ou continue com</span>
-        </div>
-      </div>
 
-      <Button variant="outline" className="w-full h-12 rounded-2xl font-black border-border hover:bg-muted transition-all shadow-sm">
-        <Globe className="mr-2 h-4 w-4" /> GITHUB
-      </Button>
 
       <p className="text-center text-sm text-muted-foreground dark:text-muted-foreground pt-6">
         Novo por aqui?{" "}

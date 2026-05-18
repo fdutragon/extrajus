@@ -92,9 +92,18 @@ export default function Home() {
               <Logo iconSize={36} showText={true} />
             </Link>
             <div className="hidden md:flex items-center gap-6 text-[11px] font-medium uppercase tracking-wider">
-              <a href="#recursos" className="hover:text-foreground transition-colors">Recursos</a>
-              <a href="#rede" className="hover:text-foreground transition-colors">Rede Profissional</a>
-              <a href="#tecnologia" className="hover:text-foreground transition-colors">Tecnologia</a>
+              <a href="#recursos" className="relative py-1 text-muted-foreground hover:text-foreground transition-colors group">
+                Recursos
+                <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+              </a>
+              <a href="#rede" className="relative py-1 text-muted-foreground hover:text-foreground transition-colors group">
+                Rede Profissional
+                <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+              </a>
+              <a href="#tecnologia" className="relative py-1 text-muted-foreground hover:text-foreground transition-colors group">
+                Tecnologia
+                <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+              </a>
             </div>
           </div>
           <div className="flex items-center gap-3 pr-2">
@@ -107,29 +116,28 @@ export default function Home() {
           </div>
         </div>
       </nav>
-
-      {/* Hero Section */}
+      {/* Hero Section */}
       <section className="relative pt-48 pb-32 px-6">
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/20 text-primary text-[10px] font-bold tracking-widest uppercase mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-            <Terminal size={12} /> ExtraJus Engine v2.0 Online
+            <Terminal size={12} /> ExtraJus Engine v2.0 — Operação Cirúrgica IA Ativa
           </div>
           <h1 className="text-4xl md:text-7xl font-bold tracking-tighter leading-[1.1] mb-8 text-foreground animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
-            A nova era da <br /> <span className="text-transparent bg-clip-text bg-gradient-to-b from-foreground to-muted-foreground/60">Gestão Jurídica.</span>
+            A nova era da <br /> <span className="text-transparent bg-clip-text bg-gradient-to-b from-foreground to-muted-foreground/60">Precisão Jurídica.</span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed mb-12 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
-            O ecossistema definitivo para advogados e empresas. Redija, assine e monitore contratos através de uma <span className="text-foreground">plataforma de alto desempenho.</span>
+            O ecossistema definitivo para advocacia de alta performance. Redija com <span className="text-foreground">Edição IA Cirúrgica</span>, audite riscos com o <span className="text-foreground">Radar Analítico</span> e rastreie cláusulas pelo <span className="text-foreground">Mapa do Instrumento</span> em tempo real.
           </p>
           
           <div className="flex flex-col sm:flex-row justify-center gap-4 mb-24 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-700">
             <Link href="/dashboard">
               <Button size="lg" className="bg-primary text-primary-foreground hover:opacity-90 rounded-full px-10 h-14 text-sm font-bold uppercase tracking-wider group shadow-xl">
-                Acessar Dashboard <ChevronRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+                Acessar Painel <ChevronRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
             <Link href="/editor">
               <Button variant="outline" size="lg" className="border-border bg-background/50 hover:bg-muted text-foreground rounded-full px-10 h-14 text-sm font-bold uppercase tracking-wider">
-                Criar Novo Contrato
+                Iniciar Redação
               </Button>
             </Link>
           </div>
@@ -148,7 +156,10 @@ export default function Home() {
                   <div className="space-y-6">
                     <div className="space-y-3">
                       <div className="h-2 w-1/2 bg-foreground/20 rounded" />
-                      <div className="h-8 w-full bg-primary/10 border border-primary/20 rounded-lg" />
+                      <div className="h-8 w-full bg-primary/10 border border-primary/20 rounded-lg flex items-center justify-between px-3 text-[9px] font-bold text-primary uppercase">
+                        <span>Contrato Ativo</span>
+                        <Zap size={10} />
+                      </div>
                       <div className="h-8 w-full bg-transparent border border-foreground/10 rounded-lg" />
                       <div className="h-8 w-full bg-transparent border border-foreground/10 rounded-lg" />
                     </div>
@@ -159,36 +170,61 @@ export default function Home() {
                     </div>
                   </div>
                </div>
+               
                {/* Editor Mockup */}
-               <div className="flex-1 p-12 text-left relative overflow-hidden bg-muted/30">
-                  <div className="max-w-2xl space-y-8">
+               <div className="flex-1 p-12 text-left relative overflow-hidden bg-muted/30 flex">
+                  <div className="flex-1 space-y-8 pr-6">
                     <div className="space-y-4">
                        <div className="h-10 w-3/4 bg-foreground/15 rounded-lg" />
                        <div className="h-4 w-full bg-foreground/10 rounded-full" />
                        <div className="h-4 w-full bg-foreground/10 rounded-full" />
                        <div className="h-4 w-2/3 bg-foreground/10 rounded-full" />
                     </div>
-                    <div className="flex items-center gap-4 pt-4">
+                    <div className="flex items-center gap-4 pt-2">
                        <div className="px-3 py-1 bg-primary/20 border border-primary/40 rounded text-[9px] font-bold text-primary uppercase tracking-widest">
-                          ExtraJus AI: Auditoria Ativa
+                          Lilith AI: Auditoria Ativa
                        </div>
                     </div>
-                    <div className="space-y-4 pt-4">
+                    <div className="space-y-4 pt-2">
                        <div className="h-6 w-1/2 bg-foreground/15 rounded-lg" />
                        <div className="h-4 w-full bg-foreground/10 rounded-full" />
-                       <div className="h-4 w-5/6 bg-foreground/10 rounded-full" />
                     </div>
+                  </div>
+
+                  {/* Right Sidebar Mockup (Mapa do Instrumento & Auditoria) */}
+                  <div className="w-56 border-l border-border bg-card/60 p-4 text-left space-y-4 hidden lg:block">
+                     <div className="flex items-center justify-between border-b border-border/40 pb-2">
+                       <span className="text-[8px] font-black text-muted-foreground uppercase">Radar Analítico</span>
+                       <span className="text-[8px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded-full">94%</span>
+                     </div>
+                     <div className="space-y-3">
+                       <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Mapa do Instrumento</span>
+                       <div className="relative pl-3 space-y-3 before:absolute before:left-[3px] before:top-1 before:bottom-1 before:w-[1px] before:bg-border">
+                         <div className="text-[9px] font-bold text-foreground/80 flex items-center justify-between">
+                           <span>DO OBJETO</span>
+                           <span className="text-[7px] text-emerald-600 font-bold">✅ OK</span>
+                         </div>
+                         <div className="pl-2 space-y-1">
+                           <div className="h-1 w-full bg-foreground/10 rounded-full" />
+                           <div className="h-1 w-5/6 bg-foreground/10 rounded-full" />
+                         </div>
+                         <div className="text-[9px] font-bold text-foreground/80 flex items-center justify-between">
+                           <span>DA RESCISÃO</span>
+                           <span className="text-[7px] text-red-600 font-bold">⚠️ RISCO</span>
+                         </div>
+                       </div>
+                     </div>
                   </div>
                   
                   {/* Floating Elements */}
-                  <div className="absolute top-1/4 right-12 bg-card border border-border p-4 rounded-2xl shadow-2xl animate-float">
+                  <div className="absolute top-1/3 left-1/3 bg-card border border-border p-4 rounded-2xl shadow-2xl animate-float">
                      <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
                           <MousePointer2 size={16} />
                         </div>
                         <div>
-                          <p className="text-[10px] font-bold text-foreground uppercase tracking-tighter">Dr. Victor</p>
-                          <p className="text-[8px] text-muted-foreground uppercase tracking-widest">Editando Cláusula 12.4</p>
+                          <p className="text-[10px] font-bold text-foreground uppercase tracking-tighter">Edição IA Cirúrgica</p>
+                          <p className="text-[8px] text-muted-foreground uppercase tracking-widest">Modificando Parágrafo 3</p>
                         </div>
                      </div>
                   </div>
@@ -203,11 +239,11 @@ export default function Home() {
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-4">
             <div className="space-y-2">
-              <h2 className="text-3xl font-bold text-foreground tracking-tight uppercase">Recursos Profissionais</h2>
-              <p className="text-muted-foreground max-w-sm">Módulos especializados construídos para gestão jurídica de excelência.</p>
+              <h2 className="text-3xl font-bold text-foreground tracking-tight uppercase">Tecnologias de Redação e Auditoria</h2>
+              <p className="text-muted-foreground max-w-sm">Módulos de inteligência ativa e usabilidade militar criados sob medida.</p>
             </div>
             <div className="text-[10px] font-bold tracking-[0.3em] uppercase text-muted-foreground">
-              Infraestrutura de Gestão
+              ExtraJus Ecosystem v2
             </div>
           </div>
 
@@ -215,117 +251,122 @@ export default function Home() {
             {/* O Editor (Editor) */}
             <BentoCard 
               className="md:col-span-8 h-[400px]"
-              title="Editor Avançado"
-              subtitle="Colaboração em Tempo Real"
-              description="Motor de redação baseado em TipTap e Yjs. Sincronização em tempo real com cursores de presença e estrutura hierárquica."
+              title="Editor & Edição Cirúrgica"
+              subtitle="O Micro-Cirurgião do seu Documento"
+              description="Esqueça a IA que reconstrói contratos inteiros e quebra a formatação. Nossa Edição IA Cirúrgica reescreve e otimiza parágrafos pontuais de forma localizada e com precisão cirúrgica."
               icon={<Layers className="w-5 h-5 text-primary" />}
             >
-              <div className="mt-8 relative h-full w-full overflow-hidden rounded-xl bg-muted/40 border border-border p-4 font-mono text-[10px] text-muted-foreground">
+              <div className="mt-2 relative h-full w-full overflow-hidden rounded-xl bg-muted/40 border border-border p-4 font-mono text-[10px] text-muted-foreground">
                  <div className="flex items-center gap-2 mb-4">
                     <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                    <span>EXTRAJUS_SYNC_ACTIVE...</span>
-                 </div>
-                 <div className="space-y-2 opacity-70">
-                    <p className="text-foreground">1. OBJETO DO CONTRATO</p>
-                    <p>   1.1. A CONTRATADA se compromete a prestar serviços de...</p>
+                    <span>EXTRAJUS_AI_SURGICAL_ACTIVE...</span>
+                  </div>
+                  <div className="space-y-2 opacity-70">
+                    <p className="text-foreground">CLÁUSULA TERCEIRA - DA RESCISÃO</p>
+                    <p className="text-emerald-500 bg-emerald-500/10 px-1 py-0.5 rounded border border-emerald-500/20 italic">
+                      + [Otimização Cirúrgica IA]: Em caso de rescisão sem justa causa, o aviso prévio será de 30 dias...
+                    </p>
                     <div className="h-4 w-3/4 bg-primary/5 rounded border border-primary/10" />
-                    <p className="text-foreground">2. CONDIÇÕES COMERCIAIS</p>
+                    <p className="text-foreground">CLÁUSULA QUARTA - DO FORO</p>
                     <div className="h-4 w-full bg-primary/5 rounded border border-primary/10" />
-                    <p className="flex items-center gap-1">   2.1. O pagamento será processado via [ <span className="text-primary">metodo_pagamento</span> ]</p>
                  </div>
                  <div className="absolute bottom-4 left-4 right-4 h-10 bg-background border border-border rounded-lg shadow-sm flex items-center px-4 gap-2">
-                    <span className="text-primary">/</span>
-                    <span className="text-muted-foreground">Inserir Cláusula Padrão...</span>
+                    <span className="text-primary">✨</span>
+                    <span className="text-muted-foreground">Cláusula otimizada com 100% de segurança de formatação.</span>
                  </div>
               </div>
             </BentoCard>
 
             <BentoCard 
               className="md:col-span-4 h-[400px]"
-              title="Dashboard"
-              subtitle="Centro de Comando"
-              description="Monitoramento analítico de contratos ativos e insights de produtividade."
+              title="Radar Analítico IA"
+              subtitle="Detecção Real-Time de Vulnerabilidades"
+              description="Escanear e mitigar riscos em tempo real. Nossa auditoria preditiva analisa termos e gera um Score de Segurança dinâmico integrado."
               icon={<Activity className="w-5 h-5 text-primary" />}
             >
-              <div className="mt-8 space-y-3">
+              <div className="mt-2 space-y-3">
                 <div className="p-5 rounded-2xl bg-primary/5 border border-primary/10 transition-all hover:bg-primary/10 group/stat">
-                   <p className="text-[10px] uppercase font-black text-primary/60 mb-2 tracking-widest">Documentos Ativos</p>
+                   <p className="text-[10px] uppercase font-black text-primary/60 mb-2 tracking-widest font-sans">Score de Segurança</p>
                    <div className="flex items-baseline gap-2">
-                     <p className="text-4xl font-black text-foreground tracking-tighter">42</p>
-                     <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                     <p className="text-4xl font-black text-foreground tracking-tighter font-sans">94%</p>
+                     <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-primary/15 text-primary">Excelente ✨</span>
                    </div>
                 </div>
                 <div className="p-5 rounded-2xl bg-muted border border-border transition-all hover:border-primary/30 group/stat">
-                   <p className="text-[10px] uppercase font-black text-muted-foreground mb-2 tracking-widest">Acessos à API</p>
+                   <p className="text-[10px] uppercase font-black text-muted-foreground mb-2 tracking-widest font-sans">Riscos Identificados</p>
                    <div className="flex items-baseline gap-2">
-                     <p className="text-4xl font-black text-foreground tracking-tighter">8.4k</p>
-                     <span className="text-[10px] font-bold text-primary">REQ</span>
+                     <p className="text-4xl font-black text-foreground tracking-tighter font-sans">02</p>
+                     <span className="text-[10px] font-bold text-red-500">CORRIGIDOS</span>
                    </div>
                 </div>
               </div>
             </BentoCard>
 
-            {/* ExtraJus AI */}
+            {/* Mapa do Instrumento */}
             <BentoCard 
               className="md:col-span-4 h-[350px]"
-              title="Inteligência Artificial"
-              subtitle="Análise Preditiva"
-              description="Geração contextual e auditoria automática de termos e riscos contratuais."
-              icon={<Sparkles className="w-5 h-5 text-primary" />}
+              title="Mapa do Instrumento"
+              subtitle="Navegação em Árvore Inteligente"
+              description="Acompanhe a estrutura do contrato por uma linha guia de blueprint que lista parágrafos e mapeia riscos de forma dinâmica e interativa."
+              icon={<Brain className="w-5 h-5 text-primary" />}
             >
-              <div className="mt-6 flex flex-col gap-2">
-                 <div className="p-3 bg-muted border border-border rounded-lg text-[10px] italic">
-                   "Analisar riscos na cláusula de rescisão para M&A."
+              <div className="mt-6 pl-4 space-y-2 border-l-2 border-primary/20">
+                 <div className="text-[9px] font-bold text-foreground/80 flex items-center justify-between">
+                   <span>1. OBJETO CONTRATUAL</span>
+                   <span className="text-[7.5px] font-black text-emerald-600 uppercase">✅ OK</span>
                  </div>
-                 <div className="self-end p-3 bg-primary/10 border border-primary/20 rounded-lg text-[10px] text-foreground font-medium">
-                   Gerando Relatório de Auditoria...
+                 <div className="text-[9px] font-bold text-foreground/80 flex items-center justify-between pl-3 italic text-muted-foreground/60">
+                   <span>- Parágrafo 1.1: Prestação de...</span>
+                 </div>
+                 <div className="text-[9px] font-bold text-foreground/80 flex items-center justify-between">
+                   <span>2. FORO ELEITO</span>
+                   <span className="text-[7.5px] font-black text-emerald-600 uppercase">✅ OK</span>
                  </div>
               </div>
             </BentoCard>
 
-            {/* Assinaturas */}
+            {/* Sincronização em Tempo Real */}
             <BentoCard 
               className="md:col-span-4 h-[350px]"
-              title="Assinaturas"
-              subtitle="Segurança Digital"
-              description="Protocolo de assinatura digital com registro de validade e biometria."
-              icon={<Fingerprint className="w-5 h-5 text-primary" />}
+              title="Sincronia Sem F5"
+              subtitle="Zero Latência na Biblioteca"
+              description="Dual-Sync reativo. Qualquer alteração ou criação de minuta reflete instantaneamente na biblioteca lateral de todos os usuários via Supabase Realtime."
+              icon={<Zap className="w-5 h-5 text-primary" />}
             >
-              <div className="mt-8 relative px-4">
+              <div className="mt-6 relative px-4">
                  <div className="space-y-3">
-                   <div className="flex items-center gap-3 opacity-30">
-                      <div className="w-4 h-4 rounded-full border border-muted-foreground" />
-                      <div className="h-2 w-24 bg-muted rounded" />
-                   </div>
-                   <div className="flex items-center gap-3">
-                      <div className="w-4 h-4 rounded-full border-2 border-primary flex items-center justify-center">
-                        <div className="w-2 h-2 rounded-full bg-primary" />
-                      </div>
-                      <div className="h-2 w-32 bg-primary/20 rounded" />
-                   </div>
+                    <div className="flex items-center gap-3">
+                       <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                       <div className="h-2 w-32 bg-primary/20 rounded" />
+                       <span className="text-[8px] text-emerald-500 font-bold uppercase tracking-widest ml-auto">Atualizado</span>
+                    </div>
+                    <div className="flex items-center gap-3 opacity-60">
+                       <div className="w-2 h-2 rounded-full bg-muted-foreground/30" />
+                       <div className="h-2 w-24 bg-muted rounded" />
+                    </div>
                  </div>
                  <div className="absolute top-1/2 right-0 -translate-y-1/2 rotate-12">
-                   <div className="bg-primary text-primary-foreground px-2 py-1 text-[8px] font-black uppercase rounded shadow-lg">ASSINADO</div>
+                    <div className="bg-primary text-primary-foreground px-2 py-1 text-[8px] font-black uppercase rounded shadow-lg">REALTIME ACTIVE</div>
                  </div>
               </div>
             </BentoCard>
 
-            {/* Modelos */}
+            {/* Repositório e Biblioteca */}
             <BentoCard 
               className="md:col-span-4 h-[350px]"
-              title="Repositório"
-              subtitle="Modelos Padronizados"
-              description="Biblioteca de minutas profissionais prontas para uso imediato."
-              icon={<ShieldCheck className="w-5 h-5 text-primary" />}
+              title="Assinatura Criptográfica"
+              subtitle="Integridade Inviolável"
+              description="Assinatura digital e biometria com selo criptográfico e hash de autenticidade para blindagem jurídica absoluta."
+              icon={<Fingerprint className="w-5 h-5 text-primary" />}
             >
-               <div className="mt-8 grid grid-cols-2 gap-2">
+               <div className="mt-6 grid grid-cols-2 gap-2">
                  <div className="aspect-square bg-muted border border-border rounded-lg flex flex-col items-center justify-center gap-2 group-hover:bg-primary/5 transition-colors">
-                    <FileText size={20} className="text-muted-foreground group-hover:text-primary transition-colors" />
-                    <span className="text-[8px] uppercase font-bold text-muted-foreground group-hover:text-primary">Cível</span>
+                    <Lock size={20} className="text-muted-foreground group-hover:text-primary transition-colors" />
+                    <span className="text-[8px] uppercase font-bold text-muted-foreground group-hover:text-primary">AES-256</span>
                  </div>
                  <div className="aspect-square bg-muted border border-border rounded-lg flex flex-col items-center justify-center gap-2 group-hover:bg-primary/5 transition-colors">
-                    <Gavel size={20} className="text-muted-foreground group-hover:text-primary transition-colors" />
-                    <span className="text-[8px] uppercase font-bold text-muted-foreground group-hover:text-primary">Comercial</span>
+                    <Fingerprint size={20} className="text-muted-foreground group-hover:text-primary transition-colors" />
+                    <span className="text-[8px] uppercase font-bold text-muted-foreground group-hover:text-primary">Biometria</span>
                  </div>
                </div>
             </BentoCard>
@@ -425,44 +466,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Planos Section */}
-      <section className="py-32 px-6 border-t border-border">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-           {[
-             { name: "Iniciante", price: "0", feat: ["5 Contratos Mensais", "IA Analítica Básica", "Rede de Contatos"] },
-             { name: "Profissional", price: "199", feat: ["Documentos Ilimitados", "IA Preditiva Avançada", "Assinaturas Digitais"], highlight: true },
-             { name: "Empresarial", price: "Personalizado", feat: ["White Label", "Audit Trail Completo", "Suporte Prioritário"] }
-           ].map((plan, i) => (
-             <div key={i} className={cn(
-               "p-10 rounded-[2.5rem] border flex flex-col transition-all duration-500 shadow-sm",
-               plan.highlight 
-                 ? "bg-primary text-primary-foreground border-primary scale-105 z-10 shadow-xl" 
-                 : "bg-card border-border text-muted-foreground hover:border-primary/20"
-             )}>
-                <p className={cn("text-[10px] font-black uppercase tracking-[0.3em] mb-4", plan.highlight ? "text-primary-foreground/80" : "text-primary")}>{plan.name}</p>
-                <div className="mb-10">
-                   <span className={cn("text-4xl font-black tracking-tighter", plan.highlight ? "text-white" : "text-foreground")}>{plan.price === "Personalizado" ? plan.price : `R$ ${plan.price}`}</span>
-                   {plan.price !== "Personalizado" && <span className="text-xs font-bold opacity-60">/mês</span>}
-                </div>
-                <div className="space-y-4 mb-10 flex-1">
-                   {plan.feat.map((f, j) => (
-                     <div key={j} className="flex items-center gap-3 text-[11px] font-bold">
-                        <CheckCircle2 size={14} className={plan.highlight ? "text-primary-foreground" : "text-primary"} />
-                        <span className={plan.highlight ? "text-white" : "text-foreground"}>{f}</span>
-                     </div>
-                   ))}
-                </div>
-                <Button className={cn(
-                  "w-full rounded-full font-black uppercase tracking-widest h-12 text-[10px]",
-                  plan.highlight ? "bg-white text-primary hover:bg-white/90" : "bg-primary text-primary-foreground hover:opacity-90"
-                )}>
-                   Começar Agora
-                </Button>
-             </div>
-           ))}
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="relative pt-32 pb-12 px-6 border-t border-border bg-background">
         <div className="max-w-5xl mx-auto">
@@ -525,19 +528,17 @@ function BentoCard({
       className
     )}>
       <div className="relative z-10 flex flex-col h-full">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2 mb-1">
-              {icon}
-              <span className="text-[10px] font-bold text-foreground uppercase tracking-widest">{title}</span>
-            </div>
-            <p className="text-lg font-bold text-foreground tracking-tight">{subtitle}</p>
+        <div className="flex flex-col mb-2">
+          <div className="flex items-center gap-2 mb-0.5">
+            {icon}
+            <span className="text-[10px] font-bold text-foreground uppercase tracking-widest">{title}</span>
           </div>
+          <p className="text-lg font-bold text-foreground tracking-tight">{subtitle}</p>
         </div>
-        <p className="text-sm text-muted-foreground font-medium leading-relaxed max-w-[240px]">
+        <p className="text-[11.5px] text-muted-foreground/80 font-medium leading-relaxed max-w-xl md:max-w-2xl">
           {description}
         </p>
-        <div className="flex-1">
+        <div className="flex-1 mt-1">
           {children}
         </div>
       </div>
