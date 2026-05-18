@@ -241,6 +241,7 @@ export function AiMenuContent({
         <AiMenuInputTextarea
           ref={tiptapAiPromptInputRef}
           isLoading={aiGenerationIsLoading}
+          autoFocus={false}
           onStop={() => {
             if (!editor) return
             ;(editor.chain() as any).aiReject({ type: "reset" }).run()

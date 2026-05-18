@@ -25,9 +25,19 @@ body {
   letter-spacing: 0.01em;
   font-size: 18px;
   color: #1a1a1a;
+  -webkit-font-smoothing: subpixel-antialiased;
+  -moz-osx-font-smoothing: auto;
+  text-rendering: optimizeLegibility;
+  text-align: justify;
+
+  p, div[data-type="legal-node"] {
+    text-align: justify;
+  }
 
   .dark & {
     color: #e4e4e7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 

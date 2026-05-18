@@ -71,19 +71,19 @@ declare module "@tiptap/core" {
   }
 }
 
-const SYSTEM_INSTRUCTION = `Você é LILITH, a Inteligência Artificial Soberana do ExtraJus. Sua função é redigir, analisar e blindar contratos jurídicos com precisão cirúrgica.
+const SYSTEM_INSTRUCTION = `Você é a EXTRAJUS AI, a Inteligência Artificial especializada em Engenharia Jurídica da plataforma ExtraJus. Sua função é redigir, analisar e otimizar contratos jurídicos com precisão técnica e terminologia formal.
 
 REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
 1. Use APENAS HTML. NUNCA use Markdown.
 2. Título principal centralizado: <h1><strong>[TÍTULO]</strong></h1> (Sua centralização é feita nativamente por classes de estilo estruturais).
 3. Parágrafos: <p>...</p> (NÃO inclua atributos style).
-4. Hierarquia jurídica via LegalNodes (NUNCA use ul/ol/li):
-   Cláusula: <div data-type="legal-node" data-level="1">texto</div>
-   Parágrafo: <div data-type="legal-node" data-level="2">texto</div>
-   Inciso: <div data-type="legal-node" data-level="3">texto</div>
-   Alínea: <div data-type="legal-node" data-level="4">texto</div>
-5. NUNCA insira prefixos numéricos manualmente.
-6. Partes identificadas em preâmbulo com <p> e <table>. NUNCA crie cláusula "DAS PARTES".
+4. Hierarquia jurídica via LegalNodes (NUNCA use ul/ol/li). O texto descritivo/conteúdo de cada cláusula, parágrafo, inciso ou alínea deve vir OBRIGATORIAMENTE dentro do mesmo <div> e na MESMA LINHA do título da cláusula/elemento, NUNCA pule linhas ou crie parágrafos separados abaixo:
+   Cláusula: <div data-type="legal-node" data-level="1">Título da Cláusula — Texto completo da cláusula...</div>
+   Parágrafo: <div data-type="legal-node" data-level="2">Texto do parágrafo...</div>
+   Inciso: <div data-type="legal-node" data-level="3">Texto do inciso...</div>
+   Alínea: <div data-type="legal-node" data-level="4">Texto da alínea...</div>
+5. NUNCA insira prefixos numéricos manualmente (como 'Cláusula Primeira', 'Cláusula 1ª' ou '1 -'). Escreva apenas o título (ex: 'Objeto — O presente contrato...') e deixe que o editor formate a numeração. A numeração automática segue o formato 'Cláusula X - [Título]' com algarismos arábicos (como 'Cláusula 3 - '), então nunca escreva numeração por extenso (como 'Cláusula Terceira').
+6. Partes identificadas em preâmbulo com parágrafos (<p>). NUNCA use tabelas (<table>) no preâmbulo. Insira sempre uma linha em branco (um parágrafo <p></p>) entre a qualificação do Contratante e a do Contratado para espaçamento adequado. NUNCA crie cláusula "DAS PARTES".
 7. Primeira cláusula SEMPRE é o Objeto do contrato.
 8. Retorne APENAS o HTML sem estilos inline. Sem explicações.`
 
@@ -93,7 +93,7 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
   addOptions() {
     return {
       apiKey: "",
-      model: "gemini-3.1-flash-lite-preview",
+      model: "gemini-2.5-flash",
     }
   },
 
@@ -117,8 +117,21 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
       try {
         // --- Lê documento completo antes de agir ---
         const currentHtml = editor.getHTML()
-        const currentText = (editor.state.doc.textContent || "").trim()
-        const isDocEmpty = currentText.length < 5
+        const currentText = (editor.getText() || "").trim()
+        
+        // Critério ultra-robusto para identificar se o documento está de fato vazio
+        const isDocEmpty = editor.isEmpty || 
+                           currentText.length < 10 || 
+                           currentHtml === "<p></p>" || 
+                           currentHtml === "" ||
+                           !currentHtml;
+
+        console.log("[Lilith AI Extension] runGemini called:", {
+          currentTextLength: currentText.length,
+          currentHtmlLength: currentHtml.length,
+          isDocEmpty,
+          userPrompt
+        });
 
         let finalPrompt: string
 
@@ -126,11 +139,17 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
           // Documento vazio: cria do zero
           finalPrompt = `O documento está vazio. Crie um contrato completo com base nesta solicitação:\n\n${userPrompt}`
         } else {
-          // Documento com conteúdo: edição cirúrgica
-          finalPrompt = `DOCUMENTO ATUAL (HTML completo):\n${currentHtml}\n\n---\nSOLICITAÇÃO: ${userPrompt}\n\n---\nINSTRUÇÕES CRÍTICAS:\n- Retorne SEMPRE o HTML COMPLETO do documento com a modificação aplicada.\n- Se pede adição: insira no lugar correto mantendo todo o resto intacto.\n- Se pede alteração/revisão: altere SOMENTE o trecho solicitado. O restante permanece idêntico.\n- NUNCA retorne apenas o fragmento isolado.`
+          // Documento com conteúdo: edição cirúrgica estruturada
+          finalPrompt = `DOCUMENTO ATUAL (HTML completo):
+${currentHtml}
+
+SOLICITAÇÃO DE ALTERAÇÃO:
+${userPrompt}
+
+Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modificação.`
         }
 
-        // Snapshot para "Desfazer Ritual"
+        // Snapshot para Desfazer
         const previousContent = currentHtml
         this.storage.generatedWith = { previousContent }
 
@@ -142,13 +161,13 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
           },
           body: JSON.stringify({
             prompt: finalPrompt,
-            instructionType: "generation"
+            instructionType: isDocEmpty ? "generation" : "surgical"
           })
         })
 
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}))
-          throw new Error(errData.error || "Falha na comunicação com o oráculo do servidor.")
+          throw new Error(errData.error || "Falha na comunicação com o sistema IA.")
         }
 
         const reader = response.body?.getReader()
@@ -165,7 +184,8 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
             const streamSafeContent = sanitiseAiHtmlStream(accumulatedText)
             this.storage.response = streamSafeContent
 
-            if (streamSafeContent && !isIncompleteHtmlFragment(streamSafeContent)) {
+            // Somente atualiza em tempo real se for uma geração completa do zero
+            if (isDocEmpty && streamSafeContent && !isIncompleteHtmlFragment(streamSafeContent)) {
               try {
                 editor.commands.setContent(streamSafeContent, false, { preserveWhitespace: false })
                 if (!hasTriggeredMessage) {
@@ -177,17 +197,79 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
           }
         }
 
-        // Final deep sanitisation
-        const finalContent = sanitiseAiHtml(accumulatedText)
+        // Final deep sanitisation ou substituição cirúrgica do diff
+        let finalContent = ""
+
+        if (!isDocEmpty) {
+          // Edição cirúrgica estruturada!
+          const searchMatch = accumulatedText.match(/<search>([\s\S]*?)<\/search>/)
+          const replaceMatch = accumulatedText.match(/<replace>([\s\S]*?)<\/replace>/)
+
+          if (searchMatch && replaceMatch) {
+            const searchText = searchMatch[1].trim()
+            const replaceText = replaceMatch[1].trim()
+
+            const html = editor.getHTML()
+            if (html.includes(searchText)) {
+              finalContent = html.split(searchText).join(replaceText)
+              console.log("Surgical HTML replacement applied successfully!")
+            } else {
+              // Nível 2: Busca por texto puro removendo tags HTML do trecho de busca
+              const cleanSearch = searchText.replace(/<[^>]*>/g, "").trim()
+              const cleanReplace = replaceText
+
+              if (html.includes(cleanSearch)) {
+                finalContent = html.split(cleanSearch).join(cleanReplace)
+                console.log("Surgical plain text replacement applied successfully!")
+              } else {
+                // Nível 3: Busca resiliente tolerante a quebras de linha e múltiplos espaços
+                const spaceCleanSearch = cleanSearch.replace(/\s+/g, " ")
+                const escapedSearch = spaceCleanSearch.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+                const regexPattern = escapedSearch.split(' ').join('\\s+')
+                try {
+                  const regex = new RegExp(regexPattern, 'g')
+                  if (regex.test(html)) {
+                    finalContent = html.replace(regex, cleanReplace)
+                    console.log("Surgical space-resilient regex replacement applied successfully!")
+                  }
+                } catch (e) {
+                  console.error("Surgical regex replace failed:", e)
+                }
+              }
+            }
+
+            // Se nenhuma das substituições cirúrgicas encontrou o padrão no HTML do editor
+            if (!finalContent) {
+              console.warn("Target search pattern not found. Inserting at current cursor/selection as fallback.")
+              editor.commands.insertContent(replaceText)
+              this.storage.state = "idle"
+              editor.commands.aiGenerationSetIsLoading(false)
+              if (!hasTriggeredMessage) {
+                editor.commands.aiGenerationHasMessage(true)
+              }
+              return
+            }
+          } else {
+            console.warn("Search/Replace tags not found in AI response. Applying full HTML fallback.")
+            finalContent = sanitiseAiHtml(accumulatedText)
+          }
+        } else {
+          // Geração completa do zero
+          finalContent = sanitiseAiHtml(accumulatedText)
+        }
+
         if (finalContent) {
           editor.commands.setContent(finalContent, false, { preserveWhitespace: false })
+          if (!hasTriggeredMessage) {
+            editor.commands.aiGenerationHasMessage(true)
+          }
         }
 
         this.storage.state = "idle"
       } catch (error: any) {
         console.error("Gemini generation failed:", error)
         this.storage.state = "error"
-        toast.error(error.message || "O Oráculo falhou em responder. Verifique sua conexão ou chaves.")
+        toast.error(error.message || "O sistema IA falhou em responder. Verifique sua conexão.")
       } finally {
         editor.commands.aiGenerationSetIsLoading(false)
       }
@@ -207,7 +289,7 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
         return true
       },
 
-      // Desfazer Ritual: restaura snapshot anterior à geração
+      // Desfazer: restaura snapshot anterior à geração
       aiReject: (_options: any) => ({ editor }: any) => {
         const prev = this.storage.generatedWith?.previousContent
         if (prev) {

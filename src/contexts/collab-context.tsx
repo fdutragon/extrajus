@@ -37,7 +37,7 @@ export const useCollaboration = (room: string) => {
   const [supabase, setSupabase] = useState<SupabaseClient | null>(null)
   const [hasCollab, setHasCollab] = useState<boolean>(true)
   const [setupError, setSetupError] = useState<boolean>(false)
-  const ydoc = useMemo(() => new YDoc(), [])
+  const ydoc = useMemo(() => new YDoc(), [room])
 
   useEffect(() => {
     const noCollabParam = getUrlParam("noCollab")

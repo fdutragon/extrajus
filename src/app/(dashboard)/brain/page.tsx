@@ -71,8 +71,6 @@ export default function BrainPage() {
 
       const userEmailLower = user.email?.toLowerCase().trim() || "";
 
-      // 1. Buscar dados essenciais em paralelo
-      // Nota: signatures são filtradas via RLS, mas aqui garantimos que trazemos apenas o relevante
       const [contractsRes, sigsRes, profileRes] = await Promise.all([
         supabase.from('contracts').select('id, title, status').eq('user_id', user.id),
         supabase.from('signatures').select('id, contract_id, signers, status, contracts(id, title, status)'),
@@ -81,9 +79,7 @@ export default function BrainPage() {
 
       const contracts = contractsRes.data || [];
 
-      // 2. Filtro de segurança adicional para signatures (caso RLS não esteja 100% restrito)
       const filteredSignatures = (sigsRes.data || []).filter((sig: any) => {
-        // Sou o dono do contrato ou sou um dos signatários
         const isOwner = contracts.some((c: any) => c.id === sig.contract_id);
         const isSigner = sig.signers?.some((s: any) => s.email?.toLowerCase().trim() === userEmailLower);
         return isOwner || isSigner;
@@ -106,7 +102,7 @@ export default function BrainPage() {
     // Core Node
     nodes.push({ 
       id: "core", 
-      name: data.profile?.full_name?.toUpperCase() || "LILITH CORE", 
+      name: data.profile?.full_name?.toUpperCase() || "MEU NÚCLEO", 
       val: 10, 
       group: "core", 
       color: "#f59e0b" // Gold/Amber for the core
@@ -119,7 +115,7 @@ export default function BrainPage() {
         name: c.title,
         val: 4,
         group: "contract",
-        color: "rgb(var(--primary-rgb, 192, 255, 0))", // Fallback to Lilith Green
+        color: "rgb(var(--primary-rgb, 72, 187, 120))", // Professional Green
         status: c.status
       });
       links.push({ source: "core", target: c.id });
@@ -131,20 +127,16 @@ export default function BrainPage() {
         const contractId = s.contract_id;
         if (!contractId) return;
 
-        // Garantir que o nó do contrato de origem exista no grafo.
-        // Se não existir (por ex. se o contrato pertence a outro usuário mas fomos convidados a assinar),
-        // criamos um nó esqueleto para ele para evitar a exceção fatal do d3-force "node not found" e deixar a rede completa!
         const hasContractNode = nodes.some(n => n.id === contractId);
         if (!hasContractNode) {
           nodes.push({
             id: contractId,
-            name: s.contracts?.title || "Contrato Recebido",
+            name: s.contracts?.title || "Documento Recebido",
             val: 4,
             group: "contract",
-            color: "rgba(var(--primary-rgb, 192, 255, 0), 0.7)", // Tom ligeiramente transparente para indicar que é externo
+            color: "rgba(var(--primary-rgb, 72, 187, 120), 0.7)", 
             status: s.contracts?.status || s.status
           });
-          // Conectar o contrato externo ao núcleo do usuário
           links.push({ source: "core", target: contractId });
         }
 
@@ -170,14 +162,10 @@ export default function BrainPage() {
 
   useEffect(() => {
     if (fgRef.current) {
-      // Moderate repulsion to group nodes closer
       fgRef.current.d3Force("charge").strength(-300);
-      // Bring connected nodes much closer to the core
       fgRef.current.d3Force("link").distance(80);
-      // Optimize collision radius to prevent overlaps in a tighter cluster
       fgRef.current.d3Force("collide", forceCollide(20));
 
-      // Initial Zoom and Center - Balanced zoom at 4.5 for the perfect cinematic overview
       setTimeout(() => {
         fgRef.current.zoom(4.5, 1000);
         fgRef.current.centerAt(0, 0, 1000);
@@ -185,7 +173,7 @@ export default function BrainPage() {
     }
   }, [graphData]);
 
-  if (loading) return <div className="p-20 text-center text-muted-foreground uppercase font-black text-xs animate-pulse">Invocando Sinapses...</div>
+  if (loading) return <div className="p-20 text-center text-muted-foreground uppercase font-black text-xs animate-pulse">Carregando Rede de Dados...</div>
 
   return (
     <div className="flex flex-col space-y-10 animate-in fade-in duration-700 min-h-[85vh]">
@@ -193,34 +181,32 @@ export default function BrainPage() {
       <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b pb-6">
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2 py-0">Neural Networking</Badge>
-            <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase italic">Neural Networking</span>
+            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2 py-0">Inteligência Analítica</Badge>
+            <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase italic">Network Visualization</span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">O Sindicato</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Rede Profissional</h1>
           <p className="text-[13px] text-muted-foreground max-w-md leading-relaxed">
-            Mapeie o capital intelectual do império. Visualize as conexões entre seus contratos e signatários em tempo real.
+            Mapeie suas conexões e documentos estratégicos. Visualize a estrutura da sua rede profissional em tempo real.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
            <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-lg border">
              <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-             <span className="text-[10px] font-black uppercase text-primary tracking-widest">Neural Sync: 99.8%</span>
+             <span className="text-[10px] font-black uppercase text-primary tracking-widest">Sincronização: 99.8%</span>
            </div>
         </div>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-4 w-full flex-1">
-        {/* Main Graph Island - Ensure it doesn't expand under sidebar */}
         <div 
           ref={containerRef}
           className="flex-1 h-[500px] lg:h-[662px] bg-card border rounded-2xl overflow-hidden relative shrink-0">
-          {/* Legend Overlay */}
           <div className="absolute top-6 left-6 z-20 space-y-2 p-4 bg-background/50 backdrop-blur-md rounded-xl border">
              <h3 className="text-xs font-black uppercase text-primary tracking-widest flex items-center gap-2">
-               <Activity size={12} /> Live Processing
+               <Activity size={12} /> Processamento Ativo
              </h3>
-             <p className="text-[11px] text-muted-foreground font-medium max-w-[180px]">Mapeamento neural de riscos em tempo real.</p>
+             <p className="text-[11px] text-muted-foreground font-medium max-w-[180px]">Mapeamento de conexões em tempo real.</p>
           </div>
 
           {width > 0 && height > 0 ? (
@@ -234,54 +220,48 @@ export default function BrainPage() {
               nodeAutoColorBy="group"
               linkDirectionalParticles={4}
               linkDirectionalParticleSpeed={0.005}
-              linkDirectionalParticleColor={() => "#c0ff00"}
+              linkDirectionalParticleColor={() => "hsl(var(--primary))"}
               linkDirectionalParticleWidth={2}
-              linkColor={() => "rgba(255, 255, 255, 0.05)"}
+              linkColor={() => "rgba(var(--foreground), 0.05)"}
               nodeCanvasObject={(node: any, ctx: CanvasRenderingContext2D, globalScale) => {
                 if (node.x === undefined || node.y === undefined) return;
                 const label = node.name;
                 const fontSize = 12 / globalScale;
                 ctx.font = `${fontSize}px Inter`;
                 
-                // Node Circle
                 ctx.beginPath();
                 ctx.arc(node.x, node.y, node.val / 2, 0, 2 * Math.PI, false);
                 
-                // Force vibrant colors for the canvas fill
-                const color = node.color || "#c0ff00";
+                const color = node.color || "hsl(var(--primary))";
                 ctx.fillStyle = color;
                 ctx.fill();
                 
-                // Shadow/Glow effect
                 ctx.shadowColor = color;
                 ctx.shadowBlur = 15;
                 ctx.shadowOffsetX = 0;
                 ctx.shadowOffsetY = 0;
 
-                // Label
                 if (globalScale > 1.5) {
                   ctx.textAlign = "center";
                   ctx.textBaseline = "middle";
-                  ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+                  ctx.fillStyle = "hsl(var(--foreground))";
                   ctx.fillText(label, node.x, node.y + (node.val / 2) + 6);
                 }
                 
-                // Reset shadow for next draws
                 ctx.shadowBlur = 0;
               }}
               onNodeClick={(node) => setSelectedNode(node)}
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground uppercase tracking-widest font-mono">
-              Invocando Matriz Neural...
+              Carregando Matriz de Dados...
             </div>
           )}
         </div>
 
-        {/* Info Side Panel - Solid layout, no overlap */}
         <div className="w-full lg:w-[380px] flex flex-col gap-4 overflow-y-auto custom-scrollbar shrink-0 h-[662px]">
           <Card className="bg-card border rounded-2xl p-6">
-            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground mb-6">Métricas de Poder</h3>
+            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground mb-6">Métricas Analíticas</h3>
 
             {selectedNode ? (
               <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
@@ -302,12 +282,12 @@ export default function BrainPage() {
 
                 <div className="space-y-4">
                   <div className="p-3 rounded-xl bg-muted/50 border">
-                    <div className="text-[9px] text-muted-foreground uppercase font-black mb-1">Precisão Analítica</div>
+                    <div className="text-[9px] text-muted-foreground uppercase font-black mb-1">Precisão de Dados</div>
                     <div className="text-lg font-mono font-bold text-primary">99.8%</div>
                   </div>
                   <div className="p-3 rounded-xl bg-muted/50 border">
-                    <div className="text-[9px] text-muted-foreground uppercase font-black mb-1">Tokens Processados</div>
-                    <div className="text-lg font-mono font-bold text-foreground">1.2M</div>
+                    <div className="text-[9px] text-muted-foreground uppercase font-black mb-1">Documentos Vinculados</div>
+                    <div className="text-lg font-mono font-bold text-foreground">14</div>
                   </div>
                 </div>
 
@@ -324,14 +304,14 @@ export default function BrainPage() {
                 <div className="w-16 h-16 rounded-full border-2 border-dashed flex items-center justify-center">
                   <Maximize2 size={24} />
                 </div>
-                <p className="text-xs font-medium max-w-[150px]">Selecione um nó no cérebro para analisar os dados.</p>
+                <p className="text-xs font-medium max-w-[150px]">Selecione um nó para analisar as informações.</p>
               </div>
             )}
           </Card>
 
           <Card className="bg-card border rounded-2xl p-6 relative overflow-hidden group flex-1">
              <div className="relative z-10 flex flex-col h-full">
-                <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Neural Analytics</h3>
+                <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Análise de Rede</h3>
                 <div className="space-y-6 flex-1">
                    <div className="space-y-2">
                       <div className="flex justify-between items-end">
@@ -354,7 +334,7 @@ export default function BrainPage() {
                 </div>
                 <div className="pt-6 mt-auto">
                   <div className="flex items-center gap-2 p-3 bg-primary/5 rounded-xl border border-primary/10 italic text-[11px] text-muted-foreground">
-                    "Detectando padrões de evasão fiscal em sub-cláusulas..."
+                    "Monitorando integridade de dados e conformidade..."
                   </div>
                 </div>
              </div>

@@ -27,9 +27,16 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // Handle session retrieval safely
+  let user = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch (error) {
+    console.error("Auth middleware error:", error);
+    // If there's an error retrieving the user (like invalid refresh token), 
+    // we continue as if there's no user to allow redirection or public access.
+  }
 
   // List of protected routes that require authentication
   const protectedRoutes = [

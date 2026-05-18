@@ -1,17 +1,14 @@
 "use client"
-
+ 
 import { useCallback } from "react"
 import type { Editor } from "@tiptap/react"
 import { Button } from "../../../../components/tiptap-ui-primitive/button"
-import { RefreshAiIcon } from "../../../../components/tiptap-icons/refresh-ai-icon"
-import { XIcon } from "../../../../components/tiptap-icons/x-icon"
-import { CheckIcon } from "../../../../components/tiptap-icons/check-icon"
 import type { TextOptions } from "../../../../components/tiptap-extension/gemini-ai-extension"
 import { useUiEditorState } from "../../../../hooks/use-ui-editor-state"
-import { ButtonGroup } from "../../../../components/tiptap-ui-primitive/button-group"
-
+import { Check, X } from "lucide-react"
+ 
 import "../../../../components/tiptap-ui/ai-menu/ai-menu-actions/ai-menu-actions.scss"
-
+ 
 export interface AiMenuActionsProps {
   editor: Editor | null
   options: TextOptions
@@ -19,7 +16,7 @@ export interface AiMenuActionsProps {
   onAccept?: () => void
   onReject?: () => void
 }
-
+ 
 export function AiMenuActions({
   editor,
   options,
@@ -28,59 +25,46 @@ export function AiMenuActions({
   onReject,
 }: AiMenuActionsProps) {
   const { aiGenerationIsLoading } = useUiEditorState(editor)
-
-  const handleRegenerate = useCallback(() => {
-    if (!editor) return
-    ;(editor.chain() as any).focus().aiRegenerate(options).run()
-    onRegenerate?.()
-  }, [editor, onRegenerate, options])
-
+ 
   const handleDiscard = useCallback(() => {
     if (!editor) return
-    ;(editor.chain() as any).focus().aiReject().run()
+    ;(editor.commands as any).aiReject()
     onReject?.()
   }, [editor, onReject])
-
+ 
   const handleApply = useCallback(() => {
     if (!editor) return
-    ;(editor.chain() as any).focus().aiAccept().run()
+    ;(editor.commands as any).aiAccept()
     onAccept?.()
   }, [editor, onAccept])
-
+ 
   return (
-    <div className="tiptap-ai-menu-actions mt-4 p-4 border border-border/40 bg-muted/30 backdrop-blur-sm rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div className="tiptap-ai-menu-results">
+    <div className="tiptap-ai-menu-actions mt-3.5 p-4 border border-border/80 bg-card/65 backdrop-blur-md rounded-2xl flex items-center justify-between gap-4 shadow-sm animate-in fade-in duration-300">
+      <div className="flex items-center gap-2">
+        <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+        <span className="text-[11px] font-medium text-muted-foreground">
+          {aiGenerationIsLoading ? "Canalizando..." : "Sugestão pronta"}
+        </span>
+      </div>
+ 
+      <div className="flex items-center gap-2">
         <Button
           variant="ghost"
-          className="tiptap-button text-[11px] font-bold bg-primary/5 text-primary hover:bg-primary/10 rounded-xl border border-primary/10 transition-all"
-          onClick={handleRegenerate}
+          className="h-8.5 px-3.5 rounded-xl border border-border/60 hover:bg-muted text-muted-foreground hover:text-foreground text-[11px] font-medium transition-all duration-200 flex items-center gap-1.5"
+          onClick={handleDiscard}
+        >
+          <X size={12} />
+          Descartar
+        </Button>
+ 
+        <Button
+          className="h-8.5 px-4 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-[11px] font-semibold transition-all duration-200 active:scale-[0.98] border border-primary/20 flex items-center gap-1.5"
+          onClick={handleApply}
           disabled={aiGenerationIsLoading}
         >
-          <RefreshAiIcon className="tiptap-button-icon mr-2" />
-          Refazer ritual
+          <Check size={12} />
+          Aplicar pacto
         </Button>
-      </div>
-
-      <div className="tiptap-ai-menu-commit">
-        <ButtonGroup className="gap-2">
-          <Button
-            variant="ghost"
-            className="tiptap-button text-[11px] font-bold bg-destructive/5 text-destructive hover:bg-destructive/10 rounded-xl border border-destructive/10 transition-all"
-            onClick={handleDiscard}
-          >
-            <XIcon className="tiptap-button-icon mr-2" />
-            Descartar
-          </Button>
-
-          <Button
-            data-style="primary"
-            className="tiptap-button bg-primary text-primary-foreground hover:opacity-90 text-[11px] font-black uppercase tracking-wider px-6 rounded-xl transition-all active:scale-95 border border-primary/20"
-            onClick={handleApply}
-          >
-            <CheckIcon className="tiptap-button-icon mr-2" />
-            Aplicar pacto
-          </Button>
-        </ButtonGroup>
       </div>
     </div>
   )

@@ -48,15 +48,15 @@ export default async function ContractsPage() {
             <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2 py-0">Ativo</Badge>
             <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase italic">Repositório Seguro</span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Repositório Central</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Meus Documentos</h1>
           <p className="text-[13px] text-muted-foreground max-w-md leading-relaxed">
-            Gestão completa e auditoria de documentos. O histórico completo da sua infraestrutura jurídica sob controle absoluto.
+            Gestão completa e auditoria de contratos. O histórico completo da sua infraestrutura jurídica sob controle profissional.
           </p>
         </div>
         <div className="flex items-center gap-3">
           <form action={createNewContract}>
             <Button type="submit" className="h-10 bg-primary text-primary-foreground hover:opacity-90 font-bold rounded-lg px-5 text-[13px]">
-              <Plus size={16} className="mr-2" /> Novo Ritual
+              <Plus size={16} className="mr-2" /> Novo Contrato
             </Button>
           </form>
           <Button variant="outline" className="h-10 px-4 border-border hover:bg-muted rounded-lg text-[13px] font-medium">
@@ -69,4 +69,3 @@ export default async function ContractsPage() {
     </div>
   );
 }
-

@@ -10,16 +10,16 @@ export default function ForgotPasswordPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-black tracking-tighter dark:text-white text-muted">RECUPERAR CHAVE</h1>
-        <p className="text-muted-foreground dark:text-muted-foreground">Enviaremos um link de descriptografia para o seu e-mail.</p>
+        <h1 className="text-3xl font-black tracking-tighter dark:text-white text-muted uppercase">Recuperar Senha</h1>
+        <p className="text-muted-foreground dark:text-muted-foreground">Enviaremos um link de recuperação para o seu e-mail corporativo.</p>
       </div>
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="email">E-mail de Guerra</Label>
+          <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">E-mail Corporativo</Label>
           <Input 
             id="email" 
-            placeholder="cadelo@imperio.com" 
+            placeholder="seu@email.com" 
             type="email" 
             className="rounded-2xl border-border bg-background dark:bg-card focus:border-primary transition-all h-12 px-4"
           />

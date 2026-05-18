@@ -50,7 +50,7 @@ export function AiMenuInputPlaceholder({
       <div className="tiptap-ai-prompt-input-placeholder-content">
         <AiSparklesIcon className="tiptap-ai-prompt-input-placeholder-icon" />
         <span className="tiptap-ai-prompt-input-placeholder-text">
-          Dite o que Lilith deve alterar no texto...
+          Digite as alterações que deseja realizar no texto...
         </span>
       </div>
       <Button data-style="primary" disabled>
@@ -140,7 +140,7 @@ export function AiPromptInputToolbar({
       <ToolbarGroup>
         <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-           <span className="text-[10px] font-medium text-primary">Lilith ativa</span>
+           <span className="text-[10px] font-medium text-primary">IA Ativa</span>
         </div>
       </ToolbarGroup>
 
@@ -171,7 +171,8 @@ export function AiMenuInputTextarea({
   onPlaceholderClick,
   showPlaceholder = false,
   isLoading = false,
-  placeholder = "Dite sua ordem para Lilith...",
+  placeholder = "Digite suas instruções para a IA...",
+  autoFocus = true,
   ...props
 }: AiMenuInputTextareaProps) {
   const [promptValue, setPromptValue] = useComboboxValueState()
@@ -225,7 +226,7 @@ export function AiMenuInputTextarea({
         <div className="flex items-center justify-between w-full h-[3.25rem] px-4 bg-primary/5 rounded-2xl border border-primary/10 animate-pulse-subtle">
           <div className="flex items-center gap-3">
              <BrainCircuit size={16} className="text-primary animate-spin duration-[3000ms]" />
-             <span className="text-[11px] font-medium text-primary">Lilith está processando seu comando...</span>
+             <span className="text-[11px] font-medium text-primary">A inteligência artificial está processando seu comando...</span>
           </div>
           <Button variant="ghost" size="small" className="h-8 w-8 rounded-lg hover:bg-primary/10 text-primary" onClick={onStop}>
             <StopCircle2Icon size={16} />
@@ -237,7 +238,7 @@ export function AiMenuInputTextarea({
         <>
           <Combobox
             autoSelect="always"
-            autoFocus
+            autoFocus={autoFocus}
             render={
               <TextareaAutosize
                 onChange={(e) => setPromptValue(e.target.value)}
@@ -247,7 +248,7 @@ export function AiMenuInputTextarea({
                 onBlur={handleTextareaBlur}
                 className="tiptap-ai-prompt-input-content"
                 placeholder={placeholder}
-                autoFocus
+                autoFocus={autoFocus}
                 style={{
                   display: showPlaceholder ? "none" : "flex",
                 }}

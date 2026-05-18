@@ -28,7 +28,7 @@
       font-size: 1.2em;
       
       .legal-node-counter::before {
-        content: "Cláusula " counter(clausula) "ª.";
+        content: "Cláusula " counter(clausula) " -";
       }
     }
 

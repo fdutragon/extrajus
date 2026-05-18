@@ -34,6 +34,20 @@ import {
   ResponsiveContainer
 } from 'recharts';
 
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-[#0f0f11] border border-zinc-800 rounded-2xl p-3 shadow-2xl text-[11px] font-extrabold text-white">
+        <p className="text-muted-foreground mb-1">{label}</p>
+        <p className="text-primary font-black">
+          Receita: R$ {Number(payload[0].value || 0).toLocaleString('pt-BR')}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState({ totalUsers: 0, totalRevenue: 0 });
   const [mounted, setMounted] = useState(false);
@@ -63,11 +77,7 @@ export default function AdminDashboard() {
   const [ggpixBalance, setGgpixBalance] = useState("R$ 0,00");
   const [loadingBalance, setLoadingBalance] = useState(false);
 
-  // Estados para Solicitações de Forja Customizada
-  const [forgeRequests, setForgeRequests] = useState<any[]>([]);
-  const [loadingForge, setLoadingForge] = useState(false);
-  const [forgeResponseText, setForgeResponseText] = useState<Record<string, string>>({});
-  const [submittingForgeResponse, setSubmittingForgeResponse] = useState<Record<string, boolean>>({});
+
 
   // Estados para Disparo Manual de Notificações
   const [directNotificationUserId, setDirectNotificationUserId] = useState("");
@@ -142,7 +152,6 @@ export default function AdminDashboard() {
       fetchWithdrawals();
       fetchSavedWallets();
       fetchGgpixBalance();
-      fetchForgeRequests();
     } catch (error) {
       console.error("Admin Error:", error);
       toast.error("Falha ao carregar dados táticos.");
@@ -187,7 +196,7 @@ export default function AdminDashboard() {
       const response = await fetch("/api/admin/crypto/balance");
       const data = await response.json();
       if (data.success) {
-        setGgpixBalance(data.balanceFormatted || `R$ ${(data.balance / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`);
+        setGgpixBalance(`R$ ${(data.balance / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
       }
     } catch (err) {
       console.error("Error fetching GGPix balance:", err);
@@ -338,50 +347,7 @@ export default function AdminDashboard() {
     u.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const fetchForgeRequests = async () => {
-    setLoadingForge(true);
-    try {
-      const res = await fetch("/api/admin/forge");
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setForgeRequests(data.requests || []);
-      }
-    } catch (err) {
-      console.error("Error fetching forge requests:", err);
-    } finally {
-      setLoadingForge(false);
-    }
-  };
 
-  const handleRespondForgeRequest = async (requestId: string, userId: string) => {
-    const answer = forgeResponseText[requestId];
-    if (!answer || !answer.trim()) {
-      toast.error("Por favor, digite uma resposta para enviar.");
-      return;
-    }
-
-    setSubmittingForgeResponse(prev => ({ ...prev, [requestId]: true }));
-    try {
-      const res = await fetch("/api/admin/forge", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ requestId, userId, answer })
-      });
-      
-      const data = await res.json();
-      if (res.ok && data.success) {
-        toast.success("Resposta enviada e usuário notificado com sucesso!");
-        setForgeResponseText(prev => ({ ...prev, [requestId]: "" }));
-        fetchForgeRequests();
-      } else {
-        toast.error(data.error || "Falha ao responder solicitação.");
-      }
-    } catch (err) {
-      toast.error("Erro ao enviar resposta.");
-    } finally {
-      setSubmittingForgeResponse(prev => ({ ...prev, [requestId]: false }));
-    }
-  };
 
   const handleSendDirectNotification = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -427,16 +393,16 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700 pb-20 px-4 md:px-0">
-      {/* Sovereign Header */}
-      <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-border pb-8">
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Badge variant="destructive" className="text-[10px] tracking-wide font-bold px-2 py-0">Admin Access</Badge>
-            <span className="text-[10px] text-muted-foreground font-mono tracking-wide italic">Command & Control Center</span>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-end gap-4 border-b border-border pb-6">
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <Badge variant="destructive" className="text-[10px] uppercase tracking-widest font-bold px-2 py-0">Admin</Badge>
+            <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase">Command & Control</span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Painel de Comando</h1>
-          <p className="text-[13px] text-muted-foreground max-w-md leading-relaxed">
-            Visão estratégica do império. Monitore novos recrutas, valide transações e gerencie o fluxo de poder através de métricas avançadas.
+          <h1 className="text-2xl font-bold tracking-tight">Painel de Comando</h1>
+          <p className="text-sm text-muted-foreground mt-1 max-w-md">
+            Monitore usuários, receita e dispare notificações em tempo real.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -446,7 +412,7 @@ export default function AdminDashboard() {
                   key={range}
                   onClick={() => setTimeRange(range)}
                   className={cn(
-                    "px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
+                    "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all",
                     timeRange === range ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-background"
                   )}
                 >
@@ -454,65 +420,75 @@ export default function AdminDashboard() {
                 </button>
               ))}
            </div>
-           <Button onClick={fetchData} variant="outline" size="sm" className="rounded-xl font-bold text-[10px] tracking-wide border-primary/20 hover:bg-primary/5 h-9">
+           <Button onClick={fetchData} variant="outline" size="sm" className="rounded-lg font-bold text-[10px] tracking-wide border-primary/20 hover:bg-primary/5 h-9">
               Sincronizar
            </Button>
         </div>
       </div>
 
       {/* Primary Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-card border-border rounded-2xl p-6 relative overflow-hidden group flex flex-col justify-between min-h-[130px] transition-all hover:border-primary/20">
-           <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <Users size={56} className="text-foreground" />
-           </div>
-           <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block font-bold">Recrutas Totais</span>
-           <div className="flex items-baseline gap-2 mt-4">
-              <span className="text-4xl font-black text-foreground">{stats.totalUsers}</span>
-              <span className="text-[9px] font-black text-emerald-500 uppercase flex items-center gap-0.5 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
-                 <ArrowUpRight size={8} /> +12%
-              </span>
-           </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="bg-card border-border rounded-xl overflow-hidden relative group transition-all duration-500 hover:border-primary/50">
+           <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-primary/5 blur-[60px] rounded-full group-hover:bg-primary/15 transition-colors duration-500" />
+           <CardContent className="p-5 relative z-10">
+             <div className="flex items-center justify-between mb-4">
+               <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors duration-500">
+                 <Users size={16} />
+               </div>
+               <span className="text-[10px] font-bold text-emerald-500 flex items-center gap-0.5 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">
+                 <ArrowUpRight size={10} /> +12%
+               </span>
+             </div>
+             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Usuários Totais</p>
+             <h3 className="text-3xl font-black tracking-tight text-foreground leading-none mt-1">{stats.totalUsers}</h3>
+           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border rounded-2xl p-6 relative overflow-hidden group flex flex-col justify-between min-h-[130px] transition-all hover:border-primary/20">
-           <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <TrendingUp size={56} className="text-primary" />
-           </div>
-           <span className="text-[10px] font-black text-muted-foreground tracking-wide block">Receita Acumulada</span>
-           <div className="flex items-baseline gap-2 mt-4">
-              <span className="text-4xl font-black text-primary">R$ {(stats.totalRevenue / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-           </div>
+        <Card className="bg-card border-border rounded-xl overflow-hidden relative group transition-all duration-500 hover:border-primary/50">
+           <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-primary/5 blur-[60px] rounded-full group-hover:bg-primary/15 transition-colors duration-500" />
+           <CardContent className="p-5 relative z-10">
+             <div className="flex items-center justify-between mb-4">
+               <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors duration-500">
+                 <TrendingUp size={16} />
+               </div>
+             </div>
+             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Receita Acumulada</p>
+             <h3 className="text-2xl font-black tracking-tight text-primary leading-none mt-1">R$ {(stats.totalRevenue / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
+           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border rounded-2xl p-6 relative overflow-hidden group flex flex-col justify-between min-h-[130px] transition-all hover:border-primary/20">
-           <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <Coins size={56} className="text-foreground" />
-           </div>
-           <span className="text-[10px] font-black text-muted-foreground tracking-wide block">Lucro Operacional</span>
-           <div className="flex items-baseline gap-2 mt-4">
-              <span className="text-4xl font-black text-foreground">R$ {((stats.totalRevenue * 0.94) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-              <span className="text-[9px] font-black text-muted-foreground uppercase bg-muted px-1.5 py-0.5 rounded-md">Net</span>
-           </div>
+        <Card className="bg-card border-border rounded-xl overflow-hidden relative group transition-all duration-500 hover:border-primary/50">
+           <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-primary/5 blur-[60px] rounded-full group-hover:bg-primary/15 transition-colors duration-500" />
+           <CardContent className="p-5 relative z-10">
+             <div className="flex items-center justify-between mb-4">
+               <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors duration-500">
+                 <Coins size={16} />
+               </div>
+               <span className="text-[10px] font-bold text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">Net</span>
+             </div>
+             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Lucro Operacional</p>
+             <h3 className="text-2xl font-black tracking-tight text-foreground leading-none mt-1">R$ {((stats.totalRevenue * 0.94) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
+           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border rounded-2xl p-6 relative overflow-hidden group flex flex-col justify-between min-h-[130px] transition-all hover:border-emerald-500/20">
-           <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <Wallet size={56} className="text-emerald-500" />
-           </div>
-           <div className="flex items-center gap-1.5">
-              <span className="text-[10px] font-black text-muted-foreground tracking-wide block">Saldo GGPix (BRL)</span>
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-           </div>
-           <div className="flex items-baseline gap-2 mt-4">
-              <span className="text-3xl font-black text-emerald-400">{ggpixBalance}</span>
-           </div>
+        <Card className="bg-card border-border rounded-xl overflow-hidden relative group transition-all duration-500 hover:border-primary/50">
+           <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-primary/5 blur-[60px] rounded-full group-hover:bg-primary/15 transition-colors duration-500" />
+           <CardContent className="p-5 relative z-10">
+             <div className="flex items-center justify-between mb-4">
+               <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors duration-500">
+                 <Wallet size={16} />
+               </div>
+               <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
+             </div>
+             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Saldo GGPix</p>
+             <h3 className="text-2xl font-black tracking-tight text-primary leading-none mt-1">{ggpixBalance}</h3>
+           </CardContent>
         </Card>
       </div>
 
-      {/* Chart Section - The War Room Graph */}
+      {/* Chart Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-        <Card className="lg:col-span-2 bg-card border-border rounded-3xl p-8 relative overflow-hidden h-full flex flex-col justify-between">
+        <Card className="lg:col-span-2 bg-card border-border rounded-xl p-6 relative overflow-hidden h-full flex flex-col justify-between">
            <div>
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                  <div>
@@ -527,9 +503,9 @@ export default function AdminDashboard() {
                  </div>
               </div>
               
-              <div className="h-[280px] w-full min-w-0 overflow-hidden" style={{ minWidth: 0 }}>
+              <div className="h-[280px] w-full min-w-0">
                  {mounted && (
-                    <ResponsiveContainer width="99%" height="100%">
+                    <ResponsiveContainer width="100%" height={280}>
                        <AreaChart data={chartData.length > 0 ? chartData : [{name: 'Sem Dados', value: 0}]}>
                           <defs>
                              <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
@@ -545,25 +521,14 @@ export default function AdminDashboard() {
                             tick={{fill: '#a1a1aa', fontSize: 10, fontWeight: 700}}
                             dy={10}
                           />
-                          <YAxis 
-                            axisLine={false} 
-                            tickLine={false} 
-                            tick={{fill: '#a1a1aa', fontSize: 10, fontWeight: 700}}
-                            tickFormatter={(value) => `R$ ${value}`}
-                          />
-                          <Tooltip 
-                            contentStyle={{ 
-                              backgroundColor: '#0f0f11', 
-                              borderRadius: '16px', 
-                              border: '1px solid #27272a',
-                              fontSize: '11px',
-                              fontWeight: '800',
-                              color: '#ffffff',
-                              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
-                            }}
-                            itemStyle={{ color: '#c0ff00' }}
-                            formatter={(value: any) => [`R$ ${Number(value || 0).toLocaleString('pt-BR')}`, 'Receita']}
-                          />
+                           <YAxis 
+                             axisLine={false} 
+                             tickLine={false} 
+                             tick={{fill: '#a1a1aa', fontSize: 10, fontWeight: 700}}
+                             tickFormatter={(value) => `R$ ${value}`}
+                           />
+
+                           <Tooltip content={<CustomTooltip />} />
                           <Area 
                             type="monotone" 
                             dataKey="value" 
@@ -580,7 +545,7 @@ export default function AdminDashboard() {
            </div>
         </Card>
 
-        <Card className="bg-card border-border rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden h-full">
+        <Card className="bg-card border-border rounded-xl p-6 flex flex-col justify-between relative overflow-hidden h-full">
            <div className="absolute inset-0 bg-gradient-to-b from-primary/[0.03] to-transparent pointer-events-none" />
            <div>
               <h3 className="text-sm font-black tracking-wide text-foreground mb-6">Injeções de Capital</h3>
@@ -611,10 +576,10 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
-      {/* Terminal de Saque Cripto - GGPix Integration */}
+      {/* Terminal de Saque Cripto */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
         {/* Formulário de Saque */}
-        <Card className="bg-card border-border rounded-3xl p-8 relative overflow-hidden flex flex-col justify-between h-full">
+        <Card className="bg-card border-border rounded-xl p-6 relative overflow-hidden flex flex-col justify-between h-full">
            <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
               <Coins size={120} className="text-primary" />
            </div>
@@ -783,7 +748,7 @@ export default function AdminDashboard() {
 
       {/* Gerenciador de Carteiras Cripto Salvas */}
 
-      <Card className="bg-card border-border rounded-3xl p-8 relative overflow-hidden">
+      <Card className="bg-card border-border rounded-xl p-6 relative overflow-hidden">
          <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
             <Wallet size={120} className="text-primary animate-pulse" />
          </div>
@@ -886,15 +851,14 @@ export default function AdminDashboard() {
          </div>
       </Card>
 
-      {/* Seção 1: Gerenciamento de Identidades (Usuários) e Envio de Notificações */}
+      {/* Gerenciamento de Usuários */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-         {/* Lista de Usuários e Injeção de Créditos */}
-         <Card className="lg:col-span-2 bg-card border-border rounded-3xl p-8 relative overflow-hidden flex flex-col justify-between h-full">
+         <Card className="lg:col-span-2 bg-card border-border rounded-xl p-6 relative overflow-hidden flex flex-col justify-between h-full">
             <div>
                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                   <div>
-                     <h3 className="text-sm font-black tracking-wide text-foreground">Gerenciamento de Identidades</h3>
-                     <p className="text-[10px] text-muted-foreground font-bold tracking-wide mt-1">Monitore e injete créditos nos recrutas do império</p>
+                     <h3 className="text-sm font-bold text-foreground">Gerenciamento de Usuários</h3>
+                     <p className="text-xs text-muted-foreground mt-0.5">Monitore e injete créditos nos usuários</p>
                   </div>
                   
                   <div className="relative max-w-xs w-full">
@@ -959,14 +923,13 @@ export default function AdminDashboard() {
             </div>
          </Card>
 
-         {/* Disparador de Notificações Manuais */}
-         <Card className="bg-card border-border rounded-3xl p-8 relative overflow-hidden flex flex-col justify-between h-full">
+         <Card className="bg-card border-border rounded-xl p-6 relative overflow-hidden flex flex-col justify-between h-full">
             <div>
-               <h3 className="text-sm font-black tracking-wide text-foreground mb-1 flex items-center gap-2">
+               <h3 className="text-sm font-bold text-foreground mb-1 flex items-center gap-2">
                   <ShieldCheck size={16} className="text-primary" /> Disparo de Notificações
                </h3>
-               <p className="text-[10px] text-muted-foreground font-bold tracking-wide mb-6">
-                  Envie mensagens e alertas diretos em tempo real para os usuários.
+               <p className="text-xs text-muted-foreground mb-6">
+                  Envie mensagens diretas em tempo real.
                </p>
 
                <form onSubmit={handleSendDirectNotification} className="space-y-4">
@@ -1000,7 +963,7 @@ export default function AdminDashboard() {
                               {/* Backdrop invisível para fechar ao clicar fora */}
                               <div className="fixed inset-0 z-40" onClick={() => setIsSelectOpen(false)} />
                               
-                              <div className="absolute left-0 right-0 mt-2 bg-card/95 border border-border rounded-2xl shadow-2xl backdrop-blur-md z-50 p-2 max-h-[220px] overflow-y-auto custom-scrollbar animate-in fade-in slide-in-from-top-2 duration-200 text-left">
+                              <div className="absolute left-0 right-0 mt-2 bg-card border border-border rounded-2xl shadow-2xl z-50 p-2 max-h-[220px] overflow-y-auto custom-scrollbar animate-in fade-in slide-in-from-top-2 duration-200 text-left">
                                  <div 
                                    onClick={() => {
                                      setDirectNotificationUserId("all");
@@ -1083,87 +1046,7 @@ export default function AdminDashboard() {
          </Card>
       </div>
 
-      {/* Seção 2: Central de Atendimento de Solicitações de Forja Customizada */}
-      <Card className="bg-card border-border rounded-3xl p-8 relative overflow-hidden">
-         <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-            <Database size={120} className="text-primary animate-pulse" />
-         </div>
-         <div className="space-y-6">
-            <div>
-               <h3 className="text-sm font-black tracking-wide text-foreground mb-1 flex items-center gap-2">
-                  <Database size={16} className="text-primary" /> Central de Perguntas & Solicitações de Forja
-               </h3>
-               <p className="text-[10px] text-muted-foreground font-bold tracking-wide">
-                  Responda às demandas de modelos sob medida dos recrutas e envie notificações imediatas com os arquivos forjados.
-               </p>
-            </div>
 
-            <div className="overflow-x-auto max-h-[350px] overflow-y-auto pr-1 space-y-4">
-               {loadingForge && forgeRequests.length === 0 ? (
-                 <div className="py-12 text-center text-muted-foreground font-black text-[9px] uppercase tracking-widest border border-dashed rounded-2xl border-border">
-                    Consultando registros no banco de dados...
-                 </div>
-               ) : forgeRequests.length === 0 ? (
-                 <div className="py-12 text-center text-muted-foreground font-black text-[9px] uppercase tracking-widest border border-dashed rounded-2xl border-border">
-                    Nenhuma solicitação de forja customizada registrada neste setor.
-                 </div>
-               ) : (
-                  forgeRequests.map((req: any) => (
-                     <div key={req.id} className="bg-muted/10 border border-border/60 hover:border-border rounded-2xl p-5 transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-6 group">
-                        <div className="space-y-3 flex-1">
-                           <div className="flex items-center gap-3">
-                              <Badge 
-                                variant="outline" 
-                                className={cn(
-                                  "text-[8px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md border-none",
-                                  req.status === "completed" ? "bg-emerald-500/15 text-emerald-400" : "bg-yellow-500/15 text-yellow-400 animate-pulse"
-                                )}
-                              >
-                                 {req.status === "completed" ? "Respondida" : "Pendente"}
-                              </Badge>
-                              <span className="text-[9px] text-muted-foreground font-mono">
-                                 Solicitado em {new Date(req.created_at).toLocaleDateString('pt-BR')} às {new Date(req.created_at).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}
-                              </span>
-                           </div>
-
-                           <div className="space-y-1">
-                              <span className="text-[11px] font-black text-foreground block">
-                                 Solicitante: <span className="text-primary">{req.profiles?.full_name || 'Recruta'}</span> ({req.profiles?.email})
-                              </span>
-                              <p className="text-xs text-muted-foreground leading-relaxed italic bg-muted/20 p-3.5 rounded-xl border border-border/30">
-                                 "{req.description}"
-                              </p>
-                           </div>
-                        </div>
-
-                        {req.status !== 'completed' ? (
-                           <div className="w-full md:w-80 space-y-2 shrink-0">
-                              <textarea
-                                placeholder="Redija a resposta ou o link do documento forjado..."
-                                value={forgeResponseText[req.id] || ""}
-                                onChange={(e) => setForgeResponseText(prev => ({ ...prev, [req.id]: e.target.value }))}
-                                rows={2}
-                                className="w-full bg-muted/40 border border-border rounded-xl px-3 py-2 text-xs font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder:text-muted-foreground/30 resize-none"
-                              />
-                              <Button
-                                onClick={() => handleRespondForgeRequest(req.id, req.user_id)}
-                                disabled={submittingForgeResponse[req.id]}
-                                className="w-full h-8 rounded-lg text-[9px] font-black tracking-wide bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center justify-center gap-1.5"
-                              >
-                                 {submittingForgeResponse[req.id] ? "Enviando Resposta..." : "Enviar Resposta & Notificar"}
-                              </Button>
-                           </div>
-                        ) : (
-                           <div className="w-full md:w-80 py-4 flex items-center justify-center shrink-0 border border-dashed border-emerald-500/30 rounded-xl bg-emerald-500/5 text-emerald-400 font-bold text-[9px] uppercase tracking-widest gap-2">
-                              ✓ Demanda Atendida com Sucesso
-                           </div>
-                        )}
-                     </div>
-                  ))
-               )}
-            </div>
-         </div>
-      </Card>
       
     </div>
   );

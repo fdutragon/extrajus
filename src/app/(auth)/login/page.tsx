@@ -25,11 +25,11 @@ export default async function LoginPage({
           </div>
         )}
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">E-mail de Guerra</Label>
+          <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">E-mail Corporativo</Label>
           <Input 
             id="email" 
             name="email"
-            placeholder="cadelo@imperio.com" 
+            placeholder="seu@email.com" 
             type="email" 
             required
             className="h-12 px-4 rounded-2xl border-border bg-background dark:bg-card transition-all text-base"
@@ -37,12 +37,12 @@ export default async function LoginPage({
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">Senha Criptografada</Label>
+            <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">Senha de Acesso</Label>
             <Link 
               href="/forgot-password" 
               className="text-[10px] text-primary dark:text-primary hover:underline font-black uppercase"
             >
-              Esqueceu a chave?
+              Esqueceu a senha?
             </Link>
           </div>
           <Input 
@@ -63,7 +63,7 @@ export default async function LoginPage({
           </label>
         </div>
         <Button type="submit" className="w-full bg-primary text-primary-foreground hover:opacity-90 font-black h-12 rounded-2xl group transition-all shadow-xl shadow-primary/10">
-          ACESSAR COMANDO <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+          ENTRAR NA PLATAFORMA <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
         </Button>
       </form>
 
@@ -72,7 +72,7 @@ export default async function LoginPage({
           <span className="w-full border-t border-border opacity-50" />
         </div>
         <div className="relative flex justify-center text-[10px] font-black uppercase tracking-[0.2em]">
-          <span className="bg-background px-6 text-muted-foreground">Ou use sua identidade digital</span>
+          <span className="bg-background px-6 text-muted-foreground">Ou continue com</span>
         </div>
       </div>
 
@@ -83,7 +83,7 @@ export default async function LoginPage({
       <p className="text-center text-sm text-muted-foreground dark:text-muted-foreground pt-6">
         Novo por aqui?{" "}
         <Link href="/register" className="text-primary dark:text-primary font-black hover:underline">
-          Recrute-se agora
+          Criar conta agora
         </Link>
       </p>
     </div>

@@ -89,27 +89,27 @@ export async function POST(request: Request) {
         resendInstance.emails.send({
           from: 'ExtraJus <assinaturas@extrajus.pro>',
           to: signer.email,
-          subject: `📜 Convocação para Selamento: ${title || 'Novo Pacto'}`,
+          subject: `📜 Convocação para Assinatura: ${title || 'Novo Contrato'}`,
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #000; color: #fff; padding: 40px; border: 1px solid #111;">
               <h1 style="color: #c0ff00; font-size: 24px; text-transform: uppercase; letter-spacing: 4px;">ExtraJus</h1>
               <p style="font-size: 14px; opacity: 0.7; border-bottom: 1px solid #222; padding-bottom: 20px;">RITUAL DE ASSINATURA DIGITAL</p>
               
               <p style="margin-top: 30px;">Saudações, <strong>${signer.name}</strong>.</p>
-              <p>Um novo pacto soberano aguarda seu selamento: <strong>${title || 'Sem Título'}</strong>.</p>
+              <p>Um novo contrato aguarda sua assinatura: <strong>${title || 'Sem Título'}</strong>.</p>
               
               <div style="background: #0a0a0a; border: 1px dashed #c0ff00; padding: 30px; margin: 30px 0; text-align: center;">
-                <p style="font-size: 10px; color: #c0ff00; text-transform: uppercase; margin-bottom: 10px;">Seu Código de Selamento</p>
+                <p style="font-size: 10px; color: #c0ff00; text-transform: uppercase; margin-bottom: 10px;">Seu Código de Assinatura</p>
                 <code style="font-size: 32px; font-weight: bold; letter-spacing: 10px; color: #fff;">${sealingCode}</code>
               </div>
 
               <p style="font-size: 13px; line-height: 1.6; opacity: 0.8;">
-                Para visualizar e selar este pacto, clique no link abaixo. Você poderá ver o documento completo em modo de somente leitura e inserir seu código para assinar digitalmente.
+                Para visualizar e assinar este documento, clique no link abaixo. Você poderá ver o documento completo em modo de somente leitura e inserir seu código para assinar digitalmente.
               </p>
 
               <a href="${siteUrl}/editor?room=${contractId}&mode=preview" 
                  style="display: inline-block; background: #c0ff00; color: #000; text-decoration: none; padding: 15px 30px; font-weight: bold; border-radius: 5px; margin-top: 20px; text-transform: uppercase; font-size: 12px;">
-                Visualizar e Selar Pacto
+                Visualizar e Assinar
               </a>
 
               <p style="margin-top: 50px; font-size: 10px; opacity: 0.3; text-align: center;">

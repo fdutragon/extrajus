@@ -65,9 +65,9 @@ export default async function DashboardPage() {
 
   const stats = [
     { title: "Contratos Ativos", value: activeCount || 0, trend: "+2", icon: FileText, color: "text-primary" },
-    { title: "Sinais Pendentes", value: pendingSigs || 0, trend: "Ação Nec.", icon: ShieldCheck, color: "text-primary" },
-    { title: "Modelos Arsenal", value: templateCount || 0, trend: "Elite", icon: Package, color: "text-primary" },
-    { title: "Créditos Poder", value: profile?.credits || 0, trend: "Ativo", icon: Zap, color: "text-primary" },
+    { title: "Assinaturas Pendentes", value: pendingSigs || 0, trend: "Ação Nec.", icon: ShieldCheck, color: "text-primary" },
+    { title: "Modelos Salvos", value: templateCount || 0, trend: "Ativos", icon: Package, color: "text-primary" },
+    { title: "Créditos IA", value: profile?.credits || 0, trend: "Operacional", icon: Zap, color: "text-primary" },
   ];
 
   return (
@@ -76,10 +76,10 @@ export default async function DashboardPage() {
       <div className="flex flex-col sm:flex-row justify-between items-end gap-4 border-b border-border pb-6">
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2 py-0">War Room</Badge>
+            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2 py-0">Dashboard</Badge>
             <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase">System Operational</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Comando de {profile?.full_name?.split(' ')[0] || 'Guerra'}</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Painel de {profile?.full_name?.split(' ')[0] || 'Controle'}</h1>
         </div>
         <form action={createContractAction}>
           <Button
@@ -96,6 +96,8 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, i) => (
           <Card key={i} className="bg-card border-border rounded-xl overflow-hidden relative group transition-all duration-500 hover:border-primary/50">
+            {/* Ambient Glow from the mockup */}
+            <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-primary/5 dark:bg-primary/10 blur-[60px] rounded-full group-hover:bg-primary/15 transition-colors duration-500" />
             <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
 
             <CardContent className="p-5 relative z-10">
@@ -105,7 +107,7 @@ export default async function DashboardPage() {
                 </div>
                 <div className={cn(
                   "flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border",
-                  stat.trend.startsWith('+') || stat.trend === 'Ativo' ? "bg-primary/10 text-primary border-primary/20" : "bg-muted text-muted-foreground border-border"
+                  stat.trend.startsWith('+') || stat.trend === 'Operacional' ? "bg-primary/10 text-primary border-primary/20" : "bg-muted text-muted-foreground border-border"
                 )}>
                   {stat.trend.startsWith('+') ? <ArrowUpRight size={10} /> : <Zap size={10} />} {stat.trend}
                 </div>
@@ -128,13 +130,13 @@ export default async function DashboardPage() {
           <div className="flex items-center justify-between px-1">
             <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Fluxo Recente</h2>
             <Link href="/contracts" className="text-[11px] text-muted-foreground hover:text-primary transition-colors font-bold flex items-center gap-1 uppercase tracking-tighter">
-              Ver Arsenal Completo <ChevronRight size={12} />
+              Ver Todos <ChevronRight size={12} />
             </Link>
           </div>
 
           <div className="bg-card border border-border rounded-xl overflow-hidden">
             {!recentContracts || recentContracts.length === 0 ? (
-              <div className="p-20 text-center text-muted-foreground uppercase font-black text-[10px] tracking-widest">Aguardando início das hostilidades...</div>
+              <div className="p-20 text-center text-muted-foreground uppercase font-black text-[10px] tracking-widest">Nenhum contrato ativo no momento.</div>
             ) : (
               <Table>
                 <TableHeader>
@@ -165,7 +167,7 @@ export default async function DashboardPage() {
                           contract.status === 'pending' ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
                         )}>
                           {contract.status === 'draft' ? 'Em Edição' : 
-                           contract.status === 'pending' ? 'Pendente' : 'Selado'}
+                           contract.status === 'pending' ? 'Pendente' : 'Assinado'}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-[11px] text-muted-foreground text-right font-mono py-5 px-6">{new Date(contract.updated_at).toLocaleDateString('pt-BR')}</TableCell>
@@ -180,11 +182,11 @@ export default async function DashboardPage() {
         {/* AI Intelligence / Sidebar Panel */}
         <div className="lg:col-span-4">
           <div className="sticky top-0 space-y-4">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground px-1">Inteligência</h2>
+            <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground px-1">Inteligência Analítica</h2>
 
             <div className="bg-card border border-border rounded-xl p-6 relative overflow-hidden group transition-all duration-500">
               {/* Ambient Glow */}
-              <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 dark:bg-primary/10 blur-[80px] rounded-full -mr-20 -mt-20 group-hover:bg-primary/10 dark:group-hover:bg-primary/20 transition-all duration-1000" />
+              <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 dark:bg-primary/10 blur-[80px] rounded-full -mr-20 -mt-20 group-hover:bg-primary/15 dark:group-hover:bg-primary/20 transition-all duration-1000" />
 
               <div className="relative z-10 space-y-6">
                 <div className="flex items-center gap-3">
@@ -192,7 +194,7 @@ export default async function DashboardPage() {
                     <Sparkles size={20} className="animate-pulse" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-foreground tracking-tight">Lilith AI Insights</h3>
+                    <h3 className="text-sm font-bold text-foreground tracking-tight">ExtraJus AI Insights</h3>
                     <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Priority Analysis</p>
                   </div>
                 </div>
@@ -204,17 +206,17 @@ export default async function DashboardPage() {
                       <span className="text-[10px] font-black uppercase text-primary">Capacidade</span>
                     </div>
                     <p className="text-[12px] text-muted-foreground leading-relaxed group-hover/item:text-foreground transition-colors">
-                      Você ainda possui <span className="text-foreground font-bold">{profile?.credits || 0} créditos</span> de ritual. Tempo de resposta médio: <span className="text-foreground font-bold">4.2s</span>.
+                      Você ainda possui <span className="text-foreground font-bold">{profile?.credits || 0} requisições</span> de auditoria IA. Tempo de resposta médio: <span className="text-foreground font-bold">4.2s</span>.
                     </p>
                   </div>
 
                   <div className="p-3 rounded-lg bg-muted/50 border border-border hover:border-primary/30 transition-all cursor-help group/item">
                     <div className="flex items-center gap-2 mb-1">
                       <TrendingUp size={12} className="text-primary" />
-                      <span className="text-[10px] font-black uppercase text-primary">Expansão</span>
+                      <span className="text-[10px] font-black uppercase text-primary">Repositório</span>
                     </div>
                     <p className="text-[12px] text-muted-foreground leading-relaxed group-hover/item:text-foreground transition-colors">
-                      O seu arsenal conta com <span className="text-foreground font-bold">{templateCount || 0} modelos</span> de alta performance prontos para forja imediata.
+                      Sua conta possui <span className="text-foreground font-bold">{templateCount || 0} modelos</span> de contratos estruturados prontos para uso imediato.
                     </p>
                   </div>
                 </div>

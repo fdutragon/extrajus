@@ -559,7 +559,7 @@ export default function DashboardLayoutClient({
               </button>
 
               {isNotificationsOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-card/95 border border-border backdrop-blur-md rounded-2xl shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-250 p-4">
+                <div className="absolute right-0 mt-2 w-80 bg-card border border-border rounded-2xl shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-250 p-4">
                   <div className="flex items-center justify-between border-b border-border pb-2.5 mb-2.5">
                     <span className="text-[11px] font-bold text-foreground uppercase tracking-wider">Notificações</span>
                     {notifications.length > 0 && (
@@ -617,10 +617,10 @@ export default function DashboardLayoutClient({
             <div className="flex items-center gap-2 pl-1 cursor-pointer group">
               <Avatar className="h-6 w-6 rounded-full border border-border ring-0 group-hover:ring-2 ring-primary/20 transition-all">
                 <AvatarImage src={profile?.avatar_url || "https://github.com/shadcn.png"} />
-                <AvatarFallback className="text-[10px]">{profile?.full_name?.slice(0,2).toUpperCase() || "AI"}</AvatarFallback>
+                <AvatarFallback className="text-[10px]">{profile?.full_name?.slice(0,2).toUpperCase() || "US"}</AvatarFallback>
               </Avatar>
               <div className="hidden lg:flex flex-col">
-                <span className="text-[11px] font-bold leading-tight tracking-tight uppercase italic">{profile?.full_name || 'Arquiteto'}</span>
+                <span className="text-[11px] font-bold leading-tight tracking-tight uppercase italic">{profile?.full_name || 'Usuário'}</span>
               </div>
             </div>
           </div>

@@ -21,13 +21,13 @@ export default function AuthLayout({
               &quot;A melhor forma de prever o futuro é redigir o contrato que o dita.&quot;
             </p>
             <footer className="text-sm font-mono text-primary dark:text-primary uppercase tracking-widest">
-              — Lilith OS // Protocolo de Dominação
+              — ExtraJus Engine // Inteligência Jurídica
             </footer>
           </blockquote>
         </div>
 
         <div className="text-xs font-mono text-muted-foreground dark:text-muted-foreground relative z-10">
-          © 2026 IMPÉRIO DO CADELO // ALL RIGHTS RESERVED
+          © 2026 EXTRAJUS — TODOS OS DIREITOS RESERVADOS
         </div>
       </div>
 

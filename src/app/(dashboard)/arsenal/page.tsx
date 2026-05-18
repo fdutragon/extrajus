@@ -66,7 +66,7 @@ export default function ArsenalPage() {
     { name: "Societário", icon: Building2 },
     { name: "Trabalhista", icon: Briefcase },
     { name: "Sigilo", icon: Lock },
-    { name: "Elite", icon: Sparkles },
+    { name: "Profissional", icon: Sparkles },
   ];
 
   const filteredTemplates = templates.filter(tpl => {
@@ -79,13 +79,12 @@ export default function ArsenalPage() {
   const handleUseTemplate = async (template: any) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      toast.error("Você precisa estar logado para forjar contratos.");
+      toast.error("Você precisa estar logado para utilizar modelos.");
       return;
     }
 
-    toast.loading("Forjando novo contrato a partir do modelo...", { id: "forge" });
+    toast.loading("Gerando novo contrato a partir do modelo...", { id: "forge" });
 
-    // 1. Create the contract
     const { data: contract, error: contractError } = await supabase
       .from('contracts')
       .insert({
@@ -101,15 +100,8 @@ export default function ArsenalPage() {
       return;
     }
 
-    // 2. Insert the initial content into yjs_updates (optional, but good for persistence)
-    // For now, we'll just redirect and let the editor handle the initial content if we pass it, 
-    // or we can pre-populate the yjs_updates table with the template content.
-    // Since Yjs is binary, we'd need to encode the HTML. 
-    // Simplified: we'll pass the template content via local storage or state if needed.
-    // Better: let's just redirect to editor with a 'from_template' param.
-    
     router.push(`/editor?room=${contract.id}&template=${template.slug}`);
-    toast.success("Contrato forjado com sucesso!", { id: "forge" });
+    toast.success("Contrato gerado com sucesso!", { id: "forge" });
   };
 
   const handleForgeRequest = () => {
@@ -124,7 +116,7 @@ export default function ArsenalPage() {
     }
 
     setIsForaging(true);
-    toast.loading("Invocando arquitetos da forja...", { id: "forge" });
+    toast.loading("Enviando solicitação para nossa equipe...", { id: "forge" });
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -134,10 +126,9 @@ export default function ArsenalPage() {
         return;
       }
 
-      // Inserir na tabela de notificações para rastreamento unificado na Caixa de Entrada
       const { error } = await supabase.from('notifications').insert({
         user_id: user.id,
-        title: `🛠️ Solicitação de Forja: ${forgeMessage.substring(0, 30)}...`,
+        title: `🛠️ Solicitação de Modelo: ${forgeMessage.substring(0, 30)}...`,
         message: forgeMessage,
         type: 'forge',
         read: false
@@ -150,7 +141,7 @@ export default function ArsenalPage() {
       setIsForgeModalOpen(false);
     } catch (err: any) {
       console.error(err);
-      toast.error(err.message || "Erro ao solicitar forja.", { id: "forge" });
+      toast.error(err.message || "Erro ao solicitar modelo.", { id: "forge" });
     } finally {
       setIsForaging(false);
     }
@@ -162,12 +153,12 @@ export default function ArsenalPage() {
       <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-border pb-8">
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2.5 py-1 h-fit flex items-center justify-center leading-none">Modelos Forjados</Badge>
+            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2.5 py-1 h-fit flex items-center justify-center leading-none">Modelos de Documentos</Badge>
             <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase italic">Master Library</span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Arsenal Jurídico</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Biblioteca de Modelos</h1>
           <p className="text-[13px] text-muted-foreground max-w-md leading-relaxed">
-            Acesso imediato a documentos de alta performance, estruturados para proteção total de ativos e operações complexas.
+            Acesso imediato a documentos de alto desempenho, estruturados para conformidade jurídica e proteção de operações complexas.
           </p>
         </div>
 
@@ -176,7 +167,7 @@ export default function ArsenalPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={14} />
             <input 
               type="text" 
-              placeholder="Pesquisar no arsenal..." 
+              placeholder="Pesquisar modelos..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-muted border border-border rounded-lg pl-9 pr-4 py-2 text-[13px] focus:ring-1 focus:ring-primary/30 transition-all outline-none"
@@ -222,7 +213,7 @@ export default function ArsenalPage() {
             <div key={i} className="h-64 bg-muted rounded-xl animate-pulse" />
           ))
         ) : filteredTemplates.length === 0 ? (
-          <div className="col-span-full py-20 text-center text-muted-foreground uppercase font-black text-xs tracking-[0.2em]">Nenhum modelo encontrado no setor.</div>
+          <div className="col-span-full py-20 text-center text-muted-foreground uppercase font-black text-xs tracking-[0.2em]">Nenhum modelo encontrado nesta categoria.</div>
         ) : (
           filteredTemplates.map((tpl, i) => (
             <Card key={tpl.id} className="bg-card border-border rounded-xl overflow-hidden group hover:border-primary/30 transition-all duration-300 flex flex-col h-full relative">
@@ -249,13 +240,13 @@ export default function ArsenalPage() {
                     onClick={() => setPreviewTemplate(tpl)}
                     className="flex-1 h-9 rounded-lg text-[11px] font-bold text-muted-foreground hover:bg-muted transition-all"
                   >
-                    Previsualizar
+                    Visualizar
                   </Button>
                   <Button 
                     onClick={() => handleUseTemplate(tpl)}
                     className="flex-1 h-9 rounded-lg bg-primary text-primary-foreground hover:opacity-90 text-[11px] font-bold" 
                   >
-                    Usar Agora <ArrowRight size={12} className="ml-1.5" />
+                    Utilizar Modelo <ArrowRight size={12} className="ml-1.5" />
                   </Button>
                 </div>
               </CardContent>
@@ -272,32 +263,32 @@ export default function ArsenalPage() {
           <div className="space-y-6 max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary">
               <ShieldCheck size={14} />
-              <span className="text-[10px] font-black uppercase tracking-widest">Protocolo de Forja Customizada</span>
+              <span className="text-[10px] font-black uppercase tracking-widest">Serviço de Elaboração Customizada</span>
             </div>
             
             <div className="space-y-3">
-              <h2 className="text-3xl font-bold tracking-tight text-foreground italic uppercase">Precisa de um Documento sob Medida?</h2>
+              <h2 className="text-3xl font-bold tracking-tight text-foreground uppercase">Precisa de um Documento sob Medida?</h2>
               <p className="text-[14px] text-muted-foreground leading-relaxed max-w-xl">
-                Nossos arquitetos jurídicos estão prontos para forjar modelos exclusivos para sua operação. 
-                Documentos blindados, otimizados para sua jurisdição e focados em controle absoluto. 
+                Nossos especialistas estão prontos para elaborar modelos exclusivos para sua operação. 
+                Documentos seguros, otimizados para sua necessidade e focados em conformidade total. 
                 <span className="text-foreground block mt-2 font-medium">Entrega em menos de 24 horas.</span>
               </p>
             </div>
 
             <div className="flex items-center gap-6 pt-4 border-t border-border">
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-foreground italic uppercase">24h</span>
+                <span className="text-xl font-bold text-foreground uppercase">24h</span>
                 <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Prazo Máximo</span>
               </div>
               <div className="h-8 w-[1px] bg-border" />
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-foreground italic uppercase">100%</span>
-                <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Garantia de Blindagem</span>
+                <span className="text-xl font-bold text-foreground uppercase">100%</span>
+                <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Conformidade Legal</span>
               </div>
               <div className="h-8 w-[1px] bg-border" />
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-foreground italic uppercase">+500</span>
-                <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Modelos Forjados</span>
+                <span className="text-xl font-bold text-foreground uppercase">+500</span>
+                <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Modelos Elaborados</span>
               </div>
             </div>
           </div>
@@ -308,7 +299,7 @@ export default function ArsenalPage() {
               onClick={handleForgeRequest}
               size="lg" className="w-full lg:w-auto h-14 bg-foreground text-background hover:opacity-90 font-bold px-10 rounded-xl transition-all active:scale-[0.98] flex items-center gap-2 group"
             >
-              {isForaging ? "Enviando..." : "Solicitar Forja Customizada"}
+              {isForaging ? "Enviando..." : "Solicitar Modelo Customizado"}
               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -322,7 +313,7 @@ export default function ArsenalPage() {
               <DialogHeader>
                 <div className="flex items-center gap-3 mb-2">
                   <Badge variant="outline" className="text-[10px] uppercase font-bold border-primary/30 text-primary bg-primary/5 h-fit py-1 flex items-center justify-center leading-none">{previewTemplate?.category}</Badge>
-                  <span className="text-[10px] text-muted-foreground font-mono uppercase">Estrutura de Elite</span>
+                  <span className="text-[10px] text-muted-foreground font-mono uppercase">Estrutura Profissional</span>
                 </div>
                 <DialogTitle className="text-2xl font-bold tracking-tight text-foreground">{previewTemplate?.title}</DialogTitle>
                 <DialogDescription className="text-muted-foreground text-sm">{previewTemplate?.description}</DialogDescription>
@@ -332,12 +323,12 @@ export default function ArsenalPage() {
             <ScrollArea className="flex-1 p-8">
               <div 
                 className="prose prose-zinc dark:prose-invert max-w-none prose-sm font-sans"
-                dangerouslySetInnerHTML={{ __html: previewTemplate?.content || "<p className='italic opacity-40 uppercase font-black text-[10px] tracking-widest text-center py-20'>Nenhum dado neural detectado...</p>" }}
+                dangerouslySetInnerHTML={{ __html: previewTemplate?.content || "<p className='italic opacity-40 uppercase font-black text-[10px] tracking-widest text-center py-20'>Nenhum dado detectado...</p>" }}
               />
             </ScrollArea>
 
             <div className="p-6 border-t border-border bg-muted/30 flex justify-center gap-3">
-              <Button variant="ghost" onClick={() => setPreviewTemplate(null)} className="h-10 px-6 font-bold text-[10px] uppercase text-muted-foreground hover:text-foreground transition-colors">Fechar Análise</Button>
+              <Button variant="ghost" onClick={() => setPreviewTemplate(null)} className="h-10 px-6 font-bold text-[10px] uppercase text-muted-foreground hover:text-foreground transition-colors">Fechar Visualização</Button>
               <Button 
                 onClick={() => {
                   const tpl = previewTemplate;
@@ -346,32 +337,32 @@ export default function ArsenalPage() {
                 }}
                 className="h-10 px-6 bg-primary text-primary-foreground font-bold rounded-lg text-[10px] uppercase hover:opacity-90 transition-all"
               >
-                Forjar Este Modelo
+                Gerar com este Modelo
               </Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Modal de Forja Customizada */}
+      {/* Modal de Solicitação Customizada */}
       <Dialog open={isForgeModalOpen} onOpenChange={setIsForgeModalOpen}>
         <DialogContent className="max-w-md bg-card/95 border border-border backdrop-blur-md rounded-2xl shadow-2xl p-6">
           <DialogHeader className="space-y-1.5 border-b border-border pb-4 mb-4">
-            <DialogTitle className="text-lg font-black tracking-wide text-foreground uppercase italic flex items-center gap-2">
-              <Zap size={18} className="text-primary" /> Solicitar Forja sob Medida
+            <DialogTitle className="text-lg font-black tracking-wide text-foreground uppercase flex items-center gap-2">
+              <Zap size={18} className="text-primary" /> Solicitar Modelo sob Medida
             </DialogTitle>
             <DialogDescription className="text-[11px] text-muted-foreground font-medium leading-relaxed">
-              Descreva detalhadamente o modelo de documento jurídico que você precisa. Nossos arquitetos vão estruturá-lo de forma blindada e disponibilizá-lo em seu arsenal.
+              Descreva detalhadamente o modelo de documento jurídico que você precisa. Nossos especialistas vão estruturá-lo de forma segura e disponibilizá-lo em sua biblioteca.
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleForgeSubmit} className="space-y-4">
             <div className="space-y-2 text-left">
               <label className="text-[10px] font-black text-muted-foreground/80 block">
-                O Que Você Deseja Forjar?
+                O Que Você Deseja Solicitar?
               </label>
               <textarea 
-                placeholder="Ex: Contrato de Prestação de Serviços de TI com cláusula de proteção de PI pesada e multa de rescisão abusiva..."
+                placeholder="Ex: Contrato de Prestação de Serviços com foco em proteção de propriedade intelectual e regras de rescisão claras..."
                 value={forgeMessage}
                 onChange={(e) => setForgeMessage(e.target.value)}
                 rows={5}
@@ -394,7 +385,7 @@ export default function ArsenalPage() {
                 disabled={isForaging}
                 className="h-10 px-5 rounded-xl text-xs font-black uppercase tracking-wider bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
               >
-                {isForaging ? "Convocando..." : "Solicitar Forja"}
+                {isForaging ? "Enviando..." : "Solicitar Modelo"}
               </Button>
             </div>
           </form>
@@ -403,4 +394,3 @@ export default function ArsenalPage() {
     </div>
   );
 }
-

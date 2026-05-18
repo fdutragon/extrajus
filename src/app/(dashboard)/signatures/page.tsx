@@ -16,27 +16,26 @@ import {
   KeyRound,
   AlertCircle,
   Check,
-  Eye
+  Eye,
+  Download
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import jsPDF from "jspdf";
 
-export default function PactsPage() {
-  const [pendingPacts, setPendingPacts] = useState<any[]>([]);
-  const [sentPacts, setSentPacts] = useState<any[]>([]);
+export default function SignaturesPage() {
+  const [pendingDocs, setPendingDocs] = useState<any[]>([]);
+  const [sentDocs, setSentDocs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sealingCode, setSealingCode] = useState("");
-  const [selectedPact, setSelectedPact] = useState<any | null>(null);
-  const [isSealing, setIsSealing] = useState(false);
+  const [selectedDoc, setSelectedDoc] = useState<any | null>(null);
   const [activeView, setActiveView] = useState<"received" | "sent">("received");
   const supabase = createClient();
 
   useEffect(() => {
-    fetchPacts();
+    fetchSignatures();
   }, []);
 
-  async function fetchPacts() {
+  async function fetchSignatures() {
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -44,307 +43,244 @@ export default function PactsPage() {
 
       const userEmailLower = user.email?.toLowerCase().trim() || "";
 
-      // 1. Buscar todas as assinaturas associadas ao usuário via Left Join seguro
       const { data: allSignatures, error } = await supabase
         .from('signatures')
         .select('*, contracts(id, title, user_id)');
 
       if (error) throw error;
 
-      // 2. Separar Pactos Recebidos vs Enviados de forma eficiente
       const received = (allSignatures || [])?.filter((sig: any) => 
         sig.signers?.some((s: any) => s.email?.toLowerCase().trim() === userEmailLower)
       ).map(sig => ({
         ...sig,
-        contracts: sig.contracts || { title: "Contrato sem Título" }
+        contracts: sig.contracts || { title: "Documento sem Título" }
       })) || [];
 
       const sent = (allSignatures || [])?.filter((sig: any) => 
         sig.contracts?.user_id === user.id
       ).map(sig => ({
         ...sig,
-        contracts: sig.contracts || { title: "Contrato sem Título" }
+        contracts: sig.contracts || { title: "Documento sem Título" }
       })) || [];
 
-      // Exibir os pactos na tela IMEDIATAMENTE sem travar o loading
-      setPendingPacts(received);
-      setSentPacts(sent);
+      setPendingDocs(received);
+      setSentDocs(sent);
       setLoading(false);
 
     } catch (error: any) {
-      console.error("Pacts Fetch Error:", error);
-      toast.error("Falha ao invocar pactos.");
+      console.error("Signatures Fetch Error:", error);
+      toast.error("Falha ao carregar assinaturas.");
       setLoading(false);
     }
   }
 
-  const handleSealPact = async () => {
-    if (!selectedPact || !sealingCode) return;
-    setIsSealing(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Usuário não autenticado.");
-
-      const response = await fetch("/api/sign/confirm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          contractId: selectedPact.contract_id, 
-          sealingCode,
-          email: user.email
-        })
-      });
-
-      const result = await response.json();
-      if (result.error) throw new Error(result.error);
-
-      toast.success("Pacto selado com sucesso.");
-      setSelectedPact(null);
-      setSealingCode("");
-      fetchPacts(); // Refresh list
-    } catch (error: any) {
-      toast.error(error.message);
-    } finally {
-      setIsSealing(false);
-    }
-  };  const handleDownloadCertificate = (pact: any) => {
-    if (!pact) return;
+  const handleDownloadCertificate = (doc: any) => {
+    if (!doc) return;
     
     try {
       const pdf = new jsPDF("p", "mm", "a4");
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       
-      // Draw Dark Luxury Background
-      pdf.setFillColor(9, 9, 11); // deep charcoal background
+      // Professional Clean Background
+      pdf.setFillColor(255, 255, 255);
       pdf.rect(0, 0, pageWidth, pageHeight, "F");
       
-      // Watermark Faint Concentric Security Circles
-      pdf.setDrawColor(20, 20, 25);
-      pdf.setLineWidth(0.2);
-      pdf.circle(pageWidth / 2, pageHeight / 2, 90, "S");
-      pdf.circle(pageWidth / 2, pageHeight / 2, 70, "S");
-      pdf.circle(pageWidth / 2, pageHeight / 2, 50, "S");
-
-      // Draw Elegant Golden/Neon Border
-      pdf.setDrawColor(192, 255, 0); // Lilith Neon Green (#c0ff00)
-      pdf.setLineWidth(1.2);
+      // Elegant Border
+      pdf.setDrawColor(220, 220, 230);
+      pdf.setLineWidth(0.1);
       pdf.rect(10, 10, pageWidth - 20, pageHeight - 20);
-      
-      pdf.setDrawColor(39, 39, 42); // Zinc 800
-      pdf.setLineWidth(0.5);
-      pdf.rect(12, 12, pageWidth - 24, pageHeight - 24);
 
-      // Drafting Crop Marks at corners
-      pdf.setDrawColor(192, 255, 0);
-      pdf.setLineWidth(0.6);
-      pdf.line(8, 12, 8, 8);
-      pdf.line(8, 8, 12, 8);
-      pdf.line(pageWidth - 8, 12, pageWidth - 8, 8);
-      pdf.line(pageWidth - 8, 8, pageWidth - 12, 8);
-      pdf.line(8, pageHeight - 12, 8, pageHeight - 8);
-      pdf.line(8, pageHeight - 8, 12, pageHeight - 8);
-      pdf.line(pageWidth - 8, pageHeight - 12, pageWidth - 8, pageHeight - 8);
-      pdf.line(pageWidth - 8, pageHeight - 8, pageWidth - 12, pageHeight - 8);
-      
       // Header
-      pdf.setTextColor(192, 255, 0);
+      pdf.setTextColor(20, 20, 30);
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(18);
-      pdf.text("CERTIFICADO DE SOBERANIA JURÍDICA", pageWidth / 2, 33, { align: "center" });
+      pdf.text("CERTIFICADO DE AUTENTICIDADE DIGITAL", pageWidth / 2, 35, { align: "center" });
       
-      pdf.setTextColor(161, 161, 170); // Zinc 400
-      pdf.setFont("courier", "bold");
-      pdf.setFontSize(7.5);
-      pdf.text("INFRAESTRUTURA DE AUTENTICAÇÃO NEURAL & BLINDAGEM DE ATIVOS LILITH S/A", pageWidth / 2, 39, { align: "center" });
+      pdf.setTextColor(100, 100, 110);
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(8);
+      pdf.text("PROTOCOLO DE SEGURANÇA E REGISTRO DIGITAL EXTRAJUS S/A", pageWidth / 2, 41, { align: "center" });
       
       // Divider
-      pdf.setDrawColor(192, 255, 0);
+      pdf.setDrawColor(72, 187, 120); // Professional Green (matching primary)
       pdf.setLineWidth(0.5);
-      pdf.line(35, 48, pageWidth - 35, 48);
+      pdf.line(40, 50, pageWidth - 40, 50);
       
-      // Pact Title
-      pdf.setTextColor(255, 255, 255);
+      // Document Title
+      pdf.setTextColor(0, 0, 0);
       pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(15);
-      const title = pact.contracts?.title?.toUpperCase() || "PACTO SOBERANO";
-      pdf.text(title, pageWidth / 2, 63, { align: "center" });
+      pdf.setFontSize(14);
+      const title = doc.contracts?.title?.toUpperCase() || "DOCUMENTO DIGITAL";
+      pdf.text(title, pageWidth / 2, 65, { align: "center" });
       
-      pdf.setTextColor(113, 113, 122); // Zinc 500
-      pdf.setFont("courier", "bold");
+      pdf.setTextColor(120, 120, 130);
+      pdf.setFont("courier", "normal");
       pdf.setFontSize(8);
-      pdf.text(`ID CONTRATO: ${pact.contract_id}`, pageWidth / 2, 70, { align: "center" });
+      pdf.text(`ID DO DOCUMENTO: ${doc.contract_id}`, pageWidth / 2, 72, { align: "center" });
       
       // Legal Declaration block
-      pdf.setFillColor(15, 15, 18);
-      pdf.rect(20, 77, pageWidth - 40, 42, "F");
-      pdf.setDrawColor(39, 39, 42);
-      pdf.rect(20, 77, pageWidth - 40, 42, "S");
+      pdf.setFillColor(245, 247, 250);
+      pdf.rect(20, 80, pageWidth - 40, 40, "F");
+      pdf.setDrawColor(230, 232, 235);
+      pdf.rect(20, 80, pageWidth - 40, 40, "S");
       
       // Left border accent
-      pdf.setFillColor(192, 255, 0);
-      pdf.rect(20, 77, 2.5, 42, "F");
+      pdf.setFillColor(72, 187, 120); // Primary Green
+      pdf.rect(20, 80, 2, 40, "F");
       
-      pdf.setTextColor(228, 228, 231); // Zinc 200
-      pdf.setFontSize(8.5);
-      pdf.setFont("helvetica", "oblique");
-      const declaration = "Certificamos para todos os fins de direito e autoridade que o presente instrumento jurídico-digital foi analisado, chancelado e selado sob a égide da rede criptográfica Lilith. A integridade estrutural, a autoria dos signatários e as evidências digitais de consentimento foram consolidadas de forma irrevogável.";
+      pdf.setTextColor(60, 60, 70);
+      pdf.setFontSize(9);
+      pdf.setFont("helvetica", "normal");
+      const declaration = "Certificamos que o presente instrumento jurídico-digital foi analisado, validado e assinado eletronicamente através da plataforma ExtraJus. A integridade do documento, a identidade dos signatários e as evidências digitais de consentimento foram registradas e vinculadas de forma permanente e imutável ao protocolo abaixo descrito.";
       const splitDeclaration = pdf.splitTextToSize(declaration, pageWidth - 55);
-      pdf.text(splitDeclaration, 27, 86);
+      pdf.text(splitDeclaration, 28, 90);
       
       // Protocol / Hash Section
-      const signedAt = pact.manifesto?.signed_at 
-        ? new Date(pact.manifesto.signed_at).toLocaleString("pt-BR") 
+      const signedAt = doc.manifesto?.signed_at 
+        ? new Date(doc.manifesto.signed_at).toLocaleString("pt-BR") 
         : new Date().toLocaleString("pt-BR");
       const fakeHash = Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join("");
       
-      pdf.setTextColor(192, 255, 0);
+      pdf.setTextColor(72, 187, 120);
       pdf.setFont("courier", "bold");
-      pdf.setFontSize(8.5);
-      pdf.text(`PROTOCOLO RITUAL  : ${pact.protocolo}`, 20, 133);
+      pdf.setFontSize(8);
+      pdf.text(`PROTOCOLO DIGITAL : ${doc.protocolo}`, 20, 135);
       
-      pdf.setTextColor(255, 255, 255);
-      pdf.text(`CHANCELA DIGITAL  : ${signedAt.toUpperCase()}`, 20, 139);
+      pdf.setTextColor(30, 30, 40);
+      pdf.text(`DATA DA CHANCELA : ${signedAt.toUpperCase()}`, 20, 141);
       
-      pdf.setTextColor(113, 113, 122);
-      pdf.text(`HASH INTEGRIDADE  : SHA-256//${fakeHash.toUpperCase().slice(0, 32)}`, 20, 145);
-      pdf.text(`                  ${fakeHash.toUpperCase().slice(32)}`, 20, 150);
+      pdf.setTextColor(110, 110, 120);
+      pdf.text(`HASH DE INTEGRIDADE: SHA-256//${fakeHash.toUpperCase().slice(0, 32)}`, 20, 147);
+      pdf.text(`                    ${fakeHash.toUpperCase().slice(32)}`, 20, 152);
       
-      // concentric Authority Seal
-      pdf.setDrawColor(192, 255, 0); // Lilith Neon Green
-      pdf.setLineWidth(0.6);
-      pdf.circle(pageWidth - 36, 141, 13, "S"); // Outer Circle
-      pdf.setDrawColor(39, 39, 42);
-      pdf.circle(pageWidth - 36, 141, 11, "S"); // Inner Circle
+      // Security Seal Circle
+      pdf.setDrawColor(72, 187, 120);
+      pdf.setLineWidth(0.4);
+      pdf.circle(pageWidth - 35, 143, 12, "S");
       
-      pdf.setTextColor(192, 255, 0);
-      pdf.setFont("courier", "bold");
-      pdf.setFontSize(6.5);
-      pdf.text("LILITH", pageWidth - 36, 141.5, { align: "center" });
-      pdf.setFontSize(4.5);
-      pdf.text("SECURE SEAL", pageWidth - 36, 144.5, { align: "center" });
+      pdf.setTextColor(72, 187, 120);
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(7);
+      pdf.text("EXTRAJUS", pageWidth - 35, 142, { align: "center" });
+      pdf.setFontSize(5);
+      pdf.text("SECURE SIGN", pageWidth - 35, 145, { align: "center" });
       
-      // Signatures
-      pdf.setTextColor(192, 255, 0);
+      // Signatures Title
+      pdf.setTextColor(0, 0, 0);
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(11);
-      pdf.text("SIGNATÁRIOS & CHANCELAS DE CONSENTIMENTO", 20, 168);
+      pdf.text("SIGNATÁRIOS E REGISTROS DE CONSENTIMENTO", 20, 170);
       
-      let yPos = 178;
-      const evidence = pact.manifesto?.evidence || {};
+      let yPos = 180;
+      const evidence = doc.manifesto?.evidence || {};
       
-      pact.signers?.forEach((s: any, idx: number) => {
-        // Draw card background for signer
-        pdf.setFillColor(15, 15, 18);
-        pdf.rect(20, yPos - 5, pageWidth - 40, 23, "F");
-        pdf.setDrawColor(30, 30, 35);
-        pdf.setLineWidth(0.4);
-        pdf.rect(20, yPos - 5, pageWidth - 40, 23, "S");
+      doc.signers?.forEach((s: any) => {
+        if (yPos > 260) {
+          pdf.addPage();
+          yPos = 30;
+        }
+
+        pdf.setFillColor(250, 251, 252);
+        pdf.rect(20, yPos - 5, pageWidth - 40, 22, "F");
+        pdf.setDrawColor(240, 242, 245);
+        pdf.rect(20, yPos - 5, pageWidth - 40, 22, "S");
         
-        // Add left neon indicator
-        pdf.setFillColor(192, 255, 0);
-        pdf.rect(20, yPos - 5, 2, 23, "F");
+        pdf.setFillColor(72, 187, 120);
+        pdf.rect(20, yPos - 5, 1.5, 22, "F");
         
-        pdf.setTextColor(255, 255, 255);
+        pdf.setTextColor(20, 20, 30);
         pdf.setFont("helvetica", "bold");
         pdf.setFontSize(9);
         pdf.text(s.name.toUpperCase(), 25, yPos + 1);
         
-        pdf.setTextColor(161, 161, 170);
+        pdf.setTextColor(100, 100, 110);
         pdf.setFont("helvetica", "normal");
         pdf.setFontSize(8);
-        pdf.text(`Email: ${s.email}`, 25, yPos + 6);
+        pdf.text(`E-mail: ${s.email}`, 25, yPos + 6);
         
-        // Match email with trimming to handle any whitespace mismatches
         const isEvidenceHolder = evidence.authorized_email?.toLowerCase().trim() === s.email?.toLowerCase().trim();
-        let ip = isEvidenceHolder ? (evidence.ip_address || "127.0.0.1") : "127.0.0.1 (Secured Node)";
-        if (ip === "::1") {
-          ip = "127.0.0.1 (Local Loopback)";
-        }
-        const ua = isEvidenceHolder ? (evidence.user_agent?.slice(0, 55) + "...") : "Secure Client Access Client v2.4";
+        let ip = isEvidenceHolder ? (evidence.ip_address || "REGISTRADO") : "PROTEGIDO";
+        if (ip === "::1") ip = "127.0.0.1 (Local)";
+        const ua = isEvidenceHolder ? (evidence.user_agent?.slice(0, 55) + "...") : "ExtraJus Secure Agent";
         
-        pdf.setTextColor(113, 113, 122);
-        pdf.setFont("courier", "bold");
+        pdf.setTextColor(130, 130, 140);
+        pdf.setFont("courier", "normal");
         pdf.setFontSize(7);
-        pdf.text(`IP NODE: ${ip} | AGENT: ${ua.toUpperCase()}`, 25, yPos + 12);
+        pdf.text(`IP ORIGEM: ${ip} | AGENTE: ${ua.toUpperCase()}`, 25, yPos + 12);
         
-        yPos += 27;
+        yPos += 26;
       });
       
-      // Footer / Authority
-      pdf.setTextColor(113, 113, 122);
-      pdf.setFontSize(8);
-      pdf.setFont("helvetica", "bold");
-      pdf.text("CONTRATO SELADO INTEGRALMENTE - SEM NECESSIDADE DE ASSINATURA FÍSICA", pageWidth / 2, pageHeight - 25, { align: "center" });
-      
-      pdf.setTextColor(192, 255, 0);
-      pdf.setFont("helvetica", "normal");
+      // Footer
+      pdf.setTextColor(150, 150, 160);
       pdf.setFontSize(7);
-      pdf.text("VALIDADO PELA AUTORIDADE DE REGISTRO E CERTIFICAÇÃO NEURAL EXTRAJUS S/A", pageWidth / 2, pageHeight - 20, { align: "center" });
+      pdf.setFont("helvetica", "normal");
+      pdf.text("ESTE DOCUMENTO FOI ASSINADO ELETRONICAMENTE NOS TERMOS DA LEGISLAÇÃO VIGENTE.", pageWidth / 2, pageHeight - 20, { align: "center" });
+      pdf.text("VALIDADO PELA AUTORIDADE DE REGISTRO DIGITAL EXTRAJUS S/A", pageWidth / 2, pageHeight - 16, { align: "center" });
       
-      // Save PDF
-      pdf.save(`certificado-soberania-${pact.protocolo}.pdf`);
-      toast.success("Certificado de Soberania baixado com sucesso!");
+      pdf.save(`certificado-assinatura-${doc.protocolo}.pdf`);
+      toast.success("Certificado baixado com sucesso!");
     } catch (err: any) {
       console.error("PDF generation failure:", err);
       toast.error("Falha ao gerar o certificado.");
     }
   };
 
-  if (loading) return <div className="p-20 text-center animate-pulse text-xs font-black uppercase tracking-widest text-muted-foreground">Invocando Pactos...</div>
+  if (loading) return <div className="p-20 text-center animate-pulse text-xs font-black uppercase tracking-widest text-muted-foreground">Carregando Assinaturas...</div>
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700 pb-20">
       <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-border pb-8">
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2 py-0">Ritual</Badge>
-            <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase italic">Sovereign Pacts Management</span>
+            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2 py-0">Assinaturas</Badge>
+            <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase italic">Electronic Signature Management</span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground italic uppercase">Arsenal de Pactos</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">Gestão de Documentos</h1>
           <p className="text-[13px] text-muted-foreground max-w-md leading-relaxed">
-            Gerencie convocações e sele documentos soberanos. Monitore o progresso do ritual em tempo real.
+            Gerencie e assine documentos eletronicamente com validade jurídica. Acompanhe o status das coletas de assinatura em tempo real.
           </p>
         </div>
         
         <div className="bg-muted p-1 rounded-xl border border-border flex gap-1">
           <button
-            onClick={() => { setActiveView("received"); setSelectedPact(null); }}
+            onClick={() => { setActiveView("received"); setSelectedDoc(null); }}
             className={cn(
               "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2",
               activeView === "received" ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-background"
             )}
           >
-            <Zap size={12} /> Para Selar ({pendingPacts.length})
+            <Zap size={12} /> Para Assinar ({pendingDocs.length})
           </button>
           <button
-            onClick={() => { setActiveView("sent"); setSelectedPact(null); }}
+            onClick={() => { setActiveView("sent"); setSelectedDoc(null); }}
             className={cn(
               "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2",
               activeView === "sent" ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:bg-background"
             )}
           >
-            <History size={12} /> Enviados ({sentPacts.length})
+            <History size={12} /> Enviados ({sentDocs.length})
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-2 space-y-4">
-           {(activeView === "received" ? pendingPacts : sentPacts).length === 0 ? (
+           {(activeView === "received" ? pendingDocs : sentDocs).length === 0 ? (
              <Card className="p-12 text-center border-dashed bg-muted/20">
                 <ShieldCheck size={48} className="mx-auto text-muted-foreground/20 mb-4" />
-                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Nenhum pacto {activeView === "received" ? "recebido" : "enviado"} no seu radar.</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Nenhum documento {activeView === "received" ? "recebido" : "enviado"} no momento.</p>
              </Card>
            ) : (
-             (activeView === "received" ? pendingPacts : sentPacts).map((pact) => (
+             (activeView === "received" ? pendingDocs : sentDocs).map((doc) => (
                <Card 
-                 key={pact.contract_id} 
+                 key={doc.contract_id} 
                  className={cn(
                    "p-6 cursor-pointer transition-all border-border hover:border-primary/30 group relative overflow-hidden",
-                   selectedPact?.contract_id === pact.contract_id && "border-primary bg-primary/5 ring-1 ring-primary/20"
+                   selectedDoc?.contract_id === doc.contract_id && "border-primary bg-primary/5 ring-1 ring-primary/20"
                  )}
-                 onClick={() => setSelectedPact(pact)}
+                 onClick={() => setSelectedDoc(doc)}
                >
                   <div className="flex items-center justify-between">
                      <div className="flex items-center gap-4">
@@ -352,18 +288,18 @@ export default function PactsPage() {
                            <FileText size={20} />
                         </div>
                         <div>
-                           <h3 className="text-sm font-black uppercase tracking-tight text-foreground">{pact.contracts.title || "Contrato Sem Nome"}</h3>
+                           <h3 className="text-sm font-black uppercase tracking-tight text-foreground">{doc.contracts.title || "Documento Sem Nome"}</h3>
                            <div className="flex items-center gap-2 mt-1">
-                              {pact.status === 'analyzing' ? (
-                                <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-[8px] font-black uppercase tracking-widest px-1.5 h-4">Analisando</Badge>
-                              ) : pact.status === 'signed' ? (
-                                <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[8px] font-black uppercase tracking-widest px-1.5 h-4">Selado</Badge>
-                              ) : pact.status === 'partially_signed' ? (
+                              {doc.status === 'analyzing' ? (
+                                <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-[8px] font-black uppercase tracking-widest px-1.5 h-4">Em Análise</Badge>
+                              ) : doc.status === 'signed' ? (
+                                <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[8px] font-black uppercase tracking-widest px-1.5 h-4">Assinado</Badge>
+                              ) : doc.status === 'partially_signed' ? (
                                 <Badge className="bg-blue-500/10 text-blue-500 border-blue-500/20 text-[8px] font-black uppercase tracking-widest px-1.5 h-4">Parcial</Badge>
                               ) : (
                                 <Badge className="bg-primary/10 text-primary border-primary/20 text-[8px] font-black uppercase tracking-widest px-1.5 h-4">Pendente</Badge>
                               )}
-                              <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest opacity-50">• Ritual Digital</span>
+                              <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest opacity-50">• Coleta Digital</span>
                            </div>
                         </div>
                      </div>
@@ -372,7 +308,7 @@ export default function PactsPage() {
                            {activeView === "sent" ? "Destinatários" : "Remetente"}
                         </p>
                         <div className="flex -space-x-2 justify-end">
-                           {pact.signers.slice(0, 3).map((s: any, i: number) => (
+                           {doc.signers.slice(0, 3).map((s: any, i: number) => (
                              <div key={i} className="w-6 h-6 rounded-full bg-muted border-2 border-background flex items-center justify-center text-[8px] font-black text-primary uppercase" title={s.email}>
                                 {s.name[0]}
                              </div>
@@ -386,34 +322,34 @@ export default function PactsPage() {
         </div>
 
         <div className="space-y-6">
-           {selectedPact ? (
+           {selectedDoc ? (
              <div className="space-y-6 animate-in slide-in-from-right-4 duration-500">
-               {activeView === "received" && selectedPact.status !== 'signed' ? (
+               {activeView === "received" && selectedDoc.status !== 'signed' ? (
                  <Card className="p-8 border-primary/20 bg-primary/[0.02] sticky top-6">
                     <div className="space-y-6">
                        <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
                              <KeyRound size={16} />
                           </div>
-                          <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Ritual de Selamento</h4>
+                          <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Assinatura Pendente</h4>
                        </div>
                        
                        <p className="text-xs text-muted-foreground leading-relaxed italic">
-                          "Para selar este pacto soberano, clique no botão abaixo para abrir o documento em modo de visualização segura e realizar a selagem do ritual."
+                          Para assinar este documento, clique no botão abaixo para abrir a visualização segura e confirmar seu consentimento digital.
                        </p>
 
                        <Link 
-                          href={`/editor?room=${selectedPact.contract_id}&mode=preview`}
+                          href={`/editor?room=${selectedDoc.contract_id}&mode=preview`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="w-full h-14 bg-primary text-primary-foreground flex items-center justify-center font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95"
                        >
-                          Confirmar Selamento
+                          Assinar Documento
                        </Link>
 
                        <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
                           <AlertCircle size={14} className="text-amber-500 shrink-0" />
-                          <p className="text-[9px] text-amber-500 font-bold leading-tight uppercase">Ação Irreversível: O selamento gera evidências digitais definitivas.</p>
+                          <p className="text-[9px] text-amber-500 font-bold leading-tight uppercase">A assinatura gera um registro de validade jurídica definitiva.</p>
                        </div>
                     </div>
                  </Card>
@@ -424,33 +360,33 @@ export default function PactsPage() {
                           <div className="w-8 h-8 rounded-lg bg-muted text-foreground flex items-center justify-center border border-border">
                              <ShieldCheck size={16} />
                           </div>
-                          <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Manifesto Digital</h4>
+                          <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Registro de Assinatura</h4>
                        </div>
 
                        <div className="space-y-4">
                           <div className="space-y-1">
-                             <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Status do Ritual</span>
+                             <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Status da Coleta</span>
                              <p className="text-xs font-bold text-foreground flex items-center gap-2">
-                                {selectedPact.status === 'signed' ? <Check className="text-emerald-500" size={14} /> : <Zap className="text-primary" size={14} />}
-                                {selectedPact.status === 'signed' ? 'Pacto Integralmente Selado' : selectedPact.status === 'partially_signed' ? 'Pacto Parcialmente Selado' : 'Aguardando Signatários'}
+                                {selectedDoc.status === 'signed' ? <Check className="text-emerald-500" size={14} /> : <Zap className="text-primary" size={14} />}
+                                {selectedDoc.status === 'signed' ? 'Totalmente Assinado' : selectedDoc.status === 'partially_signed' ? 'Assinatura Parcial' : 'Aguardando Signatários'}
                              </p>
                           </div>
 
                           <div className="space-y-1">
-                             <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Código Ritual de Acesso</span>
-                             <p className="text-sm font-mono font-black text-primary tracking-widest">{selectedPact.protocolo}</p>
+                             <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Protocolo de Registro</span>
+                             <p className="text-sm font-mono font-black text-primary tracking-widest">{selectedDoc.protocolo}</p>
                           </div>
 
                           <div className="pt-4 border-t border-border space-y-3">
-                             <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Signatários do Pacto</span>
-                             {selectedPact.signers.map((s: any, i: number) => (
+                             <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Signatários</span>
+                             {selectedDoc.signers.map((s: any, i: number) => (
                                <div key={i} className="flex items-center justify-between p-2 rounded-xl bg-muted/30 border border-border/50">
                                   <div className="flex flex-col">
                                      <span className="text-[10px] font-bold text-foreground">{s.name}</span>
                                      <span className="text-[8px] text-muted-foreground font-mono">{s.email}</span>
                                   </div>
                                   {s.signed ? (
-                                     <Badge className="h-5 text-[7px] font-black uppercase px-2 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded">Selou</Badge>
+                                     <Badge className="h-5 text-[7px] font-black uppercase px-2 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded">Assinou</Badge>
                                   ) : (
                                      <Badge className="h-5 text-[7px] font-black uppercase px-2 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded">Pendente</Badge>
                                   )}
@@ -459,7 +395,7 @@ export default function PactsPage() {
 
                               <div className="pt-2 space-y-2">
                                  <Link 
-                                    href={`/editor?room=${selectedPact.contract_id}&mode=preview`}
+                                    href={`/editor?room=${selectedDoc.contract_id}&mode=preview`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="w-full flex items-center justify-center gap-2 h-12 bg-primary text-primary-foreground font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-primary/10 transition-all active:scale-95 text-[10px]"
@@ -467,12 +403,12 @@ export default function PactsPage() {
                                     <Eye size={12} /> Visualizar Documento
                                  </Link>
 
-                                 {selectedPact.status === 'signed' && (
+                                 {selectedDoc.status === 'signed' && (
                                    <Button 
-                                      onClick={() => handleDownloadCertificate(selectedPact)}
+                                      onClick={() => handleDownloadCertificate(selectedDoc)}
                                       className="w-full h-12 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-primary/20 text-primary bg-primary/5 hover:bg-primary/10 transition-all active:scale-95 flex items-center justify-center gap-2"
                                    >
-                                      Baixar Certificado
+                                      <Download size={12} /> Baixar Certificado
                                    </Button>
                                  )}
                               </div>
@@ -485,7 +421,7 @@ export default function PactsPage() {
            ) : (
              <div className="p-8 text-center border border-dashed rounded-3xl border-border">
                 <Zap size={24} className="mx-auto text-muted-foreground/20 mb-3" />
-                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Selecione um pacto para ver os detalhes táticos.</p>
+                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Selecione um registro para ver detalhes.</p>
              </div>
            )}
         </div>

@@ -35,12 +35,12 @@ export default async function RegisterPage({
           </div>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">E-mail de Guerra</Label>
-          <Input id="email" name="email" required placeholder="cadelo@imperio.com" type="email" className="h-12 px-4 rounded-2xl border-border bg-background dark:bg-card focus:border-primary transition-all text-base" />
+          <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">E-mail Corporativo</Label>
+          <Input id="email" name="email" required placeholder="seu@email.com" type="email" className="h-12 px-4 rounded-2xl border-border bg-background dark:bg-card focus:border-primary transition-all text-base" />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">Criar Senha Forte</Label>
-          <Input id="password" name="password" required type="password" className="h-12 px-4 rounded-2xl border-border bg-background dark:bg-card focus:border-primary transition-all text-base" />
+          <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">Senha de Acesso</Label>
+          <Input id="password" name="password" required type="password" placeholder="••••••••" className="h-12 px-4 rounded-2xl border-border bg-background dark:bg-card focus:border-primary transition-all text-base" />
         </div>
         <div className="flex items-center space-x-2">
           <Checkbox id="terms" name="terms" required className="border-muted-foreground dark:border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary" />
@@ -48,18 +48,18 @@ export default async function RegisterPage({
             htmlFor="terms"
             className="text-xs font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground"
           >
-            Aceito os <Link href="#" className="text-primary hover:underline">termos de dominação</Link> e privacidade.
+            Aceito os <Link href="#" className="text-primary hover:underline">Termos de Uso</Link> e Política de Privacidade.
           </label>
         </div>
         <Button type="submit" className="w-full bg-primary text-primary-foreground hover:opacity-90 font-black h-12 rounded-2xl transition-all shadow-xl shadow-primary/10">
-          FORJAR MINHA CONTA <UserPlus className="ml-2 h-4 w-4" />
+          CRIAR MINHA CONTA <UserPlus className="ml-2 h-4 w-4" />
         </Button>
       </form>
 
       <p className="text-center text-sm text-muted-foreground dark:text-muted-foreground pt-6">
         Já possui acesso?{" "}
         <Link href="/login" className="text-primary dark:text-primary font-black hover:underline">
-          Acesse o arsenal
+          Acessar Plataforma
         </Link>
       </p>
     </div>

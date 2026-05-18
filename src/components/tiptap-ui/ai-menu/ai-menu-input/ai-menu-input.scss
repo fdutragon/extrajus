@@ -2,7 +2,7 @@
   --tiptap-ai-prompt-input-content-placeholder: var(--muted-foreground);
   --tiptap-ai-prompt-input-bg-color: var(--popover);
   --tiptap-ai-prompt-input-focused-border-color: var(--primary);
-  --tiptap-ai-prompt-input-border-color: var(--border);
+  --tiptap-ai-prompt-input-border-color: color-mix(in srgb, var(--border), var(--foreground) 15%);
 
   [data-active-state="off"] {
     --tiptap-ai-prompt-input-text-color: var(--tt-gray-light-a-400);
@@ -30,7 +30,7 @@
 
 .tiptap-ai-prompt-input {
   background-color: var(--tiptap-ai-prompt-input-bg-color);
-  border: 1px solid var(--tiptap-ai-prompt-input-border-color);
+  border: 1.5px solid var(--tiptap-ai-prompt-input-border-color);
   border-radius: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -38,15 +38,20 @@
   padding: 0.75rem 1.25rem;
   width: 100%;
   backdrop-filter: blur(12px);
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.02);
   transition: all 0.2s ease-in-out;
 
   &[data-focused="true"] {
     border-color: var(--tiptap-ai-prompt-input-focused-border-color);
-    box-shadow: 0 0 0 1px var(--tiptap-ai-prompt-input-focused-border-color);
+    box-shadow: 0 0 0 1.5px var(--tiptap-ai-prompt-input-focused-border-color), 0 12px 30px -10px rgba(0, 0, 0, 0.1);
   }
 
   &:hover {
     border-color: var(--primary);
+  }
+
+  .dark & {
+    box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.02);
   }
 }
 

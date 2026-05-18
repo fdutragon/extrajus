@@ -675,7 +675,10 @@ export default function InboxPage() {
                                      <Send size={12} className={cn(submittingReply && "animate-pulse")} />
                                   </button>
                                </div>
-                                      </div>
+                            </div>
+                         </form>
+                      </div>
+                   </div>
 
                    {isAdminView && (
                       <div className="xl:col-span-1 border-l border-border/40 pl-6 flex flex-col justify-between h-full space-y-5 text-left animate-in fade-in duration-700">
@@ -735,11 +738,6 @@ export default function InboxPage() {
 
                       </div>
                    )}
-
-                </div>    </div>
-                      </div>
-
-                   </div>
 
                 </div>
              ) : (
