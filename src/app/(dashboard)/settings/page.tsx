@@ -294,7 +294,7 @@ export default function SettingsPage() {
                     <Button 
                       disabled={isSaving}
                       onClick={handleSave}
-                      className="bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest rounded-xl px-10 h-14 text-xs transition-all active:scale-95"
+                      className="bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest rounded-xl px-10 h-14 text-xs transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
                     >
                       {isSaving ? "Salvando..." : "Salvar Configurações"}
                     </Button>
@@ -394,7 +394,7 @@ export default function SettingsPage() {
                        <Button 
                          disabled={isSaving}
                          onClick={handleSaveAi}
-                         className="bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest rounded-xl px-10 h-14 text-xs transition-all active:scale-95"
+                         className="bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest rounded-xl px-10 h-14 text-xs transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
                        >
                          {isSaving ? "Salvando..." : "Salvar Configurações de IA"}
                        </Button>
