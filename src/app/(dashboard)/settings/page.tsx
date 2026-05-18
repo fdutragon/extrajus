@@ -16,7 +16,8 @@ import {
   FileText,
   Command,
   ShieldCheck,
-  Shield
+  Shield,
+  Briefcase
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -30,7 +31,7 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
   const [fullName, setFullName] = useState("");
-  const [username, setUsername] = useState("");
+  const [occupation, setOccupation] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -47,7 +48,7 @@ export default function SettingsPage() {
       if (!user) return;
 
       setEmail(user.email || "");
-      setUsername(user.user_metadata?.username || "");
+      setOccupation(user.user_metadata?.occupation || "");
       setAiRigor(user.user_metadata?.ai_rigor ?? 8);
       setAiMode(user.user_metadata?.ai_mode ?? "Inovador");
       setAiRealtime(user.user_metadata?.ai_realtime ?? true);
@@ -104,14 +105,14 @@ export default function SettingsPage() {
       if (profileError) throw profileError;
 
       const { error: metaError } = await supabase.auth.updateUser({
-        data: { username: username }
+        data: { occupation: occupation }
       });
       if (metaError) throw metaError;
 
       setProfile((prev: any) => ({
         ...prev,
         full_name: fullName,
-        username: username
+        occupation: occupation
       }));
 
       if (email !== user.email) {
@@ -242,14 +243,14 @@ export default function SettingsPage() {
                         </div>
                         <div className="space-y-2 text-left">
                           <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 text-left">
-                            <Command size={10} /> Nome de Usuário
+                            <Briefcase size={10} /> Ocupação
                           </label>
                           <input 
                             type="text" 
                             className="w-full bg-muted/30 border border-border rounded-lg px-4 py-2.5 text-sm transition-all outline-none text-left"
-                            placeholder="username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            placeholder="Ex: Advogado(a), Diretor(a) Jurídico(a), etc."
+                            value={occupation}
+                            onChange={(e) => setOccupation(e.target.value)}
                           />
                         </div>
                       </div>
