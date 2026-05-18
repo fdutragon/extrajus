@@ -206,6 +206,7 @@
   html {
     @apply font-sans;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-size: 105%; /* Escala a fonte do site inteiro proporcionalmente para excelente leitura */
   }
 
   /* Custom Scrollbar */
