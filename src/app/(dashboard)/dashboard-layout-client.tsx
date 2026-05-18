@@ -23,9 +23,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useTransition } from "react";
 import { signOut } from "../(auth)/login/actions";
 import { createClient } from "@/utils/supabase/client";
+import { createContractAction } from "@/app/actions";
 import { Logo } from "@/components/ui/logo";
 import { toast } from "sonner";
 export default function DashboardLayoutClient({
@@ -37,8 +38,12 @@ export default function DashboardLayoutClient({
   const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [profile, setProfile] = useState<any>(null);
+  const [contractCount, setContractCount] = useState<number | null>(null);
+  const [signatureCount, setSignatureCount] = useState<number | null>(null);
   const profileRef = useRef<any>(null);
   const supabase = createClient();
+  const [isPending, startTransition] = useTransition();
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
 
   useEffect(() => {
     profileRef.current = profile;
@@ -70,6 +75,156 @@ export default function DashboardLayoutClient({
       window.removeEventListener('profile-updated', fetchProfile);
     };
   }, []);
+
+  // Buscar contagens em tempo real
+  useEffect(() => {
+    if (!profile?.id) return;
+    
+    async function fetchCounts() {
+      try {
+        const userEmailLower = profile.email?.toLowerCase().trim() || "";
+        
+        // Buscar contratos
+        const { data: contractsData } = await supabase
+          .from('contracts')
+          .select('id')
+          .eq('user_id', profile.id);
+        
+        const contractsList = contractsData || [];
+        setContractCount(contractsList.length);
+
+        // Buscar assinaturas
+        const { data: sigsData } = await supabase
+          .from('signatures')
+          .select('id, contract_id, signers');
+        
+        if (sigsData) {
+          const filtered = sigsData.filter((sig: any) => {
+            const isOwner = contractsList.some((c: any) => c.id === sig.contract_id);
+            const isSigner = sig.signers?.some((s: any) => s.email?.toLowerCase().trim() === userEmailLower);
+            return isOwner || isSigner;
+          });
+          setSignatureCount(filtered.length);
+        }
+      } catch (err) {
+        console.error("Error fetching stats:", err);
+      }
+    }
+
+    fetchCounts();
+
+    // Recarregar em eventos de atualização de perfil
+    window.addEventListener('profile-updated', fetchCounts);
+    return () => {
+      window.removeEventListener('profile-updated', fetchCounts);
+    };
+  }, [profile?.id, profile?.email]);
+
+  // Atalho de teclado global: Alt + C ou Alt + N para criar novo contrato
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      // Ignorar se o usuário estiver focado em inputs, textareas ou editores
+      const activeEl = document.activeElement;
+      if (
+        activeEl &&
+        (activeEl.tagName === "INPUT" ||
+          activeEl.tagName === "TEXTAREA" ||
+          activeEl.hasAttribute("contenteditable") ||
+          activeEl.closest(".ProseMirror"))
+      ) {
+        return;
+      }
+
+      // Atalho: Alt + C ou Alt + N
+      if (e.altKey && (e.key === "c" || e.key === "C" || e.key === "n" || e.key === "N")) {
+        e.preventDefault();
+        
+        toast.loading("⚔️ Forjando novo contrato via atalho...", { id: "shortcut-creation" });
+        startTransition(async () => {
+          try {
+            // Obter sessão do usuário de forma segura e rápida
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+              toast.error("Acesso negado. Usuário não autenticado.", { id: "shortcut-creation" });
+              return;
+            }
+
+            // Inserir contrato diretamente pelo Supabase Client-Side (Mais rápido e blindado contra erros de redirecionamento)
+            const { data, error } = await supabase
+              .from('contracts')
+              .insert({
+                user_id: user.id,
+                title: `Novo Contrato - ${new Date().toLocaleDateString('pt-BR')}`,
+                status: 'draft'
+              })
+              .select()
+              .single();
+
+            if (error) throw error;
+
+            toast.success("⚔️ Contrato forjado com sucesso!", { id: "shortcut-creation" });
+            router.push(`/editor?room=${data.id}`);
+            
+            // Disparar recarga de estatísticas das sidebars
+            window.dispatchEvent(new Event('profile-updated'));
+          } catch (err) {
+            console.error("Erro ao criar contrato por atalho:", err);
+            toast.error("Erro ao forjar contrato via atalho.", { id: "shortcut-creation" });
+          }
+        });
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [router]);
+
+  // Atalhos Globais de Navegação Rápida (Alt+H/D/I/S/A/K) e Escape para fechar
+  useEffect(() => {
+    function handleNavigationKeyDown(e: KeyboardEvent) {
+      const activeEl = document.activeElement;
+      if (
+        activeEl &&
+        (activeEl.tagName === "INPUT" ||
+          activeEl.tagName === "TEXTAREA" ||
+          activeEl.hasAttribute("contenteditable") ||
+          activeEl.closest(".ProseMirror"))
+      ) {
+        return;
+      }
+
+      if (e.altKey) {
+        const key = e.key.toLowerCase();
+        if (key === "h" || key === "d") {
+          e.preventDefault();
+          router.push("/dashboard");
+        } else if (key === "i") {
+          e.preventDefault();
+          router.push("/inbox");
+        } else if (key === "s") {
+          e.preventDefault();
+          router.push("/brain");
+        } else if (key === "a") {
+          e.preventDefault();
+          router.push("/arsenal");
+        } else if (key === "k") {
+          e.preventDefault();
+          setIsShortcutsOpen(prev => !prev);
+        }
+      }
+
+      if (e.key === "Escape") {
+        setIsShortcutsOpen(false);
+      }
+    }
+
+    window.addEventListener("keydown", handleNavigationKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleNavigationKeyDown);
+    };
+  }, [router]);
 
   // 2. Conexão isolada e blindada para o Realtime (Tempo Real)
   useEffect(() => {
@@ -300,11 +455,11 @@ export default function DashboardLayoutClient({
 
   const baseNavItems = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+    { name: "Inbox", href: "/inbox", icon: Mail },
     { name: "Contratos", href: "/contracts", icon: FileText },
     { name: "Assinaturas", href: "/signatures", icon: PenTool },
     { name: "Arsenal", href: "/arsenal", icon: Zap },
-    { name: "Cérebro", href: "/brain", icon: Brain },
-    { name: "Caixa de Entrada", href: "/inbox", icon: Mail },
+    { name: "Sinapses", href: "/brain", icon: Brain },
   ];
 
   const navItems = isAdmin
@@ -330,10 +485,10 @@ export default function DashboardLayoutClient({
         "bg-card border-border flex flex-col transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) z-50 overflow-hidden shrink-0",
         // Mobile (Default)
         "fixed inset-y-1 left-1 rounded-xl",
-        isCollapsed ? "-translate-x-full w-0 opacity-0" : "translate-x-0 w-72 opacity-100",
+        isCollapsed ? "-translate-x-full w-0 opacity-0" : "translate-x-0 w-64 opacity-100",
         // Desktop (lg)
-        "lg:static lg:translate-x-0 lg:opacity-100 lg:w-72 lg:rounded-l-xl lg:rounded-r-none lg:border border-r-0 lg:inset-auto",
-        isCollapsed ? "lg:w-12" : "lg:w-72"
+        "lg:static lg:translate-x-0 lg:opacity-100 lg:w-64 lg:rounded-l-xl lg:rounded-r-none lg:border border-r-0 lg:inset-auto",
+        isCollapsed ? "lg:w-12" : "lg:w-64"
       )}>
         {/* Subtle texture overlay */}
         <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
@@ -349,28 +504,31 @@ export default function DashboardLayoutClient({
         </div>
 
         <div className="flex-1 px-2.5 py-4 space-y-8 overflow-y-auto overflow-x-hidden relative z-10 custom-scrollbar-sidebar">
-          {/* System Health Widget - Only visible when not collapsed */}
+          {/* System Stats Widget - Only visible when not collapsed */}
           {(!isCollapsed || (typeof window !== 'undefined' && window.innerWidth < 1024)) && (
             <div className={cn(
               "px-2 space-y-3 animate-in fade-in slide-in-from-top-2 duration-700",
               isCollapsed && "hidden lg:hidden"
             )}>
               <div className="flex items-center justify-between">
-                <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-[0.15em]">Status da Nave</span>
+                <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-[0.15em]">Visão Geral</span>
                 <div className="flex gap-1">
                   <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary/50" />
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary/30" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                <div className="bg-muted rounded-lg p-2.5 border border-border">
-                  <div className="text-[9px] text-muted-foreground uppercase font-bold mb-1">Synapse</div>
-                  <div className="text-[12px] font-mono font-bold text-primary">98.4%</div>
+                <div className="bg-muted/40 rounded-lg p-2.5 border border-border hover:bg-muted/70 transition-all text-left">
+                  <div className="text-[9px] text-muted-foreground uppercase font-bold mb-0.5">Contratos</div>
+                  <div className="text-[14px] font-mono font-bold text-primary">
+                    {contractCount !== null ? contractCount : "..."}
+                  </div>
                 </div>
-                <div className="bg-muted rounded-lg p-2.5 border border-border">
-                  <div className="text-[9px] text-muted-foreground uppercase font-bold mb-1">Uptime</div>
-                  <div className="text-[12px] font-mono font-bold text-foreground/80">14d</div>
+                <div className="bg-muted/40 rounded-lg p-2.5 border border-border hover:bg-muted/70 transition-all text-left">
+                  <div className="text-[9px] text-muted-foreground uppercase font-bold mb-0.5">Assinaturas</div>
+                  <div className="text-[14px] font-mono font-bold text-foreground/90">
+                    {signatureCount !== null ? signatureCount : "..."}
+                  </div>
                 </div>
               </div>
             </div>
@@ -404,6 +562,11 @@ export default function DashboardLayoutClient({
                     "truncate animate-in fade-in slide-in-from-left-1 duration-300",
                     collapsedOnDesktop && "lg:hidden"
                   )}>{item.name}</span>
+                  {item.name === "Contratos" && !collapsedOnDesktop && (
+                    <kbd className="hidden lg:group-hover:inline-block ml-auto text-[8px] bg-muted border border-border px-1 py-0.5 rounded font-mono text-muted-foreground/80 scale-90 animate-in fade-in duration-300">
+                      Alt+C
+                    </kbd>
+                  )}
                 </Link>
               );
             })}
@@ -528,24 +691,32 @@ export default function DashboardLayoutClient({
             
             <div className="h-4 w-[1px] bg-border mx-1" />
 
-            <div className="relative max-w-[280px] w-full group">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={12} />
-              <input 
-                type="text" 
-                placeholder="Pesquisar..." 
-                className="w-full bg-muted border border-border rounded-md pl-9 pr-4 py-1 text-[12px] focus:ring-1 focus:ring-primary/20 focus:border-primary/30 transition-all outline-none"
-              />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-20 group-focus-within:opacity-0 transition-opacity">
-                <Command size={9} />
-                <span className="text-[9px] font-bold">K</span>
-              </div>
-            </div>
+            <button 
+              onClick={() => setIsShortcutsOpen(true)}
+              className="relative max-w-[200px] w-full group flex items-center justify-between bg-muted border border-border hover:border-primary/30 rounded-md pl-8 pr-2 py-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-all outline-none text-left cursor-pointer"
+            >
+              <Zap className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground group-hover:text-primary transition-colors shrink-0" size={11} />
+              <span className="font-medium">Teclas de Atalho</span>
+              <kbd className="flex items-center gap-0.5 text-[8px] bg-background border border-border px-1.5 py-0.5 rounded font-mono font-bold group-hover:text-primary transition-colors">
+                Alt+K
+              </kbd>
+            </button>
           </div>
 
           <div className="flex items-center gap-3">
-            <ThemeToggle />
+            {/* Usuário */}
+            <div className="flex items-center gap-2 pl-1 cursor-pointer group">
+              <Avatar className="h-6 w-6 rounded-full border border-border ring-0 group-hover:ring-2 ring-primary/20 transition-all">
+                <AvatarImage src={profile?.avatar_url || "https://github.com/shadcn.png"} />
+                <AvatarFallback className="text-[10px]">{profile?.full_name?.slice(0,2).toUpperCase() || "US"}</AvatarFallback>
+              </Avatar>
+              <div className="hidden lg:flex flex-col">
+                <span className="text-[11px] font-bold leading-tight tracking-tight uppercase italic">{profile?.full_name || 'Usuário'}</span>
+              </div>
+            </div>
+
             <div className="h-3 w-[1px] bg-border mx-1" />
-            
+
             {/* Sino de Notificações */}
             <div className="relative" ref={dropdownRef}>
               <button 
@@ -614,15 +785,9 @@ export default function DashboardLayoutClient({
             </div>
             
             <div className="h-3 w-[1px] bg-border mx-1" />
-            <div className="flex items-center gap-2 pl-1 cursor-pointer group">
-              <Avatar className="h-6 w-6 rounded-full border border-border ring-0 group-hover:ring-2 ring-primary/20 transition-all">
-                <AvatarImage src={profile?.avatar_url || "https://github.com/shadcn.png"} />
-                <AvatarFallback className="text-[10px]">{profile?.full_name?.slice(0,2).toUpperCase() || "US"}</AvatarFallback>
-              </Avatar>
-              <div className="hidden lg:flex flex-col">
-                <span className="text-[11px] font-bold leading-tight tracking-tight uppercase italic">{profile?.full_name || 'Usuário'}</span>
-              </div>
-            </div>
+
+            {/* Alternar Tema */}
+            <ThemeToggle />
           </div>
         </header>
 
@@ -633,6 +798,78 @@ export default function DashboardLayoutClient({
           </div>
         </main>
       </div>
+
+      {/* Shortcuts Help Modal */}
+      {isShortcutsOpen && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/60 backdrop-blur-md animate-in fade-in duration-300 p-4">
+          <div 
+            className="fixed inset-0" 
+            onClick={() => setIsShortcutsOpen(false)}
+          />
+          <div className="bg-card border border-border w-full max-w-md rounded-3xl shadow-2xl relative z-10 overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col text-left">
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-primary/20 via-primary to-primary/20" />
+            
+            <div className="p-6 border-b border-border flex items-center justify-between">
+              <div className="space-y-1">
+                <h3 className="text-base font-bold tracking-tight text-foreground flex items-center gap-2">
+                  <Zap size={14} className="text-primary animate-pulse" /> Teclas de Atalho
+                </h3>
+                <p className="text-[11px] text-muted-foreground">
+                  Acelere sua navegação jurídica global via teclado.
+                </p>
+              </div>
+              <button 
+                onClick={() => setIsShortcutsOpen(false)}
+                className="text-[10px] font-mono text-muted-foreground hover:text-foreground hover:bg-muted border border-border/80 px-2.5 py-1 rounded-xl transition-all cursor-pointer"
+              >
+                ESC
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4 max-h-[360px] overflow-y-auto custom-scrollbar">
+              <div className="space-y-2">
+                <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-widest block">Ações Globais</span>
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between p-2 rounded-xl bg-muted/40 border border-border/60 hover:bg-muted/80 transition-colors">
+                    <span className="text-[11.5px] font-medium text-foreground">Forjar Novo Contrato</span>
+                    <kbd className="text-[9px] font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-primary font-bold shadow-sm">Alt + C</kbd>
+                  </div>
+                  <div className="flex items-center justify-between p-2 rounded-xl bg-muted/40 border border-border/60 hover:bg-muted/80 transition-colors">
+                    <span className="text-[11.5px] font-medium text-foreground">Abrir este Menu de Atalhos</span>
+                    <kbd className="text-[9px] font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-primary font-bold shadow-sm">Alt + K</kbd>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-widest block">Navegação Rápida</span>
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between p-2 rounded-xl bg-muted/40 border border-border/60 hover:bg-muted/80 transition-colors">
+                    <span className="text-[11.5px] font-medium text-foreground">Painel (Dashboard)</span>
+                    <kbd className="text-[9px] font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-muted-foreground font-bold shadow-sm">Alt + H</kbd>
+                  </div>
+                  <div className="flex items-center justify-between p-2 rounded-xl bg-muted/40 border border-border/60 hover:bg-muted/80 transition-colors">
+                    <span className="text-[11.5px] font-medium text-foreground">Inbox (Notificações)</span>
+                    <kbd className="text-[9px] font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-muted-foreground font-bold shadow-sm">Alt + I</kbd>
+                  </div>
+                  <div className="flex items-center justify-between p-2 rounded-xl bg-muted/40 border border-border/60 hover:bg-muted/80 transition-colors">
+                    <span className="text-[11.5px] font-medium text-foreground">Sinapses (Grafo de Conexões)</span>
+                    <kbd className="text-[9px] font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-muted-foreground font-bold shadow-sm">Alt + S</kbd>
+                  </div>
+                  <div className="flex items-center justify-between p-2 rounded-xl bg-muted/40 border border-border/60 hover:bg-muted/80 transition-colors">
+                    <span className="text-[11.5px] font-medium text-foreground">Arsenal (Ferramentas de IA)</span>
+                    <kbd className="text-[9px] font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-muted-foreground font-bold shadow-sm">Alt + A</kbd>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 bg-muted/30 border-t border-border flex items-center justify-center gap-1">
+              <span className="text-[9px] text-muted-foreground uppercase font-mono tracking-wider">ExtraJus v2 • Modo Operacional de Elite</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

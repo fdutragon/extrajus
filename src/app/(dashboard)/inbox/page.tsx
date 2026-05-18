@@ -372,7 +372,7 @@ export default function InboxPage() {
          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 w-full">
             <div className="text-left">
                <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-2.5">
-                  Caixa de entrada {unreadCount > 0 && <span className="bg-primary/20 text-primary border border-primary/20 text-xs px-2.5 py-0.5 rounded-full font-black font-sans">{unreadCount} novas</span>}
+                  Inbox {unreadCount > 0 && <span className="bg-primary/20 text-primary border border-primary/20 text-xs px-2.5 py-0.5 rounded-full font-black font-sans">{unreadCount} novas</span>}
                </h1>
                <p className="text-xs text-muted-foreground font-bold tracking-wide mt-1">
                   Central de comunicações, solicitações de modelos e suporte técnico.

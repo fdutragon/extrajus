@@ -162,12 +162,12 @@ export default function BrainPage() {
 
   useEffect(() => {
     if (fgRef.current) {
-      fgRef.current.d3Force("charge").strength(-600);
-      fgRef.current.d3Force("link").distance(150);
-      fgRef.current.d3Force("collide", forceCollide(30));
+      fgRef.current.d3Force("charge").strength(-250);
+      fgRef.current.d3Force("link").distance(75);
+      fgRef.current.d3Force("collide", forceCollide(15));
 
       setTimeout(() => {
-        fgRef.current.zoom(3.0, 1000);
+        fgRef.current.zoom(4.0, 1000);
         fgRef.current.centerAt(0, 0, 1000);
       }, 500);
     }
@@ -184,9 +184,9 @@ export default function BrainPage() {
             <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2 py-0">Inteligência Analítica</Badge>
             <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase italic">Network Visualization</span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Rede Profissional</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Sinapses</h1>
           <p className="text-[13px] text-muted-foreground max-w-md leading-relaxed">
-            Mapeie suas conexões e documentos estratégicos. Visualize a estrutura da sua rede profissional em tempo real.
+            Mapeie suas conexões e documentos estratégicos. Visualize a estrutura de sinapses ativas em tempo real.
           </p>
         </div>
 
@@ -218,7 +218,7 @@ export default function BrainPage() {
               backgroundColor="transparent"
               nodeRelSize={5}
               linkDirectionalParticles={6}
-              linkDirectionalParticleSpeed={0.015}
+              linkDirectionalParticleSpeed={0.007}
               linkDirectionalParticleColor={(link: any) => {
                 if (link.target && link.target.group === "signer") return "#a855f7";
                 if (link.target && link.target.group === "contract") return "#10b981";
@@ -240,7 +240,7 @@ export default function BrainPage() {
                 ctx.shadowOffsetY = 0;
 
                 ctx.beginPath();
-                ctx.arc(node.x, node.y, node.val * 0.7, 0, 2 * Math.PI, false);
+                ctx.arc(node.x, node.y, node.val * 0.35, 0, 2 * Math.PI, false);
                 
                 const color = node.color || "#06b6d4";
                 ctx.fillStyle = color;
@@ -248,7 +248,7 @@ export default function BrainPage() {
 
                 // Draw solid white center core
                 ctx.beginPath();
-                ctx.arc(node.x, node.y, node.val * 0.3, 0, 2 * Math.PI, false);
+                ctx.arc(node.x, node.y, node.val * 0.15, 0, 2 * Math.PI, false);
                 ctx.fillStyle = "#ffffff";
                 ctx.fill();
                 
@@ -258,7 +258,7 @@ export default function BrainPage() {
                   ctx.textAlign = "center";
                   ctx.textBaseline = "middle";
                   ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
-                  ctx.fillText(label, node.x, node.y + (node.val * 0.7) + 6);
+                  ctx.fillText(label, node.x, node.y + (node.val * 0.35) + 6);
                 }
               }}
               onNodeClick={(node) => setSelectedNode(node)}
