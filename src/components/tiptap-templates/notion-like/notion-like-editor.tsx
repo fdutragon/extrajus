@@ -84,6 +84,7 @@ import "../../../components/tiptap-templates/notion-like/notion-like-editor.scss
 // --- Content ---
 import { 
   ChevronLeft, 
+  ChevronDown,
   FileText, 
   Library, 
   Settings2, 
@@ -101,7 +102,12 @@ import {
   PanelLeft,
   PanelRight,
   Search,
-  Save
+  Save,
+  Lock,
+  Activity,
+  Sparkles,
+  MousePointer2,
+  Eye
 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
@@ -155,7 +161,7 @@ function InviteButton({ room }: { room: string }) {
     url.searchParams.set("room", room)
     navigator.clipboard.writeText(url.toString()).then(() => {
       setCopied(true)
-      toast.success("Link do ritual copiado.")
+      toast.success("Link de acesso copiado.")
       setTimeout(() => setCopied(false), 2000)
     })
   }
@@ -195,14 +201,14 @@ export interface EditorProviderProps {
 /**
  * Loading spinner component shown while connecting to the notion server
  */
-export function LoadingSpinner({ text = "Invocando Ritual..." }: { text?: string }) {
+export function LoadingSpinner({ text = "Estabelecendo Conexão..." }: { text?: string }) {
   return (
     <div className="fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-background overflow-hidden">
       {/* Background Ambience */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(var(--primary)/0.05),transparent_70%)] animate-pulse duration-[4000ms]" />
       
       <div className="relative flex flex-col items-center gap-8 animate-in fade-in zoom-in duration-1000">
-        {/* The Portal (Logo) */}
+        {/* Logo area */}
         <div className="relative group">
           <div className="absolute -inset-10 bg-primary/10 blur-[60px] rounded-full animate-pulse transition-all duration-700" />
           <div className="relative flex flex-col items-center">
@@ -226,12 +232,6 @@ export function LoadingSpinner({ text = "Invocando Ritual..." }: { text?: string
           </div>
         </div>
       </div>
-      
-      {/* Structural Framing */}
-      <div className="absolute top-12 left-12 w-24 h-px bg-white/[0.03]" />
-      <div className="absolute top-12 left-12 w-px h-24 bg-white/[0.03]" />
-      <div className="absolute bottom-12 right-12 w-24 h-px bg-white/[0.03]" />
-      <div className="absolute bottom-12 right-12 w-px h-24 bg-white/[0.03]" />
     </div>
   )
 }
@@ -279,7 +279,7 @@ export function EditorContentArea() {
       role="presentation"
       className={cn(
         "notion-like-editor-content",
-        isDragging ? "cursor-grabbing" : "cursor-default"
+        isDragging ? "cursor-grabbing" : "cursor-text"
       )}
     >
       <DragContextMenu />
@@ -290,16 +290,16 @@ export function EditorContentArea() {
 }
 
 const ORACLE_LOGS = [
-  { id: 1, user: "Cadelo Imperial", action: "Cláusula de Sigilo Blindada", time: "12m atrás", version: "v2.4.1" },
-  { id: 2, user: "Lilith OS", action: "Auditoria de Risco Concluída", time: "45m atrás", version: "v2.4.0" },
-  { id: 3, user: "Cadelo Imperial", action: "Invocação de Template: M&A", time: "2h atrás", version: "v2.3.8" },
+  { id: 1, user: "Gestor", action: "Cláusula de Sigilo Otimizada", time: "12m atrás", version: "v2.4.1" },
+  { id: 2, user: "ExtraJus AI", action: "Auditoria de Conformidade Concluída", time: "45m atrás", version: "v2.4.0" },
+  { id: 3, user: "Gestor", action: "Importação de Modelo: M&A", time: "2h atrás", version: "v2.3.8" },
   { id: 4, user: "Sistema", action: "Sessão Colaborativa Iniciada", time: "4h atrás", version: "v2.3.0" },
 ];
 
 const ORACLE_INSIGHTS = {
   score: 92,
-  status: "Contrato Inabalável",
-  vulnerabilityMsg: '"Detectei um flanco exposto na cláusula 7.2. Deseja realizar a blindagem estratégica?"',
+  status: "Conformidade Elevada",
+  vulnerabilityMsg: '"Identifiquei um ponto de atenção na cláusula 7.2. Deseja realizar a otimização técnica?"',
 };
 
 /**
@@ -307,7 +307,7 @@ const ORACLE_INSIGHTS = {
  */
 export function EditorLayout() {
   const [oracleTab, setOracleTab] = useState("insights")
-  const [fileName, setFileName] = useState("Contrato_Imperial_Alpha")
+  const [fileName, setFileName] = useState("Documento_ExtraJus")
   const [userContracts, setUserContracts] = useState<any[]>([])
   const [templates, setTemplates] = useState<any[]>([])
   const [historyLogs, setHistoryLogs] = useState<any[]>([])
@@ -328,83 +328,74 @@ export function EditorLayout() {
     // 1. Prevent copy, cut, paste events completely
     const handleCopy = (e: ClipboardEvent) => {
       e.preventDefault()
-      toast.error("Cópia de segurança proibida sob as leis soberanas do ExtraJus.")
+      toast.error("Cópia restrita por diretiva de segurança.")
     }
 
     const handleCut = (e: ClipboardEvent) => {
       e.preventDefault()
-      toast.error("Remoção ou corte de segurança proibido sob as leis soberanas do ExtraJus.")
+      toast.error("Remoção restrita por diretiva de segurança.")
     }
 
     const handlePaste = (e: ClipboardEvent) => {
       e.preventDefault()
-      toast.error("Colagem proibida. Redija seu pacto de forma pura.")
+      toast.error("Colagem restrita. Redija o conteúdo diretamente no editor.")
     }
 
     // 2. Prevent key combinations for copying, pasting, and printing
     const handleKeyDown = (e: KeyboardEvent) => {
       const isCtrlOrCmd = e.ctrlKey || e.metaKey
 
-      // Ctrl+C / Cmd+C (Copy)
       if (isCtrlOrCmd && e.key?.toLowerCase() === "c") {
         e.preventDefault()
-        toast.error("Cópia de segurança proibida.")
+        toast.error("Cópia bloqueada.")
       }
 
-      // Ctrl+V / Cmd+V (Paste)
       if (isCtrlOrCmd && e.key?.toLowerCase() === "v") {
         e.preventDefault()
-        toast.error("Colagem de segurança proibida.")
+        toast.error("Colagem bloqueada.")
       }
 
-      // Ctrl+X / Cmd+X (Cut)
       if (isCtrlOrCmd && e.key?.toLowerCase() === "x") {
         e.preventDefault()
-        toast.error("Corte de segurança proibido.")
+        toast.error("Corte bloqueado.")
       }
 
-      // Ctrl+P / Cmd+P (Print)
       if (isCtrlOrCmd && e.key?.toLowerCase() === "p") {
         e.preventDefault()
-        toast.error("Impressão física ou digital proibida.")
+        toast.error("Impressão bloqueada.")
       }
 
-      // Detect Shift + Windows/Cmd + S (Windows Snipping Tool / Mac selection)
       if (e.shiftKey && e.metaKey && e.key?.toLowerCase() === "s") {
         e.preventDefault()
         setIsFocused(false)
-        toast.error("Tentativa de captura de tela detectada. Bloqueando conteúdo.")
+        toast.error("Captura de tela detectada. Conteúdo ocultado.")
       }
 
-      // Mac screenshot combinations: Cmd + Shift + 3 or Cmd + Shift + 4
       if (e.metaKey && e.shiftKey && (e.key === "3" || e.key === "4")) {
         e.preventDefault()
         setIsFocused(false)
-        toast.error("Tentativa de captura de tela detectada. Bloqueando conteúdo.")
+        toast.error("Captura de tela detectada. Conteúdo ocultado.")
       }
     }
 
-    // 3. Prevent PrintScreen screen grabs by clearing the clipboard immediately
     const handleKeyUp = (e: KeyboardEvent) => {
       if (e.key === "PrintScreen" || e.key === "PrtScn") {
         e.preventDefault()
         if (navigator.clipboard) {
-          navigator.clipboard.writeText("Acesso não autorizado. Pacto de segurança do ExtraJus ativo.")
+          navigator.clipboard.writeText("Acesso não autorizado.")
         }
-        toast.error("Captura de tela detectada. Pacto de segurança inviolável acionado.")
+        toast.error("Captura de tela detectada.")
       }
     }
 
-    // 4. Block dragging selection or text blocks to copy externally
     const handleDragStart = (e: DragEvent) => {
       e.preventDefault()
-      toast.error("Movimentação de texto desativada por segurança.")
+      toast.error("Movimentação de texto desativada.")
     }
 
-    // 5. Block standard browser right-click context menu (which has Copy/Paste)
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault()
-      toast.error("Menu de contexto bloqueado pelas diretrizes de confidencialidade.")
+      toast.error("Menu de contexto restrito por confidencialidade.")
     }
 
     const handleFocus = () => setIsFocused(true)
@@ -413,7 +404,6 @@ export function EditorLayout() {
     window.addEventListener("focus", handleFocus)
     window.addEventListener("blur", handleBlur)
 
-    // Use CAPTURE phase (true) for absolute interception supremacy
     document.addEventListener("copy", handleCopy, true)
     document.addEventListener("cut", handleCut, true)
     document.addEventListener("paste", handlePaste, true)
@@ -449,25 +439,22 @@ export function EditorLayout() {
   const [isSaving, setIsSaving] = useState(false)
   const [fontSize, setFontSize] = useState<number>(18)
   const [fontFamily, setFontFamily] = useState<string>("Lora")
+  const [isFontDropdownOpen, setIsFontDropdownOpen] = useState(false)
 
   const handleManualSave = async () => {
     if (!provider) {
-      toast.error("Erro: Provedor de colaboração não está pronto.")
+      toast.error("Provedor não inicializado.")
       return
     }
     
     setIsSaving(true)
-    const toastId = toast.loading("Selando progresso no banco...")
+    const toastId = toast.loading("Salvando progresso...")
     
     try {
       const result = await provider.forceSave()
-      if (result.saved) {
-        toast.success(result.message, { id: toastId })
-      } else {
-        toast.success(result.message, { id: toastId })
-      }
+      toast.success(result.message, { id: toastId })
     } catch (e: any) {
-      toast.error(`Erro ao salvar pacto: ${e.message || e}`, { id: toastId })
+      toast.error(`Erro ao salvar documento: ${e.message || e}`, { id: toastId })
     } finally {
       setIsSaving(false)
     }
@@ -491,11 +478,11 @@ export function EditorLayout() {
   }, [hasAudited, auditResults]);
 
   const auditStatus = useMemo(() => {
-    if (!hasAudited) return { label: "Inativa", color: "text-muted-foreground bg-muted border-border", barColor: "bg-muted", desc: "Oráculo adormecido. Inicie a auditoria para avaliar o pacto." };
-    if (auditScore >= 90) return { label: "Soberano ✨", color: "text-[#c0ff00] bg-[#c0ff00]/10 border-[#c0ff00]/20", barColor: "bg-[#c0ff00]", desc: "Este pacto atingiu blindagem absoluta. As cláusulas estão impecáveis e extremamente seguras contra brechas de terceiros." };
-    if (auditScore >= 70) return { label: "Seguro 👍", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20", barColor: "bg-emerald-500", desc: "O contrato possui excelente blindagem. Alguns riscos pontuais foram identificados, mas a saúde estrutural é ótima." };
-    if (auditScore >= 50) return { label: "Vulnerável ⚠️", color: "text-amber-400 bg-amber-500/10 border-amber-500/20", barColor: "bg-amber-500", desc: "Presença de ambiguidades e riscos moderados. Sugerimos aplicar os ajustes recomendados pela IA Lilith." };
-    return { label: "Risco Crítico 🔥", color: "text-red-400 bg-red-500/10 border-red-500/20", barColor: "bg-red-500", desc: "Vulnerabilidade crítica detectada! O pacto está exposto a graves riscos jurídicos que ameaçam a sua blindagem." };
+    if (!hasAudited) return { label: "Inativa", color: "text-muted-foreground bg-muted border-border", barColor: "bg-muted", desc: "Sistema IA inativo. Inicie a auditoria para avaliar o documento." };
+    if (auditScore >= 90) return { label: "Excelente ✨", color: "text-[#c0ff00] bg-[#c0ff00]/10 border-[#c0ff00]/20", barColor: "bg-[#c0ff00]", desc: "Este documento atingiu um nível de segurança elevado. As cláusulas estão tecnicamente precisas e em conformidade." };
+    if (auditScore >= 70) return { label: "Seguro 👍", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20", barColor: "bg-emerald-500", desc: "O contrato possui boa estrutura de segurança. Alguns pontos de atenção foram identificados, mas a saúde técnica é satisfatória." };
+    if (auditScore >= 50) return { label: "Vulnerável ⚠️", color: "text-amber-400 bg-amber-500/10 border-amber-500/20", barColor: "bg-amber-500", desc: "Presença de ambiguidades e riscos moderados. Sugerimos aplicar os ajustes recomendados pela Inteligência Analítica." };
+    return { label: "Risco Crítico 🔥", color: "text-red-400 bg-red-500/10 border-red-500/20", barColor: "bg-red-500", desc: "Inconsistências críticas detectadas! O documento apresenta riscos jurídicos que demandam revisão imediata." };
   }, [hasAudited, auditScore]);
 
   const filteredContracts = useMemo(() => {
@@ -513,43 +500,40 @@ export function EditorLayout() {
   const runAudit = async () => {
     if (!editor) return
     setIsAuditing(true)
-    const toastId = toast.loading("Lilith está escaneando vulnerabilidades...")
+    const toastId = toast.loading("Analisando conformidade e riscos...")
     
     try {
-      // Invocamos o comando da extensão Gemini
       await (editor.commands as any).aiAuditRisk()
-      
-      // Pequeno delay para a extensão processar e atualizar o storage
       setTimeout(() => {
         const results = (editor.storage as any).ai.auditResults
         setAuditResults(results || [])
         setHasAudited(true)
         setIsAuditing(false)
-        toast.success("Auditoria concluída. Analise os riscos detectados.", { id: toastId })
+        toast.success("Análise de conformidade concluída.", { id: toastId })
       }, 3000)
     } catch (error) {
       console.error(error)
-      toast.error("O Oráculo falhou na auditoria.", { id: toastId })
+      toast.error("O sistema falhou ao processar a auditoria.", { id: toastId })
       setIsAuditing(false)
     }
   }
 
   const handleConfirmSignature = async () => {
     if (!signerEmail) {
-      toast.error("Por favor, informe seu e-mail de convidado.")
+      toast.error("Informe seu e-mail.")
       return
     }
     if (!sealingCode || sealingCode.length !== 6) {
-      toast.error("Por favor, informe o código de selamento de 6 dígitos.")
+      toast.error("Informe o código de 6 dígitos.")
       return
     }
     if (!consentCheck) {
-      toast.error("Você precisa marcar o consentimento digital para prosseguir.")
+      toast.error("Você precisa aceitar o consentimento digital.")
       return
     }
 
     setIsSealing(true)
-    const toastId = toast.loading("Selando o instrumento contratual na rede neural...")
+    const toastId = toast.loading("Registrando assinatura digital...")
 
     try {
       const response = await fetch("/api/sign/confirm", {
@@ -563,133 +547,45 @@ export function EditorLayout() {
       })
 
       const data = await response.json()
+      if (data.error) throw new Error(data.error)
 
-      if (data.error) {
-        throw new Error(data.error)
-      }
-
-      toast.success("Pacto selado com sucesso absoluta! A integridade digital foi garantida.", { id: toastId })
-      setSealingCode("")
-      setConsentCheck(false)
-      
-      // Pequeno delay para atualizar a tela e recarregar
-      setTimeout(() => {
-        window.location.reload()
-      }, 1500)
-
+      toast.success("Assinatura registrada com sucesso.", { id: toastId })
+      setTimeout(() => window.location.reload(), 1500)
     } catch (error: any) {
-      toast.error(error.message || "Erro desconhecido ao selar pacto.", { id: toastId })
+      toast.error(error.message || "Erro ao registrar assinatura.", { id: toastId })
     } finally {
       setIsSealing(false)
     }
   }
 
-  // Fetch dynamic content for Biblioteca and Logs
   useEffect(() => {
     const fetchArsenal = async () => {
-      
-      // Fetch Active Contract Title
-      const { data: currentContract } = await supabase
-        .from('contracts')
-        .select('title')
-        .eq('id', room)
-        .single()
-      
-      if (currentContract && currentContract.title) {
-        setFileName(currentContract.title)
-      }
+      const { data: currentContract } = await supabase.from('contracts').select('title').eq('id', room).single()
+      if (currentContract?.title) setFileName(currentContract.title)
 
-      // Fetch User Contracts
-      const { data: contracts } = await supabase
-        .from('contracts')
-        .select('id, title, status')
-        .order('updated_at', { ascending: false })
-        .limit(10)
-      
+      const { data: contracts } = await supabase.from('contracts').select('id, title, status').order('updated_at', { ascending: false }).limit(10)
       if (contracts) setUserContracts(contracts)
 
-      // Fetch Global Templates
-      const { data: tmpls } = await supabase
-        .from('templates')
-        .select('id, title, slug')
-        .limit(10)
-      
+      const { data: tmpls } = await supabase.from('templates').select('id, title, slug').limit(10)
       if (tmpls) setTemplates(tmpls)
 
-      // Fetch History Logs from yjs_updates (simplified version)
-      const { data: logs } = await supabase
-        .from('yjs_updates')
-        .select('created_at')
-        .eq('contract_id', room)
-        .order('created_at', { ascending: false })
-        .limit(10)
-      
+      const { data: logs } = await supabase.from('yjs_updates').select('created_at').eq('contract_id', room).order('created_at', { ascending: false }).limit(10)
       if (logs) {
-        const formattedLogs = logs.map((log, i) => ({
-          id: i,
-          user: "Sistema",
-          action: "Sincronização de Delta",
-          time: new Date(log.created_at).toLocaleString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-          version: `v${logs.length - i}.0`
-        }))
-        setHistoryLogs(formattedLogs)
+        setHistoryLogs(logs.map((log, i) => ({
+          id: i, user: "Sistema", action: "Sincronização de Dados", time: new Date(log.created_at).toLocaleString('pt-BR', { hour: '2-digit', minute: '2-digit' }), version: `v${logs.length - i}.0`
+        })))
       }
     }
-
     fetchArsenal()
   }, [room, supabase])
 
-  // Debounced auto-save of filename to Supabase
   useEffect(() => {
-    if (!room || readOnly) return
-    
-    // Skip saving the default initial value if it hasn't loaded yet
-    if (fileName === "Contrato_Imperial_Alpha") return
-
+    if (!room || readOnly || fileName === "Documento_ExtraJus") return
     const delayDebounceFn = setTimeout(async () => {
-      const { error } = await supabase
-        .from('contracts')
-        .update({ title: fileName })
-        .eq('id', room)
-      
-      if (error) {
-        console.error("Erro ao salvar título do pacto:", error.message)
-      } else {
-        // Also refresh userContracts sidebar list to show updated title immediately!
-        const { data: contracts } = await supabase
-          .from('contracts')
-          .select('id, title, status')
-          .order('updated_at', { ascending: false })
-          .limit(10)
-        if (contracts) setUserContracts(contracts)
-      }
-    }, 1000) // 1s debounce
-
+      await supabase.from('contracts').update({ title: fileName }).eq('id', room)
+    }, 1000)
     return () => clearTimeout(delayDebounceFn)
   }, [fileName, room, readOnly, supabase])
-
-  // Scroll to the top of the A4 paper on mount/room change to prevent starting at the bottom
-  useEffect(() => {
-    const mainEl = document.querySelector('main')
-    if (mainEl) {
-      mainEl.scrollTop = 0
-    }
-
-    const timer1 = setTimeout(() => {
-      const mainEl = document.querySelector('main')
-      if (mainEl) mainEl.scrollTop = 0
-    }, 100)
-
-    const timer2 = setTimeout(() => {
-      const mainEl = document.querySelector('main')
-      if (mainEl) mainEl.scrollTop = 0
-    }, 500)
-
-    return () => {
-      clearTimeout(timer1)
-      clearTimeout(timer2)
-    }
-  }, [room])
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden relative font-sans selection:bg-primary/30">
@@ -700,35 +596,6 @@ export function EditorLayout() {
         }
       ` }} />
       
-      {/* Background Ornaments */}
-      <div className="absolute top-12 left-12 w-24 h-px bg-foreground/[0.03]" />
-      <div className="absolute top-12 left-12 w-px h-24 bg-foreground/[0.03]" />
-      <div className="absolute bottom-12 right-12 w-24 h-px bg-foreground/[0.03]" />
-      <div className="absolute bottom-12 right-12 w-px h-24 bg-foreground/[0.03]" />
-
-      {/* Settings Modal (Arsenal Config) */}
-      {showSettings && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-background/80 backdrop-blur-xl animate-in fade-in duration-300">
-          <Card className="w-full max-w-md p-8 border-border bg-card rounded-3xl space-y-6">
-            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-primary">Arsenal Config</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 rounded-2xl bg-muted/50 border border-border">
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Sincronização Realtime</span>
-                <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20">Ativo</Badge>
-              </div>
-              <div className="flex items-center justify-between p-4 rounded-2xl bg-muted/50 border border-border">
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Auto-Salvamento (2s)</span>
-                <Badge className="bg-primary/10 text-primary border-primary/20">Otimizado</Badge>
-              </div>
-            </div>
-            <Button onClick={() => setShowSettings(false)} className="w-full bg-primary text-primary-foreground font-black uppercase tracking-widest py-6 rounded-2xl">
-              Fechar Configurações
-            </Button>
-          </Card>
-        </div>
-      )}
-
-      {/* Sovereign Header - The Command Monolith */}
       <header className="fixed top-0 left-0 w-full h-12 border-b border-border bg-background/60 backdrop-blur-2xl flex items-center justify-between px-6 z-[100] transition-all duration-500 hover:bg-background/80 group">
         <div className="flex items-center gap-4">
           {!readOnly ? (
@@ -740,28 +607,29 @@ export function EditorLayout() {
               </Link>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
-              <span className="text-[9px] font-black uppercase tracking-[0.2em] bg-red-500/10 text-red-400 border border-red-500/20 px-2.5 py-1 rounded-lg">
-                Somente Leitura
-              </span>
-            </div>
+            <Badge variant="outline" className="bg-red-500/10 text-red-400 border-red-500/20 text-[9px] font-black uppercase">Somente Leitura</Badge>
           )}
           <div className="flex items-center gap-3">
-            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground truncate max-w-[160px]">{fileName}.docx</span>
-            <div className="h-4 w-px bg-border/50" />
-            <div className="flex items-center gap-2.5 text-[9px] font-bold text-muted-foreground/50 tracking-wider">
-              <span className="bg-primary/5 text-primary/70 px-2 py-0.5 rounded-full border border-primary/10 font-black uppercase tracking-[0.1em]">Soberano v2.4.0</span>
-              <span className="flex items-center gap-1"><FileText size={10} /> {wordCount} palavras</span>
-              <span className="flex items-center gap-1"><Cpu size={10} /> {readTime} min</span>
-            </div>
+            {!readOnly ? (
+              <div className="flex items-center gap-1 group/title relative">
+                <input
+                  type="text"
+                  value={fileName}
+                  onChange={(e) => setFileName(e.target.value)}
+                  placeholder="Nome do contrato..."
+                  className="bg-transparent border-0 border-b border-transparent hover:border-border/60 focus:border-primary text-[10px] font-black uppercase tracking-widest text-foreground outline-none px-1 py-0.5 transition-all w-[150px] focus:w-[260px] truncate"
+                />
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 pointer-events-none select-none">.docx</span>
+              </div>
+            ) : (
+              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground truncate max-w-[160px]">{fileName}.docx</span>
+            )}
+            {/* Version, word count and reading time removed for clean workspace layout */}
           </div>
         </div>
 
-        {/* Neural Action Center: Symmetrical Command Bridge */}
         {!readOnly && (
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-8 z-[110]">
-            
-            {/* Left Wing: Structure & Weight */}
             <div className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity duration-500">
               <MarkButton type="bold" />
               <MarkButton type="italic" />
@@ -769,16 +637,11 @@ export function EditorLayout() {
               <MarkButton type="strike" />
               <ResetAllFormattingButton />
             </div>
-
-            <div 
-              className="relative flex items-center justify-center px-3 h-12 rounded-none cursor-default group/ia transition-all overflow-hidden border-x border-primary/10 gap-2"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 transition-all" />
+            <div className="relative flex items-center justify-center px-3 h-12 rounded-none cursor-default border-x border-primary/10 gap-2 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10" />
               <BrainCircuit size={14} className="text-primary/60 relative z-10 animate-pulse" />
               <span className="text-[12px] font-black uppercase tracking-[0.2em] relative z-10 text-primary/80">IA</span>
             </div>
-
-            {/* Right Wing: Refinement & Style */}
             <div className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity duration-500">
               <ListButton type="bulletList" />
               <TextAlignButton align="left" />
@@ -795,22 +658,13 @@ export function EditorLayout() {
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 pr-4 border-r border-border/50">
             {!readOnly && <InviteButton room={room || ""} />}
-            <div className="flex items-center gap-3 ml-2">
-              <CollaborationUsers />
-              <ThemeToggle />
-            </div>
+            <CollaborationUsers />
+            <ThemeToggle />
           </div>
           {!readOnly && (
             <div className="flex items-center gap-2 pl-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleManualSave}
-                disabled={isSaving}
-                className="h-8 border-primary/20 hover:border-primary hover:bg-primary/5 text-primary text-[11px] font-bold uppercase tracking-wider gap-1.5 rounded-lg px-3 transition-all duration-300"
-              >
-                <Save className={cn("w-3.5 h-3.5", isSaving && "animate-spin")} />
-                {isSaving ? "Gravando..." : "Salvar"}
+              <Button variant="outline" size="sm" onClick={handleManualSave} disabled={isSaving} className="h-8 border-primary/20 hover:border-primary hover:bg-primary/5 text-primary text-[11px] font-bold uppercase tracking-wider rounded-lg px-3 transition-all">
+                <Save className={cn("w-3.5 h-3.5", isSaving && "animate-spin")} /> {isSaving ? "Gravando..." : "Salvar"}
               </Button>
               <ExportButton />
               <SignModal title={fileName} />
@@ -820,428 +674,218 @@ export function EditorLayout() {
       </header>
 
       {!isFocused && (
-        <div className="absolute inset-0 top-12 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[5px] z-[99999] transition-all duration-500 select-none pointer-events-none">
+        <div className="absolute inset-0 top-12 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[5px] z-[99999] select-none pointer-events-none">
           <div className="text-center p-8 bg-background/90 border border-primary/20 rounded-3xl max-w-md shadow-2xl backdrop-blur-md">
             <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4 animate-pulse">
               <ShieldAlert className="w-6 h-6 text-primary" />
             </div>
-            <h2 className="text-sm font-black uppercase tracking-[0.2em] text-foreground mb-2">Escudo Confidencial Ativo</h2>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-widest leading-relaxed">
-              O foco da tela foi perdido. O conteúdo foi ocultado automaticamente sob a diretiva de proteção de segredo ExtraJus.
-            </p>
+            <h2 className="text-sm font-black uppercase tracking-[0.2em] text-foreground mb-2">Proteção Confidencial</h2>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-widest leading-relaxed">Conteúdo ocultado automaticamente por diretiva de segurança.</p>
           </div>
         </div>
       )}
 
-      <div className={cn(
-        "flex-1 flex pt-12 relative overflow-hidden h-full transition-all duration-700",
-        !isFocused && "filter blur-[45px] select-none pointer-events-none"
-      )}>
-        
-        {/* Left Sidebar: O Códice (The War Library) */}
+      <div className={cn("flex-1 flex pt-12 relative overflow-hidden h-full transition-all duration-700", !isFocused && "filter blur-[45px] select-none pointer-events-none")}>
         {!readOnly && (
-          <div 
-            className={cn(
-              "h-full border-r border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30",
-              leftSidebarOpen ? "w-80 opacity-100" : "w-0 opacity-0 pointer-events-none overflow-hidden"
-            )}
-          >
-            <div className="p-6 flex flex-col h-full overflow-hidden min-h-0">
-              
-              {/* Tipografia Soberana - Fixed at Top */}
-              <div className="space-y-5 relative overflow-hidden group/tipografia mb-8 shrink-0">
+          <aside className={cn("h-full border-r border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", leftSidebarOpen ? "w-80" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
+            <div className="p-6 flex flex-col h-full overflow-hidden">
+              <div className="space-y-5 mb-8 shrink-0">
                 <div className="flex items-center justify-between border-b border-border/40 pb-2.5">
-                  <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
-                      <Zap size={10} className="text-primary" />
-                    </div>
-                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground">Tipografia Soberana</span>
-                  </div>
-                  <span className="text-[10px] opacity-40">🖋️</span>
+                   <div className="flex items-center gap-2">
+                     <Zap size={10} className="text-primary" />
+                     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground">Tipografia</span>
+                   </div>
                 </div>
-                
-                {/* Font Style Selection */}
                 <div className="space-y-2">
-                  <label className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/60">Estilo de Letra</label>
-                  <div className="relative">
-                    <select
-                      value={fontFamily}
-                      onChange={(e) => setFontFamily(e.target.value)}
-                      className="w-full bg-muted/20 hover:bg-muted/40 border border-border/40 hover:border-primary/20 text-foreground text-[10px] font-black uppercase tracking-wider py-2 pl-3 pr-8 rounded-xl appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
+                  <label className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/60">Fonte</label>
+                  <div className="relative group/select">
+                    <button 
+                      onClick={() => setIsFontDropdownOpen(!isFontDropdownOpen)}
+                      className="w-full bg-muted/30 border border-border/60 text-foreground text-[10px] font-bold py-2.5 px-3 rounded-xl flex items-center justify-between transition-all outline-none focus:ring-2 focus:ring-primary/20 hover:border-primary/20 text-left"
                     >
-                      <option value="Lora" className="text-foreground bg-background font-serif">Lora (Serifa)</option>
-                      <option value="Inter" className="text-foreground bg-background font-sans">Inter (Sans)</option>
-                      <option value="Times New Roman" className="text-foreground bg-background font-serif">Times (Formal)</option>
-                      <option value="JetBrains Mono" className="text-foreground bg-background font-mono">JetBrains (Brutal)</option>
-                    </select>
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground/60">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-                    </div>
+                      <span>
+                        {fontFamily === "Lora" && "Lora (Serifa)"}
+                        {fontFamily === "Inter" && "Inter (Sans)"}
+                        {fontFamily === "Times New Roman" && "Times (Formal)"}
+                        {fontFamily === "JetBrains Mono" && "JetBrains (Mono)"}
+                      </span>
+                      <ChevronDown size={12} className={cn("text-muted-foreground/60 transition-transform duration-200", isFontDropdownOpen && "rotate-180")} />
+                    </button>
+
+                    {isFontDropdownOpen && (
+                      <>
+                        <div 
+                          className="fixed inset-0 z-40" 
+                          onClick={() => setIsFontDropdownOpen(false)} 
+                        />
+                        <div className="absolute left-0 mt-1.5 w-full bg-card border border-border rounded-xl shadow-2xl z-50 p-1.5 space-y-1 animate-in fade-in slide-in-from-top-1 duration-200">
+                          {[
+                            { value: "Lora", label: "Lora (Serifa)" },
+                            { value: "Inter", label: "Inter (Sans)" },
+                            { value: "Times New Roman", label: "Times (Formal)" },
+                            { value: "JetBrains Mono", label: "JetBrains (Mono)" }
+                          ].map((font) => (
+                            <button
+                              key={font.value}
+                              onClick={() => {
+                                setFontFamily(font.value)
+                                setIsFontDropdownOpen(false)
+                              }}
+                              className={cn(
+                                "w-full text-left text-[10px] py-2 px-2.5 rounded-lg flex items-center justify-between font-bold transition-all",
+                                fontFamily === font.value
+                                  ? "bg-primary text-primary-foreground"
+                                  : "text-foreground/70 hover:bg-primary/5 hover:text-primary"
+                              )}
+                            >
+                              <span>{font.label}</span>
+                              {fontFamily === font.value && <Check size={10} className="shrink-0" />}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
-
-                {/* Font Size Selector (with Shadcn Slider) */}
                 <div className="space-y-2.5">
                   <div className="flex justify-between items-center">
-                    <label className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/60">Tamanho da Letra</label>
-                    <span className="text-[9px] font-black text-primary bg-primary/10 px-2.5 py-0.5 rounded-full border border-primary/10">{fontSize}px</span>
+                    <label className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/60">Tamanho</label>
+                    <span className="text-[9px] font-black text-primary bg-primary/10 px-2 rounded-full border border-primary/10">{fontSize}px</span>
                   </div>
-                  <div className="px-1 py-1.5 flex items-center gap-3">
-                    <span className="text-[9px] font-black text-muted-foreground/40">A-</span>
-                    <Slider
-                      value={[fontSize]}
-                      onValueChange={(val) => { if (Array.isArray(val)) { setFontSize(val[0]); } else if (typeof val === "number") { setFontSize(val); } }}
-                      min={12}
-                      max={26}
-                      step={1}
-                      className="flex-1 opacity-70 hover:opacity-100 transition-opacity"
-                    />
-                    <span className="text-[9px] font-black text-muted-foreground/40">A+</span>
-                  </div>
+                  <Slider value={[fontSize]} onValueChange={(val) => setFontSize(Array.isArray(val) ? val[0] : val)} min={12} max={26} step={1} />
                 </div>
               </div>
-
-              <div className="flex items-center gap-3 mb-6 shrink-0 pt-10 border-t border-border/40 mt-2">
-                <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-sm">
-                  <Library size={16} className="text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Biblioteca</h3>
-                  <p className="text-[8px] font-bold text-primary/60 uppercase tracking-widest">Arsenal Ativo</p>
-                </div>
+              <div className="flex items-center gap-3 mb-6 shrink-0 pt-10 border-t border-border/40">
+                <Library size={16} className="text-primary" />
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">Biblioteca</h3>
               </div>
-
-              {/* Search Box - Live Filtering */}
               <div className="relative mb-6 shrink-0">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={12} />
-                <input 
-                  type="text"
-                  placeholder="Filtrar arsenal..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-muted/30 border border-border/60 hover:border-primary/20 focus:border-primary rounded-xl pl-8 pr-3 py-2 text-[10px] text-foreground focus:outline-none transition-all placeholder:text-muted-foreground/40 font-semibold"
-                />
+                <input type="text" placeholder="Filtrar documentos..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-muted/30 border border-border/60 rounded-xl pl-8 pr-3 py-2 text-[10px] placeholder:text-muted-foreground/40 font-semibold" />
               </div>
-
-              <div className="flex-1 -mx-2 px-2 overflow-y-auto custom-scrollbar min-h-0">
+              <ScrollArea className="flex-1 -mx-2 px-2">
                 <div className="space-y-6 pb-6">
-                  {/* Seus Pactos (User Contracts) */}
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between border-b border-border pb-1.5">
-                      <p className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.25em]">Seus Pactos</p>
-                      <span className="text-[9px] opacity-40">🛡️</span>
-                    </div>
+                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.25em] border-b border-border pb-1">Seus Documentos</p>
                     <div className="space-y-0.5">
-                      {filteredContracts.length > 0 ? filteredContracts.map(contract => (
-                        <Link key={contract.id} href={`/editor?room=${contract.id}`} className="w-full text-left text-[11px] py-2 px-2.5 hover:bg-primary/5 hover:text-primary rounded-lg transition-all duration-300 group/item flex items-center justify-between font-bold text-foreground/70">
-                          <span className="truncate">{contract.title || "Documento Sem Nome"}</span>
-                          <Zap size={10} className={cn("opacity-0 group-hover/item:opacity-100 transition-opacity", contract.status === 'signed' ? "text-emerald-500" : "text-primary")} />
+                      {filteredContracts.map(c => (
+                        <Link key={c.id} href={`/editor?room=${c.id}`} className="w-full text-left text-[11px] py-2 px-2.5 hover:bg-primary/5 hover:text-primary rounded-lg flex items-center justify-between font-bold text-foreground/70">
+                          <span className="truncate">{c.title || "Documento"}</span>
+                          <Zap size={10} className={cn("opacity-0 hover:opacity-100", c.status === 'signed' ? "text-emerald-500" : "text-primary")} />
                         </Link>
-                      )) : (
-                        <p className="text-[9px] text-muted-foreground px-2 py-1.5 italic font-semibold">Nenhum pacto encontrado...</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Arsenal de Modelos (Global Templates) */}
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between border-b border-border pb-1.5">
-                      <p className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.25em]">Modelos Soberanos</p>
-                      <span className="text-[9px] opacity-40">📖</span>
-                    </div>
-                    <div className="space-y-0.5">
-                      {filteredTemplates.length > 0 ? filteredTemplates.map(template => (
-                        <Link key={template.id} href={`/editor?template=${template.slug}`} className="w-full text-left text-[11px] py-2 px-2.5 hover:bg-primary/5 hover:text-primary rounded-lg transition-all duration-300 group/item flex items-center justify-between font-bold text-foreground/70">
-                          <span className="truncate">{template.title}</span>
-                          <ArrowRight size={10} className="opacity-0 group-hover/item:opacity-100 transition-opacity text-primary" />
-                        </Link>
-                      )) : (
-                        <p className="text-[9px] text-muted-foreground px-2 py-1.5 italic font-semibold">Nenhum modelo encontrado...</p>
-                      )}
+                      ))}
                     </div>
                   </div>
                 </div>
-              </div>
+              </ScrollArea>
             </div>
-          </div>
+          </aside>
         )}
 
-        {/* Central Sanctuary - The Infinite Paper */}
         <main className="flex-1 overflow-y-auto custom-scrollbar bg-transparent px-8 py-8 relative z-10">
-          <div className="w-full max-w-[840px] mx-auto bg-card border border-border/40 rounded-3xl px-12 md:px-20 pt-10 pb-16 md:pt-16 md:pb-24 relative shadow-[0_4px_30px_rgba(0,0,0,0.2)] animate-in fade-in zoom-in-95 duration-1000 min-h-[800px] md:min-h-[1188px]">
-             
-             {/* Premium Paper Texture */}
-             <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-3xl" />
-             
-             {/* Focus Light Effect */}
-             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-32 bg-primary/5 blur-[80px] pointer-events-none rounded-full" />
-
-             <div className="relative z-10 selection:bg-primary/30">
+          <div className="w-full max-w-[840px] mx-auto bg-card border border-border/40 rounded-3xl px-12 md:px-20 pt-10 pb-16 md:pt-16 md:pb-24 relative shadow-2xl animate-in fade-in duration-1000 min-h-[800px] md:min-h-[1188px]">
+             <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-3xl" />
+             <div className="relative z-10">
                {!readOnly && <BubbleMenu editor={editor} />}
                <EditorContentArea />
              </div>
-
-             {/* Fixed Transparent AI Command Center */}
              {!readOnly && (
-               <div className="fixed bottom-12 left-1/2 -translate-x-1/2 w-full max-w-[540px] z-[100] px-4 animate-in slide-in-from-bottom-10 duration-1000">
+               <div className="fixed bottom-12 left-1/2 -translate-x-1/2 w-full max-w-[540px] z-[100] px-4">
                   <AiMenu plain={true} />
                </div>
              )}
           </div>
         </main>
 
-        {/* Right Sidebar: A Alquimia (The Oracle of Lilith) or Sealing Panel */}
-        <div 
-          className={cn(
-            "h-full border-l border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30",
-            rightSidebarOpen ? "w-96 opacity-100" : "w-0 opacity-0 pointer-events-none overflow-hidden"
-          )}
-        >
+        <aside className={cn("h-full border-l border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", rightSidebarOpen ? "w-96" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
           {readOnly ? (
-            <div className="p-6 flex flex-col h-full justify-between relative group/oracle">
+            <div className="p-6 flex flex-col h-full justify-between">
               <div className="space-y-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
-                    <ShieldCheck size={20} className="text-primary animate-pulse" />
-                  </div>
-                  <div>
-                    <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Selamento de Pacto</h3>
-                    <span className="text-[8px] text-primary font-bold uppercase tracking-widest font-black">Painel do Signatário</span>
-                  </div>
+                  <ShieldCheck size={20} className="text-primary animate-pulse" />
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em]">Assinatura Digital</h3>
                 </div>
-
                 <div className="space-y-4">
-                  <p className="text-[11px] leading-relaxed text-muted-foreground font-medium">
-                    Você foi convidado para selar digitalmente este pacto soberano. Revise o documento à esquerda (somente leitura) e preencha as credenciais de autenticação para assinar.
-                  </p>
-
-                  <div className="h-px bg-border my-2" />
-
+                  <p className="text-[11px] leading-relaxed text-muted-foreground">Revise o documento e preencha as credenciais para assinar.</p>
                   <div className="space-y-3">
-                    <label className="text-[9px] font-black text-muted-foreground uppercase tracking-wider">E-mail Convidado</label>
-                    <input 
-                      type="email"
-                      value={signerEmail}
-                      onChange={(e) => setSignerEmail(e.target.value)}
-                      placeholder="Seu e-mail de convocação..."
-                      className="w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-xs text-foreground focus:outline-none focus:border-primary transition-all font-semibold"
-                    />
+                    <label className="text-[9px] font-black text-muted-foreground uppercase">E-mail</label>
+                    <input type="email" value={signerEmail} onChange={(e) => setSignerEmail(e.target.value)} placeholder="Seu e-mail..." className="w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-xs font-semibold" />
                   </div>
-
                   <div className="space-y-3">
-                    <label className="text-[9px] font-black text-muted-foreground uppercase tracking-wider">Código de Selamento (6 dígitos)</label>
-                    <input 
-                      type="text"
-                      maxLength={6}
-                      value={sealingCode}
-                      onChange={(e) => setSealingCode(e.target.value.replace(/\D/g, ''))}
-                      placeholder="Ex: 123456"
-                      className="w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-center text-lg font-black tracking-[0.5em] text-foreground focus:outline-none focus:border-primary transition-all"
-                    />
+                    <label className="text-[9px] font-black text-muted-foreground uppercase">Código (6 dígitos)</label>
+                    <input type="text" maxLength={6} value={sealingCode} onChange={(e) => setSealingCode(e.target.value.replace(/\D/g, ''))} placeholder="123456" className="w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-center text-lg font-black tracking-[0.5em]" />
                   </div>
-
                   <div className="flex items-start gap-3 mt-4">
-                    <input 
-                      type="checkbox"
-                      id="consent"
-                      checked={consentCheck}
-                      onChange={(e) => setConsentCheck(e.target.checked)}
-                      className="mt-0.5 rounded border-border text-primary focus:ring-0"
-                    />
-                    <label htmlFor="consent" className="text-[9px] text-muted-foreground leading-normal font-semibold cursor-pointer">
-                      Declaro que li e concordo com os termos deste pacto e dou meu consentimento digital irrevogável sob as penas da lei.
-                    </label>
+                    <input type="checkbox" id="consent" checked={consentCheck} onChange={(e) => setConsentCheck(e.target.checked)} className="mt-0.5 rounded text-primary focus:ring-0" />
+                    <label htmlFor="consent" className="text-[9px] text-muted-foreground leading-normal font-semibold cursor-pointer">Declaro que li e concordo com os termos.</label>
                   </div>
                 </div>
               </div>
-
-              <div className="space-y-4 mt-auto">
-                <Button 
-                  onClick={handleConfirmSignature}
-                  disabled={isSealing || !consentCheck || !sealingCode}
-                  className="w-full bg-primary hover:opacity-90 text-primary-foreground font-black text-[10px] uppercase tracking-widest py-6 rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(var(--primary-rgb),0.1)] active:scale-95"
-                >
-                  {isSealing ? "Selando Instrumento..." : "Selar Instrumento Jurídico"}
-                </Button>
-
-                <div className="text-center">
-                  <span className="text-[7px] text-muted-foreground uppercase tracking-widest opacity-50 font-black">ExtraJus AI • Ritual Sovereign Protocol</span>
-                </div>
-              </div>
+              <Button onClick={handleConfirmSignature} disabled={isSealing || !consentCheck} className="w-full bg-primary py-6 rounded-2xl font-black text-[10px] uppercase">Assinar Instrumento</Button>
             </div>
           ) : (
-            <div className="p-6 flex flex-col h-full overflow-hidden group/oracle">
-              <Tabs value={oracleTab} onValueChange={setOracleTab} className="w-full h-full flex flex-col">
-                <TabsList className="grid w-full grid-cols-2 bg-muted/40 rounded-xl h-9 p-0.5 border border-border items-center mb-6">
-                  <TabsTrigger value="insights" className="rounded-lg text-[9px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all h-full flex items-center justify-center">
-                    Insights
-                  </TabsTrigger>
-                  <TabsTrigger value="logs" className="rounded-lg text-[9px] font-black uppercase tracking-widest data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all h-full flex items-center justify-center">
-                    Logs
-                  </TabsTrigger>
+            <div className="p-6 flex flex-col h-full overflow-hidden">
+              <Tabs value={oracleTab} onValueChange={setOracleTab} className="h-full flex flex-col">
+                <TabsList className="grid w-full grid-cols-2 bg-muted/60 p-1 rounded-xl h-10 mb-6 border border-border/40">
+                  <TabsTrigger value="insights" className="text-[10px] font-bold uppercase tracking-wider transition-all">Auditoria IA</TabsTrigger>
+                  <TabsTrigger value="logs" className="text-[10px] font-bold uppercase tracking-wider transition-all">Histórico</TabsTrigger>
                 </TabsList>
-
                 <div className="flex-1 overflow-hidden">
-                  <TabsContent value="insights" className="h-full m-0 flex flex-col space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 border-none">
+                  <TabsContent value="insights" className="h-full m-0 flex flex-col space-y-6">
                     <div className="flex items-center justify-between border-b border-border/40 pb-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
-                          <BrainCircuit size={16} className={cn("text-primary", isAuditing && "animate-pulse")} />
-                        </div>
-                        <div>
-                          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Alquimia AI</h3>
-                          <div className="flex items-center gap-1.5 mt-0.5">
-                            <div className={cn("w-1.5 h-1.5 rounded-full", isAuditing ? "bg-amber-500 animate-ping" : "bg-green-500")} />
-                            <span className={cn("text-[7px] font-bold uppercase tracking-widest", isAuditing ? "text-amber-500" : "text-green-500")}>
-                              {isAuditing ? "Auditoria em Curso" : "Sincronizada"}
-                            </span>
-                          </div>
-                        </div>
+                        <BrainCircuit size={16} className={cn("text-primary", isAuditing && "animate-pulse")} />
+                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">Radar Analítico</h3>
                       </div>
-
-                      <Button 
-                        onClick={runAudit}
-                        disabled={isAuditing}
-                        variant="outline" 
-                        size="sm" 
-                        className="h-7 px-3 text-[9px] font-black uppercase tracking-widest text-primary border-primary/20 hover:bg-primary/5 hover:border-primary/40 rounded-lg transition-all"
-                      >
-                        <Zap size={10} className="mr-1.5" /> Auditoria
-                      </Button>
+                      <Button onClick={runAudit} disabled={isAuditing} variant="outline" size="sm" className="h-8 text-[10px] font-bold uppercase tracking-wider text-primary border-primary/20 hover:bg-primary/5 hover:border-primary transition-all">Analisar</Button>
                     </div>
-
-                    <ScrollArea className="flex-1 -mx-2 px-2 custom-scrollbar">
-                      <div className="space-y-6 pb-6">
-                        <div className="space-y-4">
-                          <h4 className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.25em] border-l-2 border-primary pl-2.5">
-                            Status de Blindagem
-                          </h4>
-
+                    <ScrollArea className="flex-1 -mx-2 px-2">
+                       <div className="space-y-6 pb-6">
                           {!hasAudited ? (
-                            <div className="py-16 text-center space-y-4 border border-dashed border-border rounded-2xl bg-muted/5 transition-colors">
-                              <Brain size={28} className="mx-auto text-muted-foreground animate-pulse" />
-                              <div className="space-y-1 px-4">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-foreground">
-                                  Análise Neural Inativa
-                                </p>
-                                <p className="text-[9px] text-muted-foreground max-w-[200px] mx-auto leading-relaxed">
-                                  Invoque o oráculo da IA Lilith para escanear brechas, ambiguidades e blindar este instrumento.
-                                </p>
-                              </div>
-                              <Button 
-                                onClick={runAudit}
-                                disabled={isAuditing}
-                                className="bg-primary hover:opacity-90 text-primary-foreground font-black text-[9px] uppercase tracking-widest h-8 px-4 rounded-xl transition-all"
-                              >
-                                {isAuditing ? "Escaneando..." : "Iniciar Escaneamento"}
-                              </Button>
+                            <div className="py-16 text-center space-y-4 border border-dashed border-border rounded-2xl">
+                              <Brain size={28} className="mx-auto text-muted-foreground opacity-20" />
+                              <p className="text-[11px] font-medium text-muted-foreground/80 leading-relaxed px-4">Utilize a IA para escanear inconsistências e otimizar este documento.</p>
+                              <Button onClick={runAudit} disabled={isAuditing} className="bg-primary hover:bg-primary/95 text-primary-foreground text-[10px] font-bold uppercase tracking-wider h-9 px-6 rounded-xl transition-all shadow-sm active:scale-95">Iniciar Análise</Button>
                             </div>
                           ) : (
                             <div className="space-y-5">
-                              {/* Shielding Health Panel */}
-                              <div className="p-5 rounded-2xl bg-muted/30 border border-border space-y-4">
+                              <div className="p-5 rounded-2xl bg-muted/30 border space-y-4">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
-                                    Score de Blindagem
-                                  </span>
-                                  <span className={cn("text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full border", auditStatus.color)}>
-                                    {auditStatus.label}
-                                  </span>
+                                  <span className="text-[9px] font-black text-muted-foreground uppercase">Score de Segurança</span>
+                                  <span className={cn("text-[9px] font-black uppercase px-2 py-0.5 rounded-full", auditStatus.color)}>{auditStatus.label}</span>
                                 </div>
-
-                                <div className="flex items-baseline gap-2">
-                                  <span className="text-5xl font-black tracking-tighter text-foreground">
-                                    {auditScore}
-                                  </span>
-                                  <span className="text-lg font-bold text-primary">%</span>
+                                <div className="flex items-baseline gap-1">
+                                  <span className="text-4xl font-black">{auditScore}</span>
+                                  <span className="text-sm font-bold text-primary">%</span>
                                 </div>
-
-                                <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                                  <div 
-                                    className={cn("h-full transition-all duration-1000", auditStatus.barColor)}
-                                    style={{ width: `${auditScore}%` }} 
-                                  />
-                                </div>
-
-                                <p className="text-[9px] text-muted-foreground leading-relaxed italic">
-                                  "{auditStatus.desc}"
-                                </p>
+                                <p className="text-[9px] text-muted-foreground leading-relaxed italic">{auditStatus.desc}</p>
                               </div>
-
-                              {/* Cláusulas de Risco list */}
-                              {auditResults.length > 0 ? (
-                                <div className="space-y-3">
-                                  <h5 className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-2 pl-1">
-                                    Vulnerabilidades no Pacto ({auditResults.length})
-                                  </h5>
-                                  <div className="space-y-3">
-                                     {auditResults.map((risk) => (
-                                       <div key={risk.id} className="p-4 rounded-2xl bg-red-500/[0.02] border border-red-500/10 space-y-2.5 group/risk hover:border-red-500/25 transition-all">
-                                         <div className="flex items-center justify-between">
-                                           <span className="text-[9px] font-black text-red-400 uppercase tracking-widest flex items-center gap-1.5">
-                                             <ShieldAlert size={10} /> Cláusula de Risco
-                                           </span>
-                                           <span className="text-[8px] font-bold text-red-500/70 uppercase">Score -15%</span>
-                                         </div>
-                                         <p className="text-[10px] font-bold text-foreground italic">"{risk.originalText}"</p>
-                                         <p className="text-[9px] text-muted-foreground leading-relaxed">{risk.reason}</p>
-                                         <Button size="sm" className="w-full bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground text-[8px] font-black uppercase tracking-widest h-8 rounded-xl transition-all">
-                                            Aplicar Sugestão de Blindagem
-                                         </Button>
-                                       </div>
-                                     ))}
-                                  </div>
+                              {auditResults.map((risk) => (
+                                <div key={risk.id} className="p-4 rounded-2xl border bg-red-500/[0.02] border-red-500/10 space-y-2">
+                                  <span className="text-[8px] font-black text-red-400 uppercase">Ponto de Atenção</span>
+                                  <p className="text-[10px] font-bold italic">"{risk.originalText}"</p>
+                                  <p className="text-[9px] text-muted-foreground">{risk.reason}</p>
+                                  <Button size="sm" className="w-full bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground text-[9px] font-bold uppercase tracking-wider h-9 rounded-xl transition-all">Otimizar Cláusula</Button>
                                 </div>
-                              ) : (
-                                <div className="p-6 text-center space-y-3 border border-dashed border-[#c0ff00]/30 bg-[#c0ff00]/[0.01] rounded-2xl">
-                                  <ShieldCheck size={28} className="mx-auto text-[#c0ff00]" />
-                                  <p className="text-[10px] font-black uppercase tracking-widest text-[#c0ff00]">Blindagem Total Confirmada</p>
-                                  <p className="text-[9px] text-muted-foreground max-w-[200px] mx-auto leading-relaxed">Nenhuma brecha estrutural detectada pela rede neural da IA Lilith. O pacto está chancelado.</p>
-                                </div>
-                              )}
+                              ))}
                             </div>
                           )}
-                        </div>
-                      </div>
+                       </div>
                     </ScrollArea>
                   </TabsContent>
-
-                  <TabsContent value="logs" className="h-full m-0 flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-500 border-none">
-                    <ScrollArea className="flex-1 -mx-2 px-2 custom-scrollbar">
+                  <TabsContent value="logs" className="h-full m-0">
+                    <ScrollArea className="flex-1 -mx-2 px-2">
                       <div className="space-y-4 pb-6">
-                        <div className="flex items-center justify-between mb-4 border-b border-border/40 pb-2">
-                          <h4 className="text-[8px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
-                            <History size={10} className="text-primary" />
-                            Histórico do Pacto
-                          </h4>
-                        </div>
-                        
-                        {historyLogs.length > 0 ? historyLogs.map((log) => (
-                          <div key={log.id} className="p-4 rounded-2xl bg-muted/30 border border-border hover:border-primary/30 transition-all group/log cursor-pointer">
+                        {historyLogs.map((log) => (
+                          <div key={log.id} className="p-4 rounded-2xl bg-muted/30 border border-border">
                             <div className="flex items-center justify-between mb-2">
-                              <span className="text-[10px] font-black text-primary uppercase tracking-widest">{log.version}</span>
+                              <span className="text-[10px] font-black text-primary">{log.version}</span>
                               <span className="text-[8px] font-bold text-muted-foreground uppercase">{log.time}</span>
                             </div>
-                            <p className="text-[12px] font-bold text-foreground mb-1 group-hover/log:text-primary transition-colors">{log.action}</p>
-                            <div className="flex items-center gap-2">
-                               <div className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center text-[8px] font-black text-primary">
-                                 {log.user[0]}
-                               </div>
-                               <span className="text-[10px] font-medium text-muted-foreground">{log.user}</span>
-                            </div>
+                            <p className="text-[12px] font-bold mb-1">{log.action}</p>
+                            <span className="text-[10px] text-muted-foreground">{log.user}</span>
                           </div>
-                        )) : (
-                          <div className="py-16 text-center space-y-3 opacity-20 border border-dashed border-border rounded-2xl">
-                            <History size={24} className="mx-auto" />
-                            <p className="text-[8px] font-black uppercase tracking-widest">Nenhum log de alteração encontrado.</p>
-                          </div>
-                        )}
-
-                        <div className="pt-8 text-center opacity-20">
-                          <div className="h-px w-full bg-gradient-to-r from-transparent via-border to-transparent mb-6" />
-                          <Cpu size={24} className="mx-auto mb-3" />
-                          <p className="text-[8px] font-black uppercase tracking-[0.4em]">End of Log Archive</p>
-                        </div>
+                        ))}
                       </div>
                     </ScrollArea>
                   </TabsContent>
@@ -1249,198 +893,81 @@ export function EditorLayout() {
               </Tabs>
             </div>
           )}
-        </div>
+        </aside>
       </div>
-
     </div>
   )
 }
 
 export function EditorProvider(props: EditorProviderProps) {
-  const { provider, ydoc, placeholder = "Comece a redigir a cláusula...", geminiKey, templateSlug, readOnly } = props
-
+  const { provider, ydoc, placeholder = "Comece a redigir...", geminiKey, templateSlug, readOnly } = props
   const { user } = useUser()
   const { setTocContent } = useToc()
 
   const editor = useEditor({
     immediatelyRender: false,
     editable: !readOnly,
-    editorProps: {
-      attributes: {
-        class: "notion-like-editor",
-      },
-      // Prevent automatic scroll into view when editor is focused
-      // This is crucial for header buttons to work without jumping the page
-      scrollThreshold: 0,
-      scrollMargin: 0,
-    },
+    editorProps: { attributes: { class: "notion-like-editor" }, scrollThreshold: 0, scrollMargin: 0 },
     extensions: [
-      StarterKit.configure({
-        undoRedo: false,
-        horizontalRule: false,
-        dropcursor: {
-          width: 2,
-        },
-      }),
+      StarterKit.configure({ undoRedo: false, horizontalRule: false, dropcursor: { width: 2 } }),
       HorizontalRule,
       TextAlign.configure({ types: ["heading", "paragraph", "legalNode"] }),
       Collaboration.configure({ document: ydoc }),
-      CollaborationCaret.configure({
-        provider,
-        user: { id: user.id, name: user.name, color: user.color },
-      }),
-      Placeholder.configure({
-        placeholder,
-        emptyNodeClass: "is-empty with-slash",
-      }),
-      TableKit.configure({
-        table: {
-          resizable: true,
-          cellMinWidth: 120,
-        },
-      }),
-      NodeBackground.configure({
-        types: [
-          "paragraph",
-          "heading",
-          "blockquote",
-          "tableCell",
-          "tableHeader",
-          "tocNode",
-          "legalNode",
-        ],
-      }),
-      NodeAlignment,
-      Superscript,
-      Subscript,
-      Indent,
-      TextStyle,
-      Color,
-      Highlight.configure({ multicolor: true }),
-      Selection,
-      Image,
+      CollaborationCaret.configure({ provider, user: { id: user.id, name: user.name, color: user.color } }),
+      Placeholder.configure({ placeholder, emptyNodeClass: "is-empty with-slash" }),
+      TableKit.configure({ table: { resizable: true, cellMinWidth: 120 } }),
+      NodeBackground.configure({ types: ["paragraph", "heading", "blockquote", "tableCell", "tableHeader", "tocNode", "legalNode"] }),
+      NodeAlignment, Superscript, Subscript, Indent, TextStyle, Color, Highlight.configure({ multicolor: true }), Selection, Image,
       TableOfContents.configure({
         getIndex: getHierarchicalIndexes,
         onUpdate(content) {
           setTocContent((prev: any) => {
             if (!prev || prev.length !== content.length) return content
             for (let i = 0; i < prev.length; i++) {
-              if (
-                prev[i].id !== content[i].id || 
-                prev[i].textContent !== content[i].textContent || 
-                prev[i].level !== content[i].level ||
-                prev[i].isActive !== content[i].isActive
-              ) {
-                return content
-              }
+              if (prev[i].id !== content[i].id || prev[i].textContent !== content[i].textContent || prev[i].level !== content[i].level || prev[i].isActive !== content[i].isActive) return content
             }
             return prev
           })
         },
       }),
-      TableHandleExtension,
-      ListNormalizationExtension,
-      LegalNode,
-      VariableNode,
-      ImageUploadNode.configure({
-        accept: "image/*",
-        maxSize: MAX_FILE_SIZE,
-        limit: 3,
-        upload: handleImageUpload,
-        onError: (error) => console.error("Upload failed:", error),
-      }),
-      UniqueID.configure({
-        types: [
-          "table",
-          "paragraph",
-          "bulletList",
-          "orderedList",
-          "heading",
-          "blockquote",
-          "codeBlock",
-          "tocNode",
-          "legalNode",
-        ],
-        filterTransaction: (transaction) => !isChangeOrigin(transaction),
-      }),
-      Typography,
-      UiState,
-      TocNode.configure({
-        topOffset: 48,
-      }),
-      Gemini.configure({
-        apiKey: geminiKey || "",
-      }),
-      // Underline,
-      /* TiptapLink.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          class: "contract-link",
-        },
-      }), */
-      BubbleMenuExtension,
+      TableHandleExtension, ListNormalizationExtension, LegalNode, VariableNode,
+      ImageUploadNode.configure({ accept: "image/*", maxSize: MAX_FILE_SIZE, limit: 3, upload: handleImageUpload, onError: (error) => console.error("Upload failed:", error) }),
+      UniqueID.configure({ types: ["table", "paragraph", "bulletList", "orderedList", "heading", "blockquote", "codeBlock", "tocNode", "legalNode"], filterTransaction: (transaction) => !isChangeOrigin(transaction) }),
+      Typography, UiState, TocNode.configure({ topOffset: 48 }), Gemini.configure({ apiKey: geminiKey || "" }), BubbleMenuExtension,
     ],
   })
 
-  // Enforce readOnly/editable state dynamically
-  useEffect(() => {
-    if (!editor) return
-    editor.setEditable(!readOnly)
-  }, [editor, readOnly])
+  useEffect(() => { if (editor) editor.setEditable(!readOnly) }, [editor, readOnly])
 
-  // Template Pre-population Logic
   useEffect(() => {
     if (!editor || !templateSlug) return
-
     const checkAndFill = async () => {
-      // Small delay to ensure Yjs has loaded existing content if any
       await new Promise(resolve => setTimeout(resolve, 500))
-      
       if (editor.isEmpty) {
-        console.log(`[NotionEditor] Pre-populating with template: ${templateSlug}`)
-        const supabase = createClient()
-        const { data } = await supabase
-          .from("templates")
-          .select("content")
-          .eq("slug", templateSlug)
-          .single()
-
+        const { data } = await createClient().from("templates").select("content").eq("slug", templateSlug).single()
         if (data?.content) {
           editor.commands.setContent(data.content)
-          toast.success("Modelo carregado no editor.")
+          toast.success("Modelo carregado.")
         }
       }
     }
-
     checkAndFill()
   }, [editor, templateSlug])
 
   const contextValue = useMemo(() => (editor ? { editor } : null), [editor])
-  const memoizedLayout = useMemo(() => <EditorLayout />, [])
-
-  if (!editor || !contextValue) {
-    return <LoadingSpinner />
-  }
+  if (!editor || !contextValue) return <LoadingSpinner />
 
   return (
     <EditorContext.Provider value={contextValue}>
-      {memoizedLayout}
+      <EditorLayout />
     </EditorContext.Provider>
   )
 }
 
-/**
- * Full editor with all necessary providers, ready to use with just a room ID
- */
-export function NotionEditor({
-  room,
-  placeholder = "Start writing...",
-  templateSlug,
-  readOnly,
-}: NotionEditorProps) {
+export function NotionEditor({ room, placeholder = "Comece a redigir...", templateSlug, readOnly }: NotionEditorProps) {
   return (
     <UserProvider>
-      <CollabProvider room={room}>
+      <CollabProvider room={room} key={room}>
         <AiProvider>
           <TocProvider>
             <AiMenuStateProvider>
@@ -1453,43 +980,12 @@ export function NotionEditor({
   )
 }
 
-/**
- * Internal component that handles the editor loading state
- */
-export function NotionEditorContent({ 
-  placeholder, 
-  templateSlug,
-  readOnly
-}: { 
-  placeholder?: string, 
-  templateSlug?: string | null,
-  readOnly?: boolean
-}) {
+export function NotionEditorContent({ placeholder, templateSlug, readOnly }: { placeholder?: string, templateSlug?: string | null, readOnly?: boolean }) {
   const { provider, ydoc, setupError: collabSetupError } = useCollab()
   const { geminiKey, setupError: aiSetupError } = useAi()
 
-  // Show setup error if either collab or AI setup failed
-  if (collabSetupError || aiSetupError) {
-    return (
-      <SetupErrorMessage
-        aiSetupError={aiSetupError}
-        collabSetupError={collabSetupError}
-      />
-    )
-  }
+  if (collabSetupError || aiSetupError) return <SetupErrorMessage aiSetupError={aiSetupError} collabSetupError={collabSetupError} />
+  if (!provider || !geminiKey) return <LoadingSpinner />
 
-  if (!provider || !geminiKey) {
-    return <LoadingSpinner />
-  }
-
-  return (
-    <EditorProvider
-      provider={provider}
-      ydoc={ydoc}
-      placeholder={placeholder}
-      geminiKey={geminiKey}
-      templateSlug={templateSlug}
-      readOnly={readOnly}
-    />
-  )
+  return <EditorProvider provider={provider} ydoc={ydoc} placeholder={placeholder} geminiKey={geminiKey} templateSlug={templateSlug} readOnly={readOnly} />
 }

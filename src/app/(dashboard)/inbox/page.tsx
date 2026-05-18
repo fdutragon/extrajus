@@ -10,6 +10,7 @@ import {
   Zap, Wand2, Eye, Compass, Activity, CheckCircle, Wifi, Clock, MessageSquare 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -24,26 +25,21 @@ export default function InboxPage() {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [selectedNotification, setSelectedNotification] = useState<any>(null);
   
-  // Search & Filter
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // Admin Toggle State
   const [isAdminView, setIsAdminView] = useState(false);
   const [isUserAdmin, setIsUserAdmin] = useState(false);
 
-  // Reply state
   const [replyText, setReplyText] = useState("");
   const [submittingReply, setSubmittingReply] = useState(false);
   const [replies, setReplies] = useState<any[]>([]);
   const [loadingReplies, setLoadingReplies] = useState(false);
 
-  // Support Ticket States
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [supportMessage, setSupportMessage] = useState("");
   const [isSupporting, setIsSupporting] = useState(false);
 
-  // AI Simulated Typing State
   const [isAiTyping, setIsAiTyping] = useState(false);
 
   const supabase = createClient();
@@ -95,21 +91,19 @@ export default function InboxPage() {
       if (currentUser) {
         const isSelfAdmin = adminEmails.includes(currentUser.email || '');
         setIsUserAdmin(isSelfAdmin);
-        setIsAdminView(isSelfAdmin); // Liga por padrão se for admin
+        setIsAdminView(isSelfAdmin); 
         fetchNotifications(currentUser.id, isSelfAdmin);
       }
     }
     init();
   }, []);
 
-  // Rolar para o final do chat quando novas respostas carregarem
   useEffect(() => {
     setTimeout(() => {
       chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100);
   }, [replies, selectedNotification]);
 
-  // Realtime para atualizações nas notificações
   useEffect(() => {
     if (!user?.id) return;
 
@@ -151,7 +145,6 @@ export default function InboxPage() {
     };
   }, [user?.id, isAdminView]);
 
-  // Escuta de Realtime para réplicas adicionadas no histórico
   useEffect(() => {
     if (!selectedNotification?.id) return;
 
@@ -312,17 +305,16 @@ export default function InboxPage() {
     }
   };
 
-  // Simulated AI typing copilot action
   const handleSelectAISuggestion = (suggestionType: string) => {
     if (isAiTyping) return;
     
     let text = "";
     if (suggestionType === "polite") {
-      text = "Saudações, Recruta. Analisamos sua solicitação sobre o sistema e confirmamos que nossa equipe técnica já está auditando os parâmetros contratuais. Fique tranquilo, o acompanhamento é feito em tempo real por aqui.";
+      text = "Olá. Analisamos sua solicitação e confirmamos que nossa equipe técnica já está auditando os parâmetros do documento. Fique tranquilo, o acompanhamento é feito em tempo real por aqui.";
     } else if (suggestionType === "technical") {
-      text = "PROTOCOL CHECKPOINT: Conexão segura estabelecida. A análise heurística do seu documento indica compatibilidade de 99.8% com nossos templates de proteção de ativos. Proposta de blindagem aceita e em fila de processamento.";
-    } else if (suggestionType === "brutal") {
-      text = "Porra, recruta! Sua solicitação de suporte já está na mesa dos arquitetos da ExtraJus. Pare de atualizar a página à toa e confie no processo de dominação. Nós resolveremos isso com força letal em minutos.";
+      text = "PROTOCOLO DE SEGURANÇA: Conexão segura estabelecida. A análise técnica do seu documento indica compatibilidade de 99.8% com nossos modelos de conformidade. Solicitação aceita e em fila de processamento.";
+    } else if (suggestionType === "professional") {
+      text = "Sua solicitação de suporte já está em análise pelos nossos especialistas da ExtraJus. Estamos processando as informações e retornaremos com uma solução em breve. Acompanhe o status por este canal.";
     }
 
     setIsAiTyping(true);
@@ -336,7 +328,7 @@ export default function InboxPage() {
       } else {
         clearInterval(interval);
         setIsAiTyping(false);
-        toast.success("Lilith AI formulou a resposta perfeita!");
+        toast.success("Sugestão de resposta gerada!");
       }
     }, 12);
   };
@@ -348,18 +340,17 @@ export default function InboxPage() {
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
-  // Custom threat, risk status and intents for telemetry
   const getTelemetryData = (n: any) => {
     if (!n) return null;
     const isSupport = n.type === 'support';
     const isForge = n.type === 'forge';
     
     return {
-      urgency: isSupport ? "CRÍTICA (Central)" : isForge ? "ALTA (Forja)" : "INFORMACIONAL",
+      urgency: isSupport ? "CRÍTICA" : isForge ? "ALTA" : "INFORMACIONAL",
       urgencyColor: isSupport ? "text-amber-500 border-amber-500/20 bg-amber-500/5" : isForge ? "text-primary border-primary/20 bg-primary/5" : "text-emerald-500 border-emerald-500/20 bg-emerald-500/5",
-      intent: isSupport ? "Diagnóstico Técnico & Erro" : isForge ? "Forja Customizada de Pacto" : "Comunicação Segura Interna",
+      intent: isSupport ? "Suporte Técnico" : isForge ? "Elaboração de Documento" : "Comunicação Interna",
       confidence: isSupport ? "99.8%" : isForge ? "99.9%" : "100.0%",
-      riskIndex: isSupport ? "0.04% (Seguro)" : isForge ? "0.01% (Blindagem Padrão)" : "0.00% (Criptografado)"
+      riskIndex: isSupport ? "Seguro" : isForge ? "Conformidade Padrão" : "Criptografado"
     };
   };
 
@@ -368,49 +359,45 @@ export default function InboxPage() {
   if (!mounted) return null;
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700 pb-20 px-4 md:px-0 relative">
+    <div className="space-y-8 animate-in fade-in duration-700 pb-20 px-4 md:px-0 relative text-left">
       
-      {/* Background Occult Gradient Orbs */}
       <div className="absolute top-1/4 left-1/3 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-10 right-1/4 w-80 h-80 bg-amber-500/3 rounded-full blur-[100px] pointer-events-none" />
 
-      {/* Header Centralizado */}
-      <div className="space-y-3 relative z-10">
+      <div className="space-y-3 relative z-10 text-left">
          <div className="flex items-center gap-2">
-            <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary font-mono">Quantum Communications</span>
+            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2 py-0">Comunicações</Badge>
+            <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase italic">Secure Communications</span>
          </div>
          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 w-full">
-            <div>
-               <h1 className="text-3xl font-black tracking-tight text-foreground uppercase italic flex items-center gap-2.5">
-                  Caixa de Entrada {unreadCount > 0 && <span className="bg-primary/20 text-primary border border-primary/20 text-xs px-2.5 py-0.5 rounded-full font-black not-italic font-sans">{unreadCount} novas</span>}
+            <div className="text-left">
+               <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-2.5">
+                  Caixa de entrada {unreadCount > 0 && <span className="bg-primary/20 text-primary border border-primary/20 text-xs px-2.5 py-0.5 rounded-full font-black font-sans">{unreadCount} novas</span>}
                </h1>
                <p className="text-xs text-muted-foreground font-bold tracking-wide mt-1">
-                  Seu cofre de comunicações diretas, respostas de forja e telemetria de suporte sob medida.
+                  Central de comunicações, solicitações de modelos e suporte técnico.
                </p>
             </div>
             {!isAdminView && (
                <Button
                  onClick={() => setIsSupportOpen(true)}
-                 className="h-10 px-5 rounded-xl bg-primary text-primary-foreground hover:opacity-90 text-[11px] font-black uppercase tracking-wider flex items-center gap-2 shadow-[0_0_20px_rgba(var(--primary),0.15)] border border-primary/35 transition-all"
+                 className="h-10 px-5 rounded-xl bg-primary text-primary-foreground hover:opacity-90 text-[11px] font-black uppercase tracking-wider flex items-center gap-2 shadow-sm border border-primary/35 transition-all"
                >
-                  <HelpCircle size={13} className="text-primary-foreground" /> Abrir Chamado de Suporte
+                  <HelpCircle size={13} /> Abrir Chamado de Suporte
                </Button>
             )}
          </div>
       </div>
 
-      {/* Grid Caixa de Entrada */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch min-h-[620px] relative z-10">
          
-         {/* Lado Esquerdo: Lista de Mensagens */}
-         <div className="lg:col-span-1 bg-card/60 border border-border/80 backdrop-blur-md rounded-3xl p-5 flex flex-col justify-between h-full shadow-[0_4px_30px_rgba(0,0,0,0.2)]">
-            <div className="space-y-5 flex-1 flex flex-col">
+         <div className="lg:col-span-1 bg-card/60 border border-border/80 backdrop-blur-md rounded-3xl p-5 flex flex-col justify-between h-full shadow-sm">
+            <div className="space-y-5 flex-1 flex flex-col text-left">
                
                {isUserAdmin && (
-                  <div className="flex items-center justify-between p-3.5 bg-muted/30 border border-border/40 rounded-2xl gap-2 animate-in fade-in duration-300">
+                  <div className="flex items-center justify-between p-3.5 bg-muted/30 border border-border/40 rounded-2xl gap-2">
                      <span className="text-[8px] font-black uppercase tracking-wider text-muted-foreground font-mono flex items-center gap-1.5">
-                       <Cpu size={10} className="text-primary animate-pulse" /> Filtro de Visão
+                       <Cpu size={10} className="text-primary animate-pulse" /> Filtro de Visualização
                      </span>
                      <button 
                        onClick={() => {
@@ -422,38 +409,36 @@ export default function InboxPage() {
                        className={cn(
                          "px-3.5 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all border flex items-center gap-1.5",
                          isAdminView 
-                           ? "bg-primary text-primary-foreground border-primary/20 shadow-[0_0_15px_rgba(var(--primary),0.2)]" 
+                           ? "bg-primary text-primary-foreground border-primary/20" 
                            : "bg-muted/50 border-border/50 text-muted-foreground hover:text-foreground"
                        )}
                      >
                         <Eye size={10} />
-                        {isAdminView ? "MODO ADMIN" : "MODO RECRUTA"}
+                        {isAdminView ? "MODO ADMIN" : "MODO USUÁRIO"}
                      </button>
                   </div>
                )}
 
-               {/* Campo de Pesquisa */}
-               <div className="relative w-full">
+               <div className="relative w-full text-left">
                   <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={12} />
                   <input 
                     type="text"
-                    placeholder="Pesquisar comunicados seguros..."
+                    placeholder="Pesquisar comunicações..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-muted/30 border border-border/50 rounded-xl pl-10 pr-4 py-2.5 text-xs font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder:text-muted-foreground/30"
+                    className="w-full bg-muted/30 border border-border/50 rounded-xl pl-10 pr-4 py-2.5 text-xs font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder:text-muted-foreground/30 text-left"
                   />
                </div>
 
-               {/* Lista de Cards de Mensagens */}
-               <div className="overflow-y-auto max-h-[480px] flex-1 space-y-3 custom-scrollbar pr-0.5">
+               <div className="overflow-y-auto max-h-[480px] flex-1 space-y-3 custom-scrollbar pr-0.5 text-left">
                   {loading && notifications.length === 0 ? (
                      <div className="py-20 text-center text-[10px] font-black text-muted-foreground/50 uppercase tracking-widest border border-dashed border-border/30 rounded-2xl flex flex-col items-center justify-center gap-3">
                         <Activity size={18} className="text-primary animate-spin" />
-                        Decodificando satélites...
+                        Carregando informações...
                      </div>
                   ) : filteredNotifications.length === 0 ? (
                      <div className="py-20 text-center text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest border border-dashed border-border/35 rounded-2xl">
-                        Nenhum sinal descriptografado.
+                        Nenhuma mensagem encontrada.
                      </div>
                   ) : (
                      filteredNotifications.map((n) => {
@@ -468,18 +453,17 @@ export default function InboxPage() {
                             className={cn(
                               "p-4 rounded-2xl border transition-all cursor-pointer text-left flex flex-col gap-2 relative group",
                               isSelected 
-                                ? "bg-primary/5 border-primary/30 shadow-[inset_0_0_15px_rgba(var(--primary),0.02)]" 
+                                ? "bg-primary/5 border-primary/30" 
                                 : "bg-muted/10 border-border/30 hover:bg-muted/20 hover:border-border/60"
                             )}
                           >
-                             {/* Indicador Lateral de Tipo / Status de Glow */}
                              <div className={cn(
                                "absolute left-0 top-4 bottom-4 w-1 rounded-r-md transition-all",
                                isSelected ? "bg-primary" : "bg-transparent",
                                !n.read && "bg-amber-500"
                              )} />
 
-                             <div className="flex justify-between items-start gap-4 pl-1">
+                             <div className="flex justify-between items-start gap-4 pl-1 text-left">
                                 <span className={cn(
                                   "text-[11px] font-black leading-tight truncate max-w-[75%] flex items-center gap-1.5",
                                   !n.read ? "text-foreground" : "text-muted-foreground"
@@ -487,7 +471,7 @@ export default function InboxPage() {
                                    {isSupport ? (
                                      <LifeBuoy size={11} className="text-amber-500 shrink-0" />
                                    ) : isForge ? (
-                                     <Zap size={11} className="text-primary shrink-0 animate-pulse" />
+                                     <Zap size={11} className="text-primary shrink-0" />
                                    ) : (
                                      <Mail size={11} className="text-emerald-500 shrink-0" />
                                    )}
@@ -499,28 +483,26 @@ export default function InboxPage() {
                              </div>
 
                              {isAdminView && n.userProfile && (
-                                <div className="text-[8px] font-mono text-primary font-black pl-1 -mt-1 tracking-wider truncate uppercase flex items-center gap-1">
-                                   <User size={8} /> Recruta: {n.userProfile.full_name || n.userProfile.email}
+                                <div className="text-[8px] font-mono text-primary font-black pl-1 -mt-1 tracking-wider truncate uppercase flex items-center gap-1 text-left">
+                                   <User size={8} /> Usuário: {n.userProfile.full_name || n.userProfile.email}
                                 </div>
                              )}
 
-                             <p className="text-[10px] text-muted-foreground/80 leading-normal truncate pl-1">
+                             <p className="text-[10px] text-muted-foreground/80 leading-normal truncate pl-1 text-left">
                                 {n.message}
                              </p>
 
-                             <div className="flex justify-between items-center pl-1 mt-1">
-                               {/* Badge de tipo */}
+                             <div className="flex justify-between items-center pl-1 mt-1 text-left">
                                <span className={cn(
                                  "text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md font-mono border",
                                  isSupport ? "text-amber-500 border-amber-500/10 bg-amber-500/5" : isForge ? "text-primary border-primary/10 bg-primary/5" : "text-emerald-500 border-emerald-500/10 bg-emerald-500/5"
                                )}>
-                                 {isSupport ? "Suporte" : isForge ? "Forja" : "Alerta"}
+                                 {isSupport ? "Suporte" : isForge ? "Solicitação" : "Notificação"}
                                </span>
 
                                <button 
                                  onClick={(e) => handleDeleteNotification(n.id, e)}
                                  className="h-6 w-6 rounded-lg bg-destructive/10 text-destructive flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground opacity-0 group-hover:opacity-100 transition-all"
-                                 title="Excluir Mensagem"
                                 >
                                    <Trash2 size={10} />
                                 </button>
@@ -531,37 +513,33 @@ export default function InboxPage() {
                   )}
                </div>
                
-               {/* Telemetry Status bar */}
-               <div className="border-t border-border/30 pt-4 flex items-center justify-between text-[8px] font-mono text-muted-foreground">
-                  <span className="flex items-center gap-1"><Wifi size={8} className="text-primary" /> SECURE LINK ACTIVE</span>
-                  <span>SYNC: REALTIME</span>
+               <div className="border-t border-border/30 pt-4 flex items-center justify-between text-[8px] font-mono text-muted-foreground text-left">
+                  <span className="flex items-center gap-1"><Wifi size={8} className="text-primary" /> CONEXÃO SEGURA ATIVA</span>
+                  <span>STATUS: ONLINE</span>
                </div>
 
             </div>
          </div>
 
-         {/* Lado Direito: Decodificador & Área de Trabalho de Suporte */}
-         <div className="lg:col-span-2 bg-card/45 border border-border/80 backdrop-blur-md rounded-3xl p-6 relative flex flex-col justify-between h-full min-h-[500px] shadow-[0_4px_30px_rgba(0,0,0,0.2)]">
+         <div className="lg:col-span-2 bg-card/45 border border-border/80 backdrop-blur-md rounded-3xl p-6 relative flex flex-col justify-between h-full min-h-[500px] shadow-sm text-left">
              {selectedNotification ? (
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch h-full">
+                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch h-full text-left">
                    
-                   {/* Coluna 1 & 2: Chat Timeline (2/3 da largura no desktop) */}
-                   <div className="xl:col-span-2 flex flex-col justify-between h-full space-y-4">
+                   <div className={cn("flex flex-col justify-between h-full space-y-4 text-left", isAdminView ? "xl:col-span-2" : "xl:col-span-3")}>
                       
-                      {/* Cabeçalho da Mensagem */}
-                      <div className="space-y-4 border-b border-border/40 pb-4">
-                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                      <div className="space-y-4 border-b border-border/40 pb-4 text-left">
+                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-left">
                             <div className="space-y-1 text-left">
-                               <h2 className="text-base font-black text-foreground uppercase tracking-wide italic flex items-center gap-2">
-                                  {selectedNotification.type === 'support' ? <LifeBuoy size={16} className="text-amber-500" /> : selectedNotification.type === 'forge' ? <Zap size={16} className="text-primary animate-pulse" /> : <Mail size={16} className="text-emerald-500" />}
+                               <h2 className="text-base font-black text-foreground uppercase tracking-wide flex items-center gap-2">
+                                  {selectedNotification.type === 'support' ? <LifeBuoy size={16} className="text-amber-500" /> : selectedNotification.type === 'forge' ? <Zap size={16} className="text-primary" /> : <Mail size={16} className="text-emerald-500" />}
                                   {selectedNotification.title}
                                </h2>
-                               <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground/75">
+                               <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground/75 text-left">
                                   <User size={12} className="text-primary" />
                                   {isAdminView && selectedNotification.userProfile ? (
                                      <span>Conversa com: <span className="text-foreground">{selectedNotification.userProfile.full_name} ({selectedNotification.userProfile.email})</span></span>
                                   ) : (
-                                     <span>Remetente: <span className="text-foreground">Arquitetura de Suporte ExtraJus</span></span>
+                                     <span>Remetente: <span className="text-foreground">Suporte ExtraJus</span></span>
                                   )}
                                </div>
                             </div>
@@ -581,10 +559,8 @@ export default function InboxPage() {
                          </div>
                       </div>
 
-                      {/* Timeline Conversacional (Histórico de Réplicas) */}
                       <div className="flex-1 overflow-y-auto max-h-[300px] space-y-4 pr-1.5 custom-scrollbar text-left min-h-[220px]">
                          
-                         {/* Bolha 1: Mensagem Original */}
                          <div className="flex flex-col gap-1.5 ml-auto items-end max-w-[85%] text-right animate-in fade-in slide-in-from-right-3 duration-300">
                             <div className="bg-muted/15 border border-border/50 p-4 rounded-2xl rounded-tr-none shadow-sm backdrop-blur-sm">
                                <p className="text-xs text-foreground font-bold whitespace-pre-wrap leading-relaxed text-right">
@@ -592,14 +568,13 @@ export default function InboxPage() {
                                </p>
                             </div>
                             <span className="text-[8px] text-muted-foreground/60 font-mono pr-1 flex items-center gap-1">
-                               <Clock size={8} /> {new Date(selectedNotification.created_at).toLocaleDateString('pt-BR')} • {isAdminView && selectedNotification.userProfile ? (selectedNotification.userProfile.full_name) : "Mensagem Original"}
+                               <Clock size={8} /> {new Date(selectedNotification.created_at).toLocaleDateString('pt-BR')} • Mensagem Original
                             </span>
                          </div>
 
-                         {/* Histórico de Réplicas */}
                          {loadingReplies && replies.length === 0 ? (
                             <div className="py-6 text-center text-[9px] font-black text-muted-foreground/30 uppercase tracking-widest animate-pulse flex items-center justify-center gap-2">
-                               <Activity size={10} className="animate-spin text-primary" /> Carregando base de dados...
+                               <Activity size={10} className="animate-spin text-primary" /> Carregando conversas...
                             </div>
                          ) : (
                             replies.map((reply) => {
@@ -615,7 +590,7 @@ export default function InboxPage() {
                                      <div className={cn(
                                        "p-4 rounded-2xl shadow-sm backdrop-blur-sm transition-all",
                                        isMe 
-                                         ? "bg-primary/5 border border-primary/25 rounded-tl-none text-left shadow-[0_0_15px_rgba(var(--primary),0.02)]" 
+                                         ? "bg-primary/5 border border-primary/25 rounded-tl-none text-left" 
                                          : "bg-muted/10 border border-border/50 rounded-tr-none text-right"
                                      )}>
                                         <p className="text-xs text-foreground font-bold whitespace-pre-wrap leading-relaxed">
@@ -632,51 +607,52 @@ export default function InboxPage() {
                          <div ref={chatEndRef} />
                       </div>
 
-                      {/* Caixa de Resposta & Co-piloto de IA */}
-                      <div className="border-t border-border/30 pt-4 mt-auto">
+                      <div className="border-t border-border/30 pt-4 mt-auto text-left">
                          
-                         {/* Copiloto IA (LILITH) */}
-                         <div className="mb-4 bg-primary/5 border border-primary/10 rounded-2xl p-3 text-left space-y-2 animate-in fade-in duration-500">
-                            <div className="flex items-center justify-between">
-                               <div className="flex items-center gap-2">
-                                  <Sparkles size={13} className="text-primary animate-pulse" />
-                                  <span className="text-[9px] font-black uppercase tracking-widest text-primary font-mono">Copiloto IA LILITH</span>
-                               </div>
-                               <span className="text-[7px] font-mono text-muted-foreground bg-muted/50 px-2 py-0.5 rounded border">IA GENERATIVA ATIVA</span>
-                            </div>
-                            <p className="text-[9px] text-muted-foreground font-medium leading-normal">
-                               Simule ou automatize réplicas instantâneas clicando nos arquétipos do copiloto abaixo:
-                            </p>
-                            <div className="flex flex-wrap gap-2 pt-1">
-                               <button 
-                                 disabled={isAiTyping}
-                                 onClick={() => handleSelectAISuggestion("polite")}
-                                 className="px-2.5 py-1.5 rounded-lg bg-muted/40 hover:bg-muted/70 text-[8px] font-black uppercase text-foreground transition-all flex items-center gap-1.5 border border-border/40 disabled:opacity-50"
-                               >
-                                 ✨ Educada
-                               </button>
-                               <button 
-                                 disabled={isAiTyping}
-                                 onClick={() => handleSelectAISuggestion("technical")}
-                                 className="px-2.5 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-[8px] font-black uppercase text-primary transition-all flex items-center gap-1.5 border border-primary/20 disabled:opacity-50"
-                               >
-                                 ⚡ Técnica
-                               </button>
-                               <button 
-                                 disabled={isAiTyping}
-                                 onClick={() => handleSelectAISuggestion("brutal")}
-                                 className="px-2.5 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-[8px] font-black uppercase text-red-400 transition-all flex items-center gap-1.5 border border-red-500/20 disabled:opacity-50"
-                               >
-                                 💀 Modo Lilith
-                               </button>
-                            </div>
-                         </div>
+                         {/* Sugestões de Resposta IA (Só para Admins) */}
+                         {isAdminView && (
+                           <div className="mb-4 bg-primary/5 border border-primary/10 rounded-2xl p-3 text-left space-y-2 animate-in fade-in duration-500">
+                              <div className="flex items-center justify-between">
+                                 <div className="flex items-center gap-2">
+                                    <Sparkles size={13} className="text-primary animate-pulse" />
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-primary font-mono">Sugestões de Resposta IA</span>
+                                 </div>
+                                 <span className="text-[7px] font-mono text-muted-foreground bg-muted/50 px-2 py-0.5 rounded border">IA GENERATIVA ATIVA</span>
+                              </div>
+                              <p className="text-[9px] text-muted-foreground font-medium leading-normal text-left">
+                                 Selecione um tom de resposta para agilizar sua comunicação:
+                              </p>
+                              <div className="flex flex-wrap gap-2 pt-1">
+                                 <button 
+                                   disabled={isAiTyping}
+                                   onClick={() => handleSelectAISuggestion("polite")}
+                                   className="px-2.5 py-1.5 rounded-lg bg-muted/40 hover:bg-muted/70 text-[8px] font-black uppercase text-foreground transition-all flex items-center gap-1.5 border border-border/40 disabled:opacity-50"
+                                 >
+                                   ✨ Cordial
+                                 </button>
+                                 <button 
+                                   disabled={isAiTyping}
+                                   onClick={() => handleSelectAISuggestion("technical")}
+                                   className="px-2.5 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-[8px] font-black uppercase text-primary transition-all flex items-center gap-1.5 border border-primary/20 disabled:opacity-50"
+                                 >
+                                   ⚡ Técnica
+                                 </button>
+                                 <button 
+                                   disabled={isAiTyping}
+                                   onClick={() => handleSelectAISuggestion("professional")}
+                                   className="px-2.5 py-1.5 rounded-lg bg-muted border-border/60 hover:bg-muted/70 text-[8px] font-black uppercase text-foreground transition-all flex items-center gap-1.5 border disabled:opacity-50"
+                                 >
+                                   👔 Profissional
+                                 </button>
+                              </div>
+                           </div>
+                         )}
 
-                         <form onSubmit={handleSendReply} className="space-y-3">
-                            <div className="space-y-2">
-                               <div className="relative">
+                         <form onSubmit={handleSendReply} className="space-y-3 text-left">
+                            <div className="space-y-2 text-left">
+                               <div className="relative text-left">
                                   <textarea 
-                                    placeholder={isAiTyping ? "Lilith está formulando e digitando..." : "Escreva sua réplica ou parecer..."}
+                                    placeholder={isAiTyping ? "Gerando sugestão..." : "Escreva sua resposta..."}
                                     value={replyText}
                                     onChange={(e) => setReplyText(e.target.value)}
                                     disabled={isAiTyping}
@@ -694,77 +670,73 @@ export default function InboxPage() {
                                   <button 
                                     type="submit"
                                     disabled={submittingReply || isAiTyping}
-                                    className="absolute right-3 top-3 h-8 w-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center hover:opacity-95 transition-all shadow-md disabled:opacity-50"
-                                    title="Enviar Resposta"
+                                    className="absolute right-3 top-3 h-8 w-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center hover:opacity-95 transition-all shadow-sm disabled:opacity-50"
                                   >
                                      <Send size={12} className={cn(submittingReply && "animate-pulse")} />
                                   </button>
                                </div>
-                            </div>
-                         </form>
-                      </div>
+                                      </div>
 
-                   </div>
-
-                   {/* Coluna 3: Telemetry & AI Status (1/3 da largura no desktop) */}
-                   <div className="xl:col-span-1 border-l border-border/40 pl-6 flex flex-col justify-between h-full space-y-5 text-left animate-in fade-in duration-700">
-                      
-                      {/* Telemetry Block */}
-                      <div className="space-y-4">
-                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground font-mono flex items-center gap-1.5">
-                            <Cpu size={12} className="text-primary animate-pulse" /> Telemetria de Chamado
-                         </h3>
-
-                         <div className="space-y-3.5 pt-2">
-                            {/* Urgência */}
-                            <div className="p-3 bg-muted/20 border border-border/30 rounded-2xl space-y-1">
-                               <span className="text-[7px] text-muted-foreground font-mono font-black uppercase block">Prioridade</span>
-                               <span className={cn("text-[9px] font-black px-2 py-0.5 rounded border uppercase tracking-wider font-mono", telemetry?.urgencyColor)}>
-                                  {telemetry?.urgency}
-                               </span>
-                            </div>
-
-                            {/* Intenção */}
-                            <div className="p-3 bg-muted/20 border border-border/30 rounded-2xl space-y-1">
-                               <span className="text-[7px] text-muted-foreground font-mono font-black uppercase block">Intenção IA</span>
-                               <span className="text-[10px] font-black text-foreground flex items-center gap-1.5">
-                                  <Wand2 size={10} className="text-primary" /> {telemetry?.intent}
-                               </span>
-                            </div>
-
-                            {/* Segurança de dados */}
-                            <div className="p-3 bg-muted/20 border border-border/30 rounded-2xl space-y-1">
-                               <span className="text-[7px] text-muted-foreground font-mono font-black uppercase block">Mitigação de Riscos</span>
-                               <span className="text-[10px] font-mono font-black text-primary">
-                                  {telemetry?.riskIndex}
-                                </span>
-                            </div>
-                         </div>
-                      </div>
-
-                      {/* Quantum System Log Console */}
-                      <div className="bg-black/40 border border-border/30 rounded-2xl p-4 flex-1 flex flex-col justify-between min-h-[140px] font-mono relative overflow-hidden">
-                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/3 rounded-full blur-[40px] pointer-events-none" />
+                   {isAdminView && (
+                      <div className="xl:col-span-1 border-l border-border/40 pl-6 flex flex-col justify-between h-full space-y-5 text-left animate-in fade-in duration-700">
                          
-                         <div>
-                            <div className="flex items-center justify-between border-b border-border/20 pb-2 mb-3">
-                               <span className="text-[8px] font-black uppercase text-primary flex items-center gap-1">
-                                 <Terminal size={10} /> SYSTEM LOG
-                               </span>
-                               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
-                            </div>
-                            <div className="text-[8px] text-muted-foreground/80 space-y-1.5">
-                               <p className="text-foreground/95 flex items-center gap-1"><span className="text-primary font-bold">»</span> ESTABLISH SECURE LINK</p>
-                               <p className="flex items-center gap-1"><span className="text-emerald-500 font-bold">»</span> HEURISTIC RADAR ACTIVE</p>
-                               <p className="flex items-center gap-1"><span className="text-muted-foreground/50">»</span> CLASSIFY: {selectedNotification.type?.toUpperCase() || "ALERT"}</p>
-                               <p className="text-primary/95 flex items-center gap-1"><span className="text-primary font-bold">»</span> LILITH IA INJECTIONS LOADED</p>
+                         <div className="space-y-4 text-left">
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground font-mono flex items-center gap-1.5 text-left">
+                               <Cpu size={12} className="text-primary animate-pulse" /> Telemetria de Dados
+                            </h3>
+
+                            <div className="space-y-3.5 pt-2 text-left">
+                               <div className="p-3 bg-muted/20 border border-border/30 rounded-2xl space-y-1 text-left">
+                                  <span className="text-[7px] text-muted-foreground font-mono font-black uppercase block">Prioridade</span>
+                                  <span className={cn("text-[9px] font-black px-2 py-0.5 rounded border uppercase tracking-wider font-mono", telemetry?.urgencyColor)}>
+                                     {telemetry?.urgency}
+                                  </span>
+                               </div>
+
+                               <div className="p-3 bg-muted/20 border border-border/30 rounded-2xl space-y-1 text-left">
+                                  <span className="text-[7px] text-muted-foreground font-mono font-black uppercase block">Classificação</span>
+                                  <span className="text-[10px] font-black text-foreground flex items-center gap-1.5 text-left">
+                                     <Wand2 size={10} className="text-primary" /> {telemetry?.intent}
+                                  </span>
+                               </div>
+
+                               <div className="p-3 bg-muted/20 border border-border/30 rounded-2xl space-y-1 text-left">
+                                  <span className="text-[7px] text-muted-foreground font-mono font-black uppercase block">Segurança de Dados</span>
+                                  <span className="text-[10px] font-mono font-black text-primary text-left">
+                                     {telemetry?.riskIndex}
+                                   </span>
+                               </div>
                             </div>
                          </div>
-                         <div className="pt-4 mt-auto border-t border-border/20">
-                            <div className="text-[7px] text-muted-foreground font-mono flex items-center gap-1 uppercase tracking-wider">
-                              <Shield size={8} className="text-primary animate-pulse" /> BLINDAGEM QUANTICA ATIVA
+
+                         <div className="bg-black/40 border border-border/30 rounded-2xl p-4 flex-1 flex flex-col justify-between min-h-[140px] font-mono relative overflow-hidden text-left">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/3 rounded-full blur-[40px] pointer-events-none" />
+                            
+                            <div className="text-left">
+                               <div className="flex items-center justify-between border-b border-border/20 pb-2 mb-3 text-left">
+                                  <span className="text-[8px] font-black uppercase text-primary flex items-center gap-1">
+                                    <Terminal size={10} /> SYSTEM LOG
+                                  </span>
+                                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
+                               </div>
+                               <div className="text-[8px] text-muted-foreground/80 space-y-1.5 text-left">
+                                  <p className="text-foreground/95 flex items-center gap-1"><span className="text-primary font-bold">»</span> LINK SEGURO ESTABELECIDO</p>
+                                  <p className="flex items-center gap-1"><span className="text-emerald-500 font-bold">»</span> MONITORAMENTO ATIVO</p>
+                                  <p className="flex items-center gap-1"><span className="text-muted-foreground/50">»</span> CLASSIFICAÇÃO: {selectedNotification.type?.toUpperCase() || "ALERTA"}</p>
+                                  <p className="text-primary/95 flex items-center gap-1"><span className="text-primary font-bold">»</span> ASSISTENTE IA CARREGADO</p>
+                                </div>
+                            </div>
+                            <div className="pt-4 mt-auto border-t border-border/20 text-left">
+                               <div className="text-[7px] text-muted-foreground font-mono flex items-center gap-1 uppercase tracking-wider text-left">
+                                 <Shield size={8} className="text-primary animate-pulse" /> PROTEÇÃO DIGITAL EXTRAJUS
+                               </div>
                             </div>
                          </div>
+
+                      </div>
+                   )}
+
+                </div>    </div>
                       </div>
 
                    </div>
@@ -773,21 +745,20 @@ export default function InboxPage() {
              ) : (
                 <div className="h-full flex flex-col items-center justify-center py-24 text-center space-y-5 relative overflow-hidden">
                    
-                   {/* Center occult design core */}
                    <div className="relative flex items-center justify-center">
                      <div className="absolute w-24 h-24 bg-primary/5 border border-primary/10 rounded-full animate-ping duration-[3000ms]" />
                      <div className="absolute w-16 h-16 bg-primary/10 border border-primary/20 rounded-full animate-pulse" />
                      <div className="h-12 h-12 rounded-full bg-muted/40 border border-border/60 flex items-center justify-center text-muted-foreground/60 relative z-10">
-                        <MailOpen size={20} className="animate-bounce" />
+                        <MailOpen size={20} />
                      </div>
                    </div>
 
                    <div className="space-y-1 relative z-10">
                       <h3 className="text-xs font-black text-foreground uppercase tracking-[0.2em] font-mono flex items-center justify-center gap-1.5">
-                         <ShieldCheck size={12} className="text-primary" /> Decodificador Neural
+                         <ShieldCheck size={12} className="text-primary" /> Central de Comunicação
                       </h3>
                       <p className="text-[10px] text-muted-foreground font-bold tracking-wide max-w-[240px] mx-auto leading-relaxed">
-                         Nenhum feixe de comunicação ativa selecionado. Conecte-se com um recruta na lateral para descriptografar os dados de telemetria.
+                         Nenhuma comunicação selecionada. Escolha uma mensagem na lista lateral para visualizar os detalhes.
                       </p>
                    </div>
                 </div>
@@ -796,31 +767,30 @@ export default function InboxPage() {
 
        </div>
 
-      {/* Modal de Suporte */}
       <Dialog open={isSupportOpen} onOpenChange={setIsSupportOpen}>
-        <DialogContent className="max-w-md bg-card/95 border border-border/80 backdrop-blur-md rounded-2xl shadow-2xl p-6 relative overflow-hidden">
+        <DialogContent className="max-w-md bg-card/95 border border-border/80 backdrop-blur-md rounded-2xl shadow-2xl p-6 relative overflow-hidden text-left">
           <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
           
           <DialogHeader className="space-y-1.5 border-b border-border/40 pb-4 mb-4 text-left">
-            <DialogTitle className="text-lg font-black tracking-wide text-foreground uppercase italic flex items-center gap-2">
+            <DialogTitle className="text-lg font-black tracking-wide text-foreground uppercase italic flex items-center gap-2 text-left">
               <LifeBuoy size={18} className="text-primary" /> Central de Chamados & Suporte
             </DialogTitle>
-            <DialogDescription className="text-[11px] text-muted-foreground font-medium leading-relaxed">
-              Encontrou alguma anomalia, precisa de ajuda ou quer tirar alguma dúvida? Deixe sua mensagem e nós responderemos aqui em tempo real.
+            <DialogDescription className="text-[11px] text-muted-foreground font-medium leading-relaxed text-left">
+              Precisa de ajuda ou quer tirar alguma dúvida? Deixe sua mensagem e nós responderemos aqui em tempo real.
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleOpenSupport} className="space-y-4">
+          <form onSubmit={handleOpenSupport} className="space-y-4 text-left">
             <div className="space-y-2 text-left">
-              <label className="text-[10px] font-black text-muted-foreground/80 block">
+              <label className="text-[10px] font-black text-muted-foreground/80 block text-left">
                 Sua Mensagem / Dúvida
               </label>
               <textarea 
-                placeholder="Descreva seu problema, erro ou dúvida de forma clara..."
+                placeholder="Descreva seu problema ou dúvida de forma clara..."
                 value={supportMessage}
                 onChange={(e) => setSupportMessage(e.target.value)}
                 rows={5}
-                className="w-full bg-muted/30 border border-border/50 rounded-xl px-4 py-3.5 text-xs font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder:text-muted-foreground/35 resize-none min-h-[120px]"
+                className="w-full bg-muted/30 border border-border/50 rounded-xl px-4 py-3.5 text-xs font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder:text-muted-foreground/35 resize-none min-h-[120px] text-left"
                 required
               />
             </div>
@@ -839,7 +809,7 @@ export default function InboxPage() {
                 disabled={isSupporting}
                 className="h-10 px-5 rounded-xl text-xs font-black uppercase tracking-wider bg-primary text-primary-foreground hover:bg-primary/95 transition-all flex items-center justify-center gap-2"
               >
-                {isSupporting ? "Enviando Chamado..." : "Abrir Chamado"}
+                {isSupporting ? "Enviando..." : "Abrir Chamado"}
               </Button>
             </div>
           </form>
