@@ -536,7 +536,7 @@ export default function Home() {
 
           <div className="text-center space-y-3">
             <h2 className="text-2xl md:text-4xl font-black text-foreground tracking-tight leading-tight">
-              Segurança e Criptografia de Nível Bancário
+              Segurança e Criptografia
             </h2>
             <p className="text-[13px] md:text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed font-medium">
               Protegemos suas transações e dados comerciais com os protocolos mais rigorosos e avançados do mercado internacional.
