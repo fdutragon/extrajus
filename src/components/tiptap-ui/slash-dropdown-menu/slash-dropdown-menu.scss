@@ -1,17 +1,17 @@
 :root {
-  --tt-slash-decoration-bg-color: var(--tt-gray-light-a-100);
-  --tt-slash-decoration-color: var(--tt-gray-light-a-400);
-  --tt-slash-scrollbar-thumb: oklch(0.8 0 0);
-  --tt-slash-scrollbar-hover: oklch(0.7 0 0);
-  --tt-slash-scrollbar-track: oklch(0.96 0 0);
+  --tt-slash-decoration-bg-color: color-mix(in srgb, var(--primary), transparent 92%);
+  --tt-slash-decoration-color: var(--primary);
+  --tt-slash-scrollbar-thumb: var(--border);
+  --tt-slash-scrollbar-hover: var(--muted-foreground);
+  --tt-slash-scrollbar-track: var(--background);
 }
 
 .dark {
-  --tt-slash-decoration-bg-color: var(--tt-gray-dark-a-100);
-  --tt-slash-decoration-color: var(--tt-gray-dark-a-400);
-  --tt-slash-scrollbar-thumb: oklch(0.3 0 0);
-  --tt-slash-scrollbar-hover: oklch(0.4 0 0);
-  --tt-slash-scrollbar-track: oklch(0.1 0 0);
+  --tt-slash-decoration-bg-color: color-mix(in srgb, var(--primary), transparent 88%);
+  --tt-slash-decoration-color: var(--primary);
+  --tt-slash-scrollbar-thumb: var(--border);
+  --tt-slash-scrollbar-hover: var(--muted-foreground);
+  --tt-slash-scrollbar-track: var(--background);
 }
 
 span.tiptap-slash-decoration {
@@ -22,6 +22,7 @@ span.tiptap-slash-decoration {
 
 span.tiptap-slash-decoration::after {
   color: var(--tt-slash-decoration-color);
+  font-weight: 700;
 }
 
 span.tiptap-slash-decoration.is-empty::after {
@@ -30,16 +31,17 @@ span.tiptap-slash-decoration.is-empty::after {
 
 .tiptap-slash-card {
   overflow-y: auto;
-  overflow-x: hidden;
-  border-radius: 12px !important;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7) !important;
-  background-color: var(--bg-card, rgba(15, 15, 15, 0.85)) !important;
-  backdrop-filter: blur(16px) !important;
-  border: 1px solid rgba(255, 215, 0, 0.15) !important;
+  overflow-x: hidden !important;
+  border-radius: 14px !important;
+  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.8) !important;
+  background-color: color-mix(in srgb, var(--card), transparent 12%) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid color-mix(in srgb, var(--primary), transparent 88%) !important;
   padding: 4px !important;
 
   &::-webkit-scrollbar {
     width: 4px;
+    height: 0px !important;
   }
 
   &::-webkit-scrollbar-track {
@@ -57,56 +59,93 @@ span.tiptap-slash-decoration.is-empty::after {
     background: var(--tt-slash-scrollbar-hover);
   }
 
-  // Estilização compacta e refinada dos botões (itens do menu)
+  // Grupos e containers sem transbordo
+  .tiptap-card-item-group, .tiptap-slash-card-body {
+    min-width: 0 !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  // Estilização ULTRA compacta e refinada dos botões
   .tiptap-button {
-    font-size: 0.775rem !important; // Mais compacto, não "muito grande"
-    height: 1.85rem !important; // Reduz a altura, mais refinado
+    font-size: 0.725rem !important;
+    height: 1.75rem !important;
     padding: 0 10px !important;
-    margin: 2px 4px !important; // Adiciona margem vertical/horizontal para não ficar "grudado"
+    margin: 1px 4px !important;
     border-radius: 6px !important;
     gap: 8px !important;
     width: calc(100% - 8px) !important;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    color: var(--foreground) !important;
+    opacity: 0.85;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
 
     .tiptap-button-icon {
       width: 0.875rem !important;
       height: 0.875rem !important;
-      opacity: 0.6;
-      transition: opacity 0.2s ease;
+      opacity: 0.7;
+      transition: all 0.2s ease;
+      color: var(--foreground);
+      flex-shrink: 0;
     }
 
     .tiptap-button-text {
       font-weight: 500 !important;
+      letter-spacing: -0.01em;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    // Hover e Ativo com destaque dourado elegante
-    &[data-active-state="on"],
-    &:hover {
-      background-color: rgba(255, 215, 0, 0.08) !important;
-      color: rgb(255, 215, 0) !important;
+    // Hover e Ativo com destaque em Ouro Líquido (Apenas para não-básicos)
+    &[data-active-state="on"]:not([data-basic="true"]),
+    &:hover:not([data-basic="true"]) {
+      background-color: color-mix(in srgb, var(--primary), transparent 88%) !important;
+      color: var(--primary) !important;
+      opacity: 1;
+      transform: translateX(2px);
 
       .tiptap-button-icon {
         opacity: 1 !important;
-        color: rgb(255, 215, 0) !important;
+        color: var(--primary) !important;
+        transform: scale(1.1);
+      }
+    }
+
+    // Estilo Neutro para Itens Básicos (Texto Simples)
+    &[data-basic="true"] {
+      &[data-active-state="on"],
+      &:hover {
+        background-color: var(--accent) !important;
+        color: var(--foreground) !important;
+        opacity: 1;
+        transform: translateX(2px);
+
+        .tiptap-button-icon {
+          opacity: 1 !important;
+          color: var(--foreground) !important;
+        }
       }
     }
   }
 
-  // Estilização das labels de grupo
+  // Estilização das labels de grupo (Hierarquia de Poder - Mais compacta)
   .tiptap-card-group-label {
-    padding: 8px 12px 4px !important;
+    padding: 6px 14px 2px !important; // Reduzido padding superior e inferior
     font-size: 0.6rem !important;
-    font-weight: 900 !important;
+    font-weight: 800 !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.15em !important;
-    color: rgba(255, 255, 255, 0.35) !important;
+    letter-spacing: 0.2em !important;
+    color: var(--muted-foreground) !important;
+    opacity: 0.6;
   }
 
-  // Linhas divisórias
+  // Linhas divisórias (Sutis como um fio de seda - Mais próximas)
   hr, .tiptap-separator, [data-orientation="horizontal"] {
-    margin: 4px 8px !important;
-    opacity: 0.08 !important;
-    background-color: rgba(255, 255, 255, 0.5) !important;
+    margin: 2px 12px !important; // Reduzido de 6px para 2px
+    opacity: 0.1 !important;
+    background-color: var(--border) !important;
   }
 }
 
@@ -116,6 +155,6 @@ span.tiptap-slash-decoration.is-empty::after {
 
 @media screen and (min-width: 480px) {
   .tiptap-slash-card {
-    min-width: 15rem;
+    min-width: 11rem; // Reduzido de 13rem para 11rem
   }
 }

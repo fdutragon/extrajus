@@ -83,12 +83,14 @@ const Item = (props: {
 
   const BadgeIcon = item.badge
   const indentLevel = (item as any).indent || 0
+  const isBasic = (item as any).isBasic || false
 
   return (
     <Button
       ref={itemRef}
       variant="ghost"
       data-active-state={isSelected ? "on" : "off"}
+      data-basic={isBasic}
       onClick={onSelect}
       style={{ paddingLeft: `${indentLevel * 12 + 8}px` }}
     >

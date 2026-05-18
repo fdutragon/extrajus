@@ -212,23 +212,7 @@ export function LoadingSpinner({ text = "Estabelecendo Conexão..." }: { text?: 
         <div className="relative group">
           <div className="absolute -inset-10 bg-primary/10 blur-[60px] rounded-full animate-pulse transition-all duration-700" />
           <div className="relative flex flex-col items-center">
-            <Logo iconSize={64} className="flex-col text-center gap-4" />
-          </div>
-        </div>
-
-        {/* Loading Message */}
-        <div className="flex flex-col items-center gap-3">
-          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground animate-pulse">
-            {text}
-          </span>
-          <div className="flex gap-1.5">
-            {[0, 1, 2].map((i) => (
-              <div 
-                key={i} 
-                className="w-1 h-1 rounded-full bg-primary/40 animate-bounce" 
-                style={{ animationDelay: `${i * 150}ms`, animationDuration: '1000ms' }}
-              />
-            ))}
+            <Logo iconSize={64} showText={false} className="flex-col text-center gap-4" />
           </div>
         </div>
       </div>

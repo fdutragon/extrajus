@@ -45,6 +45,7 @@ const texts = {
     keywords: ["texto", "simples", "p", "paragrafo"],
     badge: Type,
     group: "Básico",
+    isBasic: true,
   },
 
   // Jurídico
@@ -81,7 +82,7 @@ const texts = {
     indent: 3,
   },
   add_signature: {
-    title: "Campo Assinatura",
+    title: "Assinatura",
     subtext: "Inserir linhas de assinatura",
     keywords: ["assinatura", "firmar", "final", "pacto"],
     badge: PenTool,
