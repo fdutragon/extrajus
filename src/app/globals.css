@@ -195,6 +195,16 @@
     @apply border-border outline-ring/50;
   }
 
+  button,
+  [role="button"] {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [role="button"]:disabled {
+    cursor: not-allowed;
+  }
+
   body {
     @apply bg-background text-foreground selection:bg-primary/30 subpixel-antialiased;
     -webkit-font-smoothing: subpixel-antialiased;
