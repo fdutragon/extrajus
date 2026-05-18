@@ -479,10 +479,10 @@ export function EditorLayout() {
 
   const auditStatus = useMemo(() => {
     if (!hasAudited) return { label: "Inativa", color: "text-muted-foreground bg-muted border-border", barColor: "bg-muted", desc: "Sistema IA inativo. Inicie a auditoria para avaliar o documento." };
-    if (auditScore >= 90) return { label: "Excelente ✨", color: "text-[#c0ff00] bg-[#c0ff00]/10 border-[#c0ff00]/20", barColor: "bg-[#c0ff00]", desc: "Este documento atingiu um nível de segurança elevado. As cláusulas estão tecnicamente precisas e em conformidade." };
-    if (auditScore >= 70) return { label: "Seguro 👍", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20", barColor: "bg-emerald-500", desc: "O contrato possui boa estrutura de segurança. Alguns pontos de atenção foram identificados, mas a saúde técnica é satisfatória." };
-    if (auditScore >= 50) return { label: "Vulnerável ⚠️", color: "text-amber-400 bg-amber-500/10 border-amber-500/20", barColor: "bg-amber-500", desc: "Presença de ambiguidades e riscos moderados. Sugerimos aplicar os ajustes recomendados pela Inteligência Analítica." };
-    return { label: "Risco Crítico 🔥", color: "text-red-400 bg-red-500/10 border-red-500/20", barColor: "bg-red-500", desc: "Inconsistências críticas detectadas! O documento apresenta riscos jurídicos que demandam revisão imediata." };
+    if (auditScore >= 90) return { label: "Excelente ✨", color: "text-primary bg-primary/10 border-primary/20", barColor: "bg-primary", desc: "Este documento atingiu um nível de segurança elevado. As cláusulas estão tecnicamente precisas e em conformidade." };
+    if (auditScore >= 70) return { label: "Seguro 👍", color: "text-emerald-700 bg-emerald-500/10 border-emerald-500/20 dark:text-emerald-400", barColor: "bg-emerald-600 dark:bg-emerald-500", desc: "O contrato possui boa estrutura de segurança. Alguns pontos de atenção foram identificados, mas a saúde técnica é satisfatória." };
+    if (auditScore >= 50) return { label: "Vulnerável ⚠️", color: "text-amber-700 bg-amber-500/10 border-amber-500/20 dark:text-amber-400", barColor: "bg-amber-600 dark:bg-amber-500", desc: "Presença de ambiguidades e riscos moderados. Sugerimos aplicar os ajustes recomendados pela Inteligência Analítica." };
+    return { label: "Risco Crítico 🔥", color: "text-red-700 bg-red-500/10 border-red-500/20 dark:text-red-400", barColor: "bg-red-600 dark:bg-red-500", desc: "Inconsistências críticas detectadas! O documento apresenta riscos jurídicos que demandam revisão imediata." };
   }, [hasAudited, auditScore]);
 
   const filteredContracts = useMemo(() => {
@@ -516,6 +516,68 @@ export function EditorLayout() {
       toast.error("O sistema falhou ao processar a auditoria.", { id: toastId })
       setIsAuditing(false)
     }
+  }
+
+  const getClauses = () => {
+    if (!editor) return []
+    const clauses: { id: string; title: string; pos: number }[] = []
+    editor.state.doc.descendants((node: any, pos: number) => {
+      if (
+        (node.type.name === "heading" && node.attrs.level === 1) ||
+        (node.type.name === "legalNode" && node.attrs.level === 1)
+      ) {
+        clauses.push({
+          id: `clause-${pos}`,
+          title: node.textContent.trim(),
+          pos
+        })
+      }
+      return true
+    })
+    return clauses
+  }
+
+  const getClauseSubItems = (clausePos: number, nextClausePos?: number) => {
+    if (!editor) return []
+    const subItems: { id: string; text: string; pos: number }[] = []
+    const start = clausePos
+    const end = nextClausePos ?? editor.state.doc.content.size
+
+    editor.state.doc.nodesBetween(start, end, (node: any, pos: number) => {
+      if (pos === clausePos) return true
+
+      if (node.type.name === "paragraph" || node.type.name === "legalNode") {
+        const textContent = node.textContent.trim()
+        // Ignora títulos e textos extremamente curtos
+        if (textContent.length > 5 && node.attrs?.level !== 1) {
+          subItems.push({
+            id: `sub-${pos}`,
+            text: textContent,
+            pos
+          })
+        }
+      }
+      return true
+    })
+    return subItems
+  }
+
+
+  const getClauseRisks = (clausePos: number, nextClausePos?: number) => {
+    if (!editor || auditResults.length === 0) return []
+    const start = clausePos
+    const end = nextClausePos ?? editor.state.doc.content.size
+    const sectionText = editor.state.doc.textBetween(start, end).toLowerCase()
+    
+    return auditResults.filter(risk => 
+      sectionText.includes(risk.originalText.toLowerCase()) ||
+      risk.originalText.toLowerCase().includes(sectionText.substring(0, 30).toLowerCase())
+    )
+  }
+
+  const scrollToPosition = (pos: number) => {
+    if (!editor) return
+    editor.chain().focus().setTextSelection(pos).scrollIntoView().run()
   }
 
   const handleConfirmSignature = async () => {
@@ -577,7 +639,49 @@ export function EditorLayout() {
       }
     }
     fetchArsenal()
+
+    // Inscrição em tempo real na tabela de contratos para sincronização reativa global
+    const channel = supabase
+      .channel('realtime-contracts-library')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'contracts',
+        },
+        (payload) => {
+          if (payload.eventType === 'INSERT') {
+            const newDoc = payload.new
+            setUserContracts((prev) => {
+              if (prev.some(c => c.id === newDoc.id)) return prev
+              return [newDoc, ...prev].slice(0, 10)
+            })
+          } else if (payload.eventType === 'UPDATE') {
+            const updatedDoc = payload.new
+            setUserContracts((prev) =>
+              prev.map((c) => (c.id === updatedDoc.id ? { ...c, title: updatedDoc.title, status: updatedDoc.status } : c))
+            )
+          } else if (payload.eventType === 'DELETE') {
+            const deletedDoc = payload.old
+            setUserContracts((prev) => prev.filter((c) => c.id !== deletedDoc.id))
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }, [room, supabase])
+
+  // Atualização instantânea local (latência zero) do contrato ativo na listagem da barra lateral
+  useEffect(() => {
+    if (!room || fileName === "Documento_ExtraJus") return
+    setUserContracts((prev) =>
+      prev.map((c) => (c.id === room ? { ...c, title: fileName } : c))
+    )
+  }, [fileName, room])
 
   useEffect(() => {
     if (!room || readOnly || fileName === "Documento_ExtraJus") return
@@ -587,12 +691,58 @@ export function EditorLayout() {
     return () => clearTimeout(delayDebounceFn)
   }, [fileName, room, readOnly, supabase])
 
+  // Sincroniza dinamicamente o título do documento (fileName) com o primeiro <h1> inserido no editor (especialmente por geração da IA)
+  useEffect(() => {
+    if (!editor || readOnly) return
+
+    const handleUpdate = () => {
+      let firstH1 = ""
+      editor.state.doc.descendants((node: any) => {
+        if (node.type.name === "heading" && node.attrs.level === 1) {
+          firstH1 = node.textContent.trim()
+          return false // Stop traversal
+        }
+        return true
+      })
+
+      if (firstH1 && firstH1 !== fileName && firstH1.length > 2) {
+        // Limpa possíveis colchetes ou espaços sobressalentes
+        const cleanTitle = firstH1
+          .replace(/[\[\]]/g, "")
+          .trim()
+        
+        if (cleanTitle) {
+          setFileName(cleanTitle)
+        }
+      }
+    }
+
+    editor.on("update", handleUpdate)
+    return () => {
+      editor.off("update", handleUpdate)
+    }
+  }, [editor, fileName, readOnly])
+
   return (
     <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden relative font-sans selection:bg-primary/30">
       <style dangerouslySetInnerHTML={{ __html: `
         .tiptap.ProseMirror {
           font-family: ${fontFamily === "Lora" ? '"Lora", serif' : fontFamily === "Inter" ? '"Inter", sans-serif' : fontFamily === "Times New Roman" ? '"Times New Roman", serif' : '"JetBrains Mono", monospace'} !important;
           font-size: ${fontSize}px !important;
+        }
+        .scrollbar-minimalist::-webkit-scrollbar {
+          width: 3px !important;
+          height: 3px !important;
+        }
+        .scrollbar-minimalist::-webkit-scrollbar-track {
+          background: transparent !important;
+        }
+        .scrollbar-minimalist::-webkit-scrollbar-thumb {
+          background: var(--border) !important;
+          border-radius: 99px !important;
+        }
+        .scrollbar-minimalist::-webkit-scrollbar-thumb:hover {
+          background: var(--primary) !important;
         }
       ` }} />
       
@@ -611,15 +761,16 @@ export function EditorLayout() {
           )}
           <div className="flex items-center gap-3">
             {!readOnly ? (
-              <div className="flex items-center gap-1 group/title relative">
+              <div className="flex items-center group/title relative">
                 <input
                   type="text"
                   value={fileName}
                   onChange={(e) => setFileName(e.target.value)}
                   placeholder="Nome do contrato..."
-                  className="bg-transparent border-0 border-b border-transparent hover:border-border/60 focus:border-primary text-[10px] font-black uppercase tracking-widest text-foreground outline-none px-1 py-0.5 transition-all w-[150px] focus:w-[260px] truncate"
+                  style={{ width: `${Math.max(12, fileName.length + 1)}ch` }}
+                  className="bg-transparent border-0 border-b border-transparent hover:border-border/60 focus:border-primary text-[10px] font-black uppercase tracking-widest text-foreground outline-none px-1 py-0.5 transition-all max-w-[280px] truncate"
                 />
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 pointer-events-none select-none">.docx</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 pointer-events-none select-none -ml-1">.docx</span>
               </div>
             ) : (
               <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground truncate max-w-[160px]">{fileName}.docx</span>
@@ -643,29 +794,21 @@ export function EditorLayout() {
               <span className="text-[12px] font-black uppercase tracking-[0.2em] relative z-10 text-primary/80">IA</span>
             </div>
             <div className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity duration-500">
-              <ListButton type="bulletList" />
               <TextAlignButton align="left" />
               <TextAlignButton align="center" />
               <TextAlignButton align="right" />
               <TextAlignButton align="justify" />
-              <div className="h-4 w-px bg-border mx-1" />
-              <LinkPopover autoOpenOnLinkActive={false} orientation="horizontal" />
               <ColorTextPopover orientation="horizontal" />
             </div>
           </div>
         )}
 
-        <div className="flex items-center gap-2">
+        <div className="flex-none flex items-center gap-2">
           <div className="flex items-center gap-1.5 pr-4 border-r border-border/50">
-            {!readOnly && <InviteButton room={room || ""} />}
-            <CollaborationUsers />
             <ThemeToggle />
           </div>
           {!readOnly && (
             <div className="flex items-center gap-2 pl-2">
-              <Button variant="outline" size="sm" onClick={handleManualSave} disabled={isSaving} className="h-8 border-primary/20 hover:border-primary hover:bg-primary/5 text-primary text-[11px] font-bold uppercase tracking-wider rounded-lg px-3 transition-all">
-                <Save className={cn("w-3.5 h-3.5", isSaving && "animate-spin")} /> {isSaving ? "Gravando..." : "Salvar"}
-              </Button>
               <ExportButton />
               <SignModal title={fileName} />
             </div>
@@ -688,7 +831,7 @@ export function EditorLayout() {
       <div className={cn("flex-1 flex pt-12 relative overflow-hidden h-full transition-all duration-700", !isFocused && "filter blur-[45px] select-none pointer-events-none")}>
         {!readOnly && (
           <aside className={cn("h-full border-r border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", leftSidebarOpen ? "w-80" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
-            <div className="p-6 flex flex-col h-full overflow-hidden">
+            <div className="px-4 py-6 flex flex-col h-full overflow-hidden w-80">
               <div className="space-y-5 mb-8 shrink-0">
                 <div className="flex items-center justify-between border-b border-border/40 pb-2.5">
                    <div className="flex items-center gap-2">
@@ -763,15 +906,15 @@ export function EditorLayout() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={12} />
                 <input type="text" placeholder="Filtrar documentos..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-muted/30 border border-border/60 rounded-xl pl-8 pr-3 py-2 text-[10px] placeholder:text-muted-foreground/40 font-semibold" />
               </div>
-              <ScrollArea className="flex-1 -mx-2 px-2">
+              <ScrollArea className="flex-1 w-full">
                 <div className="space-y-6 pb-6">
                   <div className="space-y-3">
                     <p className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.25em] border-b border-border pb-1">Seus Documentos</p>
                     <div className="space-y-0.5">
                       {filteredContracts.map(c => (
-                        <Link key={c.id} href={`/editor?room=${c.id}`} className="w-full text-left text-[11px] py-2 px-2.5 hover:bg-primary/5 hover:text-primary rounded-lg flex items-center justify-between font-bold text-foreground/70">
-                          <span className="truncate">{c.title || "Documento"}</span>
-                          <Zap size={10} className={cn("opacity-0 hover:opacity-100", c.status === 'signed' ? "text-emerald-500" : "text-primary")} />
+                        <Link key={c.id} href={`/editor?room=${c.id}`} className="w-full min-w-0 text-left text-[11px] py-2 px-2.5 hover:bg-primary/5 hover:text-primary rounded-lg flex items-center justify-between font-bold text-foreground/70 transition-all gap-2">
+                          <span className="truncate flex-1 min-w-0">{c.title || "Documento"}</span>
+                          <Zap size={10} className={cn("shrink-0 opacity-0 group-hover:opacity-100", c.status === 'signed' ? "text-emerald-500" : "text-primary")} />
                         </Link>
                       ))}
                     </div>
@@ -783,7 +926,7 @@ export function EditorLayout() {
         )}
 
         <main className="flex-1 overflow-y-auto custom-scrollbar bg-transparent px-8 py-8 relative z-10">
-          <div className="w-full max-w-[840px] mx-auto bg-card border border-border/40 rounded-3xl px-12 md:px-20 pt-10 pb-16 md:pt-16 md:pb-24 relative shadow-2xl animate-in fade-in duration-1000 min-h-[800px] md:min-h-[1188px]">
+          <div className="w-full max-w-[840px] mx-auto bg-card border border-border/40 rounded-3xl px-16 md:px-28 pt-10 pb-16 md:pt-16 md:pb-24 relative shadow-2xl animate-in fade-in duration-1000 min-h-[800px] md:min-h-[1188px]">
              <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-3xl" />
              <div className="relative z-10">
                {!readOnly && <BubbleMenu editor={editor} />}
@@ -824,73 +967,154 @@ export function EditorLayout() {
               <Button onClick={handleConfirmSignature} disabled={isSealing || !consentCheck} className="w-full bg-primary py-6 rounded-2xl font-black text-[10px] uppercase">Assinar Instrumento</Button>
             </div>
           ) : (
-            <div className="p-6 flex flex-col h-full overflow-hidden">
-              <Tabs value={oracleTab} onValueChange={setOracleTab} className="h-full flex flex-col">
-                <TabsList className="grid w-full grid-cols-2 bg-muted/60 p-1 rounded-xl h-10 mb-6 border border-border/40">
-                  <TabsTrigger value="insights" className="text-[10px] font-bold uppercase tracking-wider transition-all">Auditoria IA</TabsTrigger>
-                  <TabsTrigger value="logs" className="text-[10px] font-bold uppercase tracking-wider transition-all">Histórico</TabsTrigger>
-                </TabsList>
-                <div className="flex-1 overflow-hidden">
-                  <TabsContent value="insights" className="h-full m-0 flex flex-col space-y-6">
-                    <div className="flex items-center justify-between border-b border-border/40 pb-4">
-                      <div className="flex items-center gap-3">
-                        <BrainCircuit size={16} className={cn("text-primary", isAuditing && "animate-pulse")} />
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">Radar Analítico</h3>
-                      </div>
-                      <Button onClick={runAudit} disabled={isAuditing} variant="outline" size="sm" className="h-8 text-[10px] font-bold uppercase tracking-wider text-primary border-primary/20 hover:bg-primary/5 hover:border-primary transition-all">Analisar</Button>
-                    </div>
-                    <ScrollArea className="flex-1 -mx-2 px-2">
-                       <div className="space-y-6 pb-6">
-                          {!hasAudited ? (
-                            <div className="py-16 text-center space-y-4 border border-dashed border-border rounded-2xl">
-                              <Brain size={28} className="mx-auto text-muted-foreground opacity-20" />
-                              <p className="text-[11px] font-medium text-muted-foreground/80 leading-relaxed px-4">Utilize a IA para escanear inconsistências e otimizar este documento.</p>
-                              <Button onClick={runAudit} disabled={isAuditing} className="bg-primary hover:bg-primary/95 text-primary-foreground text-[10px] font-bold uppercase tracking-wider h-9 px-6 rounded-xl transition-all shadow-sm active:scale-95">Iniciar Análise</Button>
-                            </div>
-                          ) : (
-                            <div className="space-y-5">
-                              <div className="p-5 rounded-2xl bg-muted/30 border space-y-4">
-                                <div className="flex items-center justify-between">
-                                  <span className="text-[9px] font-black text-muted-foreground uppercase">Score de Segurança</span>
-                                  <span className={cn("text-[9px] font-black uppercase px-2 py-0.5 rounded-full", auditStatus.color)}>{auditStatus.label}</span>
-                                </div>
-                                <div className="flex items-baseline gap-1">
-                                  <span className="text-4xl font-black">{auditScore}</span>
-                                  <span className="text-sm font-bold text-primary">%</span>
-                                </div>
-                                <p className="text-[9px] text-muted-foreground leading-relaxed italic">{auditStatus.desc}</p>
-                              </div>
-                              {auditResults.map((risk) => (
-                                <div key={risk.id} className="p-4 rounded-2xl border bg-red-500/[0.02] border-red-500/10 space-y-2">
-                                  <span className="text-[8px] font-black text-red-400 uppercase">Ponto de Atenção</span>
-                                  <p className="text-[10px] font-bold italic">"{risk.originalText}"</p>
-                                  <p className="text-[9px] text-muted-foreground">{risk.reason}</p>
-                                  <Button size="sm" className="w-full bg-primary/10 hover:bg-primary text-primary hover:text-primary-foreground text-[9px] font-bold uppercase tracking-wider h-9 rounded-xl transition-all">Otimizar Cláusula</Button>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                       </div>
-                    </ScrollArea>
-                  </TabsContent>
-                  <TabsContent value="logs" className="h-full m-0">
-                    <ScrollArea className="flex-1 -mx-2 px-2">
-                      <div className="space-y-4 pb-6">
-                        {historyLogs.map((log) => (
-                          <div key={log.id} className="p-4 rounded-2xl bg-muted/30 border border-border">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-[10px] font-black text-primary">{log.version}</span>
-                              <span className="text-[8px] font-bold text-muted-foreground uppercase">{log.time}</span>
-                            </div>
-                            <p className="text-[12px] font-bold mb-1">{log.action}</p>
-                            <span className="text-[10px] text-muted-foreground">{log.user}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                  </TabsContent>
+            <div className="p-6 flex flex-col h-full overflow-hidden min-h-0 space-y-6">
+              <div className="flex items-center justify-between border-b border-border/40 pb-4">
+                <div className="flex items-center gap-3">
+                  <BrainCircuit size={16} className={cn("text-primary", isAuditing && "animate-pulse")} />
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">Radar Analítico</h3>
                 </div>
-              </Tabs>
+                <Button onClick={runAudit} disabled={isAuditing} variant="outline" size="sm" className="h-8 text-[10px] font-bold uppercase tracking-wider text-primary border-primary/20 hover:bg-primary/5 hover:border-primary transition-all">Analisar</Button>
+              </div>
+              {/* Seção 1: Score ou Iniciar Auditoria (Fixado no topo) */}
+              <div className="shrink-0">
+                {!hasAudited ? (
+                  <div className="p-5 rounded-2xl bg-primary/5 border border-primary/10 space-y-3.5 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
+                    <div className="flex items-center gap-2">
+                      <Brain size={16} className="text-primary animate-pulse" />
+                      <span className="text-[9px] font-black text-primary uppercase tracking-widest">Radar de Conformidade</span>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground leading-relaxed">
+                      Rode o radar analítico para escanear inconsistências, brechas jurídicas e calcular o score de proteção do instrumento.
+                    </p>
+                    <Button 
+                      onClick={runAudit} 
+                      disabled={isAuditing} 
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-[9px] font-black uppercase tracking-wider h-8 rounded-xl transition-all"
+                    >
+                      Rolar Análise IA
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="p-5 rounded-2xl bg-muted/30 border space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[9px] font-black text-muted-foreground uppercase">Score de Segurança</span>
+                      <span className={cn("text-[9px] font-black uppercase px-2 py-0.5 rounded-full", auditStatus.color)}>{auditStatus.label}</span>
+                    </div>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-4xl font-black">{auditScore}</span>
+                      <span className="text-sm font-bold text-primary">%</span>
+                    </div>
+                    <p className="text-[9px] text-muted-foreground leading-relaxed italic">{auditStatus.desc}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Seção 2: Árvore Interativa de Cláusulas (Mapa do Instrumento) */}
+              <div className="flex flex-col flex-1 min-h-0 space-y-4">
+                <div className="flex items-center gap-2 border-b border-border/40 pb-2 shrink-0">
+                  <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Mapa do Instrumento</span>
+                </div>
+                
+                <ScrollArea className="flex-1 pr-3 scrollbar-minimalist min-h-0">
+                  {getClauses().length === 0 ? (
+                    <div className="text-center py-6">
+                      <span className="text-[9px] text-muted-foreground font-semibold">Nenhuma cláusula identificada ainda.</span>
+                    </div>
+                  ) : (
+                    <div className="relative pl-5 pr-3 py-1 space-y-5 before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-[1.5px] before:bg-border/60">
+                      {getClauses().map((clause, idx, array) => {
+                        const nextClause = array[idx + 1]
+                        const clauseRisks = getClauseRisks(clause.pos, nextClause?.pos)
+                        const hasRisk = clauseRisks.length > 0
+                        const subItems = getClauseSubItems(clause.pos, nextClause?.pos)
+                        const visibleSubItems = subItems.slice(0, 4)
+                        const hasMore = subItems.length > 4
+
+                        return (
+                          <div key={clause.id} className="relative group/clause">
+                            {/* Indicador de Status na Árvore */}
+                            <div className={cn(
+                              "absolute -left-[23px] top-0.5 h-3.5 w-3.5 rounded-full border-2 bg-background flex items-center justify-center transition-all duration-300 z-10",
+                              !hasAudited 
+                                ? "border-muted-foreground/30" 
+                                : hasRisk 
+                                  ? "border-red-500 bg-red-950/20" 
+                                  : "border-emerald-500 bg-emerald-950/20"
+                            )}>
+                              {hasAudited && (
+                                hasRisk 
+                                  ? <div className="h-1.5 w-1.5 rounded-full bg-red-500" />
+                                  : <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                              )}
+                            </div>
+
+                            <div className="space-y-2">
+                              <button
+                                onClick={() => scrollToPosition(clause.pos)}
+                                className="flex items-center justify-between w-full text-left group-hover/clause:text-primary transition-all"
+                              >
+                                <span className="text-[10px] font-bold uppercase tracking-wider truncate max-w-[170px] text-foreground/80 group-hover/clause:text-primary">
+                                  {clause.title}
+                                </span>
+                                {hasAudited && (
+                                  hasRisk 
+                                    ? <span className="text-[8px] font-black uppercase text-red-600 dark:text-red-400 tracking-wider">⚠️ Risco</span>
+                                    : <span className="text-[8px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">✅ OK</span>
+                                )}
+                              </button>
+
+                              {/* Sub-itens (Parágrafos da Cláusula) */}
+                              {visibleSubItems.length > 0 && (
+                                <div className="pl-2.5 space-y-1 py-0.5 border-l border-border/20 ml-1">
+                                  {visibleSubItems.map((sub) => (
+                                    <button
+                                      key={sub.id}
+                                      onClick={() => scrollToPosition(sub.pos)}
+                                      className="flex items-center gap-1.5 text-left text-[8px] text-muted-foreground/40 hover:text-primary transition-all w-full min-w-0 group/sub"
+                                    >
+                                      <div className="h-0.5 w-1 bg-muted-foreground/20 group-hover/sub:bg-primary shrink-0 transition-colors" />
+                                      <span className="truncate flex-1 min-w-0 font-medium italic">
+                                        {sub.text}
+                                      </span>
+                                    </button>
+                                  ))}
+                                  {hasMore && (
+                                    <span className="text-[8px] text-muted-foreground/20 pl-2.5 font-bold tracking-widest block leading-none">...</span>
+                                  )}
+                                </div>
+                              )}
+
+                              {/* Se houver risco correspondente a esta cláusula, renderiza abaixo dela de forma integrada */}
+                              {hasAudited && hasRisk && (
+                                <div className="pl-3 space-y-2.5 border-l border-red-500/20 mt-1.5">
+                                  {clauseRisks.map((risk) => (
+                                    <div key={risk.id} className="p-3 rounded-xl border bg-red-500/[0.02] border-red-500/10 space-y-2">
+                                      <span className="text-[7.5px] font-black text-red-600 dark:text-red-400 uppercase tracking-widest">Atenção</span>
+                                      <p className="text-[9px] font-medium leading-relaxed text-muted-foreground/90">
+                                        {risk.reason}
+                                      </p>
+                                      <Button 
+                                        size="sm" 
+                                        onClick={() => {
+                                          scrollToPosition(clause.pos)
+                                        }}
+                                        className="w-full bg-red-500/10 hover:bg-red-500 text-red-600 dark:text-red-400 hover:text-white dark:hover:text-white text-[8px] font-bold uppercase tracking-widest h-7 rounded-lg transition-all"
+                                      >
+                                        Otimizar Cláusula
+                                      </Button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </ScrollArea>
+              </div>
             </div>
           )}
         </aside>

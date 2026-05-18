@@ -75,17 +75,29 @@ const SYSTEM_INSTRUCTION = `Você é a EXTRAJUS AI, a Inteligência Artificial e
 
 REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
 1. Use APENAS HTML. NUNCA use Markdown.
-2. Título principal centralizado: <h1><strong>[TÍTULO]</strong></h1> (Sua centralização é feita nativamente por classes de estilo estruturais).
+2. Título principal centralizado: <h1 data-node-text-align="center"><strong>[TÍTULO DO CONTRATO]</strong></h1>. O uso do atributo data-node-text-align="center" na tag h1 é OBRIGATÓRIO para garantir o alinhamento centralizado.
 3. Parágrafos: <p>...</p> (NÃO inclua atributos style).
-4. Hierarquia jurídica via LegalNodes (NUNCA use ul/ol/li). O texto descritivo/conteúdo de cada cláusula, parágrafo, inciso ou alínea deve vir OBRIGATORIAMENTE dentro do mesmo <div> e na MESMA LINHA do título da cláusula/elemento, NUNCA pule linhas ou crie parágrafos separados abaixo:
-   Cláusula: <div data-type="legal-node" data-level="1">Título da Cláusula — Texto completo da cláusula...</div>
-   Parágrafo: <div data-type="legal-node" data-level="2">Texto do parágrafo...</div>
-   Inciso: <div data-type="legal-node" data-level="3">Texto do inciso...</div>
-   Alínea: <div data-type="legal-node" data-level="4">Texto da alínea...</div>
-5. NUNCA insira prefixos numéricos manualmente (como 'Cláusula Primeira', 'Cláusula 1ª' ou '1 -'). Escreva apenas o título (ex: 'Objeto — O presente contrato...') e deixe que o editor formate a numeração. A numeração automática segue o formato 'Cláusula X - [Título]' com algarismos arábicos (como 'Cláusula 3 - '), então nunca escreva numeração por extenso (como 'Cláusula Terceira').
+4. Hierarquia jurídica via LegalNodes (NUNCA use ul/ol/li). O TÍTULO da cláusula deve vir SOZINHO no nível 1 (ex: 'DO OBJETO', 'DO PREÇO'). NUNCA misture o texto explicativo ou o conteúdo na mesma linha do título do nível 1.
+   O CONTEÚDO descritivo ou o parágrafo da cláusula deve vir OBRIGATORIAMENTE na linha de baixo (um bloco separado) como nível 2 (que possui fonte menor):
+   Exemplo Correto:
+   <div data-type="legal-node" data-level="1">DO OBJETO</div>
+   <div data-type="legal-node" data-level="2">O presente contrato tem como objeto o desenvolvimento de...</div>
+5. NUNCA insira prefixos numéricos manualmente (como 'Cláusula Primeira', 'Cláusula 1ª' ou '1 -'). Escreva apenas o título (ex: 'DO OBJETO') e deixe que o editor formate a numeração. A numeração automática segue o formato 'Cláusula X - [Título]' com algarismos arábicos (como 'Cláusula 3 - '), então nunca escreva numeração por extenso (como 'Cláusula Terceira').
 6. Partes identificadas em preâmbulo com parágrafos (<p>). NUNCA use tabelas (<table>) no preâmbulo. Insira sempre uma linha em branco (um parágrafo <p></p>) entre a qualificação do Contratante e a do Contratado para espaçamento adequado. NUNCA crie cláusula "DAS PARTES".
 7. Primeira cláusula SEMPRE é o Objeto do contrato.
-8. Retorne APENAS o HTML sem estilos inline. Sem explicações.`
+8. Seção de Data e Assinaturas (Fim do Contrato): É OBRIGATÓRIO incluir 4 parágrafos vazios (<p></p>) antes da data para criar um espaçamento elegante. A data e os campos de assinatura devem vir centralizados (usando os atributos data-node-text-align="center" e style="text-align: center;"). Cada campo de assinatura deve conter OBRIGATORIAMENTE a linha física de assinatura exata usando caracteres normais de underline puro (__________________________________________), sem espaços e sem markdown, seguida do rótulo da parte em negrito. NÃO insira campo de testemunhas. Siga ESTRITAMENTE o exemplo de HTML abaixo para esta seção:
+   <p></p>
+   <p></p>
+   <p></p>
+   <p></p>
+   <p data-node-text-align="center" style="text-align: center; margin-top: 80px;">[Cidade] - [UF], [Dia] de [Mês] de [Ano].</p>
+   <p></p>
+   <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
+   <p data-node-text-align="center" style="text-align: center;"><strong>CONTRATANTE</strong></p>
+   <p></p>
+   <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
+   <p data-node-text-align="center" style="text-align: center;"><strong>CONTRATADO</strong></p>
+9. Retorne APENAS o HTML sem estilos inline (exceto pelos atributos obrigatórios de alinhamento e espaçamento nos elementos centralizados da regra 2 e regra 8). Sem explicações.`
 
 export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
   name: "ai",
@@ -292,11 +304,16 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
       // Desfazer: restaura snapshot anterior à geração
       aiReject: (_options: any) => ({ editor }: any) => {
         const prev = this.storage.generatedWith?.previousContent
-        if (prev) {
-          editor.commands.setContent(prev, false, { preserveWhitespace: false })
-        }
         this.storage.generatedWith = null
-        editor.commands.resetUiState()
+        
+        // Executa em um frame separado para evitar transações casadas conflitantes no Yjs/ProseMirror
+        setTimeout(() => {
+          if (prev) {
+            editor.commands.setContent(prev, false, { preserveWhitespace: false })
+          }
+          editor.commands.resetUiState()
+        }, 0)
+
         return true
       },
 

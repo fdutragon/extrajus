@@ -48,13 +48,6 @@ const texts = {
   },
 
   // Jurídico
-  add_preamble: {
-    title: "Adicionar Preâmbulo",
-    subtext: "Inserir preâmbulo e Cláusula 1ª (Objeto)",
-    keywords: ["preambulo", "inicio", "partes", "objeto"],
-    badge: Users,
-    group: "Jurídico",
-  },
   clausula: {
     title: "Cláusula",
     subtext: "Nova cláusula contratual",
@@ -110,26 +103,13 @@ const getItemImplementations = () => {
     },
 
     // Jurídico
-    add_preamble: {
-      check: (editor: Editor) => {
-        const hasPreamble = editor.getText().includes("CONTRATO DE")
-        return !hasPreamble && isNodeInSchema("legalNode", editor)
-      },
-      action: ({ editor }: { editor: Editor }) => {
-        editor
-          .chain()
-          .focus()
-          .insertContent('<h1 data-node-text-align="center"><strong>CONTRATO DE [PREENCHER TIPO DE CONTRATO]</strong></h1><p data-node-text-align="justify"><strong>CONTRATANTE:</strong> [NOME/RAZÃO SOCIAL], [NACIONALIDADE], [ESTADO CIVIL], [PROFISSÃO], inscrito no CPF/CNPJ sob o nº [000.000.000-00], residente e domiciliado em [ENDEREÇO COMPLETO].</p><p data-node-text-align="justify"><strong>CONTRATADO:</strong> [NOME/RAZÃO SOCIAL], [NACIONALIDADE], [ESTADO CIVIL], [PROFISSÃO], inscrito no CPF/CNPJ sob o nº [000.000.000-00], residente e domiciliado em [ENDEREÇO COMPLETO].</p><p data-node-text-align="justify">As partes acima identificadas têm, entre si, justo e acertado o presente Contrato, que se regerá pelas cláusulas seguintes e pelas condições descritas abaixo.</p><p></p><div data-type="legal-node" data-level="1" data-node-text-align="justify"><strong>CLÁUSULA PRIMEIRA - DO OBJETO</strong></div><div data-type="legal-node" data-level="2" data-node-text-align="justify">O presente instrumento tem como objeto [DESCREVER O OBJETO DO CONTRATO COM PRECISÃO].</div>')
-          .run()
-      },
-    },
     add_signature: {
       check: (editor: Editor) => isNodeInSchema("paragraph", editor),
       action: ({ editor }: { editor: Editor }) => {
         editor
           .chain()
           .focus()
-          .insertContent('<p></p><p data-node-text-align="center">__________________________________________</p><p data-node-text-align="center"><strong>CONTRATANTE</strong></p><p data-node-text-align="center">__________________________________________</p><p data-node-text-align="center"><strong>CONTRATADO</strong></p>')
+          .insertContent('<p></p><p data-node-text-align="center">[Cidade] - [UF], [Dia] de [Mês] de [Ano].</p><p></p><p data-node-text-align="center">__________________________________________</p><p data-node-text-align="center"><strong>CONTRATANTE</strong></p><p></p><p data-node-text-align="center">__________________________________________</p><p data-node-text-align="center"><strong>CONTRATADO</strong></p>')
           .run()
       },
     },
