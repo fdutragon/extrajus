@@ -104,7 +104,7 @@ export function Logo({ className, showText = true, iconSize = 32, ...props }: Lo
           "font-sans font-black tracking-[0.28em] text-foreground leading-none flex items-center",
           isLarge ? "text-[13px]" : isMedium ? "text-[11.5px]" : "text-[10px]"
         )}>
-          EXTRA<span className="text-[#e2c9a3]">JUS</span>
+          Extra<span className="text-[#e2c9a3]">Jus</span>
         </span>
       )}
     </div>

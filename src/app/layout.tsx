@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import Script from "next/script";
 
 const headingFont = Cormorant_Garamond({
   variable: "--font-heading",
@@ -52,6 +53,16 @@ export default function RootLayout({
     >
       <head />
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-background text-foreground">
+        {/* Google Tag (gtag.js) */}
+        <Script async src="https://www.googletagmanager.com/gtag/js?id=AW-18156533859" strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-18156533859');
+          `}
+        </Script>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
