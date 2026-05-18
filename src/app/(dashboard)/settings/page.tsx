@@ -219,7 +219,7 @@ export default function SettingsPage() {
                         <AvatarFallback className="bg-muted text-muted-foreground font-black text-2xl">{fullName?.slice(0,2).toUpperCase() || "US"}</AvatarFallback>
                       </Avatar>
                       <div className="mb-2 text-left">
-                        <h2 className="text-3xl font-black tracking-tight text-foreground uppercase">{fullName || 'Usuário'}</h2>
+                        <h2 className="text-3xl font-black tracking-tight text-foreground">{fullName || 'Usuário'}</h2>
                         <p className="text-sm text-muted-foreground font-medium italic">Perfil Profissional ExtraJus</p>
                       </div>
                     </div>

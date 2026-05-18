@@ -766,52 +766,52 @@ export default function InboxPage() {
        </div>
 
       <Dialog open={isSupportOpen} onOpenChange={setIsSupportOpen}>
-        <DialogContent className="max-w-md bg-card/95 border border-border/80 backdrop-blur-md rounded-2xl shadow-2xl p-6 relative overflow-hidden text-left">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-          
-          <DialogHeader className="space-y-1.5 border-b border-border/40 pb-4 mb-4 text-left">
-            <DialogTitle className="text-lg font-black tracking-wide text-foreground uppercase italic flex items-center gap-2 text-left">
-              <LifeBuoy size={18} className="text-primary" /> Central de Chamados & Suporte
-            </DialogTitle>
-            <DialogDescription className="text-[11px] text-muted-foreground font-medium leading-relaxed text-left">
-              Precisa de ajuda ou quer tirar alguma dúvida? Deixe sua mensagem e nós responderemos aqui em tempo real.
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="max-w-md bg-card/95 border border-border/80 backdrop-blur-md rounded-2xl shadow-2xl p-6 overflow-hidden text-left">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+            
+            <DialogHeader className="space-y-1.5 border-b border-border/40 pb-4 mb-4 text-left">
+              <DialogTitle className="text-lg font-black tracking-wide text-foreground uppercase italic flex items-center gap-2 text-left">
+                <LifeBuoy size={18} className="text-primary" /> Central de Chamados & Suporte
+              </DialogTitle>
+              <DialogDescription className="text-[11px] text-muted-foreground font-medium leading-relaxed text-left">
+                Precisa de ajuda ou quer tirar alguma dúvida? Deixe sua mensagem e nós responderemos aqui em tempo real.
+              </DialogDescription>
+            </DialogHeader>
 
-          <form onSubmit={handleOpenSupport} className="space-y-4 text-left">
-            <div className="space-y-2 text-left">
-              <label className="text-[10px] font-black text-muted-foreground/80 block text-left">
-                Sua Mensagem / Dúvida
-              </label>
-              <textarea 
-                placeholder="Descreva seu problema ou dúvida de forma clara..."
-                value={supportMessage}
-                onChange={(e) => setSupportMessage(e.target.value)}
-                rows={5}
-                className="w-full bg-muted/30 border border-border/50 rounded-xl px-4 py-3.5 text-xs font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder:text-muted-foreground/35 resize-none min-h-[120px] text-left"
-                required
-              />
-            </div>
+            <form onSubmit={handleOpenSupport} className="space-y-4 text-left">
+              <div className="space-y-2 text-left">
+                <label className="text-[10px] font-black text-muted-foreground/80 block text-left">
+                  Sua Mensagem / Dúvida
+                </label>
+                <textarea 
+                  placeholder="Descreva seu problema ou dúvida de forma clara..."
+                  value={supportMessage}
+                  onChange={(e) => setSupportMessage(e.target.value)}
+                  rows={5}
+                  className="w-full bg-muted/30 border border-border/50 rounded-xl px-4 py-3.5 text-xs font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder:text-muted-foreground/35 resize-none min-h-[120px] text-left"
+                  required
+                />
+              </div>
 
-            <div className="flex gap-3 justify-end pt-2 border-t border-border/40 mt-6">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setIsSupportOpen(false)}
-                className="h-10 px-4 rounded-xl text-xs font-bold text-muted-foreground hover:bg-muted"
-              >
-                Cancelar
-              </Button>
-              <Button 
-                type="submit"
-                disabled={isSupporting}
-                className="h-10 px-5 rounded-xl text-xs font-black uppercase tracking-wider bg-primary text-primary-foreground hover:bg-primary/95 transition-all flex items-center justify-center gap-2"
-              >
-                {isSupporting ? "Enviando..." : "Abrir Chamado"}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
+              <div className="flex gap-3 justify-center pt-2 border-t border-border/40 mt-6">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setIsSupportOpen(false)}
+                  className="h-10 px-4 rounded-xl text-xs font-bold text-muted-foreground hover:bg-muted"
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  type="submit"
+                  disabled={isSupporting}
+                  className="h-10 px-5 rounded-xl text-xs font-black uppercase tracking-wider bg-primary text-primary-foreground hover:bg-primary/95 transition-all flex items-center justify-center gap-2"
+                >
+                  {isSupporting ? "Enviando..." : "Abrir Chamado"}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
       </Dialog>
 
    </div>

@@ -640,7 +640,7 @@ export default function DashboardLayoutClient({
             })}
           </nav>
 
-          {/* Lilith Pulse - AI Live Activity Feed */}
+          {/* ExtraJus Pulse - AI Live Activity Feed */}
           {(!isCollapsed || (typeof window !== 'undefined' && window.innerWidth < 1024)) && (
             <div className={cn("px-2 pt-4 border-t border-border space-y-3 animate-in fade-in duration-1000", isCollapsed && "lg:hidden")}>
                <div className="flex items-center gap-2">
@@ -648,7 +648,7 @@ export default function DashboardLayoutClient({
                    <div className="w-2 h-2 rounded-full bg-primary animate-ping absolute inset-0" />
                    <div className="w-2 h-2 rounded-full bg-primary relative" />
                  </div>
-                 <span className="text-[9px] font-bold text-primary uppercase tracking-widest">Lilith Pulse</span>
+                 <span className="text-[9px] font-bold text-primary uppercase tracking-widest">ExtraJus Pulse</span>
                </div>
                <div className="bg-primary/5 rounded-lg p-2.5 border border-primary/10">
                  <p className="text-[10px] text-primary/80 leading-tight italic font-medium font-mono">

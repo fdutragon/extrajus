@@ -73,7 +73,7 @@
   outline: none;
 
   .tiptap.ProseMirror {
-    font-family: "Inter", sans-serif;
+    font-family: var(--font-sans);
   }
 
   &::placeholder {

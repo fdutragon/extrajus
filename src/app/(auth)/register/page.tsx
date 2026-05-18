@@ -24,18 +24,8 @@ export default async function RegisterPage({
             {error}
           </div>
         )}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="firstName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">Primeiro Nome</Label>
-            <Input id="firstName" name="firstName" required placeholder="Felipe" className="h-12 px-4 rounded-2xl border-border bg-background dark:bg-card focus:border-primary transition-all text-base" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="lastName" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">Sobrenome</Label>
-            <Input id="lastName" name="lastName" required placeholder="Silva" className="h-12 px-4 rounded-2xl border-border bg-background dark:bg-card focus:border-primary transition-all text-base" />
-          </div>
-        </div>
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">E-mail Corporativo</Label>
+          <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">Seu Email</Label>
           <Input id="email" name="email" required placeholder="seu@email.com" type="email" className="h-12 px-4 rounded-2xl border-border bg-background dark:bg-card focus:border-primary transition-all text-base" />
         </div>
         <div className="space-y-2">

@@ -87,8 +87,8 @@ export function SignModal({ title = "Documento Digital" }: { title?: string }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <button className="h-9 rounded-xl bg-primary text-primary-foreground hover:opacity-90 font-bold text-xs tracking-wide px-6 py-2 transition-all active:scale-95 flex items-center gap-3 border-none cursor-pointer">
-            <Fingerprint size={14} />
+          <button className="h-7 rounded-lg border border-primary/20 hover:bg-primary/10 text-primary font-bold text-[9px] uppercase tracking-widest px-3 transition-all active:scale-95 flex items-center gap-2 cursor-pointer">
+            <Fingerprint size={12} />
             Assinar
           </button>
         }
@@ -180,33 +180,41 @@ export function SignModal({ title = "Documento Digital" }: { title?: string }) {
                  </div>
               </div>
 
-              <button 
-                onClick={handleSign}
-                disabled={isSending}
-                className={cn(
-                  "w-full h-14 rounded-xl font-bold text-sm tracking-tight transition-all duration-300 relative overflow-hidden group flex items-center justify-center border border-primary/20",
-                  isSending 
-                    ? "bg-muted text-muted-foreground cursor-not-allowed opacity-70" 
-                    : "bg-primary text-primary-foreground hover:shadow-[0_0_25px_rgba(var(--primary-rgb),0.3)] hover:border-primary/50 active:scale-[0.98]"
-                )}
-              >
-                {isSending ? (
-                  <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                    <span className="uppercase text-xs tracking-widest font-black">Processando...</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-3 relative z-10">
-                    <span className="uppercase text-xs tracking-widest font-black">Enviar para Assinatura</span>
-                    <Send size={16} className="transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1" />
-                  </div>
-                )}
-                
-                {/* Glossy overlay effect */}
-                {!isSending && (
-                  <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                )}
-              </button>
+              <div className="flex gap-3 justify-center">
+                <button 
+                  onClick={() => setOpen(false)}
+                  disabled={isSending}
+                  className="flex-1 h-14 rounded-xl font-bold text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground hover:bg-muted transition-all border border-border"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  onClick={handleSign}
+                  disabled={isSending}
+                  className={cn(
+                    "flex-[2] h-14 rounded-xl font-bold text-sm tracking-tight transition-all duration-300 relative overflow-hidden group flex items-center justify-center border border-primary/20",
+                    isSending 
+                      ? "bg-muted text-muted-foreground cursor-not-allowed opacity-70" 
+                      : "bg-primary text-primary-foreground hover:shadow-[0_0_25px_rgba(var(--primary-rgb),0.3)] hover:border-primary/50 active:scale-[0.98]"
+                  )}
+                >
+                  {isSending ? (
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                      <span className="uppercase text-xs tracking-widest font-black">Processando...</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3 relative z-10">
+                      <span className="uppercase text-xs tracking-widest font-black">Enviar para Assinatura</span>
+                      <Send size={16} className="transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1" />
+                    </div>
+                  )}
+                  
+                  {!isSending && (
+                    <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  )}
+                </button>
+              </div>
               
               <p className="text-[8px] text-center text-muted-foreground/60 uppercase tracking-[0.2em] font-medium">
                 Ao prosseguir, você valida o documento sob as normas da ExtraJus S/A

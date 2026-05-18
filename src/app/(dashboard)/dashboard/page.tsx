@@ -84,10 +84,14 @@ export default async function DashboardPage() {
         <form action={createContractAction}>
           <Button
             type="submit"
-            className="bg-primary text-primary-foreground hover:opacity-90 font-bold tracking-tight rounded-lg px-5 py-2 group transition-all duration-300"
+            className="relative bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-[0.1em] text-[10px] rounded-xl px-8 h-12 group transition-all duration-500 overflow-hidden shadow-[0_0_20px_rgba(197,168,128,0.15)] hover:shadow-[0_0_30px_rgba(197,168,128,0.3)] border border-primary/50 hover:border-primary"
           >
-            <PlusCircle size={16} className="mr-2" />
-            Novo Contrato
+            <div className="relative z-10 flex items-center gap-2">
+              <PlusCircle size={14} className="transition-transform duration-500 group-hover:rotate-90 group-hover:scale-110" />
+              Forjar Novo Contrato
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-tr from-primary via-primary/90 to-[#e5cfa1] opacity-100" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.2),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           </Button>
         </form>
       </div>

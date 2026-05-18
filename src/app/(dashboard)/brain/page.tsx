@@ -231,7 +231,7 @@ export default function BrainPage() {
                 if (node.x === undefined || node.y === undefined) return;
                 const label = node.name;
                 const fontSize = 11 / globalScale;
-                ctx.font = `bold ${fontSize}px Inter`;
+                ctx.font = `bold ${fontSize}px Plus Jakarta Sans`;
                 
                 // Draw glowing aura shadow
                 ctx.shadowColor = node.color || "#06b6d4";

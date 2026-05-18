@@ -23,7 +23,9 @@ import {
   Terminal,
   MousePointer2,
   Search,
-  Database
+  Database,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -49,12 +51,12 @@ export default function Home() {
   const graphData = useMemo(() => {
     return { 
       nodes: [
-        { id: "core", name: "EXTRAJUS CORE", val: 30, group: "core", color: "hsl(var(--primary))" },
-        { id: "p1", name: "Contrato A-1", val: 15, group: "pro", color: "hsl(var(--primary) / 0.7)" },
-        { id: "p2", name: "Draft B-2", val: 15, group: "pro", color: "hsl(var(--primary) / 0.7)" },
-        { id: "p3", name: "Protocolo X", val: 15, group: "pro", color: "hsl(var(--primary) / 0.7)" },
-        { id: "o1", name: "Fusão Corporativa", val: 20, group: "opportunity", color: "hsl(var(--primary) / 0.4)" },
-        { id: "o2", name: "Tech IPO", val: 18, group: "opportunity", color: "hsl(var(--primary) / 0.4)" },
+        { id: "core", name: "CERTIFICAÇÃO CORE", val: 30, group: "core", color: "#c5a880" },
+        { id: "p1", name: "Hash MD5-Alpha", val: 15, group: "pro", color: "rgba(197, 168, 128, 0.8)" },
+        { id: "p2", name: "Selo Digital", val: 15, group: "pro", color: "rgba(197, 168, 128, 0.8)" },
+        { id: "p3", name: "Protocolo AES", val: 15, group: "pro", color: "rgba(197, 168, 128, 0.8)" },
+        { id: "o1", name: "Validação ICP", val: 20, group: "opportunity", color: "rgba(197, 168, 128, 0.5)" },
+        { id: "o2", name: "Biometria Ativa", val: 18, group: "opportunity", color: "rgba(197, 168, 128, 0.5)" },
       ], 
       links: [
         { source: "core", target: "p1" },
@@ -96,12 +98,16 @@ export default function Home() {
                 Recursos
                 <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
               </a>
-              <a href="#rede" className="relative py-1 text-muted-foreground hover:text-foreground transition-colors group">
-                Rede Profissional
+              <a href="#assinaturas" className="relative py-1 text-muted-foreground hover:text-foreground transition-colors group">
+                Assinaturas
                 <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
               </a>
               <a href="#tecnologia" className="relative py-1 text-muted-foreground hover:text-foreground transition-colors group">
                 Tecnologia
+                <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+              </a>
+              <a href="#faq" className="relative py-1 text-muted-foreground hover:text-foreground transition-colors group">
+                FAQ
                 <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
               </a>
             </div>
@@ -123,21 +129,25 @@ export default function Home() {
             <Terminal size={12} /> ExtraJus Engine v2.0 — Operação Cirúrgica IA Ativa
           </div>
           <h1 className="text-4xl md:text-7xl font-bold tracking-tighter leading-[1.1] mb-8 text-foreground animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
-            A nova era da <br /> <span className="text-transparent bg-clip-text bg-gradient-to-b from-foreground to-muted-foreground/60">Precisão Jurídica.</span>
+            Criação e Auditoria <br /> <span className="text-transparent bg-clip-text bg-gradient-to-b from-foreground to-muted-foreground/60">de Contratos de Elite.</span>
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed mb-12 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
-            O ecossistema definitivo para advocacia de alta performance. Redija com <span className="text-foreground">Edição IA Cirúrgica</span>, audite riscos com o <span className="text-foreground">Radar Analítico</span> e rastreie cláusulas pelo <span className="text-foreground">Mapa do Instrumento</span> em tempo real.
+          <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto font-medium leading-relaxed mb-12 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
+            O arsenal definitivo para a <span className="text-foreground">blindagem jurídica</span> total. Redija com precisão milimétrica através de IA Cirúrgica e audite riscos em tempo real com telemetria avançada.
           </p>
           
-          <div className="flex flex-col sm:flex-row justify-center gap-4 mb-24 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-700">
-            <Link href="/dashboard">
-              <Button size="lg" className="bg-primary text-primary-foreground hover:opacity-90 rounded-full px-10 h-14 text-sm font-bold uppercase tracking-wider group shadow-xl">
-                Acessar Painel <ChevronRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+          <div className="flex flex-col sm:flex-row justify-center gap-6 mb-24 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-700">
+            <Link href="/register">
+              <Button size="lg" className="relative h-14 px-10 rounded-full bg-primary text-primary-foreground font-black uppercase tracking-[0.15em] text-xs shadow-[0_0_20px_rgba(197,168,128,0.3)] hover:shadow-[0_0_35px_rgba(197,168,128,0.5)] transition-all duration-500 group overflow-hidden border border-primary/50 hover:border-primary">
+                <span className="relative z-10 flex items-center gap-2">
+                  Criar Conta Grátis <ChevronRight className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-1" />
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-tr from-primary via-primary/90 to-[#e5cfa1] opacity-100" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.2),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </Button>
             </Link>
             <Link href="/editor">
-              <Button variant="outline" size="lg" className="border-border bg-background/50 hover:bg-muted text-foreground rounded-full px-10 h-14 text-sm font-bold uppercase tracking-wider">
-                Iniciar Redação
+              <Button variant="outline" size="lg" className="h-14 px-10 rounded-full border-border bg-background/40 hover:bg-muted/80 text-foreground font-bold uppercase tracking-widest text-xs transition-all duration-300 backdrop-blur-sm">
+                Explorar Editor
               </Button>
             </Link>
           </div>
@@ -182,7 +192,7 @@ export default function Home() {
                     </div>
                     <div className="flex items-center gap-4 pt-2">
                        <div className="px-3 py-1 bg-primary/20 border border-primary/40 rounded text-[9px] font-bold text-primary uppercase tracking-widest">
-                          Lilith AI: Auditoria Ativa
+                          ExtraJus AI: Auditoria Ativa
                        </div>
                     </div>
                     <div className="space-y-4 pt-2">
@@ -237,13 +247,13 @@ export default function Home() {
       {/* Bento Features Grid */}
       <section id="recursos" className="py-24 px-6 border-t border-border">
         <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-4">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold text-foreground tracking-tight uppercase">Tecnologias de Redação e Auditoria</h2>
-              <p className="text-muted-foreground max-w-sm">Módulos de inteligência ativa e usabilidade militar criados sob medida.</p>
+          <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
+            <div className="space-y-1">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tighter uppercase italic">Arquitetura de <br /> <span className="text-muted-foreground">Dominação Jurídica.</span></h2>
+              <p className="text-muted-foreground max-w-sm font-medium">Arsenal de inteligência ativa e usabilidade militar. Tecnologia letal para quem não aceita a mediocridade.</p>
             </div>
-            <div className="text-[10px] font-bold tracking-[0.3em] uppercase text-muted-foreground">
-              ExtraJus Ecosystem v2
+            <div className="text-[10px] font-bold tracking-[0.4em] uppercase text-primary animate-pulse pb-1">
+              ExtraJus Ecosystem v2.0 // Protocolo de Inteligência Ativa
             </div>
           </div>
 
@@ -254,7 +264,6 @@ export default function Home() {
               title="Editor & Edição Cirúrgica"
               subtitle="O Micro-Cirurgião do seu Documento"
               description="Esqueça a IA que reconstrói contratos inteiros e quebra a formatação. Nossa Edição IA Cirúrgica reescreve e otimiza parágrafos pontuais de forma localizada e com precisão cirúrgica."
-              icon={<Layers className="w-5 h-5 text-primary" />}
             >
               <div className="mt-2 relative h-full w-full overflow-hidden rounded-xl bg-muted/40 border border-border p-4 font-mono text-[10px] text-muted-foreground">
                  <div className="flex items-center gap-2 mb-4">
@@ -282,7 +291,6 @@ export default function Home() {
               title="Radar Analítico IA"
               subtitle="Detecção Real-Time de Vulnerabilidades"
               description="Escanear e mitigar riscos em tempo real. Nossa auditoria preditiva analisa termos e gera um Score de Segurança dinâmico integrado."
-              icon={<Activity className="w-5 h-5 text-primary" />}
             >
               <div className="mt-2 space-y-3">
                 <div className="p-5 rounded-2xl bg-primary/5 border border-primary/10 transition-all hover:bg-primary/10 group/stat">
@@ -308,7 +316,6 @@ export default function Home() {
               title="Mapa do Instrumento"
               subtitle="Navegação em Árvore Inteligente"
               description="Acompanhe a estrutura do contrato por uma linha guia de blueprint que lista parágrafos e mapeia riscos de forma dinâmica e interativa."
-              icon={<Brain className="w-5 h-5 text-primary" />}
             >
               <div className="mt-6 pl-4 space-y-2 border-l-2 border-primary/20">
                  <div className="text-[9px] font-bold text-foreground/80 flex items-center justify-between">
@@ -331,7 +338,6 @@ export default function Home() {
               title="Sincronia Sem F5"
               subtitle="Zero Latência na Biblioteca"
               description="Dual-Sync reativo. Qualquer alteração ou criação de minuta reflete instantaneamente na biblioteca lateral de todos os usuários via Supabase Realtime."
-              icon={<Zap className="w-5 h-5 text-primary" />}
             >
               <div className="mt-6 relative px-4">
                  <div className="space-y-3">
@@ -357,7 +363,6 @@ export default function Home() {
               title="Assinatura Criptográfica"
               subtitle="Integridade Inviolável"
               description="Assinatura digital e biometria com selo criptográfico e hash de autenticidade para blindagem jurídica absoluta."
-              icon={<Fingerprint className="w-5 h-5 text-primary" />}
             >
                <div className="mt-6 grid grid-cols-2 gap-2">
                  <div className="aspect-square bg-muted border border-border rounded-lg flex flex-col items-center justify-center gap-2 group-hover:bg-primary/5 transition-colors">
@@ -374,20 +379,20 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Rede Profissional Section */}
-      <section id="rede" className="py-32 px-6 relative overflow-hidden bg-background">
+      {/* Assinaturas Certificadas Section */}
+      <section id="assinaturas" className="py-32 px-6 relative overflow-hidden bg-background">
         <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           <div className="space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/5 border border-primary/20 text-primary text-[10px] font-bold tracking-widest uppercase">
-              Networking
+              Certificação Digital
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight leading-tight uppercase">Conexões <br /> <span className="text-muted-foreground">Estratégicas.</span></h2>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight leading-tight uppercase">Assinaturas com <br /> <span className="text-muted-foreground">Certificação.</span></h2>
             <p className="text-lg text-muted-foreground leading-relaxed font-medium">
-              Visualize sua rede de contatos e oportunidades em tempo real através de um grafo interativo de alta precisão.
+              Valide documentos com selo criptográfico de alta integridade, biometria e rastreabilidade total em conformidade com as normas ICP-Brasil e globais.
             </p>
-            <Link href="/dashboard">
+            <Link href="/signatures">
               <Button variant="link" className="text-primary p-0 h-auto font-bold uppercase text-xs tracking-widest hover:opacity-70 group">
-                Explorar Rede <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+                Gerenciar Assinaturas <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
           </div>
@@ -403,13 +408,15 @@ export default function Home() {
                   enableNodeDrag={false}
                   enableZoomInteraction={false}
                   enablePanInteraction={false}
-                  linkDirectionalParticles={2}
+                  linkDirectionalParticles={4}
                   linkDirectionalParticleSpeed={0.005}
-                  linkColor={() => "rgba(var(--foreground), 0.15)"}
+                  linkDirectionalParticleWidth={2}
+                  linkDirectionalParticleColor={() => "hsl(var(--primary))"}
+                  linkColor={() => "rgba(197, 168, 128, 0.2)"}
                   nodeCanvasObject={(node: any, ctx: CanvasRenderingContext2D, globalScale) => {
                     const label = node.name;
                     const fontSize = 12 / globalScale;
-                    ctx.font = `600 ${fontSize}px Inter`;
+                    ctx.font = `600 ${fontSize}px Plus Jakarta Sans`;
                     
                     // Draw node glow/shadow
                     ctx.shadowColor = node.color;
@@ -433,7 +440,7 @@ export default function Home() {
                 />
                 <div className="absolute top-6 left-6 flex items-center gap-2">
                    <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_10px_var(--primary)]" />
-                   <span className="text-[9px] font-bold text-foreground/70 uppercase tracking-widest">ExtraJus Neural Link</span>
+                   <span className="text-[9px] font-bold text-foreground/70 uppercase tracking-widest">Protocolo de Integridade ExtraJus</span>
                 </div>
              </div>
           </div>
@@ -463,6 +470,41 @@ export default function Home() {
                 <p className="text-[11px] text-muted-foreground font-medium leading-relaxed">{tech.desc}</p>
              </div>
            ))}
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section id="faq" className="py-32 px-6 border-t border-border bg-background relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full pointer-events-none opacity-50" />
+        
+        <div className="max-w-3xl mx-auto relative z-10">
+          <div className="text-center mb-20 space-y-4">
+            <h2 className="text-3xl font-bold text-foreground tracking-tight uppercase italic">Protocolos e Respostas</h2>
+            <p className="text-muted-foreground font-medium">Esclarecimentos sobre a operação e a tecnologia ExtraJus.</p>
+          </div>
+
+          <div className="space-y-4">
+            <FAQItem 
+              question="A IA substitui a revisão de um advogado?"
+              answer="Não. A ExtraJus opera como um ecossistema de assistência de alta performance. A plataforma potencializa a capacidade analítica e a velocidade do profissional jurídico, mas a validação estratégica final e o selamento do documento permanecem sob controle e responsabilidade humana."
+            />
+            <FAQItem 
+              question="Como funciona a Edição IA Cirúrgica?"
+              answer="Nosso motor de inteligência atua exclusivamente nos nós (parágrafos) selecionados pelo usuário. Diferente de soluções convencionais que reprocessam o arquivo integralmente, nossa tecnologia preserva a integridade estrutural e a formatação original do contrato, aplicando otimizações localizadas com precisão absoluta."
+            />
+            <FAQItem 
+              question="Os dados dos meus contratos são seguros?"
+              answer="A ExtraJus utiliza criptografia de nível militar AES-256 e protocolos rigorosos de isolamento de dados. Cada documento é armazenado em ambientes segregados com controle de acesso multinível e trilhas de auditoria digital invioláveis, garantindo total conformidade com normas globais de privacidade."
+            />
+            <FAQItem 
+              question="Como funciona o monitoramento de conformidade?"
+              answer="A plataforma dispõe de um motor de análise contínua que avalia a saúde jurídica do documento em tempo real. Ele identifica riscos potenciais, ambiguidades e inconsistências normativas enquanto o texto é redigido, fornecendo telemetria técnica para embasar a tomada de decisão."
+            />
+            <FAQItem 
+              question="Posso importar meus próprios modelos de contrato?"
+              answer="Sim. A plataforma permite a ingestão de bibliotecas proprietárias. O sistema analisa seus padrões de redação e termos recorrentes, integrando seu estilo específico ao arsenal de ferramentas de automação e auditoria da ExtraJus."
+            />
+          </div>
         </div>
       </section>
 
@@ -512,14 +554,12 @@ function BentoCard({
   title, 
   subtitle, 
   description, 
-  icon, 
   className 
 }: { 
   children?: React.ReactNode, 
   title: string, 
   subtitle: string, 
   description: string, 
-  icon: React.ReactNode, 
   className?: string 
 }) {
   return (
@@ -530,7 +570,6 @@ function BentoCard({
       <div className="relative z-10 flex flex-col h-full">
         <div className="flex flex-col mb-2">
           <div className="flex items-center gap-2 mb-0.5">
-            {icon}
             <span className="text-[10px] font-bold text-foreground uppercase tracking-widest">{title}</span>
           </div>
           <p className="text-lg font-bold text-foreground tracking-tight">{subtitle}</p>
@@ -545,6 +584,38 @@ function BentoCard({
       
       {/* Background Glow */}
       <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-primary/5 blur-[80px] rounded-full group-hover:bg-primary/10 transition-colors duration-500" />
+    </div>
+  );
+}
+
+function FAQItem({ question, answer }: { question: string, answer: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className={cn(
+      "border border-border/60 bg-card/40 backdrop-blur-sm rounded-2xl overflow-hidden transition-all duration-300",
+      isOpen ? "border-primary/30 bg-card/60" : "hover:border-border"
+    )}>
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full p-6 flex items-center justify-between text-left group"
+      >
+        <span className="text-sm font-bold text-foreground tracking-tight group-hover:text-primary transition-colors">{question}</span>
+        <div className={cn(
+          "w-8 h-8 rounded-full border border-border flex items-center justify-center transition-all duration-300",
+          isOpen ? "bg-primary border-primary text-primary-foreground rotate-180" : "text-muted-foreground group-hover:border-primary/50 group-hover:text-primary"
+        )}>
+          <ChevronDown size={14} />
+        </div>
+      </button>
+      <div className={cn(
+        "px-6 overflow-hidden transition-all duration-300 ease-in-out",
+        isOpen ? "max-h-48 pb-6 opacity-100" : "max-h-0 opacity-0"
+      )}>
+        <p className="text-[13px] text-muted-foreground/80 leading-relaxed font-medium">
+          {answer}
+        </p>
+      </div>
     </div>
   );
 }

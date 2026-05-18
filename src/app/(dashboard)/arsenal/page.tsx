@@ -371,7 +371,7 @@ export default function ArsenalPage() {
               />
             </div>
 
-            <div className="flex gap-3 justify-end pt-2 border-t border-border mt-6">
+            <div className="flex gap-3 justify-center pt-2 border-t border-border mt-6">
               <Button
                 type="button"
                 variant="ghost"
