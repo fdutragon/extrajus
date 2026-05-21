@@ -37,7 +37,7 @@ import {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-[#0f0f11] border border-zinc-800 rounded-2xl p-3 shadow-2xl text-[11px] font-extrabold text-white">
+      <div className="bg-[#0f0f11] border border-zinc-800 rounded-2xl p-3 shadow-2xl text-sm font-extrabold text-white">
         <p className="text-muted-foreground mb-1">{label}</p>
         <p className="text-primary font-black">
           Receita: R$ {Number(payload[0].value || 0).toLocaleString('pt-BR')}
@@ -145,7 +145,9 @@ export default function AdminDashboard() {
       const usersRes = await fetch("/api/admin/users");
       const usersData = await usersRes.json();
       if (usersRes.ok && usersData.success) {
-        setUsers(usersData.users || []);
+        const fullUsersList = usersData.users || [];
+        setUsers(fullUsersList);
+        setStats(prev => ({ ...prev, totalUsers: fullUsersList.length }));
       }
       
       // Carregar saques cripto integrados e carteiras salvas
@@ -384,10 +386,11 @@ export default function AdminDashboard() {
     }
   };
 
-  const filteredUsers = users.filter(u => 
-    u.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    u.email?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredUsers = users.filter(u => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (u.full_name?.toLowerCase().includes(term) || u.email?.toLowerCase().includes(term));
+  });
 
 
 
@@ -429,21 +432,24 @@ export default function AdminDashboard() {
   if (loading && users.length === 0) return (
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-background z-50">
        <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4" />
-       <p className="font-black text-[10px] tracking-widest text-primary">Decodificando Império...</p>
+       <p className="font-black text-xs tracking-widest text-primary">Decodificando Império...</p>
     </div>
   )
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-700 pb-20 px-4 md:px-0">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-end gap-4 border-b border-border pb-6">
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <Badge variant="destructive" className="text-[10px] uppercase tracking-widest font-bold px-2 py-0">Admin</Badge>
-            <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase">Command & Control</span>
+    <div className="space-y-12 animate-in fade-in duration-700 overflow-x-hidden px-1 pb-20">
+      {/* Header Area */}
+      <div className="flex flex-col sm:flex-row justify-between items-end gap-6 border-b border-border/50 pb-8 relative">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-4">
+            <Badge variant="outline" className="text-[9px] uppercase tracking-[0.3em] font-black border-primary/30 text-primary bg-primary/5 px-3 py-1 rounded-full animate-pulse">Core System</Badge>
+            <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">Neural Network Online</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Painel de Comando</h1>
-          <p className="text-sm text-muted-foreground mt-1 max-w-md">
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground">
+            Admin <span className="text-muted-foreground/30 font-light">/</span> <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/50 bg-clip-text text-transparent">Operator</span>
+          </h1>
+          <p className="text-sm text-muted-foreground mt-2 max-w-md">
             Monitore usuários, receita e dispare notificações em tempo real.
           </p>
         </div>
@@ -454,7 +460,7 @@ export default function AdminDashboard() {
                   key={range}
                   onClick={() => setTimeRange(range)}
                   className={cn(
-                    "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all",
+                    "px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest transition-all",
                     timeRange === range ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-background"
                   )}
                 >
@@ -462,7 +468,7 @@ export default function AdminDashboard() {
                 </button>
               ))}
            </div>
-           <Button onClick={fetchData} variant="outline" size="sm" className="rounded-lg font-bold text-[10px] tracking-wide border-primary/20 hover:bg-primary/5 h-9">
+           <Button onClick={fetchData} variant="outline" size="sm" className="rounded-lg font-bold text-xs tracking-wide border-primary/20 hover:bg-primary/5 h-9">
               Sincronizar
            </Button>
         </div>
@@ -470,23 +476,23 @@ export default function AdminDashboard() {
 
       {/* Primary Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-card border-border rounded-xl overflow-hidden relative group transition-all duration-500 hover:border-primary/50">
+        <Card className="bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.1)] relative group transition-all duration-500 hover:border-primary/50">
            <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-primary/5 blur-[60px] rounded-full group-hover:bg-primary/15 transition-colors duration-500" />
            <CardContent className="p-5 relative z-10">
              <div className="flex items-center justify-between mb-4">
                <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors duration-500">
                  <Users size={16} />
                </div>
-               <span className="text-[10px] font-bold text-emerald-500 flex items-center gap-0.5 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">
+               <span className="text-xs font-bold text-emerald-500 flex items-center gap-0.5 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">
                  <ArrowUpRight size={10} /> +12%
                </span>
              </div>
-             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Usuários Totais</p>
+             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Usuários Totais</p>
              <h3 className="text-3xl font-black tracking-tight text-foreground leading-none mt-1">{stats.totalUsers}</h3>
            </CardContent>
         </Card>
 
-        <Card className="bg-card border-border rounded-xl overflow-hidden relative group transition-all duration-500 hover:border-primary/50">
+        <Card className="bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.1)] relative group transition-all duration-500 hover:border-primary/50">
            <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-primary/5 blur-[60px] rounded-full group-hover:bg-primary/15 transition-colors duration-500" />
            <CardContent className="p-5 relative z-10">
              <div className="flex items-center justify-between mb-4">
@@ -494,26 +500,26 @@ export default function AdminDashboard() {
                  <TrendingUp size={16} />
                </div>
              </div>
-             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Receita Acumulada</p>
+             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Receita Acumulada</p>
              <h3 className="text-2xl font-black tracking-tight text-primary leading-none mt-1">R$ {(stats.totalRevenue / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
            </CardContent>
         </Card>
 
-        <Card className="bg-card border-border rounded-xl overflow-hidden relative group transition-all duration-500 hover:border-primary/50">
+        <Card className="bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.1)] relative group transition-all duration-500 hover:border-primary/50">
            <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-primary/5 blur-[60px] rounded-full group-hover:bg-primary/15 transition-colors duration-500" />
            <CardContent className="p-5 relative z-10">
              <div className="flex items-center justify-between mb-4">
                <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors duration-500">
                  <Coins size={16} />
                </div>
-               <span className="text-[10px] font-bold text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">Net</span>
+               <span className="text-xs font-bold text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">Net</span>
              </div>
-             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Lucro Operacional</p>
+             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Lucro Operacional</p>
              <h3 className="text-2xl font-black tracking-tight text-foreground leading-none mt-1">R$ {((stats.totalRevenue * 0.94) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
            </CardContent>
         </Card>
 
-        <Card className="bg-card border-border rounded-xl overflow-hidden relative group transition-all duration-500 hover:border-primary/50">
+        <Card className="bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.1)] relative group transition-all duration-500 hover:border-primary/50">
            <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-primary/5 blur-[60px] rounded-full group-hover:bg-primary/15 transition-colors duration-500" />
            <CardContent className="p-5 relative z-10">
              <div className="flex items-center justify-between mb-4">
@@ -522,7 +528,7 @@ export default function AdminDashboard() {
                </div>
                <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
              </div>
-             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Saldo GGPix</p>
+             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Saldo GGPix</p>
              <h3 className="text-2xl font-black tracking-tight text-primary leading-none mt-1">{ggpixBalance}</h3>
            </CardContent>
         </Card>
@@ -530,18 +536,18 @@ export default function AdminDashboard() {
 
       {/* Chart Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-        <Card className="lg:col-span-2 bg-card border-border rounded-xl p-6 relative overflow-hidden h-full flex flex-col justify-between">
+        <Card className="lg:col-span-2 bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] shadow-[0_0_50px_rgba(0,0,0,0.1)] p-6 relative overflow-hidden h-full flex flex-col justify-between">
            <div>
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                  <div>
                     <h3 className="text-sm font-black tracking-wide text-foreground flex items-center gap-2">
                        <BarChart3 size={16} className="text-primary" /> Curva de Crescimento
                     </h3>
-                    <p className="text-[10px] text-muted-foreground font-bold tracking-wide mt-1">Fluxo de caixa gerado pela rede</p>
+                    <p className="text-xs text-muted-foreground font-bold tracking-wide mt-1">Fluxo de caixa gerado pela rede</p>
                  </div>
                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-muted/50 border border-border">
                     <Calendar size={12} className="text-muted-foreground" />
-                    <span className="text-[10px] font-black text-foreground tracking-wide">{timeRange === 'day' ? 'Últimos 30 Dias' : timeRange === 'month' ? 'Visão Mensal' : 'Histórico Anual'}</span>
+                    <span className="text-xs font-black text-foreground tracking-wide">{timeRange === 'day' ? 'Últimos 30 Dias' : timeRange === 'month' ? 'Visão Mensal' : 'Histórico Anual'}</span>
                  </div>
               </div>
               
@@ -587,7 +593,7 @@ export default function AdminDashboard() {
            </div>
         </Card>
 
-        <Card className="bg-card border-border rounded-xl p-6 flex flex-col justify-between relative overflow-hidden h-full">
+        <Card className="bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] shadow-[0_0_50px_rgba(0,0,0,0.1)] p-6 flex flex-col justify-between relative overflow-hidden h-full">
            <div className="absolute inset-0 bg-gradient-to-b from-primary/[0.03] to-transparent pointer-events-none" />
            <div>
               <h3 className="text-sm font-black tracking-wide text-foreground mb-6">Injeções de Capital</h3>
@@ -602,7 +608,7 @@ export default function AdminDashboard() {
                         <div className={cn("w-8 h-8 rounded-lg bg-muted flex items-center justify-center transition-all group-hover:scale-110", item.color)}>
                            <item.icon size={14} />
                         </div>
-                        <span className="text-[10px] font-black text-muted-foreground tracking-wide">{item.label}</span>
+                        <span className="text-xs font-black text-muted-foreground tracking-wide">{item.label}</span>
                      </div>
                      <span className="text-xs font-black text-foreground">R$ {(item.value / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                    </div>
@@ -611,7 +617,7 @@ export default function AdminDashboard() {
            </div>
            
            <div className="mt-8 pt-8 border-t border-border">
-              <p className="text-[9px] font-bold text-muted-foreground tracking-wide leading-relaxed">
+              <p className="text-xs font-bold text-muted-foreground tracking-wide leading-relaxed">
                  Os dados são processados em tempo real pela rede neural Lilith para garantir precisão absoluta nas métricas de guerra.
               </p>
            </div>
@@ -621,7 +627,7 @@ export default function AdminDashboard() {
       {/* Terminal de Saque Cripto */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
         {/* Formulário de Saque */}
-        <Card className="bg-card border-border rounded-xl p-6 relative overflow-hidden flex flex-col justify-between h-full">
+        <Card className="bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] shadow-[0_0_50px_rgba(0,0,0,0.1)] p-6 relative overflow-hidden flex flex-col justify-between h-full">
            <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
               <Coins size={120} className="text-primary" />
            </div>
@@ -629,11 +635,11 @@ export default function AdminDashboard() {
               <h3 className="text-sm font-black tracking-wide text-foreground mb-1 flex items-center gap-2">
                  <Coins size={16} className="text-primary animate-pulse" /> Terminal de Saque Cripto
               </h3>
-              <p className="text-[10px] text-muted-foreground font-bold tracking-wide mb-6">Debitar BRL e enviar USDT (BEP-20) via GGPix</p>
+              <p className="text-xs text-muted-foreground font-bold tracking-wide mb-6">Debitar BRL e enviar USDT (BEP-20) via GGPix</p>
               
               <form onSubmit={handleExecuteWithdrawal} className="space-y-5">
                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-muted-foreground/80 block mb-1.5">Valor do Saque (R$)</label>
+                    <label className="text-xs font-black text-muted-foreground/80 block mb-1.5">Valor do Saque (R$)</label>
                     <div className="relative">
                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground">R$</span>
                        <input 
@@ -651,7 +657,7 @@ export default function AdminDashboard() {
                  {/* Carteiras Salvas Dropdown */}
                  {savedWallets.length > 0 && (
                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-muted-foreground/80 block mb-1.5 flex justify-between">
+                      <label className="text-xs font-black text-muted-foreground/80 block mb-1.5 flex justify-between">
                          <span>Carteiras Salvas</span>
                          <span className="text-[8px] text-primary/80 lowercase cursor-pointer">clique para preencher</span>
                       </label>
@@ -675,7 +681,7 @@ export default function AdminDashboard() {
                  )}
 
                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-muted-foreground/80 block mb-1.5">Endereço da Carteira BSC (USDT BEP-20)</label>
+                    <label className="text-xs font-black text-muted-foreground/80 block mb-1.5">Endereço da Carteira BSC (USDT BEP-20)</label>
                     <div className="relative">
                        <input 
                          type="text"
@@ -692,7 +698,7 @@ export default function AdminDashboard() {
                     <Button 
                       type="submit" 
                       disabled={submittingWithdraw}
-                      className="w-full h-11 rounded-xl text-[10px] font-black tracking-wide bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+                      className="w-full h-11 rounded-xl text-xs font-black tracking-wide bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
                     >
                        {submittingWithdraw ? (
                          <>
@@ -719,7 +725,7 @@ export default function AdminDashboard() {
               <div className="flex justify-between items-center mb-6">
                  <div>
                     <h3 className="text-sm font-black tracking-wide text-foreground">Registro de Transações Cripto</h3>
-                    <p className="text-[10px] text-muted-foreground font-bold tracking-wide mt-1">Status em tempo real das chancelas GGPix</p>
+                    <p className="text-xs text-muted-foreground font-bold tracking-wide mt-1">Status em tempo real das chancelas GGPix</p>
                  </div>
                  <Button 
                    onClick={fetchWithdrawals} 
@@ -734,13 +740,13 @@ export default function AdminDashboard() {
 
               <div className="overflow-x-auto max-h-[300px] overflow-y-auto">
                  {withdrawals.length === 0 ? (
-                   <div className="py-12 text-center text-muted-foreground font-black text-[9px] uppercase tracking-widest border border-dashed rounded-2xl border-border">
+                   <div className="py-12 text-center text-muted-foreground font-black text-xs uppercase tracking-widest border border-dashed rounded-2xl border-border">
                       Nenhum saque cripto registrado neste quadrante do império.
                    </div>
                  ) : (
                     <table className="w-full text-left border-collapse text-xs">
                        <thead>
-                          <tr className="border-b border-border text-[9px] font-black text-muted-foreground tracking-wide">
+                          <tr className="border-b border-border text-xs font-black text-muted-foreground tracking-wide">
                              <th className="pb-3">Data</th>
                              <th className="pb-3">Valor BRL</th>
                              <th className="pb-3">Destinatário</th>
@@ -750,13 +756,13 @@ export default function AdminDashboard() {
                        <tbody className="divide-y divide-border/40 font-bold">
                           {withdrawals.map((w: any) => (
                              <tr key={w.id} className="hover:bg-muted/10 transition-colors">
-                                <td className="py-3 font-mono text-[10px] text-muted-foreground">
+                                <td className="py-3 font-mono text-xs text-muted-foreground">
                                    {new Date(w.updatedAt || w.createdAt).toLocaleDateString('pt-BR')} {new Date(w.updatedAt || w.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                                 </td>
                                 <td className="py-3 font-black text-foreground">
                                    R$ {(w.amountBRLCents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                 </td>
-                                <td className="py-3 font-mono text-[10px] text-muted-foreground">
+                                <td className="py-3 font-mono text-xs text-muted-foreground">
                                    {w.walletAddress.slice(0, 6)}...{w.walletAddress.slice(-4)}
                                 </td>
                                 <td className="py-3">
@@ -790,7 +796,7 @@ export default function AdminDashboard() {
 
       {/* Gerenciador de Carteiras Cripto Salvas */}
 
-      <Card className="bg-card border-border rounded-xl p-6 relative overflow-hidden">
+      <Card className="bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] shadow-[0_0_50px_rgba(0,0,0,0.1)] p-6 relative overflow-hidden">
          <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
             <Wallet size={120} className="text-primary animate-pulse" />
          </div>
@@ -800,7 +806,7 @@ export default function AdminDashboard() {
                   <h3 className="text-sm font-black tracking-wide text-foreground mb-1 flex items-center gap-2">
                      <Wallet size={16} className="text-primary" /> Adicionar Carteira Cripto
                   </h3>
-                  <p className="text-[10px] text-muted-foreground font-bold tracking-wide">
+                  <p className="text-xs text-muted-foreground font-bold tracking-wide">
                      Salve seus endereços BSC (BEP-20) favoritos para uso tático nos saques.
                   </p>
                </div>
@@ -810,7 +816,7 @@ export default function AdminDashboard() {
                   handleSaveWallet();
                }} className="space-y-5">
                   <div className="space-y-2">
-                     <label className="text-[10px] font-black text-muted-foreground/80 block mb-1.5">Apelido da Carteira</label>
+                     <label className="text-xs font-black text-muted-foreground/80 block mb-1.5">Apelido da Carteira</label>
                      <input 
                        type="text"
                        placeholder="Ex: Metamask Principal, Trust Secundária"
@@ -822,7 +828,7 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="space-y-2">
-                     <label className="text-[10px] font-black text-muted-foreground/80 block mb-1.5">Endereço da Carteira BSC (USDT BEP-20)</label>
+                     <label className="text-xs font-black text-muted-foreground/80 block mb-1.5">Endereço da Carteira BSC (USDT BEP-20)</label>
                      <input 
                        type="text"
                        placeholder="0x..."
@@ -835,7 +841,7 @@ export default function AdminDashboard() {
 
                   <Button 
                     type="submit" 
-                    className="w-full h-10 rounded-xl text-[10px] font-black tracking-wide bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+                    className="w-full h-10 rounded-xl text-xs font-black tracking-wide bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
                   >
                      <Plus size={12} /> Salvar Carteira
                   </Button>
@@ -847,13 +853,13 @@ export default function AdminDashboard() {
                   <h3 className="text-sm font-black tracking-wide text-foreground mb-1">
                      Suas Carteiras Armazenadas
                   </h3>
-                  <p className="text-[10px] text-muted-foreground font-bold tracking-wide">
+                  <p className="text-xs text-muted-foreground font-bold tracking-wide">
                      Lista de carteiras blindadas no banco de dados.
                   </p>
                </div>
 
                {savedWallets.length === 0 ? (
-                 <div className="py-12 text-center text-muted-foreground font-black text-[9px] uppercase tracking-widest border border-dashed rounded-2xl border-border">
+                 <div className="py-12 text-center text-muted-foreground font-black text-xs uppercase tracking-widest border border-dashed rounded-2xl border-border">
                     Nenhuma carteira salva. Use o formulário ao lado para adicionar.
                  </div>
                ) : (
@@ -861,8 +867,8 @@ export default function AdminDashboard() {
                     {savedWallets.map((w, idx) => (
                        <div key={idx} className="bg-muted/15 border border-border/60 hover:border-border rounded-2xl p-4 transition-all flex justify-between items-start group">
                           <div className="space-y-1 truncate max-w-[80%]">
-                             <span className="text-[11px] font-black text-foreground block truncate">{w.label}</span>
-                             <span className="text-[9px] font-mono text-muted-foreground block truncate">{w.address}</span>
+                             <span className="text-sm font-black text-foreground block truncate">{w.label}</span>
+                             <span className="text-xs font-mono text-muted-foreground block truncate">{w.address}</span>
                           </div>
                           <div className="flex gap-2">
                              <button
@@ -895,8 +901,8 @@ export default function AdminDashboard() {
 
       {/* Gerenciamento de Usuários */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-         <Card className="lg:col-span-2 bg-card border-border rounded-xl p-6 relative overflow-hidden flex flex-col justify-between h-full">
-            <div>
+         <Card className="lg:col-span-2 bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] shadow-[0_0_50px_rgba(0,0,0,0.1)] p-6 relative overflow-hidden flex flex-col justify-between h-full">
+            <div className="flex flex-col flex-1 min-h-0">
                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                   <div>
                      <h3 className="text-sm font-bold text-foreground">Gerenciamento de Usuários</h3>
@@ -915,15 +921,15 @@ export default function AdminDashboard() {
                   </div>
                </div>
 
-               <div className="overflow-x-auto max-h-[300px] overflow-y-auto pr-1">
+               <div className="overflow-x-auto overflow-y-auto flex-1 pr-1 custom-scrollbar min-h-[300px]">
                   {filteredUsers.length === 0 ? (
-                    <div className="py-12 text-center text-muted-foreground font-black text-[9px] uppercase tracking-widest border border-dashed rounded-2xl border-border">
+                    <div className="py-12 text-center text-muted-foreground font-black text-xs uppercase tracking-widest border border-dashed rounded-2xl border-border">
                        Nenhum recruta correspondente encontrado.
                     </div>
                   ) : (
                      <table className="w-full text-left border-collapse text-xs">
                         <thead>
-                           <tr className="border-b border-border text-[9px] font-black text-muted-foreground tracking-wide">
+                           <tr className="border-b border-border text-xs font-black text-muted-foreground tracking-wide">
                               <th className="pb-3">Nome / E-mail</th>
                               <th className="pb-3">Créditos Atuais</th>
                               <th className="pb-3 text-right">Ação</th>
@@ -934,12 +940,12 @@ export default function AdminDashboard() {
                               <tr key={u.id} className="hover:bg-muted/10 transition-colors">
                                  <td className="py-3">
                                     <div className="flex flex-col">
-                                       <span className="text-foreground text-[11px]">{u.full_name || 'Sem nome'}</span>
-                                       <span className="text-[9px] text-muted-foreground font-mono">{u.email}</span>
-                                       <span className="text-[9px] text-primary/80 font-bold uppercase tracking-wider mt-0.5">{u.occupation || u.username || 'Sem Ocupação'}</span>
+                                       <span className="text-foreground text-sm">{u.full_name || 'Sem nome'}</span>
+                                       <span className="text-xs text-muted-foreground font-mono">{u.email}</span>
+                                       <span className="text-xs text-primary/80 font-bold uppercase tracking-wider mt-0.5">{u.occupation || u.username || 'Sem Ocupação'}</span>
                                     </div>
                                  </td>
-                                 <td className="py-3 font-black text-primary text-[12px]">
+                                 <td className="py-3 font-black text-primary text-sm">
                                     {u.credits || 0}
                                  </td>
                                  <td className="py-3 text-right">
@@ -948,7 +954,7 @@ export default function AdminDashboard() {
                                          onClick={() => handleManualAddCredits(u.id, u.credits)}
                                          variant="outline" 
                                          size="sm" 
-                                         className="h-7 rounded-lg text-[9px] font-black tracking-wide bg-primary/10 text-primary border border-primary/30 hover:bg-primary hover:text-primary-foreground px-3 transition-all duration-200"
+                                         className="h-7 rounded-lg text-xs font-black tracking-wide bg-primary/10 text-primary border border-primary/30 hover:bg-primary hover:text-primary-foreground px-3 transition-all duration-200"
                                        >
                                           Injetar Poder
                                        </Button>
@@ -956,7 +962,7 @@ export default function AdminDashboard() {
                                          onClick={() => handleResetCredits(u.id)}
                                          variant="outline" 
                                          size="sm" 
-                                         className="h-7 rounded-lg text-[9px] font-black tracking-wide bg-amber-500/10 text-amber-500 border border-amber-500/30 hover:bg-amber-600 hover:text-white hover:border-amber-600 px-3 transition-all duration-200"
+                                         className="h-7 rounded-lg text-xs font-black tracking-wide bg-amber-500/10 text-amber-500 border border-amber-500/30 hover:bg-amber-600 hover:text-white hover:border-amber-600 px-3 transition-all duration-200"
                                        >
                                           Zerar
                                        </Button>
@@ -964,7 +970,7 @@ export default function AdminDashboard() {
                                          onClick={() => handleDeleteUser(u.id)}
                                          variant="outline" 
                                          size="sm" 
-                                         className="h-7 rounded-lg text-[9px] font-black tracking-wide bg-red-500/15 text-red-400 border border-red-500/40 hover:bg-red-600 hover:text-white hover:border-red-600 px-3 transition-all duration-200"
+                                         className="h-7 rounded-lg text-xs font-black tracking-wide bg-red-500/15 text-red-400 border border-red-500/40 hover:bg-red-600 hover:text-white hover:border-red-600 px-3 transition-all duration-200"
                                        >
                                           Excluir
                                        </Button>
@@ -984,7 +990,7 @@ export default function AdminDashboard() {
             </div>
          </Card>
 
-         <Card className="bg-card border-border rounded-xl p-6 relative overflow-hidden flex flex-col justify-between h-full">
+         <Card className="bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] shadow-[0_0_50px_rgba(0,0,0,0.1)] p-6 relative overflow-hidden flex flex-col justify-between h-full">
             <div>
                <h3 className="text-sm font-bold text-foreground mb-1 flex items-center gap-2">
                   <ShieldCheck size={16} className="text-primary" /> Disparo de Notificações
@@ -995,7 +1001,7 @@ export default function AdminDashboard() {
 
                <form onSubmit={handleSendDirectNotification} className="space-y-4">
                   <div className="space-y-2">
-                     <label className="text-[10px] font-black text-muted-foreground/80 block mb-1">Destinatário</label>
+                     <label className="text-xs font-black text-muted-foreground/80 block mb-1">Destinatário</label>
                      
                      {/* Seletor Customizado Premium e Temático */}
                      <div className="relative">
@@ -1016,7 +1022,7 @@ export default function AdminDashboard() {
                                   users.find((u: any) => u.id === directNotificationUserId)?.email || 
                                   "Selecione um recruta..."}
                            </span>
-                           <span className="text-muted-foreground/60 text-[9px]">▼</span>
+                           <span className="text-muted-foreground/60 text-xs">▼</span>
                         </div>
 
                         {isSelectOpen && (
@@ -1056,8 +1062,8 @@ export default function AdminDashboard() {
                                              : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
                                          )}
                                        >
-                                          <span className="font-bold text-[11px]">{u.full_name || 'Sem nome'}</span>
-                                          <span className="text-[9px] text-muted-foreground font-mono">{u.email}</span>
+                                          <span className="font-bold text-sm">{u.full_name || 'Sem nome'}</span>
+                                          <span className="text-xs text-muted-foreground font-mono">{u.email}</span>
                                        </div>
                                     );
                                  })}
@@ -1068,7 +1074,7 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="space-y-2">
-                     <label className="text-[10px] font-black text-muted-foreground/80 block mb-1">Título do Alerta</label>
+                     <label className="text-xs font-black text-muted-foreground/80 block mb-1">Título do Alerta</label>
                      <input 
                        type="text"
                        placeholder="Ex: Atualização do Sistema, Alerta de Segurança"
@@ -1080,7 +1086,7 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="space-y-2">
-                     <label className="text-[10px] font-black text-muted-foreground/80 block mb-1">Mensagem do Comunicado</label>
+                     <label className="text-xs font-black text-muted-foreground/80 block mb-1">Mensagem do Comunicado</label>
                      <textarea 
                        placeholder="Descreva com detalhes o comunicado..."
                        value={directNotificationMessage}
@@ -1094,7 +1100,7 @@ export default function AdminDashboard() {
                   <Button 
                     type="submit"
                     disabled={submittingNotification}
-                    className="w-full h-11 rounded-xl text-[10px] font-black tracking-wide bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+                    className="w-full h-11 rounded-xl text-xs font-black tracking-wide bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
                   >
                      {submittingNotification ? "Disparando..." : "Disparar Alerta em Tempo Real"}
                   </Button>

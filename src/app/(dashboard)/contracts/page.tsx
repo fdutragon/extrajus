@@ -41,22 +41,34 @@ export default async function ContractsPage() {
   }
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-700">
-      <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-border pb-8">
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2 py-0">Ativo</Badge>
-            <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase italic">Repositório Seguro</span>
+    <div className="space-y-12 animate-in fade-in duration-700 overflow-x-hidden px-1">
+      {/* Header Area */}
+      <div className="flex flex-col sm:flex-row justify-between items-end gap-6 border-b border-border/50 pb-8 relative">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-4">
+            <Badge variant="outline" className="text-[9px] uppercase tracking-[0.3em] font-black border-primary/30 text-primary bg-primary/5 px-3 py-1 rounded-full animate-pulse">Secure Repository</Badge>
+            <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">Legal Infrastructure</span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Meus Documentos</h1>
-          <p className="text-[13px] text-muted-foreground max-w-md leading-relaxed">
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground">
+            Contracts <span className="text-muted-foreground/30 font-light">/</span> <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/50 bg-clip-text text-transparent">Vault</span>
+          </h1>
+          <p className="text-sm text-muted-foreground mt-2 max-w-md">
             Gestão completa e auditoria de contratos. O histórico completo da sua infraestrutura jurídica sob controle profissional.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="relative z-10">
           <form action={createNewContract}>
-            <Button type="submit" className="h-10 bg-primary text-primary-foreground hover:opacity-90 font-bold rounded-lg px-5 text-[13px]">
-              <Plus size={16} className="mr-2" /> Novo Contrato
+            <Button
+              type="submit"
+              className="relative bg-primary/5 text-primary hover:text-primary-foreground hover:bg-primary font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl px-8 h-12 group transition-all duration-500 shadow-[0_0_15px_rgba(var(--primary),0.1)] hover:shadow-[0_0_30px_rgba(var(--primary),0.3)] border border-primary/30 hover:border-primary overflow-hidden"
+              variant="outline"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
+              <div className="relative z-10 flex items-center gap-2">
+                <Plus size={16} className="transition-transform duration-500 group-hover:rotate-90 group-hover:scale-110" />
+                New Contract
+              </div>
             </Button>
           </form>
         </div>

@@ -33,10 +33,10 @@ export async function signup(formData: FormData) {
   const user = data.user
   if (user) {
     try {
-      // Force initial credits to exactly 10 using the service role admin client (bypasses RLS)
+      // Force initial credits to exactly 150 using the service role admin client (bypasses RLS)
       await supabaseAdmin
         .from('profiles')
-        .update({ credits: 10 })
+        .update({ credits: 150 })
         .eq('id', user.id)
       
       // 3. Authenticate immediately to set cookies and create active session
@@ -199,7 +199,7 @@ export async function signup(formData: FormData) {
                   </p>
                   
                   <p style="text-align: center; font-weight: bold; color: #c5a880; font-size: 13px;">
-                    ⚡ Sua conta foi ativada com 10 Sinapses de boas-vindas para você iniciar as suas auditorias imediatamente.
+                    ⚡ Sua conta foi ativada com 150 Sinapses de boas-vindas para você iniciar as suas auditorias imediatamente.
                   </p>
 
                   <div class="features">

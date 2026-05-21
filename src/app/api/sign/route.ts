@@ -39,7 +39,7 @@ export async function POST(request: Request) {
       .single();
 
     const currentCredits = profile?.credits ?? 0;
-    const signatureCost = 4;
+    const signatureCost = 50;
 
     if (currentCredits < signatureCost) {
       return NextResponse.json({ 

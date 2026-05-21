@@ -562,25 +562,22 @@ export function EditorLayout() {
     const toastId = toast.loading("Analisando conformidade e riscos...");
     
     try {
-      await (editor.commands as any).aiAuditRisk()
-      setTimeout(() => {
-        const state = (editor.storage as any).ai.state
-        if (state === "error") {
-          setIsAuditing(false)
-          setAuditResults([])
-          setHasAudited(false)
-          toast.dismiss(toastId)
-          return
-        }
-        const results = (editor.storage as any).ai.auditResults
-        setAuditResults(results || [])
-        setHasAudited(true)
+      const results = await (editor.commands as any).aiAuditRisk()
+      const state = (editor.storage as any).ai.state
+      if (state === "error") {
         setIsAuditing(false)
-        toast.success("Análise de conformidade concluída.", { id: toastId })
-      }, 3000)
-    } catch (error) {
+        setAuditResults([])
+        setHasAudited(false)
+        toast.dismiss(toastId)
+        return
+      }
+      setAuditResults(results || [])
+      setHasAudited(true)
+      setIsAuditing(false)
+      toast.success("Análise de conformidade concluída.", { id: toastId })
+    } catch (error: any) {
       console.error(error)
-      toast.error("O sistema falhou ao processar a auditoria.", { id: toastId })
+      toast.error(error?.message || "O sistema falhou ao processar a auditoria.", { id: toastId })
       setIsAuditing(false)
     }
   }
@@ -645,6 +642,29 @@ export function EditorLayout() {
   const scrollToPosition = (pos: number) => {
     if (!editor) return
     editor.chain().focus().setTextSelection(pos).scrollIntoView().run()
+  }
+
+  const handleOptimizeClause = (clausePos: number, nextClausePos?: number) => {
+    if (!editor) return
+    const start = clausePos
+    const end = nextClausePos ?? editor.state.doc.content.size
+    
+    // Seleciona a cláusula inteira
+    editor.chain().focus().setTextSelection({ from: start, to: end }).scrollIntoView().run()
+    
+    // Prompt automático letal
+    const optimizePrompt = "Reescreva esta cláusula para remover riscos, fechar brechas jurídicas e blindar os termos com linguagem altamente formal e protetora (Contrato de Guerra)."
+    
+    // Dispara a geração da IA substituindo a seleção
+    ;(editor.chain() as any).aiTextPrompt({
+      text: optimizePrompt,
+      insert: true,
+      stream: true,
+      format: "rich-text",
+    }).run()
+    
+    // Abre o menu da IA para exibir os controles de carregamento e aceite
+    setAiPromptOpen(true)
   }
 
   const handleConfirmSignature = async () => {
@@ -924,21 +944,21 @@ export function EditorLayout() {
 
       <div className={cn("flex-1 flex pt-12 relative overflow-hidden h-full transition-all duration-700", !isFocused && "filter blur-[45px] select-none pointer-events-none")}>
         {!readOnly && (
-          <aside className={cn("h-full border-r border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", leftSidebarOpen ? "w-80" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
-            <div className="px-4 py-6 flex flex-col h-full overflow-hidden w-80">
+          <aside className={cn("h-full border-r border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", leftSidebarOpen ? "w-[360px]" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
+            <div className="px-4 py-6 flex flex-col h-full overflow-hidden w-[360px]">
               <div className="space-y-5 mb-8 shrink-0">
                 <div className="flex items-center justify-between border-b border-border/40 pb-2.5">
                    <div className="flex items-center gap-2">
-                     <Zap size={10} className="text-primary" />
-                     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground">Tipografia</span>
+                     <Zap size={12} className="text-primary" />
+                     <span className="text-xs font-black uppercase tracking-[0.2em] text-foreground">Tipografia</span>
                    </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/60">Fonte</label>
+                  <label className="text-xs font-black uppercase tracking-widest text-muted-foreground/60">Fonte</label>
                   <div className="relative group/select">
                     <button 
                       onClick={() => setIsFontDropdownOpen(!isFontDropdownOpen)}
-                      className="w-full bg-muted/30 border border-border/60 text-foreground text-[10px] font-bold py-2.5 px-3 rounded-xl flex items-center justify-between transition-all outline-none focus:ring-2 focus:ring-primary/20 hover:border-primary/20 text-left"
+                      className="w-full bg-muted/30 border border-border/60 text-foreground text-sm font-bold py-2.5 px-3 rounded-xl flex items-center justify-between transition-all outline-none focus:ring-2 focus:ring-primary/20 hover:border-primary/20 text-left"
                     >
                       <span>
                         {fontFamily === "Cambria" && "Cambria (Serifa)"}
@@ -969,14 +989,14 @@ export function EditorLayout() {
                                 setIsFontDropdownOpen(false)
                               }}
                               className={cn(
-                                "w-full text-left text-[10px] py-2 px-2.5 rounded-lg flex items-center justify-between font-bold transition-all",
+                                "w-full text-left text-sm py-2 px-2.5 rounded-lg flex items-center justify-between font-bold transition-all",
                                 fontFamily === font.value
                                   ? "bg-primary text-primary-foreground"
                                   : "text-foreground/70 hover:bg-primary/5 hover:text-primary"
                               )}
                             >
                               <span>{font.label}</span>
-                              {fontFamily === font.value && <Check size={10} className="shrink-0" />}
+                              {fontFamily === font.value && <Check size={12} className="shrink-0" />}
                             </button>
                           ))}
                         </div>
@@ -986,29 +1006,29 @@ export function EditorLayout() {
                 </div>
                 <div className="space-y-2.5">
                   <div className="flex justify-between items-center">
-                    <label className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/60">Tamanho</label>
-                    <span className="text-[9px] font-black text-primary bg-primary/10 px-2 rounded-full border border-primary/10">{fontSize}px</span>
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground/60">Tamanho</label>
+                    <span className="text-xs font-black text-primary bg-primary/10 px-2 rounded-full border border-primary/10">{fontSize}px</span>
                   </div>
                   <Slider value={[fontSize]} onValueChange={(val) => setFontSize(Array.isArray(val) ? val[0] : val)} min={12} max={26} step={1} />
                 </div>
               </div>
               <div className="flex items-center gap-3 mb-6 shrink-0 pt-10 border-t border-border/40">
-                <Library size={16} className="text-primary" />
-                <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">Biblioteca</h3>
+                <Library size={18} className="text-primary" />
+                <h3 className="text-sm font-black uppercase tracking-[0.2em]">Biblioteca</h3>
               </div>
               <div className="relative mb-6 shrink-0">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={12} />
-                <input type="text" placeholder="Filtrar documentos..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-muted/30 border border-border/60 rounded-xl pl-8 pr-3 py-2 text-[10px] placeholder:text-muted-foreground/40 font-semibold" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={14} />
+                <input type="text" placeholder="Filtrar documentos..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-muted/30 border border-border/60 rounded-xl pl-8 pr-3 py-2 text-sm placeholder:text-muted-foreground/40 font-semibold" />
               </div>
               <ScrollArea className="flex-1 w-full">
                 <div className="space-y-6 pb-6">
                   <div className="space-y-3">
-                    <p className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.25em] border-b border-border pb-1">Seus Documentos</p>
+                    <p className="text-xs font-black text-muted-foreground uppercase tracking-[0.25em] border-b border-border pb-1">Seus Documentos</p>
                     <div className="space-y-0.5">
                       {filteredContracts.map(c => (
-                        <Link key={c.id} href={`/editor?room=${c.id}`} className="w-full min-w-0 text-left text-[11px] py-2 px-2.5 hover:bg-primary/5 hover:text-primary rounded-lg flex items-center justify-between font-bold text-foreground/70 transition-all gap-2">
+                        <Link key={c.id} href={`/editor?room=${c.id}`} className="w-full min-w-0 text-left text-[13px] py-2 px-2.5 hover:bg-primary/5 hover:text-primary rounded-lg flex items-center justify-between font-normal text-foreground/70 transition-all gap-2">
                           <span className="truncate flex-1 min-w-0">{c.title || "Documento"}</span>
-                          <Zap size={10} className={cn("shrink-0 opacity-0 group-hover:opacity-100", c.status === 'signed' ? "text-emerald-500" : "text-primary")} />
+                          <Zap size={12} className={cn("shrink-0 opacity-0 group-hover:opacity-100", c.status === 'signed' ? "text-emerald-500" : "text-primary")} />
                         </Link>
                       ))}
                     </div>
@@ -1019,27 +1039,30 @@ export function EditorLayout() {
           </aside>
         )}
 
-        <main className="flex-1 overflow-y-auto custom-scrollbar bg-transparent px-8 py-8 relative z-10">
-          {/* Subtle occult background glow behind the sheet */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/3 dark:bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse duration-[6000ms]" />
+        <div className="flex-1 relative flex flex-col min-w-0 overflow-hidden">
+          <main className="flex-1 overflow-y-auto custom-scrollbar bg-transparent px-8 py-8 relative z-10">
+            {/* Subtle occult background glow behind the sheet */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/3 dark:bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse duration-[6000ms]" />
 
-          <div className="w-full max-w-[840px] mx-auto bg-card/90 dark:bg-card/75 backdrop-blur-xl border border-border/60 rounded-[32px] px-16 md:px-28 pt-16 pb-16 md:pt-20 md:pb-24 relative shadow-2xl transition-all duration-500 animate-in fade-in duration-1000 min-h-[800px] md:min-h-[1188px]">
-             {/* Grain overlay for paper feel */}
-             <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-[32px]" />
+            <div className="w-full max-w-[840px] mx-auto bg-card/90 dark:bg-card/75 backdrop-blur-xl border border-border/60 rounded-[32px] px-12 md:px-20 pt-16 pb-16 md:pt-20 md:pb-24 relative shadow-2xl transition-all duration-500 animate-in fade-in duration-1000 min-h-[800px] md:min-h-[1188px]">
+               {/* Grain overlay for paper feel */}
+               <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-[32px]" />
 
-             <div className="relative z-10">
-               {!readOnly && <BubbleMenu editor={editor} />}
-               <EditorContentArea />
-             </div>
-          </div>
-        </main>
-        {!readOnly && aiPromptOpen && (
-          <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-full max-w-[540px] z-[100] px-4 transition-all duration-500 animate-in fade-in slide-in-from-bottom-5">
-             <AiMenu plain={true} />
-          </div>
-        )}
+               <div className="relative z-10">
+                 {!readOnly && <BubbleMenu editor={editor} />}
+                 <EditorContentArea />
+               </div>
+            </div>
+          </main>
+          
+          {!readOnly && aiPromptOpen && (
+            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-full max-w-[640px] z-[100] px-4 transition-all duration-500 animate-in fade-in slide-in-from-bottom-5">
+               <AiMenu plain={true} />
+            </div>
+          )}
+        </div>
 
-        <aside className={cn("h-full border-l border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", rightSidebarOpen ? "w-96" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
+        <aside className={cn("h-full border-l border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", rightSidebarOpen ? "w-[420px]" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
           {readOnly ? (
             <div className="p-6 flex flex-col h-full justify-between">
               {contractStatus === 'signed' ? (
@@ -1047,16 +1070,16 @@ export function EditorLayout() {
                   <div className="p-4 bg-emerald-500/10 rounded-full border border-emerald-500/30 animate-pulse mb-2">
                     <ShieldCheck size={48} className="text-emerald-400" />
                   </div>
-                  <h3 className="text-sm font-black uppercase tracking-[0.2em] text-emerald-400">Contrato Selado</h3>
+                  <h3 className="text-base font-black uppercase tracking-[0.2em] text-emerald-400">Contrato Selado</h3>
                   <div className="space-y-4 max-w-xs">
-                    <p className="text-[11px] leading-relaxed text-muted-foreground">
+                    <p className="text-sm leading-relaxed text-muted-foreground">
                       Este instrumento jurídico foi totalmente assinado e selado digitalmente.
                     </p>
                     <div className="p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
-                      <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest block mb-1">Status da Assinatura</span>
-                      <span className="text-[10px] font-bold text-white">IMUTÁVEL & REGISTRADO</span>
+                      <span className="text-xs font-black text-emerald-400 uppercase tracking-widest block mb-1">Status da Assinatura</span>
+                      <span className="text-sm font-bold text-white">IMUTÁVEL & REGISTRADO</span>
                     </div>
-                    <p className="text-[9px] text-muted-foreground/60 italic leading-normal">
+                    <p className="text-xs text-muted-foreground/60 italic leading-normal">
                       Qualquer tentativa de edição foi bloqueada para preservar a integridade jurídica das assinaturas.
                     </p>
                   </div>
@@ -1065,55 +1088,55 @@ export function EditorLayout() {
               ) : (
                 <div className="space-y-6">
                   <div className="flex items-center gap-4">
-                    <ShieldCheck size={20} className="text-primary animate-pulse" />
-                    <h3 className="text-[11px] font-black uppercase tracking-[0.2em]">Assinatura Digital</h3>
+                    <ShieldCheck size={24} className="text-primary animate-pulse" />
+                    <h3 className="text-sm font-black uppercase tracking-[0.2em]">Assinatura Digital</h3>
                   </div>
                   <div className="space-y-4">
-                    <p className="text-[11px] leading-relaxed text-muted-foreground">Revise o documento e preencha as credenciais para assinar.</p>
+                    <p className="text-sm leading-relaxed text-muted-foreground">Revise o documento e preencha as credenciais para assinar.</p>
                     <div className="space-y-3">
-                      <label className="text-[9px] font-black text-muted-foreground uppercase">E-mail</label>
-                      <input type="email" value={signerEmail} onChange={(e) => setSignerEmail(e.target.value)} placeholder="Seu e-mail..." className="w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-xs font-semibold" />
+                      <label className="text-xs font-black text-muted-foreground uppercase">E-mail</label>
+                      <input type="email" value={signerEmail} onChange={(e) => setSignerEmail(e.target.value)} placeholder="Seu e-mail..." className="w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-sm font-semibold" />
                     </div>
                     <div className="space-y-3">
-                      <label className="text-[9px] font-black text-muted-foreground uppercase">Código (6 dígitos)</label>
-                      <input type="text" maxLength={6} value={sealingCode} onChange={(e) => setSealingCode(e.target.value.replace(/\D/g, ''))} placeholder="123456" className="w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-center text-lg font-black tracking-[0.5em]" />
+                      <label className="text-xs font-black text-muted-foreground uppercase">Código (6 dígitos)</label>
+                      <input type="text" maxLength={6} value={sealingCode} onChange={(e) => setSealingCode(e.target.value.replace(/\D/g, ''))} placeholder="123456" className="w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-center text-xl font-black tracking-[0.5em]" />
                     </div>
                     <div className="flex items-start gap-3 mt-4">
                       <input type="checkbox" id="consent" checked={consentCheck} onChange={(e) => setConsentCheck(e.target.checked)} className="mt-0.5 rounded text-primary focus:ring-0" />
-                      <label htmlFor="consent" className="text-[9px] text-muted-foreground leading-normal font-semibold cursor-pointer">Declaro que li e concordo com os termos.</label>
+                      <label htmlFor="consent" className="text-xs text-muted-foreground leading-normal font-semibold cursor-pointer">Declaro que li e concordo com os termos.</label>
                     </div>
                   </div>
                 </div>
               )}
               {contractStatus !== 'signed' && (
-                <Button onClick={handleConfirmSignature} disabled={isSealing || !consentCheck} className="w-full bg-primary py-6 rounded-2xl font-black text-[10px] uppercase">Assinar Instrumento</Button>
+                <Button onClick={handleConfirmSignature} disabled={isSealing || !consentCheck} className="w-full bg-primary py-6 rounded-2xl font-black text-sm uppercase">Assinar Instrumento</Button>
               )}
             </div>
           ) : (
             <div className="p-6 flex flex-col h-full overflow-hidden min-h-0 space-y-6">
               <div className="flex items-center justify-between border-b border-border/40 pb-4">
                 <div className="flex items-center gap-3">
-                  <BrainCircuit size={16} className={cn("text-primary", isAuditing && "animate-pulse")} />
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">Radar Analítico</h3>
+                  <BrainCircuit size={18} className={cn("text-primary", isAuditing && "animate-pulse")} />
+                  <h3 className="text-sm font-black uppercase tracking-[0.2em]">Radar Analítico</h3>
                 </div>
-                <Button onClick={runAudit} disabled={isAuditing} variant="outline" size="sm" className="h-8 text-[10px] font-bold uppercase tracking-wider text-primary border-primary/20 hover:bg-primary/5 hover:border-primary transition-all">Analisar</Button>
+                <Button onClick={runAudit} disabled={isAuditing} variant="outline" size="sm" className="h-8 text-xs font-bold uppercase tracking-wider text-primary border-primary/20 hover:bg-primary/5 hover:border-primary transition-all">Analisar</Button>
               </div>
               {/* Seção 1: Score ou Iniciar Auditoria (Fixado no topo) */}
               <div className="shrink-0">
                 {!hasAudited ? (
-                  <div className="p-5 rounded-2xl bg-primary/5 border border-primary/10 space-y-3.5 relative overflow-hidden">
+                  <div className="p-5 rounded-2xl bg-primary/5 border border-primary/10 space-y-4 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
-                    <div className="flex items-center gap-2">
-                      <Brain size={16} className="text-primary animate-pulse" />
-                      <span className="text-[9px] font-black text-primary uppercase tracking-widest">Radar de Conformidade</span>
+                    <div className="flex items-center gap-1.5">
+                      <Brain size={14} className="text-primary animate-pulse" />
+                      <span className="text-[10px] font-black text-primary uppercase tracking-widest">Radar de Conformidade</span>
                     </div>
-                    <p className="text-[10px] text-muted-foreground leading-relaxed">
+                    <p className="text-xs text-muted-foreground leading-relaxed">
                       Rode o radar analítico para escanear inconsistências, brechas jurídicas e calcular o score de proteção do instrumento.
                     </p>
                     <Button 
                       onClick={runAudit} 
                       disabled={isAuditing} 
-                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-[9px] font-black uppercase tracking-wider h-8 rounded-xl transition-all"
+                      className="w-full bg-transparent border border-primary/50 text-primary hover:bg-primary hover:border-primary hover:text-primary-foreground text-[10px] font-black uppercase tracking-[0.2em] h-8 rounded-xl transition-all shadow-[0_0_10px_rgba(var(--primary),0.05)] hover:shadow-[0_0_20px_rgba(var(--primary),0.2)]"
                     >
                       Rolar Análise IA
                     </Button>
@@ -1121,14 +1144,14 @@ export function EditorLayout() {
                 ) : (
                   <div className="p-5 rounded-2xl bg-muted/30 border space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-[9px] font-black text-muted-foreground uppercase">Score de Segurança</span>
-                      <span className={cn("text-[9px] font-black uppercase px-2 py-0.5 rounded-full", auditStatus.color)}>{auditStatus.label}</span>
+                      <span className="text-xs font-black text-muted-foreground uppercase">Score de Segurança</span>
+                      <span className={cn("text-xs font-black uppercase px-2 py-0.5 rounded-full", auditStatus.color)}>{auditStatus.label}</span>
                     </div>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-black">{auditScore}</span>
-                      <span className="text-sm font-bold text-primary">%</span>
+                      <span className="text-5xl font-black">{auditScore}</span>
+                      <span className="text-lg font-bold text-primary">%</span>
                     </div>
-                    <p className="text-[9px] text-muted-foreground leading-relaxed italic">{auditStatus.desc}</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed italic">{auditStatus.desc}</p>
                   </div>
                 )}
               </div>
@@ -1136,13 +1159,13 @@ export function EditorLayout() {
               {/* Seção 2: Árvore Interativa de Cláusulas (Mapa do Instrumento) */}
               <div className="flex flex-col flex-1 min-h-0 space-y-4">
                 <div className="flex items-center gap-2 border-b border-border/40 pb-2 shrink-0">
-                  <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Mapa do Instrumento</span>
+                  <span className="text-xs font-black text-muted-foreground uppercase tracking-widest">Mapa do Instrumento</span>
                 </div>
                 
                 <ScrollArea className="flex-1 pr-3 scrollbar-minimalist min-h-0">
                   {getClauses().length === 0 ? (
                     <div className="text-center py-6">
-                      <span className="text-[9px] text-muted-foreground font-semibold">Nenhuma cláusula identificada ainda.</span>
+                      <span className="text-xs text-muted-foreground font-semibold">Nenhuma cláusula identificada ainda.</span>
                     </div>
                   ) : (
                     <div className="relative pl-5 pr-3 py-1 space-y-5 before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-[1.5px] before:bg-border/60">
@@ -1177,13 +1200,13 @@ export function EditorLayout() {
                                 onClick={() => scrollToPosition(clause.pos)}
                                 className="flex items-center justify-between w-full text-left group-hover/clause:text-primary transition-all"
                               >
-                                <span className="text-[10px] font-bold uppercase tracking-wider truncate max-w-[170px] text-foreground/80 group-hover/clause:text-primary">
+                                <span className="text-[13px] font-bold uppercase tracking-wider truncate max-w-[220px] text-foreground/80 group-hover/clause:text-primary">
                                   {clause.title}
                                 </span>
                                 {hasAudited && (
                                   hasRisk 
-                                    ? <span className="text-[8px] font-black uppercase text-red-600 dark:text-red-400 tracking-wider">⚠️ Risco</span>
-                                    : <span className="text-[8px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">✅ OK</span>
+                                    ? <span className="text-xs font-black uppercase text-red-600 dark:text-red-400 tracking-wider">⚠️ Risco</span>
+                                    : <span className="text-xs font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">✅ OK</span>
                                 )}
                               </button>
 
@@ -1194,7 +1217,7 @@ export function EditorLayout() {
                                     <button
                                       key={sub.id}
                                       onClick={() => scrollToPosition(sub.pos)}
-                                      className="flex items-center gap-1.5 text-left text-[8px] text-muted-foreground/40 hover:text-primary transition-all w-full min-w-0 group/sub"
+                                      className="flex items-center gap-1.5 text-left text-xs text-muted-foreground/60 hover:text-primary transition-all w-full min-w-0 group/sub"
                                     >
                                       <div className="h-0.5 w-1 bg-muted-foreground/20 group-hover/sub:bg-primary shrink-0 transition-colors" />
                                       <span className="truncate flex-1 min-w-0 font-medium italic">
@@ -1203,30 +1226,31 @@ export function EditorLayout() {
                                     </button>
                                   ))}
                                   {hasMore && (
-                                    <span className="text-[8px] text-muted-foreground/20 pl-2.5 font-bold tracking-widest block leading-none">...</span>
+                                    <span className="text-xs text-muted-foreground/40 pl-2.5 font-bold tracking-widest block leading-none">...</span>
                                   )}
                                 </div>
                               )}
 
                               {/* Se houver risco correspondente a esta cláusula, renderiza abaixo dela de forma integrada */}
                               {hasAudited && hasRisk && (
-                                <div className="pl-3 space-y-2.5 border-l border-red-500/20 mt-1.5">
+                                <div className="pl-3 space-y-2.5 border-l border-red-500/40 mt-1.5">
                                   {clauseRisks.map((risk) => (
-                                    <div key={risk.id} className="p-3 rounded-xl border bg-red-500/[0.02] border-red-500/10 space-y-2">
-                                      <span className="text-[7.5px] font-black text-red-600 dark:text-red-400 uppercase tracking-widest">Atenção</span>
-                                      <p className="text-[9px] font-medium leading-relaxed text-muted-foreground/90">
-                                        {risk.reason}
-                                      </p>
-                                      <Button 
-                                        size="sm" 
-                                        onClick={() => {
-                                          scrollToPosition(clause.pos)
-                                        }}
-                                        className="w-full bg-red-500/10 hover:bg-red-500 text-red-600 dark:text-red-400 hover:text-white dark:hover:text-white text-[8px] font-bold uppercase tracking-widest h-7 rounded-lg transition-all"
-                                      >
-                                        Otimizar Cláusula
-                                      </Button>
-                                    </div>
+                                      <div key={risk.id} className="p-4 rounded-xl border bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-500/40 space-y-3 shadow-lg shadow-red-900/5">
+                                        <span className="text-xs font-black text-red-600 dark:text-red-500 uppercase tracking-widest flex items-center gap-1.5">
+                                          <ShieldAlert size={14} className="text-red-600 dark:text-red-500" />
+                                          Atenção
+                                        </span>
+                                        <p className="text-[13px] font-medium leading-relaxed text-red-900 dark:text-red-100/90">
+                                          {risk.reason}
+                                        </p>
+                                        <Button 
+                                          size="sm" 
+                                          onClick={() => handleOptimizeClause(clause.pos, nextClause?.pos)}
+                                          className="w-full bg-red-100 hover:bg-red-200 text-red-800 border border-red-300 dark:bg-red-950 dark:hover:bg-red-900 dark:text-red-400 dark:border-red-500/30 hover:text-red-900 dark:hover:text-red-300 text-xs font-bold uppercase tracking-widest h-9 rounded-lg transition-all"
+                                        >
+                                          Otimizar Cláusula
+                                        </Button>
+                                      </div>
                                   ))}
                                 </div>
                               )}

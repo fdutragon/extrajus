@@ -359,24 +359,27 @@ export default function SignaturesPage() {
   if (loading) return <div className="p-20 text-center animate-pulse text-xs font-black uppercase tracking-widest text-muted-foreground">Carregando Assinaturas...</div>
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-700 pb-20">
-      <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-border pb-8">
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2 py-0">Assinaturas</Badge>
-            <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase italic">Electronic Signature Management</span>
+    <div className="space-y-12 animate-in fade-in duration-700 overflow-x-hidden px-1 pb-20">
+      <div className="flex flex-col sm:flex-row justify-between items-end gap-6 border-b border-border/50 pb-8 relative">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-4">
+            <Badge variant="outline" className="text-[9px] uppercase tracking-[0.3em] font-black border-primary/30 text-primary bg-primary/5 px-3 py-1 rounded-full animate-pulse">Secure Protocol</Badge>
+            <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">Electronic Signature Management</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Gestão de Documentos</h1>
-          <p className="text-[13px] text-muted-foreground max-w-md leading-relaxed">
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground">
+            Signatures <span className="text-muted-foreground/30 font-light">/</span> <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/50 bg-clip-text text-transparent">Vault</span>
+          </h1>
+          <p className="text-sm text-muted-foreground mt-2 max-w-md">
             Gerencie e assine documentos eletronicamente com validade jurídica. Acompanhe o status das coletas de assinatura em tempo real.
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
         <div className="md:col-span-2 space-y-4">
            {documents.length === 0 ? (
-             <Card className="p-12 text-center border-dashed bg-muted/20">
+             <Card className="p-12 text-center border-dashed bg-card/40 backdrop-blur-md border-border/50 rounded-[32px]">
                 <ShieldCheck size={48} className="mx-auto text-muted-foreground/20 mb-4" />
                 <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Nenhum documento coletado no momento.</p>
              </Card>
@@ -391,8 +394,8 @@ export default function SignaturesPage() {
                  <Card 
                    key={doc.contract_id} 
                    className={cn(
-                     "p-6 cursor-pointer transition-all border-border hover:border-primary/30 group relative overflow-hidden",
-                     selectedDoc?.contract_id === doc.contract_id && "border-primary bg-primary/5 ring-1 ring-primary/20"
+                     "p-6 cursor-pointer transition-all bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] shadow-[0_0_30px_rgba(0,0,0,0.1)] hover:border-primary/40 group relative overflow-hidden",
+                     selectedDoc?.contract_id === doc.contract_id && "border-primary/60 bg-primary/5 ring-1 ring-primary/20"
                    )}
                    onClick={() => setSelectedDoc(doc)}
                  >
@@ -459,7 +462,7 @@ export default function SignaturesPage() {
            {selectedDoc ? (
              <div className="space-y-6 animate-in slide-in-from-right-4 duration-500">
                 {userNeedsToSign ? (
-                  <Card className="p-8 border-rose-500/20 bg-rose-500/[0.01] sticky top-6">
+                   <Card className="p-8 border-rose-500/20 bg-card/40 backdrop-blur-md rounded-[32px] shadow-[0_0_30px_rgba(0,0,0,0.1)] sticky top-6">
                      <div className="space-y-6">
                         <div className="flex items-center gap-3">
                            <div className="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-500 border border-rose-500/20 flex items-center justify-center">

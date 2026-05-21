@@ -158,21 +158,24 @@ export default function SettingsPage() {
   if (loading) return <div className="p-20 text-center text-muted-foreground font-black text-xs animate-pulse">Carregando Configurações...</div>
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-700">
-      <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-border pb-8">
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2 py-0">Preferências</Badge>
-            <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase italic">System Configuration</span>
+    <div className="space-y-12 animate-in fade-in duration-700 overflow-x-hidden px-1">
+      <div className="flex flex-col sm:flex-row justify-between items-end gap-6 border-b border-border/50 pb-8 relative">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-4">
+            <Badge variant="outline" className="text-[9px] uppercase tracking-[0.3em] font-black border-primary/30 text-primary bg-primary/5 px-3 py-1 rounded-full animate-pulse">System Config</Badge>
+            <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">Account Management</span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Configurações</h1>
-          <p className="text-[13px] text-muted-foreground max-w-md leading-relaxed">
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground">
+            Settings <span className="text-muted-foreground/30 font-light">/</span> <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/50 bg-clip-text text-transparent">Control</span>
+          </h1>
+          <p className="text-sm text-muted-foreground mt-2 max-w-md">
             Gerencie as preferências da sua conta, parâmetros de inteligência artificial e faturamento.
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative z-10">
         <div className="lg:col-span-3 space-y-2 sticky top-0">
           {menuItems.map((item) => {
             const Icon = item.icon;
@@ -182,10 +185,10 @@ export default function SettingsPage() {
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-bold transition-all duration-300 group",
+                  "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-black uppercase tracking-widest transition-all duration-300 group",
                   isActive 
                     ? "bg-primary text-primary-foreground shadow-sm" 
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                 )}
               >
                 <Icon size={16} className={cn(isActive ? "text-primary-foreground" : "group-hover:text-primary transition-colors")} />
@@ -199,10 +202,10 @@ export default function SettingsPage() {
         <div className="lg:col-span-9 space-y-6 text-left">
           {activeTab === "perfil" && (
             <div className="animate-in slide-in-from-bottom-2 duration-500 text-left">
-              <Card className="rounded-xl overflow-hidden text-left">
+              <Card className="bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] overflow-hidden text-left shadow-[0_0_50px_rgba(0,0,0,0.1)]">
                 <div className="h-32 w-full bg-gradient-to-r from-primary/10 via-card to-background pt-4 pr-4 flex justify-end items-start relative">
                   <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay" />
-                  <Badge className="bg-primary/20 text-primary border-primary/30 font-bold text-[9px] uppercase tracking-widest">Sessão Ativa</Badge>
+                  <Badge className="bg-primary/20 text-primary border-primary/30 font-bold text-xs uppercase tracking-widest">Sessão Ativa</Badge>
                 </div>
                 <div className="px-8 pb-8 -mt-12 relative z-10 text-left">
                   <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 text-left">
@@ -220,10 +223,10 @@ export default function SettingsPage() {
 
                   <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-12 text-left">
                     <div className="space-y-6 text-left">
-                      <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground border-b border-border pb-2 text-left">Identidade</h3>
+                      <h3 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground border-b border-border pb-2 text-left">Identidade</h3>
                       <div className="space-y-4 text-left">
                         <div className="space-y-2 text-left">
-                          <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 text-left">
+                          <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 text-left">
                             <FileText size={10} /> Nome Completo
                           </label>
                           <input 
@@ -235,7 +238,7 @@ export default function SettingsPage() {
                           />
                         </div>
                         <div className="space-y-2 text-left">
-                          <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 text-left">
+                          <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 text-left">
                             <Briefcase size={10} /> Ocupação
                           </label>
                           <input 
@@ -250,10 +253,10 @@ export default function SettingsPage() {
                     </div>
 
                     <div className="space-y-6 text-left">
-                      <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground border-b border-border pb-2 text-left">Segurança</h3>
+                      <h3 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground border-b border-border pb-2 text-left">Segurança</h3>
                       <div className="space-y-4 text-left">
                         <div className="space-y-2 text-left">
-                          <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 text-left">
+                          <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 text-left">
                             <FileText size={10} /> E-mail Principal
                           </label>
                           <input 
@@ -264,7 +267,7 @@ export default function SettingsPage() {
                           />
                         </div>
                         <div className="space-y-2 text-left">
-                          <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 text-left">
+                          <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 text-left">
                             <Zap size={10} /> Nova Senha
                           </label>
                           <input 
@@ -274,7 +277,7 @@ export default function SettingsPage() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                           />
-                          <p className="text-[9px] text-muted-foreground italic text-left">Deixe em branco para manter a senha atual.</p>
+                          <p className="text-xs text-muted-foreground italic text-left">Deixe em branco para manter a senha atual.</p>
                         </div>
                       </div>
                     </div>
@@ -283,7 +286,7 @@ export default function SettingsPage() {
                   <div className="mt-12 pt-8 border-t flex flex-col md:flex-row justify-between items-center gap-6 text-left">
                     <div className="flex items-center gap-4 text-muted-foreground text-left">
                        <Shield size={20} className="opacity-20" />
-                       <p className="text-[10px] font-medium leading-relaxed max-w-xs text-left">Alterações sensíveis podem exigir revalidação via e-mail para garantir a segurança da conta.</p>
+                       <p className="text-xs font-medium leading-relaxed max-w-xs text-left">Alterações sensíveis podem exigir revalidação via e-mail para garantir a segurança da conta.</p>
                     </div>
                     <Button 
                       disabled={isSaving}
@@ -414,7 +417,7 @@ export default function SettingsPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                       <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block mb-1">Saldo Atual</span>
+                       <span className="text-xs font-black text-muted-foreground uppercase tracking-widest block mb-1">Saldo Atual</span>
                        <div className="flex items-baseline gap-1 justify-end">
                           <span className="text-3xl font-black text-primary">{profile?.credits || 0}</span>
                           <span className="text-xs font-bold text-muted-foreground">CRÉDITOS</span>
@@ -425,28 +428,28 @@ export default function SettingsPage() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
                     {[
                       { 
-                        credits: 20, 
-                        price: 29, 
-                        label: "Pacto Inicial", 
-                        desc: "Ideal para testes e análises rápidas.", 
+                        credits: 150, 
+                        price: 19.90, 
+                        label: "Pacote Operacional", 
+                        desc: "Ideal para testes, com volume seguro de Sinapses.", 
                         popular: false,
                         text: "text-foreground",
                         border: "border-border hover:border-primary/30 hover:scale-[1.01]"
                       },
                       { 
-                        credits: 50, 
-                        price: 49, 
-                        label: "Pacto de Elite", 
-                        desc: "O preferido dos especialistas. Alta performance.", 
+                        credits: 500, 
+                        price: 49.90, 
+                        label: "Arsenal Avançado", 
+                        desc: "O preferido. Bônus de Sinapses e alta performance.", 
                         popular: true,
                         text: "text-primary",
                         border: "border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.06)] hover:border-primary scale-[1.02]"
                       },
                       { 
-                        credits: 100, 
-                        price: 69, 
-                        label: "Pacto Soberano", 
-                        desc: "Poder absoluto e irrestrito para corporações.", 
+                        credits: 1200, 
+                        price: 99.90, 
+                        label: "Arsenal Supremo", 
+                        desc: "Poder irrestrito. Alto bônus de Sinapses para escalar.", 
                         popular: false,
                         text: "text-primary/90",
                         border: "border-border hover:border-primary/30 hover:scale-[1.01]"
@@ -465,20 +468,20 @@ export default function SettingsPage() {
                             <Sparkles size={8} /> Popular
                           </div>
                         )}
-                        <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest block mb-2 text-left">{pkg.label}</span>
+                        <span className="text-xs font-black text-muted-foreground uppercase tracking-widest block mb-2 text-left">{pkg.label}</span>
                         <div className="flex items-baseline gap-1 mb-2 text-left">
                            <span className={cn("text-2xl font-black font-mono tracking-tight", pkg.text)}>{pkg.credits}</span>
-                           <span className="text-[10px] font-bold text-muted-foreground">Sinapses</span>
+                           <span className="text-xs font-bold text-muted-foreground">Sinapses</span>
                         </div>
-                        <p className="text-[11px] text-muted-foreground leading-relaxed font-medium mb-6">
+                        <p className="text-sm text-muted-foreground leading-relaxed font-medium mb-6">
                           {pkg.desc}
                         </p>
                         <div className="flex items-center justify-between mt-auto pt-4 border-t border-border/50 text-left">
                            <div className="flex flex-col">
                              <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Investimento</span>
-                             <span className="text-sm font-black text-foreground font-mono">R$ {pkg.price}</span>
+                             <span className="text-sm font-black text-foreground font-mono">R$ {pkg.price.toFixed(2).replace('.', ',')}</span>
                            </div>
-                           <Button size="sm" variant="ghost" className="h-8 px-3 text-[9px] font-black uppercase tracking-widest rounded-lg border border-border group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">Adquirir</Button>
+                           <Button size="sm" variant="ghost" className="h-8 px-3 text-xs font-black uppercase tracking-widest rounded-lg border border-border group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">Adquirir</Button>
                         </div>
                       </div>
                     ))}

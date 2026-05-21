@@ -12,7 +12,8 @@ import {
   Sparkles,
   Zap,
   ShieldCheck,
-  Package
+  Package,
+  BrainCircuit
 } from "lucide-react";
 import {
   Table,
@@ -72,55 +73,57 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-700">
+    <div className="space-y-12 animate-in fade-in duration-700 overflow-x-hidden px-1">
       {/* Header Area */}
-      <div className="flex flex-col sm:flex-row justify-between items-end gap-4 border-b border-border pb-6">
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2 py-0">Dashboard</Badge>
-            <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase">System Operational</span>
+      <div className="flex flex-col sm:flex-row justify-between items-end gap-6 border-b border-border/50 pb-8 relative">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-4">
+            <Badge variant="outline" className="text-[9px] uppercase tracking-[0.3em] font-black border-primary/30 text-primary bg-primary/5 px-3 py-1 rounded-full animate-pulse">Core System</Badge>
+            <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">Neural Network Online</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Painel de {profile?.full_name?.split(' ')[0] || 'Controle'}</h1>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground">
+            Comando <span className="text-muted-foreground/30 font-light">/</span> <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/50 bg-clip-text text-transparent">{profile?.full_name?.split(' ')[0] || 'Geral'}</span>
+          </h1>
         </div>
-        <form action={createContractAction}>
+        <form action={createContractAction} className="relative z-10 w-full sm:w-auto">
           <Button
+            variant="outline"
             type="submit"
-            className="relative bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-[0.1em] text-[10px] rounded-xl px-4 h-9 group transition-all duration-500 overflow-hidden shadow-[0_0_20px_rgba(197,168,128,0.15)] hover:shadow-[0_0_30px_rgba(197,168,128,0.3)] border border-primary/50 hover:border-primary"
+            className="w-full sm:w-auto relative bg-primary/5 text-primary hover:text-primary-foreground hover:bg-primary font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl px-8 h-12 group transition-all duration-500 shadow-[0_0_15px_rgba(var(--primary),0.1)] hover:shadow-[0_0_30px_rgba(var(--primary),0.3)] border border-primary/30 hover:border-primary overflow-hidden"
           >
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
             <div className="relative z-10 flex items-center gap-2">
-              <PlusCircle size={14} className="transition-transform duration-500 group-hover:rotate-90 group-hover:scale-110" />
+              <PlusCircle size={16} className="transition-transform duration-500 group-hover:rotate-90 group-hover:scale-110" />
               Forjar Novo Contrato
             </div>
-            <div className="absolute inset-0 bg-gradient-to-tr from-primary via-primary/90 to-[#e5cfa1] opacity-100" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.2),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           </Button>
         </form>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
-          <Card key={i} className="bg-card border-border rounded-xl overflow-hidden relative group transition-all duration-500 hover:border-primary/50">
-            {/* Ambient Glow from the mockup */}
-            <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-primary/5 dark:bg-primary/10 blur-[60px] rounded-full group-hover:bg-primary/15 transition-colors duration-500" />
-            <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
+          <Card key={i} className="bg-card/40 backdrop-blur-md border-border/50 rounded-3xl overflow-hidden relative group transition-all duration-500 hover:border-primary/40 hover:shadow-[0_0_40px_rgba(var(--primary),0.05)]">
+            <div className="absolute -bottom-16 -right-16 w-48 h-48 bg-primary/5 blur-[60px] rounded-full group-hover:bg-primary/15 transition-colors duration-700 pointer-events-none" />
+            <div className="absolute inset-0 pointer-events-none opacity-[0.02] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
 
-            <CardContent className="p-5 relative z-10">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors duration-500">
-                  <stat.icon size={16} />
+            <CardContent className="p-6 relative z-10">
+              <div className="flex items-center justify-between mb-6">
+                <div className="w-10 h-10 rounded-2xl bg-muted/50 border border-border/50 flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:border-primary/30 group-hover:bg-primary/5 transition-all duration-500">
+                  <stat.icon size={18} />
                 </div>
                 <div className={cn(
-                  "flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border",
-                  stat.trend.startsWith('+') || stat.trend === 'Operacional' ? "bg-primary/10 text-primary border-primary/20" : "bg-muted text-muted-foreground border-border"
+                  "flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-colors",
+                  stat.trend.startsWith('+') || stat.trend === 'Operacional' ? "bg-primary/10 text-primary border-primary/20 group-hover:bg-primary/20" : "bg-muted text-muted-foreground border-border"
                 )}>
-                  {stat.trend.startsWith('+') ? <ArrowUpRight size={10} /> : <Zap size={10} />} {stat.trend}
+                  {stat.trend.startsWith('+') ? <ArrowUpRight size={12} /> : <Zap size={12} className={stat.trend === 'Operacional' ? 'animate-pulse' : ''} />} {stat.trend}
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{stat.title}</p>
-                <h3 className="text-3xl font-black tracking-tight text-foreground leading-none">
+              <div className="space-y-2">
+                <p className="text-[10px] font-black text-muted-foreground/80 uppercase tracking-widest">{stat.title}</p>
+                <h3 className="text-4xl font-black tracking-tighter text-foreground leading-none group-hover:scale-[1.02] origin-left transition-transform duration-500">
                   {stat.value}
                 </h3>
               </div>
@@ -129,53 +132,71 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
         {/* Recent Contracts Table */}
-        <div className="lg:col-span-8 space-y-4">
-          <div className="flex items-center justify-between px-1">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Fluxo Recente</h2>
-            <Link href="/contracts" className="text-[11px] text-muted-foreground hover:text-primary transition-colors font-bold flex items-center gap-1 uppercase tracking-tighter">
-              Ver Todos <ChevronRight size={12} />
+        <div className="lg:col-span-8 space-y-6">
+          <div className="flex items-center justify-between px-2">
+            <h2 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+              Radar de Instrumentos
+            </h2>
+            <Link href="/contracts" className="text-[9px] text-muted-foreground hover:text-primary transition-colors font-black flex items-center gap-1.5 uppercase tracking-widest bg-muted/40 hover:bg-primary/10 px-4 py-2 rounded-full border border-border/50 hover:border-primary/30">
+              Expansão Completa <ChevronRight size={12} />
             </Link>
           </div>
 
-          <div className="bg-card border border-border rounded-xl overflow-hidden">
+          <div className="bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.1)] relative">
+            <div className="absolute inset-0 pointer-events-none opacity-[0.02] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
+            
             {!recentContracts || recentContracts.length === 0 ? (
-              <div className="p-20 text-center text-muted-foreground uppercase font-black text-[10px] tracking-widest">Nenhum contrato ativo no momento.</div>
+              <div className="p-24 flex flex-col items-center justify-center text-center space-y-5 relative z-10">
+                <div className="w-20 h-20 rounded-[32px] bg-muted/30 border border-border/50 flex items-center justify-center text-muted-foreground/30 shadow-inner">
+                  <FileText size={28} />
+                </div>
+                <p className="text-muted-foreground/60 uppercase font-black text-[10px] tracking-widest">Nenhum contrato ativo detectado no radar.</p>
+              </div>
             ) : (
-              <Table>
+              <Table className="relative z-10">
                 <TableHeader>
-                  <TableRow className="border-border hover:bg-transparent bg-muted/50">
-                    <TableHead className="text-[10px] uppercase font-bold tracking-widest h-12 px-6">Documento</TableHead>
-                    <TableHead className="text-[10px] uppercase font-bold tracking-widest h-12 px-6">Status</TableHead>
-                    <TableHead className="text-[10px] uppercase font-bold tracking-widest h-12 text-right px-6">Data</TableHead>
+                  <TableRow className="border-border/40 hover:bg-transparent bg-muted/30">
+                    <TableHead className="text-[9px] uppercase font-black tracking-widest h-14 px-8 text-muted-foreground">Documento Ativo</TableHead>
+                    <TableHead className="text-[9px] uppercase font-black tracking-widest h-14 px-6 text-muted-foreground">Status Tático</TableHead>
+                    <TableHead className="text-[9px] uppercase font-black tracking-widest h-14 text-right px-8 text-muted-foreground">Último Acesso</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {recentContracts.map((contract) => (
-                    <TableRow key={contract.id} className="border-border group hover:bg-accent transition-colors cursor-pointer">
-                      <TableCell className="py-5 px-6">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors">
-                            <FileText size={14} />
+                    <TableRow key={contract.id} className="border-border/30 group hover:bg-primary/5 transition-colors cursor-pointer hover:border-primary/30">
+                      <TableCell className="py-6 px-8">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-2xl bg-muted/50 border border-border/50 flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/10 group-hover:border-primary/30 transition-all duration-300 shadow-inner shrink-0">
+                            <FileText size={18} />
                           </div>
-                          <div className="flex flex-col">
-                            <Link href={`/editor?room=${contract.id}`} className="text-[13px] font-bold tracking-tight hover:underline">{contract.title}</Link>
-                            <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">ID: {contract.id.slice(0,8)}...</span>
+                          <div className="flex flex-col space-y-1 min-w-0">
+                            <Link href={`/editor?room=${contract.id}`} className="text-sm font-bold text-foreground group-hover:text-primary transition-colors flex items-center gap-2 truncate max-w-[150px] sm:max-w-[250px] md:max-w-[350px] xl:max-w-[450px]">
+                              {(() => {
+                                const t = contract.title || 'Contrato Sem Título';
+                                const minors = ['de', 'da', 'do', 'das', 'dos', 'e', 'ou', 'em', 'para', 'com', 'por', 'sem', 'sob'];
+                                return t.toLowerCase().split(' ').map((w, i) => (i > 0 && minors.includes(w)) ? w : w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                              })()}
+                            </Link>
+                            <span className="text-[9px] text-muted-foreground/60 font-black uppercase tracking-[0.2em] font-mono">Hash: {contract.id.slice(0,8)}</span>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="py-5 px-6">
+                      <TableCell className="py-6 px-6">
                         <Badge variant="outline" className={cn(
-                          "rounded-full text-[9px] uppercase font-black px-2.5 py-0.5 border-none",
-                          contract.status === 'signed' ? "bg-primary/10 text-primary" :
-                          contract.status === 'pending' ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
+                          "rounded-full text-[9px] uppercase font-black px-3 py-1 border transition-colors",
+                          contract.status === 'signed' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
+                          contract.status === 'pending' ? "bg-primary/10 text-primary border-primary/20" : "bg-muted/80 text-muted-foreground border-border/60"
                         )}>
                           {contract.status === 'draft' ? 'Em Edição' : 
                            contract.status === 'pending' ? 'Pendente' : 'Assinado'}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-[11px] text-muted-foreground text-right font-mono py-5 px-6">{new Date(contract.updated_at).toLocaleDateString('pt-BR')}</TableCell>
+                      <TableCell className="text-[11px] text-muted-foreground text-right font-mono font-medium py-6 px-8">
+                        {new Date(contract.updated_at).toLocaleDateString('pt-BR')}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -186,52 +207,64 @@ export default async function DashboardPage() {
 
         {/* AI Intelligence / Sidebar Panel */}
         <div className="lg:col-span-4">
-          <div className="sticky top-0 space-y-4">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground px-1">Inteligência Analítica</h2>
+          <div className="sticky top-10 space-y-6">
+            <h2 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground px-2 flex items-center gap-2">
+              <BrainCircuit size={14} className="text-primary/70" /> 
+              Inteligência Analítica
+            </h2>
 
-            <div className="bg-card border border-border rounded-xl p-6 relative overflow-hidden group transition-all duration-500">
+            <div className="bg-card/60 backdrop-blur-xl border border-border/60 rounded-[32px] p-8 relative overflow-hidden group transition-all duration-500 hover:border-primary/40 hover:shadow-[0_0_40px_rgba(var(--primary),0.05)]">
               {/* Ambient Glow */}
-              <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 dark:bg-primary/10 blur-[80px] rounded-full -mr-20 -mt-20 group-hover:bg-primary/15 dark:group-hover:bg-primary/20 transition-all duration-1000" />
+              <div className="absolute top-0 right-0 w-72 h-72 bg-primary/5 blur-[100px] rounded-full -mr-20 -mt-20 group-hover:bg-primary/15 transition-all duration-1000 pointer-events-none" />
+              <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
 
-              <div className="relative z-10 space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-inner text-primary">
-                    <Sparkles size={20} className="animate-pulse" />
+              <div className="relative z-10 space-y-8">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/30 shadow-[inset_0_0_20px_rgba(var(--primary),0.1)] text-primary shrink-0 relative">
+                    <Sparkles size={24} className="animate-pulse" />
+                    <div className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-background animate-pulse" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-foreground tracking-tight">ExtraJus AI Insights</h3>
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Priority Analysis</p>
+                    <h3 className="text-lg font-black text-foreground tracking-tight">Núcleo Synapse</h3>
+                    <p className="text-[9px] text-primary/80 uppercase tracking-[0.2em] font-black">Online & Operacional</p>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="p-3 rounded-lg bg-muted/50 border border-border hover:border-primary/30 transition-all group/item">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Zap size={12} className="text-primary" />
-                      <span className="text-[10px] font-black uppercase text-primary">Capacidade</span>
+                  <div className="p-5 rounded-[20px] bg-muted/30 border border-border/50 hover:border-primary/40 hover:bg-muted/50 transition-all group/item relative overflow-hidden">
+                    <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-primary/5 to-transparent pointer-events-none opacity-0 group-hover/item:opacity-100 transition-opacity duration-500" />
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <Zap size={14} className="text-primary" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-primary">Reservatório</span>
+                      </div>
+                      <span className="text-xs font-black font-mono text-primary bg-primary/10 px-2 py-0.5 rounded-md border border-primary/20">{profile?.credits || 0}</span>
                     </div>
-                    <p className="text-[12px] text-muted-foreground leading-relaxed group-hover/item:text-foreground transition-colors">
-                      Você ainda possui <span className="text-foreground font-bold">{profile?.credits || 0} requisições</span> de auditoria IA. Tempo de resposta médio: <span className="text-foreground font-bold">4.2s</span>.
+                    <p className="text-xs text-muted-foreground leading-relaxed font-medium mb-5 pr-2">
+                      Sua carga neural está ativa. Refine acordos ou blinde cláusulas com a IA.
                     </p>
                     <BuyCreditsButton />
                   </div>
 
-                  <div className="p-3 rounded-lg bg-muted/50 border border-border hover:border-primary/30 transition-all group/item">
-                    <div className="flex items-center gap-2 mb-1">
-                      <TrendingUp size={12} className="text-primary" />
-                      <span className="text-[10px] font-black uppercase text-primary">Repositório</span>
+                  <div className="p-5 rounded-[20px] bg-muted/30 border border-border/50 hover:border-primary/40 hover:bg-muted/50 transition-all group/item relative overflow-hidden">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <Package size={14} className="text-primary" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-primary">Arsenal Base</span>
+                      </div>
+                      <span className="text-xs font-black font-mono text-foreground bg-muted border border-border px-2 py-0.5 rounded-md">{templateCount || 0}</span>
                     </div>
-                    <p className="text-[12px] text-muted-foreground leading-relaxed group-hover/item:text-foreground transition-colors">
-                      Sua conta possui <span className="text-foreground font-bold">{templateCount || 0} modelos</span> de contratos estruturados prontos para uso imediato.
+                    <p className="text-xs text-muted-foreground leading-relaxed font-medium mb-5 pr-2">
+                      Acesso aos moldes de contratos imutáveis testados em campo de batalha.
                     </p>
                     <Link href="/arsenal" className="block w-full">
                       <Button
                         variant="outline"
                         size="sm"
-                        className="mt-3 w-full h-8 gap-1.5 rounded-xl border-border hover:border-primary/50 bg-muted/20 hover:bg-muted text-muted-foreground hover:text-foreground font-bold text-[9px] uppercase tracking-widest transition-all duration-300 active:scale-[0.98]"
+                        className="w-full h-10 gap-2 rounded-xl border-border/60 hover:border-primary/50 bg-background/50 hover:bg-primary/5 text-muted-foreground hover:text-primary font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-300"
                       >
-                        <FileText size={10} className="text-muted-foreground group-hover/item:text-primary transition-colors" />
-                        Biblioteca de Modelos
+                        <FileText size={14} className="text-muted-foreground group-hover/item:text-primary transition-colors" />
+                        Abrir Arsenal
                       </Button>
                     </Link>
                   </div>

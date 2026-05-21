@@ -107,7 +107,7 @@ export default function SupportPage() {
       <div className="space-y-3">
          <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Suporte ExtraJus</span>
+            <span className="text-xs font-black uppercase tracking-widest text-primary">Suporte ExtraJus</span>
          </div>
          <h1 className="text-3xl font-black tracking-tight text-foreground uppercase italic">
             Suporte & Forja Customizada
@@ -130,14 +130,14 @@ export default function SupportPage() {
                   <h3 className="text-sm font-black tracking-wide text-foreground mb-1 flex items-center gap-2">
                      <Zap size={16} className="text-primary" /> Solicitar Forja de Modelo
                   </h3>
-                  <p className="text-[10px] text-muted-foreground font-bold tracking-wide">
+                  <p className="text-xs text-muted-foreground font-bold tracking-wide">
                      Descreva detalhadamente o modelo de documento jurídico que você precisa. Nossos arquitetos vão estruturá-lo e adicioná-lo ao seu arsenal.
                   </p>
                </div>
 
                <form onSubmit={handleRequestForge} className="space-y-5">
                   <div className="space-y-2">
-                     <label className="text-[10px] font-black text-muted-foreground/80 block mb-1.5">O Que Você Deseja Forjar?</label>
+                     <label className="text-xs font-black text-muted-foreground/80 block mb-1.5">O Que Você Deseja Forjar?</label>
                      <textarea 
                        placeholder="Ex: Contrato de Prestação de Serviços de TI com cláusula de proteção de PI pesada e multa de rescisão abusiva..."
                        value={forgeDescription}
@@ -151,7 +151,7 @@ export default function SupportPage() {
                   <Button 
                     type="submit"
                     disabled={isForaging}
-                    className="w-full h-11 rounded-xl text-[10px] font-black tracking-wide bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+                    className="w-full h-11 rounded-xl text-xs font-black tracking-wide bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
                   >
                      {isForaging ? "Convocando Arquitetos..." : (
                        <>
@@ -178,14 +178,14 @@ export default function SupportPage() {
                   <h3 className="text-sm font-black tracking-wide text-foreground mb-1 flex items-center gap-2">
                      <LifeBuoy size={16} className="text-primary" /> Central de Chamados & Suporte
                   </h3>
-                  <p className="text-[10px] text-muted-foreground font-bold tracking-wide">
+                  <p className="text-xs text-muted-foreground font-bold tracking-wide">
                      Encontrou alguma anomalia, precisa de ajuda com assinaturas, saldo, ou quer tirar alguma dúvida? Deixe sua mensagem e nosso general Felipe responderá na sua caixa de entrada.
                   </p>
                </div>
 
                <form onSubmit={handleOpenSupport} className="space-y-5">
                   <div className="space-y-2">
-                     <label className="text-[10px] font-black text-muted-foreground/80 block mb-1.5">Sua Mensagem / Dúvida</label>
+                     <label className="text-xs font-black text-muted-foreground/80 block mb-1.5">Sua Mensagem / Dúvida</label>
                      <textarea 
                        placeholder="Descreva seu problema, erro ou dúvida de forma clara..."
                        value={supportMessage}
@@ -199,7 +199,7 @@ export default function SupportPage() {
                   <Button 
                     type="submit"
                     disabled={isSupporting}
-                    className="w-full h-11 rounded-xl text-[10px] font-black tracking-wide bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+                    className="w-full h-11 rounded-xl text-xs font-black tracking-wide bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
                   >
                      {isSupporting ? "Enviando Chamado..." : (
                        <>

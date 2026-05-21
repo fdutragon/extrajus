@@ -31,11 +31,11 @@ export async function POST(req: Request) {
 
     const currentCredits = profile?.credits ?? 0;
     
-    let cost = 1;
+    let cost = 10;
     if (instructionType === "generation") {
-      cost = 6;
+      cost = 100;
     } else if (instructionType === "audit") {
-      cost = 3; // Auditoria completa lê o contrato inteiro
+      cost = 40; // Auditoria completa lê o contrato inteiro
     }
 
     if (currentCredits < cost) {
@@ -68,7 +68,16 @@ export async function POST(req: Request) {
 
     // 1. Fluxo de Auditoria de Riscos Jurídicos
     if (instructionType === "audit") {
-      let systemInstruction = `Você é a EXTRAJUS AI, assistente profissional de conformidade jurídica. Sua função é analisar minutas, identificar riscos e sugerir melhorias técnicas.\nFormato estrito: [{"originalText": "texto exato", "suggestion": "nova redação", "reason": "explicação técnica do risco ou melhoria"}]`;
+      let systemInstruction = `Você é a EXTRAJUS AI, assistente profissional de conformidade jurídica com rigor absoluto em conformidade com as leis civis, comerciais e de usura (incluindo o Código Civil brasileiro, Código de Defesa do Consumidor e a Lei de Usura).
+Sua função é analisar detalhadamente a minuta contratual fornecida, identificar riscos jurídicos graves, brechas contratuais, ambiguidades e cláusulas abusivas ou ilegais.
+
+DIRETRIZES ESPECÍFICAS DE CONFORMIDADE:
+1. JUROS E ENCARGOS ABUSIVOS (CRÍTICO): Você DEVE identificar e apontar imediatamente qualquer cláusula que estabeleça taxas de juros moratórios ou remuneratórios excessivas, ilegais ou que caracterizem usura/juros abusivos (como taxas absurdas de 1000% ao mês, ou taxas que excedam o limite legal padrão de 1% ao mês ou a taxa SELIC). Sugira a redução imediata para o limite legal de 1% ao mês.
+2. MULTAS DESPROPORCIONAIS: Aponte multas rescisórias ou moratórias excessivas (superiores a 2% em relações de consumo ou superiores a 10%-20% em contratos cíveis e comerciais).
+3. ERROS E CONTRADIÇÕES: Aponte contradições de prazos, valores, falta de foro de eleição ou ausência de regras sobre responsabilidade e inadimplemento.
+
+Formato estrito de retorno (retorne APENAS um array JSON válido sem decorações markdown adicionais fora dele):
+[{"originalText": "texto exato do contrato a ser corrigido", "suggestion": "nova redação sugerida (pode conter HTML simples)", "reason": "fundamentação jurídica e técnica detalhada do risco ou da abusividade"}]`;
 
       systemInstruction += `\nNÍVEL DE RIGOR DE AUDITORIA ATIVO: Nível ${aiRigor}/10. ${
         aiRigor >= 8 
@@ -78,15 +87,45 @@ export async function POST(req: Request) {
             : "Diretriz crítica: Adote uma postura de rigor equilibrado padrão de mercado, identificando riscos contratuais típicos e cláusulas sensíveis comuns."
       }`;
 
-      const auditModel = genAI.getGenerativeModel({
-        model: modelName,
-        systemInstruction: systemInstruction,
-      }, { apiVersion: "v1beta" });
+      // GROQ INJECTION PARA VELOCIDADE BRUTAL NA AUDITORIA
+      try {
+        const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: "llama-3.1-70b-versatile",
+            temperature: 0.2,
+            messages: [
+              { role: "system", content: systemInstruction },
+              { role: "user", content: `Analise este contrato e aponte todos os riscos, brechas e abusividades de acordo com as diretrizes de rigor:\n\n${prompt}` }
+            ]
+          })
+        });
 
-      const result = await auditModel.generateContent(`Analise este contrato e aponte os riscos:\n\n${prompt}`);
-      const responseText = result.response.text();
-      
-      return NextResponse.json({ text: responseText });
+        if (!groqResponse.ok) {
+          throw new Error("Groq API failed");
+        }
+
+        const data = await groqResponse.json();
+        const responseText = data.choices[0].message.content;
+        
+        return NextResponse.json({ text: responseText });
+      } catch (err) {
+        console.error("Groq fallback falhou, tentando Gemini...", err);
+        // Fallback para Gemini caso o Groq falhe
+        const auditModel = genAI.getGenerativeModel({
+          model: modelName,
+          systemInstruction: systemInstruction,
+        }, { apiVersion: "v1beta" });
+
+        const result = await auditModel.generateContent(`Analise este contrato e aponte todos os riscos, brechas e abusividades de acordo com as diretrizes de rigor:\n\n${prompt}`);
+        const responseText = result.response.text();
+        
+        return NextResponse.json({ text: responseText });
+      }
     }
  
     // 2. Fluxo de Edição Cirúrgica (Diff Engine)
@@ -145,13 +184,14 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
    - Relato conciso e preciso dos Fatos e do descumprimento/fundamento jurídico relevante.
    - Solicitação clara da providência requerida e fixação de prazo peremptório (ex: 24h, 5 dias, etc.) para cumprimento voluntário.
    - Advertência explícita sobre as medidas judiciais cabíveis em caso de inércia.
-6. Seção de Data e Assinaturas (Fim da Notificação): Inclua exatamente 1 parágrafo vazio com quebra (<p><br></p>) antes da data para espaçamento compacto. A data e os campos de assinatura devem vir centralizados (usando data-node-text-align="center" e style="text-align: center;"). Cada campo de assinatura deve conter o rótulo da parte em negrito seguido da linha física usando underline puro (__________________________________________) centralizado abaixo dele.
+6. Seção de Data e Assinaturas (Fim da Notificação): Inclua exatamente 1 parágrafo vazio com quebra (<p><br></p>) antes da data para espaçamento compacto. A data e os campos de assinatura devem vir centralizados (usando data-node-text-align="center" e style="text-align: center;"). Cada campo de assinatura deve conter OBRIGATORIAMENTE a linha física de assinatura usando underline puro (__________________________________________) centralizado ACIMA do rótulo da parte em negrito.
    Exemplo:
    <p><br></p>
    <p data-node-text-align="center" style="text-align: center; margin-top: 24px;">[Cidade] - [UF], [Dia] de [Mês] de [Ano].</p>
    <p><br></p>
-   <p data-node-text-align="center" style="text-align: center;"><strong>NOTIFICANTE</strong></p>
+   <p><br></p>
    <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
+   <p data-node-text-align="center" style="text-align: center;"><strong>NOTIFICANTE</strong></p>
 7. Retorne APENAS o HTML sem estilos inline (exceto pelos atributos obrigatórios de alinhamento e espaçamento). Sem explicações.`;
     } else if (user?.email === "felipedutra@outlook.com" && docType === "peticao") {
       systemInstruction = `Você é a EXTRAJUS AI, a Inteligência Artificial especializada em Engenharia Jurídica da plataforma ExtraJus. Sua função é redigir, analisar e otimizar PETIÇÕES JUDICIAIS, peças processuais e requerimentos judiciais com extrema precisão processual e terminologia jurídica formal de alto nível.
@@ -172,8 +212,8 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
    <p data-node-text-align="center" style="text-align: center;">Pede deferimento.</p>
    <p data-node-text-align="center" style="text-align: center;">[Cidade] - [UF], [Dia] de [Mês] de [Ano].</p>
    <p><br></p>
-   <p data-node-text-align="center" style="text-align: center;"><strong>ADVOGADO</strong></p>
    <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
+   <p data-node-text-align="center" style="text-align: center;"><strong>ADVOGADO</strong></p>
    <p data-node-text-align="center" style="text-align: center;">OAB/[UF] nº [Número]</p>
 7. Retorne APENAS o HTML sem estilos inline (exceto pelos atributos obrigatórios de alinhamento e espaçamento). Sem explicações.`;
     } else {
@@ -203,15 +243,17 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
      * <div data-type="legal-node" data-level="4">Prazo de entrega em até...</div>
 6. Partes identificadas em preâmbulo com parágrafos (<p>). NUNCA use tabelas (<table>) no preâmbulo. NÃO insira nenhuma linha em branco entre a qualificação do Contratante e a do Contratado (devem vir em parágrafos contíguos sem nenhum espaçamento). NUNCA crie cláusula "DAS PARTES".
 7. Primeira cláusula SEMPRE é o Objeto do contrato.
-8. Seção de Data e Assinaturas (Fim do Contrato): É OBRIGATÓRIO incluir exatamente 1 parágrafo vazio com quebra (<p><br></p>) antes da data para criar um espaçamento elegante e compacto. A data e os campos de assinatura devem vir centralizados (usando os atributos data-node-text-align="center" e style="text-align: center;"). Cada campo de assinatura deve conter OBRIGATORIAMENTE o rótulo da parte em negrito seguido da linha física usando underline puro (__________________________________________) centralizado abaixo dele. NÃO insira campo de testemunhas. Siga ESTRITAMENTE o exemplo de HTML abaixo para esta seção:
+8. Seção de Data e Assinaturas (Fim do Contrato): É OBRIGATÓRIO incluir exatamente 1 parágrafo vazio com quebra (<p><br></p>) antes da data para criar um espaçamento elegante e compacto. A data e os campos de assinatura devem vir centralizados (usando os atributos data-node-text-align="center" e style="text-align: center;"). Cada campo de assinatura deve conter OBRIGATORIAMENTE a linha física de assinatura usando underline puro (__________________________________________) centralizado ACIMA do rótulo da parte em negrito. NÃO insira campo de testemunhas. Siga ESTRITAMENTE o exemplo de HTML abaixo para esta seção:
    <p><br></p>
    <p data-node-text-align="center" style="text-align: center; margin-top: 24px;">[Cidade] - [UF], [Dia] de [Mês] de [Ano].</p>
    <p><br></p>
-   <p data-node-text-align="center" style="text-align: center;"><strong>CONTRATANTE</strong></p>
-   <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
    <p><br></p>
-   <p data-node-text-align="center" style="text-align: center;"><strong>CONTRATADO</strong></p>
    <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
+   <p data-node-text-align="center" style="text-align: center;"><strong>CONTRATANTE</strong></p>
+   <p><br></p>
+   <p><br></p>
+   <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
+   <p data-node-text-align="center" style="text-align: center;"><strong>CONTRATADO</strong></p>
 9. Retorne APENAS o HTML sem estilos inline (exceto pelos atributos obrigatórios de alinhamento e espaçamento nos elementos centralizados da regra 2 e regra 8). Sem explicações.`;
     }
 

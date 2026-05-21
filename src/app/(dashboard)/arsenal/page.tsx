@@ -148,32 +148,35 @@ export default function ArsenalPage() {
   };
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-700">
+    <div className="space-y-12 animate-in fade-in duration-700 overflow-x-hidden px-1">
       {/* Header Area */}
-      <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-border pb-8">
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2.5 py-1 h-fit flex items-center justify-center leading-none">Modelos de Documentos</Badge>
-            <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase italic">Master Library</span>
+      <div className="flex flex-col sm:flex-row justify-between items-end gap-6 border-b border-border/50 pb-8 relative">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-4">
+            <Badge variant="outline" className="text-[9px] uppercase tracking-[0.3em] font-black border-primary/30 text-primary bg-primary/5 px-3 py-1 rounded-full animate-pulse">Master Library</Badge>
+            <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">Contract Intelligence</span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Biblioteca de Modelos</h1>
-          <p className="text-[13px] text-muted-foreground max-w-md leading-relaxed">
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground">
+            Arsenal <span className="text-muted-foreground/30 font-light">/</span> <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/50 bg-clip-text text-transparent">Templates</span>
+          </h1>
+          <p className="text-sm text-muted-foreground mt-2 max-w-md">
             Acesso imediato a documentos de alto desempenho, estruturados para conformidade jurídica e proteção de operações complexas.
           </p>
         </div>
 
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="relative flex-1 md:w-72 group">
+        <div className="flex items-center gap-3 w-full sm:w-auto relative z-10">
+          <div className="relative flex-1 sm:w-72 group">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={14} />
             <input 
               type="text" 
-              placeholder="Pesquisar modelos..." 
+              placeholder="Search templates..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-muted border border-border rounded-lg pl-9 pr-4 py-2 text-[13px] focus:ring-1 focus:ring-primary/30 transition-all outline-none"
+              className="w-full bg-muted/30 border border-border/50 rounded-xl pl-9 pr-4 py-2.5 text-sm focus:ring-1 focus:ring-primary/30 transition-all outline-none placeholder:text-muted-foreground/50"
             />
           </div>
-          <Button variant="outline" className="h-10 px-3 border-border hover:bg-muted rounded-lg">
+          <Button variant="outline" className="h-10 px-3 border-border/50 hover:bg-muted/50 rounded-xl">
             <Filter size={16} />
           </Button>
         </div>
@@ -189,7 +192,7 @@ export default function ArsenalPage() {
           )}
         >
           <LayoutGrid size={14} />
-          <span className="text-[12px] font-bold tracking-tight">Todos</span>
+          <span className="text-sm font-bold tracking-tight">Todos</span>
         </button>
         {categories.map((cat, i) => (
           <button 
@@ -201,7 +204,7 @@ export default function ArsenalPage() {
             )}
           >
             <cat.icon size={14} className={cn(selectedCategory === cat.name ? "text-primary-foreground" : "text-muted-foreground group-hover:text-primary")} />
-            <span className="text-[12px] font-bold tracking-tight">{cat.name}</span>
+            <span className="text-sm font-bold tracking-tight">{cat.name}</span>
           </button>
         ))}
       </div>
@@ -216,12 +219,12 @@ export default function ArsenalPage() {
           <div className="col-span-full py-20 text-center text-muted-foreground uppercase font-black text-xs tracking-[0.2em]">Nenhum modelo encontrado nesta categoria.</div>
         ) : (
           filteredTemplates.map((tpl, i) => (
-            <Card key={tpl.id} className="bg-card border-border rounded-xl overflow-hidden group hover:border-primary/30 transition-all duration-300 flex flex-col h-full relative">
+            <Card key={tpl.id} className="bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] overflow-hidden group hover:border-primary/40 transition-all duration-300 flex flex-col h-full relative shadow-[0_0_30px_rgba(0,0,0,0.1)]">
               <div className="absolute top-0 left-0 w-full h-0.5 bg-muted group-hover:bg-primary transition-colors" />
               
               <CardContent className="p-6 flex flex-col h-full">
                 <div className="flex justify-between items-start mb-6">
-                  <Badge variant="outline" className="text-[9px] uppercase font-bold tracking-widest border-border text-muted-foreground group-hover:border-primary/30 group-hover:text-primary transition-colors h-fit py-1 inline-flex items-center justify-center leading-none align-middle">
+                  <Badge variant="outline" className="text-xs uppercase font-bold tracking-widest border-border text-muted-foreground group-hover:border-primary/30 group-hover:text-primary transition-colors h-fit py-1 inline-flex items-center justify-center leading-none align-middle">
                     {tpl.category}
                   </Badge>
                   <button className="p-1.5 text-muted-foreground hover:text-primary transition-colors">
@@ -230,21 +233,21 @@ export default function ArsenalPage() {
                 </div>
 
                 <div className="flex-1 space-y-2">
-                  <h3 className="text-sm font-bold tracking-tight text-foreground transition-colors">{tpl.title}</h3>
-                  <p className="text-[12px] text-muted-foreground leading-relaxed line-clamp-3 group-hover:text-foreground transition-colors">{tpl.description}</p>
+                  <h3 className="text-lg font-bold tracking-tight text-foreground transition-colors">{tpl.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 group-hover:text-foreground transition-colors">{tpl.description}</p>
                 </div>
 
                 <div className="mt-8 pt-6 border-t border-border flex gap-2">
                   <Button 
                     variant="ghost" 
                     onClick={() => setPreviewTemplate(tpl)}
-                    className="flex-1 h-9 rounded-lg text-[11px] font-bold text-muted-foreground hover:bg-muted transition-all"
+                    className="flex-1 h-9 rounded-lg text-sm font-bold text-muted-foreground hover:bg-muted transition-all"
                   >
                     Visualizar
                   </Button>
                   <Button 
                     onClick={() => handleUseTemplate(tpl)}
-                    className="flex-1 h-9 rounded-lg bg-primary text-primary-foreground hover:opacity-90 text-[11px] font-bold" 
+                    className="flex-1 h-9 rounded-lg bg-primary text-primary-foreground hover:opacity-90 text-sm font-bold" 
                   >
                     Utilizar Modelo <ArrowRight size={12} className="ml-1.5" />
                   </Button>
@@ -256,19 +259,19 @@ export default function ArsenalPage() {
       </div>
 
       {/* Featured / Custom Forge Section */}
-      <div className="bg-card border border-border rounded-2xl p-10 relative overflow-hidden group mt-12">
+      <div className="bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] p-10 relative overflow-hidden group mt-12 shadow-[0_0_50px_rgba(0,0,0,0.15)]">
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/5 blur-[100px] rounded-full -mr-48 -mt-48 group-hover:bg-primary/10 transition-all duration-1000" />
         
         <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
           <div className="space-y-6 max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary">
               <ShieldCheck size={14} />
-              <span className="text-[10px] font-black uppercase tracking-widest">Serviço de Elaboração Customizada</span>
+              <span className="text-xs font-black uppercase tracking-widest">Serviço de Elaboração Customizada</span>
             </div>
             
             <div className="space-y-3">
               <h2 className="text-3xl font-bold tracking-tight text-foreground uppercase">Precisa de um Documento sob Medida?</h2>
-              <p className="text-[14px] text-muted-foreground leading-relaxed max-w-xl">
+              <p className="text-base text-muted-foreground leading-relaxed max-w-xl">
                 Nossos especialistas estão prontos para elaborar modelos exclusivos para sua operação. 
                 Documentos seguros, otimizados para sua necessidade e focados em conformidade total. 
                 <span className="text-foreground block mt-2 font-medium">Entrega em menos de 24 horas.</span>
@@ -278,17 +281,17 @@ export default function ArsenalPage() {
             <div className="flex items-center gap-6 pt-4 border-t border-border">
               <div className="flex flex-col">
                 <span className="text-xl font-bold text-foreground uppercase">24h</span>
-                <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Prazo Máximo</span>
+                <span className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">Prazo Máximo</span>
               </div>
               <div className="h-8 w-[1px] bg-border" />
               <div className="flex flex-col">
                 <span className="text-xl font-bold text-foreground uppercase">100%</span>
-                <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Conformidade Legal</span>
+                <span className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">Conformidade Legal</span>
               </div>
               <div className="h-8 w-[1px] bg-border" />
               <div className="flex flex-col">
                 <span className="text-xl font-bold text-foreground uppercase">+500</span>
-                <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Modelos Elaborados</span>
+                <span className="text-xs text-muted-foreground uppercase font-bold tracking-tighter">Modelos Elaborados</span>
               </div>
             </div>
           </div>
@@ -312,8 +315,8 @@ export default function ArsenalPage() {
             <div className="p-8 border-b border-border bg-muted/30">
               <DialogHeader>
                 <div className="flex items-center gap-3 mb-2">
-                  <Badge variant="outline" className="text-[10px] uppercase font-bold border-primary/30 text-primary bg-primary/5 h-fit py-1 flex items-center justify-center leading-none">{previewTemplate?.category}</Badge>
-                  <span className="text-[10px] text-muted-foreground font-mono uppercase">Estrutura Profissional</span>
+                  <Badge variant="outline" className="text-xs uppercase font-bold border-primary/30 text-primary bg-primary/5 h-fit py-1 flex items-center justify-center leading-none">{previewTemplate?.category}</Badge>
+                  <span className="text-xs text-muted-foreground font-mono uppercase">Estrutura Profissional</span>
                 </div>
                 <DialogTitle className="text-2xl font-bold tracking-tight text-foreground">{previewTemplate?.title}</DialogTitle>
                 <DialogDescription className="text-muted-foreground text-sm">{previewTemplate?.description}</DialogDescription>
@@ -323,19 +326,19 @@ export default function ArsenalPage() {
             <ScrollArea className="flex-1 p-8">
               <div 
                 className="prose prose-zinc dark:prose-invert max-w-none prose-sm font-sans"
-                dangerouslySetInnerHTML={{ __html: previewTemplate?.content || "<p className='italic opacity-40 uppercase font-black text-[10px] tracking-widest text-center py-20'>Nenhum dado detectado...</p>" }}
+                dangerouslySetInnerHTML={{ __html: previewTemplate?.content || "<p className='italic opacity-40 uppercase font-black text-xs tracking-widest text-center py-20'>Nenhum dado detectado...</p>" }}
               />
             </ScrollArea>
 
             <div className="p-6 border-t border-border bg-muted/30 flex justify-center gap-3">
-              <Button variant="ghost" onClick={() => setPreviewTemplate(null)} className="h-9 px-4 font-bold text-[10px] uppercase text-muted-foreground hover:text-foreground transition-colors">Fechar Visualização</Button>
+              <Button variant="ghost" onClick={() => setPreviewTemplate(null)} className="h-9 px-4 font-bold text-xs uppercase text-muted-foreground hover:text-foreground transition-colors">Fechar Visualização</Button>
               <Button 
                 onClick={() => {
                   const tpl = previewTemplate;
                   setPreviewTemplate(null);
                   handleUseTemplate(tpl);
                 }}
-                className="h-9 px-4 bg-primary text-primary-foreground font-bold rounded-lg text-[10px] uppercase hover:opacity-90 transition-all"
+                className="h-9 px-4 bg-primary text-primary-foreground font-bold rounded-lg text-xs uppercase hover:opacity-90 transition-all"
               >
                 Gerar com este Modelo
               </Button>
@@ -351,14 +354,14 @@ export default function ArsenalPage() {
             <DialogTitle className="text-lg font-black tracking-wide text-foreground uppercase flex items-center gap-2">
               <Zap size={18} className="text-primary" /> Solicitar Modelo sob Medida
             </DialogTitle>
-            <DialogDescription className="text-[11px] text-muted-foreground font-medium leading-relaxed">
+            <DialogDescription className="text-sm text-muted-foreground font-medium leading-relaxed">
               Descreva detalhadamente o modelo de documento jurídico que você precisa. Nossos especialistas vão estruturá-lo de forma segura e disponibilizá-lo em sua biblioteca.
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleForgeSubmit} className="space-y-4">
             <div className="space-y-2 text-left">
-              <label className="text-[10px] font-black text-muted-foreground/80 block">
+              <label className="text-xs font-black text-muted-foreground/80 block">
                 O Que Você Deseja Solicitar?
               </label>
               <textarea 

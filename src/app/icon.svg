@@ -5,25 +5,18 @@
   fill="none"
   xmlns="http://www.w3.org/2000/svg"
 >
-  <defs>
-    <linearGradient id="goldGradientIcon" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stopColor="#fff8e7" />
-      <stop offset="30%" stopColor="#e2c9a3" />
-      <stop offset="70%" stopColor="#c5a880" />
-      <stop offset="100%" stopColor="#785e3a" />
-    </linearGradient>
-  </defs>
-
+  <!-- Hexágono com preenchimento Obsidian Escuro de Luxo para contraste absoluto em abas claras/escuras -->
   <polygon 
     points="50,6 88,28 88,72 50,94 12,72 12,28" 
-    stroke="url(#goldGradientIcon)" 
+    fill="#0c0c0e"
+    stroke="#e2c9a3" 
     strokeWidth="4" 
     strokeLinejoin="round"
   />
   
   <polygon 
     points="50,12 82,31 82,69 50,88 18,69 18,31" 
-    stroke="url(#goldGradientIcon)" 
+    stroke="#e2c9a3" 
     strokeWidth="1.5" 
     strokeDasharray="4 6" 
     opacity="0.4"
@@ -31,23 +24,23 @@
 
   <path 
     d="M47 25 L23 46 L31 54 L47 46 Z" 
-    fill="url(#goldGradientIcon)" 
+    fill="#e2c9a3" 
     opacity="0.9" 
   />
   <path 
     d="M47 49 L27 66 L35 72 L47 61 Z" 
-    fill="url(#goldGradientIcon)" 
+    fill="#e2c9a3" 
     opacity="0.8" 
   />
 
   <path 
     d="M53 25 L77 46 L69 54 L53 46 Z" 
-    fill="url(#goldGradientIcon)" 
+    fill="#e2c9a3" 
     opacity="0.9" 
   />
   <path 
     d="M53 49 L73 66 L65 72 L53 61 Z" 
-    fill="url(#goldGradientIcon)" 
+    fill="#e2c9a3" 
     opacity="0.8" 
   />
   
@@ -56,15 +49,15 @@
     y1="16" 
     x2="50" 
     y2="84" 
-    stroke="url(#goldGradientIcon)" 
+    stroke="#e2c9a3" 
     strokeWidth="2.8" 
     strokeLinecap="round" 
   />
 
   <path 
     d="M50,44 L56,50 L50,56 L44,50 Z" 
-    fill="url(#goldGradientIcon)" 
-    stroke="url(#goldGradientIcon)" 
+    fill="#0c0c0e" 
+    stroke="#e2c9a3" 
     strokeWidth="1" 
   />
 </svg>

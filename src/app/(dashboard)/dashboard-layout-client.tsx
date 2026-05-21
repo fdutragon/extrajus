@@ -16,7 +16,11 @@ import {
   Command,
   Brain,
   Mail,
-  HelpCircle
+  HelpCircle,
+  ZoomIn,
+  ZoomOut,
+  Minus,
+  Plus
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -44,6 +48,22 @@ export default function DashboardLayoutClient({
   const supabase = createClient();
   const [isPending, startTransition] = useTransition();
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+  const [zoom, setZoom] = useState<number>(100);
+
+  // Apply zoom to html root
+  useEffect(() => {
+    const saved = localStorage.getItem('extrajus-zoom');
+    if (saved) setZoom(Number(saved));
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.style.fontSize = `${zoom}%`;
+    localStorage.setItem('extrajus-zoom', String(zoom));
+  }, [zoom]);
+
+  const handleZoomIn  = () => setZoom(z => Math.min(z + 5, 130));
+  const handleZoomOut = () => setZoom(z => Math.max(z - 5, 80));
+  const handleZoomReset = () => setZoom(100);
 
   useEffect(() => {
     profileRef.current = profile;
@@ -139,7 +159,7 @@ export default function DashboardLayoutClient({
       if (e.altKey && (e.key === "c" || e.key === "C" || e.key === "n" || e.key === "N")) {
         e.preventDefault();
         
-        toast.loading("⚔️ Forjando novo contrato via atalho...", { id: "shortcut-creation" });
+        toast.loading("⚔️ Criando novo contrato via atalho...", { id: "shortcut-creation" });
         startTransition(async () => {
           try {
             // Obter sessão do usuário de forma segura e rápida
@@ -162,14 +182,14 @@ export default function DashboardLayoutClient({
 
             if (error) throw error;
 
-            toast.success("⚔️ Contrato forjado com sucesso!", { id: "shortcut-creation" });
+            toast.success("⚔️ Contrato criado com sucesso!", { id: "shortcut-creation" });
             router.push(`/editor?room=${data.id}`);
             
             // Disparar recarga de estatísticas das sidebars
             window.dispatchEvent(new Event('profile-updated'));
           } catch (err) {
             console.error("Erro ao criar contrato por atalho:", err);
-            toast.error("Erro ao forjar contrato via atalho.", { id: "shortcut-creation" });
+            toast.error("Erro ao criar contrato via atalho.", { id: "shortcut-creation" });
           }
         });
       }
@@ -511,7 +531,7 @@ export default function DashboardLayoutClient({
               isCollapsed && "hidden lg:hidden"
             )}>
               <div className="flex items-center justify-between">
-                <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.18em]">Arsenal de Poder</span>
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.18em]">Arsenal de Poder</span>
                 <div className="flex gap-1">
                   <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                   <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
@@ -526,31 +546,31 @@ export default function DashboardLayoutClient({
                 <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-xl pointer-events-none group-hover:bg-primary/10 transition-colors" />
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[10px] text-primary font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <Brain size={12} className="text-primary animate-pulse" /> Sinapses Ativas
+                    <Brain size={10} className="text-primary animate-pulse" /> Sinapses Ativas
                   </span>
-                  <span className="text-[8px] font-black text-primary/70 group-hover:text-primary transition-colors uppercase tracking-widest bg-primary/10 px-1.5 py-0.5 rounded-md border border-primary/20">RECARREGAR</span>
+                  <span className="text-[7px] font-black text-primary/70 group-hover:text-primary transition-colors uppercase tracking-widest bg-primary/10 px-1.5 py-0.5 rounded-md border border-primary/20">RECARREGAR</span>
                 </div>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-[20px] font-mono font-black text-primary drop-shadow-[0_0_8px_rgba(var(--primary),0.3)]">
+                  <span className="text-[16px] font-mono font-black text-primary drop-shadow-[0_0_8px_rgba(var(--primary),0.3)]">
                     {profile?.credits !== undefined ? profile.credits : "30"}
                   </span>
-                  <span className="text-[10px] text-muted-foreground font-medium font-mono">disponíveis</span>
+                  <span className="text-[9px] text-muted-foreground font-medium font-mono">disponíveis</span>
                 </div>
                 <p className="text-[9px] text-muted-foreground/80 mt-1 leading-normal">
-                  Forje contratos (6) ou use Rituais de IA (1).
+                  Forje contratos (100) ou refine com IA (10).
                 </p>
               </Link>
 
               <div className="grid grid-cols-2 gap-2">
-                <div className="bg-muted/40 rounded-lg p-2.5 border border-border hover:bg-muted/70 transition-all text-left">
+                <div className="bg-muted/40 rounded-lg p-2 border border-border hover:bg-muted/70 transition-all text-left">
                   <div className="text-[9px] text-muted-foreground uppercase font-bold mb-0.5">Contratos</div>
-                  <div className="text-[14px] font-mono font-bold text-foreground/80">
+                  <div className="text-sm font-mono font-bold text-foreground/80">
                     {contractCount !== null ? contractCount : "..."}
                   </div>
                 </div>
-                <div className="bg-muted/40 rounded-lg p-2.5 border border-border hover:bg-muted/70 transition-all text-left">
+                <div className="bg-muted/40 rounded-lg p-2 border border-border hover:bg-muted/70 transition-all text-left">
                   <div className="text-[9px] text-muted-foreground uppercase font-bold mb-0.5">Assinaturas</div>
-                  <div className="text-[14px] font-mono font-bold text-foreground/80">
+                  <div className="text-sm font-mono font-bold text-foreground/80">
                     {signatureCount !== null ? signatureCount : "..."}
                   </div>
                 </div>
@@ -560,7 +580,7 @@ export default function DashboardLayoutClient({
 
           <nav className="space-y-0.5">
             {(!isCollapsed || (typeof window !== 'undefined' && window.innerWidth < 1024)) && (
-              <div className={cn("px-2 mb-2 text-[9px] font-semibold text-muted-foreground uppercase tracking-[0.15em] animate-in fade-in duration-700", isCollapsed && "lg:hidden")}>Geral</div>
+              <div className={cn("px-2 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-[0.15em] animate-in fade-in duration-700", isCollapsed && "lg:hidden")}>Geral</div>
             )}
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -599,14 +619,14 @@ export default function DashboardLayoutClient({
           {/* Recent Projects - New Section */}
           {(!isCollapsed || (typeof window !== 'undefined' && window.innerWidth < 1024)) && (
             <div className={cn("space-y-3 animate-in fade-in duration-1000 delay-300", isCollapsed && "lg:hidden")}>
-              <div className="px-2 text-[9px] font-semibold text-muted-foreground uppercase tracking-[0.15em]">Projetos Recentes</div>
+              <div className="px-2 text-xs font-semibold text-muted-foreground uppercase tracking-[0.15em]">Projetos Recentes</div>
               <div className="space-y-1">
                 {loadingProjects ? (
                   Array.from({ length: 3 }).map((_, i) => (
                     <div key={i} className="h-6 mx-2 bg-muted/20 rounded animate-pulse mb-1.5" />
                   ))
                 ) : recentProjects.length === 0 ? (
-                  <div className="px-2.5 py-1.5 text-[10px] text-muted-foreground/60 italic leading-normal">
+                  <div className="px-2.5 py-1.5 text-xs text-muted-foreground/60 italic leading-normal">
                     Nenhum projeto ativo ou pendente.
                   </div>
                 ) : (
@@ -633,7 +653,7 @@ export default function DashboardLayoutClient({
 
           <nav className="space-y-0.5">
             {(!isCollapsed || (typeof window !== 'undefined' && window.innerWidth < 1024)) && (
-              <div className={cn("px-2 mb-2 text-[9px] font-semibold text-muted-foreground uppercase tracking-[0.15em] animate-in fade-in duration-700", isCollapsed && "lg:hidden")}>Sistema</div>
+              <div className={cn("px-2 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-[0.15em] animate-in fade-in duration-700", isCollapsed && "lg:hidden")}>Sistema</div>
             )}
             {secondaryItems.map((item) => {
               const Icon = item.icon;
@@ -672,10 +692,10 @@ export default function DashboardLayoutClient({
                    <div className="w-2 h-2 rounded-full bg-primary animate-ping absolute inset-0" />
                    <div className="w-2 h-2 rounded-full bg-primary relative" />
                  </div>
-                 <span className="text-[9px] font-bold text-primary uppercase tracking-widest">ExtraJus Pulse</span>
+                 <span className="text-xs font-bold text-primary uppercase tracking-widest">ExtraJus Pulse</span>
                </div>
                <div className="bg-primary/5 rounded-lg p-2.5 border border-primary/10">
-                 <p className="text-[10px] text-primary/80 leading-tight italic font-medium font-mono">
+                 <p className="text-xs text-primary/80 leading-tight italic font-medium font-mono">
                    "Auditoria de risco ativa em todos os contratos."
                  </p>
                </div>
@@ -704,44 +724,80 @@ export default function DashboardLayoutClient({
       {/* Main Content Island */}
       <div className="flex-1 flex flex-col min-w-0 bg-background border border-border rounded-r-xl rounded-l-none lg:rounded-l-none shadow-sm overflow-hidden relative transition-all duration-500">
         {/* Top Navigation Bar Integrated into Content Island */}
-        <header className="h-12 border-b border-border flex items-center justify-between px-4 shrink-0 bg-background/80 backdrop-blur-xl z-30">
-          <div className="flex items-center gap-3 flex-1">
+        <header className="h-12 border-b border-border/50 flex items-center justify-between px-4 shrink-0 bg-background/80 backdrop-blur-xl z-30">
+          <div className="flex items-center gap-2.5 flex-1">
             <button 
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="p-1 hover:bg-muted rounded-md text-muted-foreground transition-colors"
+              className="p-1.5 hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground transition-colors"
             >
-              {isCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+              {isCollapsed ? <PanelLeftOpen size={15} /> : <PanelLeftClose size={15} />}
             </button>
             
-            <div className="h-4 w-[1px] bg-border mx-1" />
+            <div className="h-4 w-px bg-border/60 mx-0.5" />
 
+            {/* Shortcuts button */}
             <button 
               onClick={() => setIsShortcutsOpen(true)}
-              className="relative max-w-[200px] w-full group flex items-center justify-between bg-muted border border-border hover:border-primary/30 rounded-md pl-8 pr-2 py-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-all outline-none text-left cursor-pointer"
+              className="relative group flex items-center gap-1.5 bg-muted/40 hover:bg-muted border border-border/40 hover:border-primary/20 rounded-lg pl-6 pr-3 py-1.5 text-muted-foreground hover:text-foreground transition-all outline-none cursor-pointer whitespace-nowrap"
             >
-              <Zap className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground group-hover:text-primary transition-colors shrink-0" size={11} />
-              <span className="font-medium">Teclas de Atalho</span>
-              <kbd className="flex items-center gap-0.5 text-[8px] bg-background border border-border px-1.5 py-0.5 rounded font-mono font-bold group-hover:text-primary transition-colors">
+              <Zap className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground/50 group-hover:text-primary transition-colors shrink-0" size={10} />
+              <span className="font-medium text-[11px] hidden sm:block">Shortcuts</span>
+              <kbd className="flex items-center gap-0.5 text-[8px] bg-background/80 border border-border/60 px-1.5 py-0.5 rounded font-mono font-bold group-hover:text-primary transition-colors shrink-0">
                 Alt+K
               </kbd>
             </button>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Usuário */}
-            <div className="flex items-center gap-2 pl-1 cursor-pointer group">
-              <Avatar className="h-6 w-6 rounded-full border border-border ring-0 group-hover:ring-2 ring-primary/20 transition-all">
-                <AvatarImage src={profile?.avatar_url || "https://github.com/shadcn.png"} />
-                <AvatarFallback className="text-[10px]">{profile?.full_name?.slice(0,2).toUpperCase() || "US"}</AvatarFallback>
-              </Avatar>
-              <div className="hidden lg:flex flex-col">
-                <span className="text-[11px] font-bold leading-tight tracking-tight uppercase italic">{profile?.full_name || 'Usuário'}</span>
-              </div>
+          <div className="flex items-center gap-2">
+            {/* Zoom control */}
+            <div className="hidden md:flex items-center gap-1 bg-muted/30 border border-border/40 rounded-lg px-1.5 py-1">
+              <button
+                onClick={handleZoomOut}
+                disabled={zoom <= 80}
+                className="w-5 h-5 flex items-center justify-center rounded-md text-muted-foreground/60 hover:text-foreground hover:bg-muted transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                title="Diminuir fonte"
+              >
+                <Minus size={10} />
+              </button>
+              <button
+                onClick={handleZoomReset}
+                className="min-w-[32px] text-center text-[9px] font-black font-mono text-muted-foreground/50 hover:text-primary transition-colors px-1"
+                title="Resetar zoom"
+              >
+                {zoom}%
+              </button>
+              <button
+                onClick={handleZoomIn}
+                disabled={zoom >= 130}
+                className="w-5 h-5 flex items-center justify-center rounded-md text-muted-foreground/60 hover:text-foreground hover:bg-muted transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                title="Aumentar fonte"
+              >
+                <Plus size={10} />
+              </button>
             </div>
 
-            <div className="h-3 w-[1px] bg-border mx-1" />
+            <div className="h-3 w-px bg-border/50 mx-0.5" />
 
-            {/* Sino de Notificações */}
+            {/* User */}
+            <div className="flex items-center gap-2.5 cursor-pointer group">
+              <div className="hidden lg:flex flex-col text-right">
+                <span className="text-sm font-semibold leading-tight italic text-foreground/70">
+                  {new Date().getHours() < 12 ? "Bom dia" : new Date().getHours() < 18 ? "Boa tarde" : "Boa noite"},{" "}
+                  {(() => {
+                    const name = profile?.full_name?.split(' ')[0] || 'Usuário';
+                    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+                  })()}!
+                </span>
+              </div>
+              <Avatar className="h-7 w-7 rounded-full border border-border ring-0 group-hover:ring-2 ring-primary/20 transition-all">
+                <AvatarImage src={profile?.avatar_url || "https://github.com/shadcn.png"} />
+                <AvatarFallback className="text-xs">{profile?.full_name?.slice(0,2).toUpperCase() || "US"}</AvatarFallback>
+              </Avatar>
+            </div>
+
+            <div className="h-3 w-px bg-border/50 mx-0.5" />
+
+            {/* Notifications bell */}
             <div className="relative" ref={dropdownRef}>
               <button 
                 onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
@@ -756,11 +812,11 @@ export default function DashboardLayoutClient({
               {isNotificationsOpen && (
                 <div className="absolute right-0 mt-2 w-80 bg-card border border-border rounded-2xl shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-250 p-4">
                   <div className="flex items-center justify-between border-b border-border pb-2.5 mb-2.5">
-                    <span className="text-[11px] font-bold text-foreground uppercase tracking-wider">Notificações</span>
+                    <span className="text-sm font-bold text-foreground uppercase tracking-wider">Notificações</span>
                     {notifications.length > 0 && (
                       <button 
                         onClick={handleMarkAllAsRead}
-                        className="text-[9px] font-black text-primary hover:underline uppercase tracking-widest"
+                        className="text-xs font-black text-primary hover:underline uppercase tracking-widest"
                       >
                         Limpar Tudo
                       </button>
@@ -769,7 +825,7 @@ export default function DashboardLayoutClient({
                   
                   <div className="max-h-64 overflow-y-auto space-y-2.5 custom-scrollbar pr-0.5">
                     {notifications.length === 0 ? (
-                      <div className="py-8 text-center text-muted-foreground text-[11px]">
+                      <div className="py-8 text-center text-muted-foreground text-sm">
                         Nenhuma notificação por enquanto.
                       </div>
                     ) : (
@@ -785,7 +841,7 @@ export default function DashboardLayoutClient({
                           )}
                         >
                           <div className="flex items-start justify-between gap-2">
-                            <span className={cn("text-[11px] font-bold leading-tight", !n.read ? "text-foreground" : "text-muted-foreground")}>
+                            <span className={cn("text-sm font-bold leading-tight", !n.read ? "text-foreground" : "text-muted-foreground")}>
                               {n.title}
                             </span>
                             {!n.read && (
@@ -796,7 +852,7 @@ export default function DashboardLayoutClient({
                               />
                             )}
                           </div>
-                          <p className="text-[10px] text-muted-foreground leading-normal">{n.message}</p>
+                          <p className="text-xs text-muted-foreground leading-normal">{n.message}</p>
                           <span className="text-[8px] text-muted-foreground/60 font-mono mt-1">
                             {new Date(n.created_at).toLocaleDateString('pt-BR')} às {new Date(n.created_at).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}
                           </span>
@@ -808,9 +864,9 @@ export default function DashboardLayoutClient({
               )}
             </div>
 
-            <div className="h-3 w-[1px] bg-border mx-1" />
+            <div className="h-3 w-px bg-border/50 mx-0.5" />
 
-            {/* Alternar Tema */}
+            {/* Theme toggle */}
             <ThemeToggle />
           </div>
         </header>
@@ -838,58 +894,58 @@ export default function DashboardLayoutClient({
                 <h3 className="text-base font-bold tracking-tight text-foreground flex items-center gap-2">
                   <Zap size={14} className="text-primary animate-pulse" /> Teclas de Atalho
                 </h3>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   Acelere sua navegação jurídica global via teclado.
                 </p>
               </div>
               <button 
                 onClick={() => setIsShortcutsOpen(false)}
-                className="text-[10px] font-mono text-muted-foreground hover:text-foreground hover:bg-muted border border-border/80 px-2.5 py-1 rounded-xl transition-all cursor-pointer"
+                className="text-xs font-mono text-muted-foreground hover:text-foreground hover:bg-muted border border-border/80 px-2.5 py-1 rounded-xl transition-all cursor-pointer"
               >
                 ESC
               </button>
             </div>
 
-            <div className="p-5 space-y-4 max-h-[360px] overflow-y-auto custom-scrollbar">
+            <div className="p-5 space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar">
               <div className="space-y-2">
-                <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-widest block">Ações Globais</span>
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest block">Ações Globais</span>
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between p-2 rounded-xl bg-muted/40 border border-border/60 hover:bg-muted/80 transition-colors">
-                    <span className="text-[11.5px] font-medium text-foreground">Forjar Novo Contrato</span>
-                    <kbd className="text-[9px] font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-primary font-bold shadow-sm">Alt + C</kbd>
+                    <span className="text-[11.5px] font-medium text-foreground">Criar Novo Contrato</span>
+                    <kbd className="text-xs font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-primary font-bold shadow-sm">Alt + C</kbd>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded-xl bg-muted/40 border border-border/60 hover:bg-muted/80 transition-colors">
                     <span className="text-[11.5px] font-medium text-foreground">Abrir este Menu de Atalhos</span>
-                    <kbd className="text-[9px] font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-primary font-bold shadow-sm">Alt + K</kbd>
+                    <kbd className="text-xs font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-primary font-bold shadow-sm">Alt + K</kbd>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-widest block">Navegação Rápida</span>
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest block">Navegação Rápida</span>
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between p-2 rounded-xl bg-muted/40 border border-border/60 hover:bg-muted/80 transition-colors">
                     <span className="text-[11.5px] font-medium text-foreground">Painel (Dashboard)</span>
-                    <kbd className="text-[9px] font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-muted-foreground font-bold shadow-sm">Alt + H</kbd>
+                    <kbd className="text-xs font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-muted-foreground font-bold shadow-sm">Alt + H</kbd>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded-xl bg-muted/40 border border-border/60 hover:bg-muted/80 transition-colors">
                     <span className="text-[11.5px] font-medium text-foreground">Inbox (Notificações)</span>
-                    <kbd className="text-[9px] font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-muted-foreground font-bold shadow-sm">Alt + I</kbd>
+                    <kbd className="text-xs font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-muted-foreground font-bold shadow-sm">Alt + I</kbd>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded-xl bg-muted/40 border border-border/60 hover:bg-muted/80 transition-colors">
                     <span className="text-[11.5px] font-medium text-foreground">Sinapses (Grafo de Conexões)</span>
-                    <kbd className="text-[9px] font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-muted-foreground font-bold shadow-sm">Alt + S</kbd>
+                    <kbd className="text-xs font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-muted-foreground font-bold shadow-sm">Alt + S</kbd>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded-xl bg-muted/40 border border-border/60 hover:bg-muted/80 transition-colors">
                     <span className="text-[11.5px] font-medium text-foreground">Arsenal (Ferramentas de IA)</span>
-                    <kbd className="text-[9px] font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-muted-foreground font-bold shadow-sm">Alt + A</kbd>
+                    <kbd className="text-xs font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-muted-foreground font-bold shadow-sm">Alt + A</kbd>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="p-4 bg-muted/30 border-t border-border flex items-center justify-center gap-1">
-              <span className="text-[9px] text-muted-foreground uppercase font-mono tracking-wider">ExtraJus v2 • Modo Operacional de Elite</span>
+              <span className="text-xs text-muted-foreground uppercase font-mono tracking-wider">ExtraJus v2 • Modo Operacional de Elite</span>
             </div>
           </div>
         </div>

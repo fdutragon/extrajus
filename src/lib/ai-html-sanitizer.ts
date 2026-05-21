@@ -32,15 +32,15 @@ function stripMarkdownSyntax(html: string): string {
     .replace(/```/g, "")
     // Inline code `text` → <code>text</code>  (only outside existing HTML tags)
     .replace(/`([^`]+)`/g, "<code>$1</code>")
-    // Bold+Italic ***text*** or ___text___
+    // Bold+Italic ***text*** or ___text___ (evitando engolir linhas de assinatura de underline puro)
     .replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>")
-    .replace(/___(.+?)___/g, "<strong><em>$1</em></strong>")
+    .replace(/___([^\n_]+?)___/g, "<strong><em>$1</em></strong>")
     // Bold **text** or __text__
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/__(.+?)__/g, "<strong>$1</strong>")
+    .replace(/__([^\n_]+?)__/g, "<strong>$1</strong>")
     // Italic *text* or _text_  (single, not double)
     .replace(/\*([^*\n]+?)\*/g, "<em>$1</em>")
-    .replace(/_([^_\n]+?)_/g, "<em>$1</em>")
+    .replace(/_([^\n_]+?)_/g, "<em>$1</em>")
     // Strikethrough ~~text~~
     .replace(/~~(.+?)~~/g, "<s>$1</s>")
     // Heading ATX style: ## Title → <h2>Title</h2>

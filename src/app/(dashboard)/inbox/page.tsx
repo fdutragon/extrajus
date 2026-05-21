@@ -359,39 +359,39 @@ export default function InboxPage() {
   if (!mounted) return null;
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700 pb-20 px-4 md:px-0 relative text-left">
+    <div className="space-y-10 animate-in fade-in duration-700 pb-20 overflow-x-hidden px-1 relative">
       
-      <div className="absolute top-1/4 left-1/3 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-10 right-1/4 w-80 h-80 bg-amber-500/3 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/4 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-40 right-1/4 w-80 h-80 bg-amber-500/3 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="space-y-3 relative z-10 text-left">
-         <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2 py-0">Comunicações</Badge>
-            <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase italic">Secure Communications</span>
-         </div>
-         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 w-full">
-            <div className="text-left">
-               <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-2.5">
-                  Inbox {unreadCount > 0 && <span className="bg-primary/20 text-primary border border-primary/20 text-xs px-2.5 py-0.5 rounded-full font-black font-sans">{unreadCount} novas</span>}
-               </h1>
-               <p className="text-xs text-muted-foreground font-bold tracking-wide mt-1">
-                  Central de comunicações, solicitações de modelos e suporte técnico.
-               </p>
-            </div>
-            {!isAdminView && (
-               <Button
-                 onClick={() => setIsSupportOpen(true)}
-                 className="h-10 px-5 rounded-xl bg-primary text-primary-foreground hover:opacity-90 text-[11px] font-black uppercase tracking-wider flex items-center gap-2 shadow-sm border border-primary/35 transition-all"
-               >
-                  <HelpCircle size={13} /> Abrir Chamado de Suporte
-               </Button>
-            )}
-         </div>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-end gap-6 border-b border-border/50 pb-8 relative z-10">
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <Badge variant="outline" className="text-[9px] uppercase tracking-[0.3em] font-black border-primary/30 text-primary bg-primary/5 px-3 py-1 rounded-full animate-pulse">Secure Communications</Badge>
+            <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">Real-time Protocol</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground flex items-center gap-4">
+            Inbox
+            {unreadCount > 0 && <span className="bg-primary/15 text-primary border border-primary/25 text-sm px-3 py-1 rounded-full font-black font-sans animate-pulse">{unreadCount} new</span>}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-2 max-w-md">Central de comunicações, solicitações de modelos e suporte técnico.</p>
+        </div>
+        {!isAdminView && (
+          <Button
+            onClick={() => setIsSupportOpen(true)}
+            className="relative bg-primary/5 text-primary hover:text-primary-foreground hover:bg-primary font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl px-8 h-12 group transition-all duration-500 border border-primary/30 hover:border-primary overflow-hidden"
+            variant="outline"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
+            <div className="relative z-10 flex items-center gap-2"><HelpCircle size={14} /> Open Support Ticket</div>
+          </Button>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch min-h-[620px] relative z-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-stretch min-h-[680px] relative z-10">
          
-         <div className="lg:col-span-1 bg-card/60 border border-border/80 backdrop-blur-md rounded-3xl p-5 flex flex-col justify-between h-full shadow-sm">
+         <div className="lg:col-span-1 bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] p-5 flex flex-col justify-between h-full shadow-[0_0_60px_rgba(0,0,0,0.12)]">
             <div className="space-y-5 flex-1 flex flex-col text-left">
                
                {isUserAdmin && (
@@ -521,7 +521,7 @@ export default function InboxPage() {
             </div>
          </div>
 
-         <div className="lg:col-span-2 bg-card/45 border border-border/80 backdrop-blur-md rounded-3xl p-6 relative flex flex-col justify-between h-full min-h-[500px] shadow-sm text-left">
+         <div className="lg:col-span-2 bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] p-6 relative flex flex-col justify-between h-full min-h-[600px] shadow-[0_0_60px_rgba(0,0,0,0.12)] text-left">
              {selectedNotification ? (
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch h-full text-left">
                    
@@ -766,51 +766,55 @@ export default function InboxPage() {
        </div>
 
       <Dialog open={isSupportOpen} onOpenChange={setIsSupportOpen}>
-        <DialogContent className="max-w-md bg-card/95 border border-border/80 backdrop-blur-md rounded-2xl shadow-2xl p-6 overflow-hidden text-left">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-            
-            <DialogHeader className="space-y-1.5 border-b border-border/40 pb-4 mb-4 text-left">
-              <DialogTitle className="text-lg font-black tracking-wide text-foreground uppercase italic flex items-center gap-2 text-left">
-                <LifeBuoy size={18} className="text-primary" /> Central de Chamados & Suporte
+        <DialogContent className="max-w-md bg-card/95 backdrop-blur-xl border border-border/60 rounded-[32px] shadow-2xl p-0 overflow-hidden text-left">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="p-7">
+            <DialogHeader className="space-y-2 border-b border-border/30 pb-5 mb-6 text-left">
+              <DialogTitle className="text-base font-black tracking-wide text-foreground uppercase flex items-center gap-2.5 text-left">
+                <div className="w-8 h-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                  <LifeBuoy size={15} className="text-primary" />
+                </div>
+                Support Ticket
               </DialogTitle>
-              <DialogDescription className="text-[11px] text-muted-foreground font-medium leading-relaxed text-left">
-                Precisa de ajuda ou quer tirar alguma dúvida? Deixe sua mensagem e nós responderemos aqui em tempo real.
+              <DialogDescription className="text-xs text-muted-foreground leading-relaxed text-left">
+                Describe your issue clearly and we'll respond here in real time.
               </DialogDescription>
             </DialogHeader>
 
-            <form onSubmit={handleOpenSupport} className="space-y-4 text-left">
+            <form onSubmit={handleOpenSupport} className="space-y-5 text-left">
               <div className="space-y-2 text-left">
-                <label className="text-[10px] font-black text-muted-foreground/80 block text-left">
-                  Sua Mensagem / Dúvida
+                <label className="text-[9px] font-black text-muted-foreground/70 uppercase tracking-widest block text-left">
+                  Your Message
                 </label>
-                <textarea 
-                  placeholder="Descreva seu problema ou dúvida de forma clara..."
+                <textarea
+                  placeholder="Describe your problem or question clearly..."
                   value={supportMessage}
                   onChange={(e) => setSupportMessage(e.target.value)}
                   rows={5}
-                  className="w-full bg-muted/30 border border-border/50 rounded-xl px-4 py-3.5 text-xs font-bold focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder:text-muted-foreground/35 resize-none min-h-[120px] text-left"
+                  className="w-full bg-muted/20 border border-border/40 rounded-2xl px-4 py-3.5 text-xs font-semibold focus:ring-2 focus:ring-primary/15 outline-none transition-all placeholder:text-muted-foreground/30 resize-none min-h-[120px] text-left"
                   required
                 />
               </div>
 
-              <div className="flex gap-3 justify-center pt-2 border-t border-border/40 mt-6">
+              <div className="flex gap-3 pt-2 border-t border-border/30">
                 <Button
                   type="button"
                   variant="ghost"
                   onClick={() => setIsSupportOpen(false)}
-                  className="h-10 px-4 rounded-xl text-xs font-bold text-muted-foreground hover:bg-muted"
+                  className="flex-1 h-11 rounded-2xl text-xs font-black text-muted-foreground hover:bg-muted/50 uppercase tracking-widest"
                 >
-                  Cancelar
+                  Cancel
                 </Button>
-                <Button 
+                <Button
                   type="submit"
                   disabled={isSupporting}
-                  className="h-10 px-5 rounded-xl text-xs font-black uppercase tracking-wider bg-primary text-primary-foreground hover:bg-primary/95 transition-all flex items-center justify-center gap-2"
+                  className="flex-1 h-11 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground hover:opacity-90 transition-all shadow-md"
                 >
-                  {isSupporting ? "Enviando..." : "Abrir Chamado"}
+                  {isSupporting ? "Sending..." : "Open Ticket"}
                 </Button>
               </div>
             </form>
+          </div>
           </DialogContent>
       </Dialog>
 

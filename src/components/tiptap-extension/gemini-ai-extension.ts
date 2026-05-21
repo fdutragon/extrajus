@@ -96,16 +96,15 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
      * <div data-type="legal-node" data-level="4">Prazo de entrega em até...</div>
 6. Partes identificadas em preâmbulo com parágrafos (<p>). NUNCA use tabelas (<table>) no preâmbulo. Insira sempre DUAS linhas em branco (dois parágrafos <p></p><p></p>) entre a qualificação do Contratante e a do Contratado para espaçamento adequado. NUNCA crie cláusula "DAS PARTES".
 7. Primeira cláusula SEMPRE é o Objeto do contrato.
-8. Seção de Data e Assinaturas (Fim do Contrato): É OBRIGATÓRIO incluir 4 parágrafos vazios (<p></p>) antes da data para criar um espaçamento elegante. A data e os campos de assinatura devem vir centralizados (usando os atributos data-node-text-align="center" e style="text-align: center;"). Cada campo de assinatura deve conter OBRIGATORIAMENTE a linha física de assinatura exata usando caracteres normais de underline puro (__________________________________________), sem espaços e sem markdown, seguida do rótulo da parte em negrito. NÃO insira campo de testemunhas. Siga ESTRITAMENTE o exemplo de HTML abaixo para esta seção:
-   <p></p>
-   <p></p>
-   <p></p>
-   <p></p>
-   <p data-node-text-align="center" style="text-align: center; margin-top: 80px;">[Cidade] - [UF], [Dia] de [Mês] de [Ano].</p>
-   <p></p>
+8. Seção de Data e Assinaturas (Fim do Contrato): É OBRIGATÓRIO incluir exatamente 1 parágrafo vazio com quebra (<p><br></p>) antes da data para criar um espaçamento elegante e compacto. A data e os campos de assinatura devem vir centralizados (usando os atributos data-node-text-align="center" e style="text-align: center;"). Cada campo de assinatura deve conter OBRIGATORIAMENTE a linha física de assinatura exata usando underline puro (__________________________________________) centralizado ACIMA do rótulo da parte em negrito. NÃO insira campo de testemunhas. Siga ESTRITAMENTE o exemplo de HTML abaixo para esta seção:
+   <p><br></p>
+   <p data-node-text-align="center" style="text-align: center; margin-top: 24px;">[Cidade] - [UF], [Dia] de [Mês] de [Ano].</p>
+   <p><br></p>
+   <p><br></p>
    <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
    <p data-node-text-align="center" style="text-align: center;"><strong>CONTRATANTE</strong></p>
-   <p></p>
+   <p><br></p>
+   <p><br></p>
    <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
    <p data-node-text-align="center" style="text-align: center;"><strong>CONTRATADO</strong></p>
 9. Retorne APENAS o HTML sem estilos inline (exceto pelos atributos obrigatórios de alinhamento e espaçamento nos elementos centralizados da regra 2 e regra 8). Sem explicações.`
@@ -409,12 +408,12 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
       },
 
       aiAuditRisk: () => ({ editor }: any) => {
-        const text = editor.state.doc.textContent
+        const text = editor.getText() || editor.state.doc.textContent
 
         if (text.trim().length < 150) {
           this.storage.state = "error"
           this.storage.auditResults = []
-          return false
+          return Promise.reject(new Error("🔒 O instrumento de pacto é muito curto! Digite ou forje pelo menos 150 caracteres para que o Radar Analítico possa escanear e auditar os riscos jurídicos."))
         }
 
         const runAudit = async () => {
@@ -440,7 +439,7 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
                 this.storage.auditResults = [];
                 toast.error(errData.error || "Saldo de Sinapses insuficiente para esta operação.")
                 window.dispatchEvent(new Event("open-plans-modal"));
-                return
+                return []
               }
               throw new Error(errData.error || "Falha na comunicação com o auditor do servidor.")
             }
@@ -448,31 +447,33 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
             const data = await response.json()
             const responseText = data.text || ""
 
+            let auditResultsCleaned: any[] = [];
             const jsonMatch = responseText.match(/\[[\s\S]*\]/)
             if (jsonMatch) {
               try {
-                const auditData = JSON.parse(jsonMatch[0])
-                this.storage.auditResults = Array.isArray(auditData)
+                const cleanJsonStr = jsonMatch[0].trim();
+                const auditData = JSON.parse(cleanJsonStr)
+                auditResultsCleaned = Array.isArray(auditData)
                   ? auditData.map((item: any) => ({ ...item, id: Math.random().toString(36).substring(7) }))
                   : []
               } catch (e) {
                 console.error("Audit JSON parse error:", e)
-                this.storage.auditResults = []
               }
-            } else {
-              this.storage.auditResults = []
             }
+            
+            this.storage.auditResults = auditResultsCleaned;
             this.storage.state = "idle"
             editor.view.dispatch(editor.state.tr.setMeta("aiAuditCompleted", true))
+            return auditResultsCleaned;
           } catch (error) {
             console.error("Gemini audit failed:", error)
             this.storage.state = "error"
             this.storage.auditResults = [];
+            throw error;
           }
         }
 
-        runAudit()
-        return true
+        return runAudit()
       },
     }
   },

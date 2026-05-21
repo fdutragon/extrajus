@@ -51,12 +51,12 @@ export default function Home() {
   const graphData = useMemo(() => {
     return {
       nodes: [
-        { id: "core", name: "Certificação Core", val: 30, group: "core", color: "#c5a880" },
-        { id: "p1", name: "Hash MD5-Alpha", val: 15, group: "pro", color: "rgba(197, 168, 128, 0.8)" },
-        { id: "p2", name: "Selo Digital", val: 15, group: "pro", color: "rgba(197, 168, 128, 0.8)" },
-        { id: "p3", name: "Protocolo AES", val: 15, group: "pro", color: "rgba(197, 168, 128, 0.8)" },
-        { id: "o1", name: "Validação ICP", val: 20, group: "opportunity", color: "rgba(197, 168, 128, 0.5)" },
-        { id: "o2", name: "Biometria Ativa", val: 18, group: "opportunity", color: "rgba(197, 168, 128, 0.5)" },
+        { id: "core", name: "Certificação Core", val: 30, group: "core", color: "#a855f7" },
+        { id: "p1", name: "Hash MD5-Alpha", val: 15, group: "pro", color: "rgba(168, 85, 247, 0.8)" },
+        { id: "p2", name: "Selo Digital", val: 15, group: "pro", color: "rgba(168, 85, 247, 0.8)" },
+        { id: "p3", name: "Protocolo AES", val: 15, group: "pro", color: "rgba(168, 85, 247, 0.8)" },
+        { id: "o1", name: "Validação ICP", val: 20, group: "opportunity", color: "rgba(168, 85, 247, 0.5)" },
+        { id: "o2", name: "Biometria Ativa", val: 18, group: "opportunity", color: "rgba(168, 85, 247, 0.5)" },
       ],
       links: [
         { source: "core", target: "p1" },
@@ -132,16 +132,13 @@ export default function Home() {
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/5 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest animate-in fade-in slide-in-from-bottom-4 duration-1000">
             <Sparkles size={11} className="animate-pulse" /> Inteligência Artificial para Criação e Auditoria Legal
           </div>
-
           {/* Headline Reduzida & Consistente */}
           <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.1] text-foreground animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
             O Modelo de Contrato Perfeito. <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/90 to-amber-200">
-              Gerado e Auditado por IA.
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/90 to-purple-400">
+              Gerado, Auditado e Assinado por IA.
             </span>
-          </h1>
-
-          {/* Subheadline Reduzida & Focada em Google Ads "Modelo de Contrato" */}
+          </h1>          {/* Subheadline Reduzida & Focada em Google Ads "Modelo de Contrato" */}
           <p className="text-[13px] md:text-base text-muted-foreground/90 max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
             Pare de copiar PDFs genéricos e perigosos da internet que colocam sua empresa em risco. Use nossa inteligência cirúrgica para <span className="text-foreground font-bold">criar, auditar e assinar</span> contratos profissionais sob medida em segundos.
           </p>
@@ -495,7 +492,7 @@ export default function Home() {
                 linkDirectionalParticleSpeed={0.005}
                 linkDirectionalParticleWidth={2}
                 linkDirectionalParticleColor={() => "hsl(var(--primary))"}
-                linkColor={() => "rgba(197, 168, 128, 0.2)"}
+                linkColor={() => "rgba(168, 85, 247, 0.2)"}
                 nodeCanvasObject={(node: any, ctx: CanvasRenderingContext2D, globalScale) => {
                   const label = node.name;
                   const fontSize = 12 / globalScale;

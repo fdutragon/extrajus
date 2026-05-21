@@ -105,7 +105,7 @@ export default function BrainPage() {
       name: data.profile?.full_name?.toUpperCase() || "MEU NÚCLEO", 
       val: 12, 
       group: "core", 
-      color: "#fbbf24" // Glowing Liquid Gold
+      color: "#c5a880" // Primary Gold
     });
 
     // Contract Nodes
@@ -115,7 +115,7 @@ export default function BrainPage() {
         name: c.title,
         val: 6,
         group: "contract",
-        color: "#10b981", // Glowing Emerald Green
+        color: "#9333ea", // Amethyst Purple
         status: c.status
       });
       links.push({ source: "core", target: c.id });
@@ -134,7 +134,7 @@ export default function BrainPage() {
             name: s.contracts?.title || "Documento Recebido",
             val: 6,
             group: "contract",
-            color: "#06b6d4", // Electric Cyan / Neon blue
+            color: "#e2c9a3", // Light Gold
             status: s.contracts?.status || s.status
           });
           links.push({ source: "core", target: contractId });
@@ -147,7 +147,7 @@ export default function BrainPage() {
             name: sig.name || sig.email || "Signatário Sem Nome",
             val: 4,
             group: "signer",
-            color: "#a855f7", // Radiant Violet / Purple
+            color: "#dc2626", // Blood Red
             status: s.status
           });
           links.push({ source: contractId, target: sigId });
@@ -167,7 +167,7 @@ export default function BrainPage() {
       fgRef.current.d3Force("collide", forceCollide(15));
 
       setTimeout(() => {
-        fgRef.current.zoom(4.0, 1000);
+        fgRef.current.zoom(2.2, 1000);
         fgRef.current.centerAt(0, 0, 1000);
       }, 500);
     }
@@ -176,37 +176,40 @@ export default function BrainPage() {
   if (loading) return <div className="p-20 text-center text-muted-foreground uppercase font-black text-xs animate-pulse">Carregando Rede de Dados...</div>
 
   return (
-    <div className="flex flex-col space-y-10 animate-in fade-in duration-700 min-h-[85vh]">
+    <div className="flex flex-col space-y-12 animate-in fade-in duration-700 min-h-[85vh] overflow-x-hidden px-1">
       {/* Header Area */}
-      <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b pb-6">
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-[10px] uppercase tracking-widest font-bold border-primary/50 text-primary bg-primary/5 px-2 py-0">Inteligência Analítica</Badge>
-            <span className="text-[10px] text-muted-foreground font-mono tracking-widest uppercase italic">Network Visualization</span>
+      <div className="flex flex-col sm:flex-row justify-between items-end gap-6 border-b border-border/50 pb-8 relative">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-4">
+            <Badge variant="outline" className="text-[9px] uppercase tracking-[0.3em] font-black border-primary/30 text-primary bg-primary/5 px-3 py-1 rounded-full animate-pulse">Neural Network</Badge>
+            <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">Network Visualization</span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Sinapses</h1>
-          <p className="text-[13px] text-muted-foreground max-w-md leading-relaxed">
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground">
+            Brain <span className="text-muted-foreground/30 font-light">/</span> <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/50 bg-clip-text text-transparent">Synapses</span>
+          </h1>
+          <p className="text-sm text-muted-foreground mt-2 max-w-md">
             Mapeie suas conexões e documentos estratégicos. Visualize a estrutura de sinapses ativas em tempo real.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-           <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-lg border">
+        <div className="flex items-center gap-3 relative z-10">
+           <div className="flex items-center gap-2 bg-muted/30 px-4 py-2 rounded-xl border border-border/50 backdrop-blur-sm">
              <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-             <span className="text-[10px] font-black uppercase text-primary tracking-widest">Sincronização: 99.8%</span>
+             <span className="text-xs font-black uppercase text-primary tracking-widest">Sync: 99.8%</span>
            </div>
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-4 w-full flex-1">
+      <div className="flex flex-col lg:flex-row gap-4 w-full flex-1 relative z-10">
         <div 
           ref={containerRef}
-          className="flex-1 h-[500px] lg:h-[662px] bg-card border rounded-2xl overflow-hidden relative shrink-0">
+          className="flex-1 h-[500px] lg:h-[662px] bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] overflow-hidden relative shrink-0 shadow-[0_0_50px_rgba(0,0,0,0.15)]">
           <div className="absolute top-6 left-6 z-20 space-y-2 p-4 bg-background/50 backdrop-blur-md rounded-xl border">
              <h3 className="text-xs font-black uppercase text-primary tracking-widest flex items-center gap-2">
                <Activity size={12} /> Processamento Ativo
              </h3>
-             <p className="text-[11px] text-muted-foreground font-medium max-w-[180px]">Mapeamento de conexões em tempo real.</p>
+             <p className="text-sm text-muted-foreground font-medium max-w-[180px]">Mapeamento de conexões em tempo real.</p>
           </div>
 
           {width > 0 && height > 0 ? (
@@ -220,9 +223,9 @@ export default function BrainPage() {
               linkDirectionalParticles={6}
               linkDirectionalParticleSpeed={0.007}
               linkDirectionalParticleColor={(link: any) => {
-                if (link.target && link.target.group === "signer") return "#a855f7";
-                if (link.target && link.target.group === "contract") return "#10b981";
-                return "#06b6d4";
+                if (link.target && link.target.group === "signer") return "#dc2626"; // Blood Red
+                if (link.target && link.target.group === "contract") return "#9333ea"; // Amethyst Purple
+                return "#c5a880"; // Primary Gold
               }}
               linkDirectionalParticleWidth={3.5}
               linkColor={() => "rgba(255, 255, 255, 0.15)"}
@@ -255,9 +258,10 @@ export default function BrainPage() {
                 ctx.shadowBlur = 0; // reset shadow for labels
 
                 if (globalScale > 1.2) {
+                  const isDark = typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : true;
                   ctx.textAlign = "center";
                   ctx.textBaseline = "middle";
-                  ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+                  ctx.fillStyle = isDark ? "rgba(255, 255, 255, 0.9)" : "rgba(0, 0, 0, 0.8)";
                   ctx.fillText(label, node.x, node.y + (node.val * 0.35) + 6);
                 }
               }}
@@ -287,17 +291,17 @@ export default function BrainPage() {
                   </div>
                   <div>
                     <h4 className="text-sm font-bold tracking-tight">{selectedNode.name}</h4>
-                    <p className="text-[10px] text-muted-foreground uppercase font-black">{selectedNode.group}</p>
+                    <p className="text-xs text-muted-foreground uppercase font-black">{selectedNode.group}</p>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div className="p-3 rounded-xl bg-muted/50 border">
-                    <div className="text-[9px] text-muted-foreground uppercase font-black mb-1">Precisão de Dados</div>
+                    <div className="text-xs text-muted-foreground uppercase font-black mb-1">Precisão de Dados</div>
                     <div className="text-lg font-mono font-bold text-primary">99.8%</div>
                   </div>
                   <div className="p-3 rounded-xl bg-muted/50 border">
-                    <div className="text-[9px] text-muted-foreground uppercase font-black mb-1">Documentos Vinculados</div>
+                    <div className="text-xs text-muted-foreground uppercase font-black mb-1">Documentos Vinculados</div>
                     <div className="text-lg font-mono font-bold text-foreground">14</div>
                   </div>
                 </div>
@@ -326,8 +330,8 @@ export default function BrainPage() {
                 <div className="space-y-6 flex-1">
                    <div className="space-y-2">
                       <div className="flex justify-between items-end">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Total de Conexões</span>
-                        <span className="text-[10px] font-black text-primary">{graphData.nodes.length}</span>
+                        <span className="text-xs font-black uppercase tracking-wider text-muted-foreground">Total de Conexões</span>
+                        <span className="text-xs font-black text-primary">{graphData.nodes.length}</span>
                       </div>
                       <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden border border-border/30">
                         <div className="h-full bg-primary w-[92%]" />
@@ -335,8 +339,8 @@ export default function BrainPage() {
                    </div>
                    <div className="space-y-2">
                       <div className="flex justify-between items-end">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Densidade da Rede</span>
-                        <span className="text-[10px] font-black text-primary">{graphData.links.length}</span>
+                        <span className="text-xs font-black uppercase tracking-wider text-muted-foreground">Densidade da Rede</span>
+                        <span className="text-xs font-black text-primary">{graphData.links.length}</span>
                       </div>
                       <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden border border-border/30">
                         <div className="h-full bg-primary w-[64%]" />

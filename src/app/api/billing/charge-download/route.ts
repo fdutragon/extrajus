@@ -27,7 +27,7 @@ export async function POST(req: Request) {
       .single();
 
     const currentCredits = profile?.credits ?? 0;
-    const cost = 2; // Custo de 2 créditos para baixar o DOCX
+    const cost = 25; // Custo de 25 créditos para baixar o DOCX
 
     if (currentCredits < cost) {
       return NextResponse.json(

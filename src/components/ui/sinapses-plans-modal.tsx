@@ -180,28 +180,31 @@ export function SinapsesPlansModal() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
                 { 
-                  credits: 20, 
-                  price: 29, 
-                  label: "Pacto Inicial", 
-                  desc: "Ideal para testes e análises rápidas.", 
+                  credits: 150, 
+                  price: 19.90, 
+                  label: "Pacote Operacional", 
+                  desc: "Ideal para testes, com volume seguro de Sinapses.", 
+                  estimate: "Forja ~1 contrato completo",
                   popular: false,
                   text: "text-foreground",
                   border: "border-border hover:border-primary/30 hover:scale-[1.01]"
                 },
                 { 
-                  credits: 50, 
-                  price: 49, 
-                  label: "Pacto de Elite", 
-                  desc: "O preferido dos especialistas do direito. Alta performance.", 
+                  credits: 500, 
+                  price: 49.90, 
+                  label: "Arsenal Avançado", 
+                  desc: "O preferido. Bônus de Sinapses e alta performance.", 
+                  estimate: "Forja ~5 contratos completos",
                   popular: true,
                   text: "text-primary",
                   border: "border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.06)] hover:border-primary scale-[1.02]"
                 },
                 { 
-                  credits: 100, 
-                  price: 69, 
-                  label: "Pacto Soberano", 
-                  desc: "Poder absoluto e irrestrito para corporações.", 
+                  credits: 1200, 
+                  price: 99.90, 
+                  label: "Arsenal Supremo", 
+                  desc: "Poder irrestrito. Alto bônus de Sinapses para escalar.", 
+                  estimate: "Forja ~12 contratos completos",
                   popular: false,
                   text: "text-primary/90",
                   border: "border-border hover:border-primary/30 hover:scale-[1.01]"
@@ -228,14 +231,19 @@ export function SinapsesPlansModal() {
                     <span className="text-[10px] font-bold text-muted-foreground">Sinapses</span>
                   </div>
                   
-                  <p className="text-[11px] text-muted-foreground leading-relaxed font-medium mb-6">
+                  <p className="text-[11px] text-muted-foreground leading-relaxed font-medium mb-3">
                     {pkg.desc}
                   </p>
+
+                  <div className="bg-muted/40 rounded-lg p-2 mb-6 border border-border/50 flex items-center gap-2">
+                    <Brain size={12} className="text-primary/70" />
+                    <span className="text-[10px] font-bold text-foreground/80">{pkg.estimate}</span>
+                  </div>
 
                   <div className="flex items-center justify-between mt-auto pt-4 border-t border-border">
                     <div className="flex flex-col">
                       <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Investimento</span>
-                      <span className="text-sm font-black text-foreground font-mono">R$ {pkg.price}</span>
+                      <span className="text-sm font-black text-foreground font-mono">R$ {pkg.price.toFixed(2).replace('.', ',')}</span>
                     </div>
                     <Button 
                       size="sm" 
