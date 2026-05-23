@@ -177,7 +177,7 @@ export default async function DashboardPage() {
                               {(() => {
                                 const t = contract.title || 'Contrato Sem Título';
                                 const minors = ['de', 'da', 'do', 'das', 'dos', 'e', 'ou', 'em', 'para', 'com', 'por', 'sem', 'sob'];
-                                return t.toLowerCase().split(' ').map((w, i) => (i > 0 && minors.includes(w)) ? w : w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                                return t.toLowerCase().split(' ').map((w: string, i: number) => (i > 0 && minors.includes(w)) ? w : w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
                               })()}
                             </Link>
                             <span className="text-[9px] text-muted-foreground/60 font-black uppercase tracking-[0.2em] font-mono">Hash: {contract.id.slice(0,8)}</span>

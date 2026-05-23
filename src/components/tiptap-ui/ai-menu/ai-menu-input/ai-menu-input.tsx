@@ -4,6 +4,7 @@ import { useCallback, useState, useEffect } from "react"
 import { createClient } from "@/utils/supabase/client"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { useCollab } from "../../../../contexts/collab-context"
 // Tiptap Core Extensions
 import type { Tone } from "../../../../components/tiptap-extension/gemini-ai-extension"
 
@@ -41,18 +42,21 @@ import "../../../../components/tiptap-ui/ai-menu/ai-menu-input/ai-menu-input.scs
 
 export function AiMenuInputPlaceholder({
   onPlaceholderClick,
+  placeholder,
 }: {
-  onPlaceholderClick: () => void
+  onPlaceholderClick?: () => void
+  placeholder?: string
 }) {
   return (
     <div
       className="tiptap-ai-prompt-input-placeholder"
+      role="button"
+      tabIndex={0}
       onClick={onPlaceholderClick}
     >
-      <div className="tiptap-ai-prompt-input-placeholder-content">
-        <AiSparklesIcon className="tiptap-ai-prompt-input-placeholder-icon" />
-        <span className="tiptap-ai-prompt-input-placeholder-text">
-          Digite instruções para criar seu contrato...
+      <div className="tiptap-ai-prompt-input-placeholder-content pr-4 truncate">
+        <span className="tiptap-ai-prompt-input-placeholder-text truncate block w-full">
+          {placeholder || "Digite instruções para criar seu contrato..."}
         </span>
       </div>
       <Button data-style="primary" disabled>
@@ -136,7 +140,7 @@ export function AiPromptInputToolbar({
     <Toolbar
       variant="floating"
       data-plain="true"
-      className="tiptap-ai-prompt-input-toolbar"
+      className="tiptap-ai-prompt-input-toolbar pt-2"
       style={{ display: showPlaceholder ? "none" : "flex" }}
     >
       <ToolbarGroup>
@@ -175,6 +179,7 @@ export function AiMenuInputTextarea({
   isLoading = false,
   placeholder = "Digite instruções para criar seu contrato...",
   autoFocus = true,
+  isEditing = false,
   ...props
 }: AiMenuInputTextareaProps) {
   const [promptValue, setPromptValue] = useComboboxValueState()
@@ -218,12 +223,39 @@ export function AiMenuInputTextarea({
   )
 
   const [isMaster, setIsMaster] = useState(false)
-  const [docType, setDocType] = useState<string>("contrato")
+  
+  const { provider } = useCollab()
+  const [isSynced, setIsSynced] = useState(provider?.isSynced ?? false)
+
+  useEffect(() => {
+    if (!provider) return
+    setIsSynced(provider.isSynced)
+    const handleStatus = (event: any) => {
+      if (event?.status === "connected" || event[0]?.status === "connected") setIsSynced(true)
+    }
+    provider.on("status", handleStatus)
+    return () => provider.off("status", handleStatus)
+  }, [provider])
+
+  const [aiSuggestion, setAiSuggestion] = useState<string | null>(() => typeof window !== "undefined" ? window.localStorage.getItem("extrajus_ai_suggestion") : null)
+
+  useEffect(() => {
+    const handleSuggestionUpdate = () => {
+      setAiSuggestion(window.localStorage.getItem("extrajus_ai_suggestion"))
+    }
+    window.addEventListener("ai-suggestion-updated", handleSuggestionUpdate)
+    return () => window.removeEventListener("ai-suggestion-updated", handleSuggestionUpdate)
+  }, [])
+
+  const docType = "contrato";
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("extrajus_ai_doc_type") || "contrato"
-      setDocType(saved)
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlTipo = urlParams.get("tipo");
+      if (urlTipo && ["contrato", "notificacao", "peticao"].includes(urlTipo)) {
+        localStorage.setItem("extrajus_ai_doc_type", urlTipo);
+      }
     }
 
     const supabase = createClient()
@@ -234,83 +266,73 @@ export function AiMenuInputTextarea({
     })
   }, [])
 
+  const dynamicPlaceholder = !isSynced
+    ? "Sincronizando ambiente da inteligência artificial..."
+    : isEditing
+    ? "Escreva o que você deseja alterar, complementar ou remover..."
+    : "Descreva o tipo de contrato que você precisa e liste as cláusulas ou obrigações especiais que deseja incluir...";
+
   return (
     <div
-      className="tiptap-ai-prompt-input flex flex-col"
+      className="tiptap-ai-prompt-input"
       data-focused={isFocused}
       data-active-state={showPlaceholder || isLoading ? "off" : "on"}
       {...props}
     >
-      {isMaster && !isLoading && !showPlaceholder && (
-        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-background/50 border border-border/60 rounded-xl mb-3.5 mt-0.5 self-center mx-auto select-none z-50">
-          <span className="text-[9px] font-black text-muted-foreground/60 uppercase tracking-widest mr-1.5">Foco IA:</span>
-          {[
-            { id: "contrato", label: "Contratos" },
-            { id: "notificacao", label: "Notificações" },
-            { id: "peticao", label: "Petições" }
-          ].map((opt) => (
-            <button
-              key={opt.id}
-              type="button"
-              onClick={() => {
-                localStorage.setItem("extrajus_ai_doc_type", opt.id)
-                setDocType(opt.id)
-                toast.success(`💥 Foco da IA alterado para: ${opt.label}`)
-              }}
-              className={cn(
-                "text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg transition-all",
-                docType === opt.id
-                  ? "bg-primary text-primary-foreground shadow-[0_0_10px_rgba(var(--primary),0.2)] border border-primary"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground border border-transparent"
-              )}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-      )}
-      {isLoading ? (
-        <div className="flex items-center justify-between w-full h-[3.25rem] px-4 bg-primary/5 rounded-2xl border border-primary/10 animate-pulse-subtle">
-          <div className="flex items-center gap-3">
-             <BrainCircuit size={16} className="text-primary animate-spin duration-[3000ms]" />
-             <span className="text-[11px] font-medium text-primary">A inteligência artificial está processando seu comando...</span>
-          </div>
-          <Button variant="ghost" size="small" className="h-8 w-8 rounded-lg hover:bg-primary/10 text-primary" onClick={onStop}>
-            <StopCircle2Icon size={16} />
-          </Button>
-        </div>
-      ) : showPlaceholder ? (
-        <AiMenuInputPlaceholder onPlaceholderClick={handleOnPlaceholderClick} />
-      ) : (
-        <>
-          <Combobox
-            autoSelect="always"
-            autoFocus={autoFocus}
-            render={
-              <TextareaAutosize
-                onChange={(e) => setPromptValue(e.target.value)}
-                value={promptValue}
-                onKeyDown={handleKeyDown}
-                onFocus={handleFocus}
-                onBlur={handleTextareaBlur}
-                className="tiptap-ai-prompt-input-content"
-                placeholder={placeholder}
-                autoFocus={autoFocus}
-                style={{
-                  display: showPlaceholder ? "none" : "flex",
-                }}
-              />
-            }
-          />
+      <div className="tiptap-ai-prompt-input-inner flex flex-col w-full h-full">
 
-          <AiPromptInputToolbar
-            showPlaceholder={showPlaceholder}
-            onInputSubmit={handleSubmit}
-            onToneChange={onToneChange}
-            isEmpty={!promptValue?.trim()}
-          />
-        </>
-      )}
+        {isLoading ? (
+          <div className="flex items-center justify-between w-full h-[3.25rem] px-4 bg-primary/5 rounded-2xl border border-primary/10 animate-pulse-subtle">
+            <div className="flex items-center gap-3">
+               <BrainCircuit size={16} className="text-primary animate-spin duration-[3000ms]" />
+               <span className="text-[11px] font-medium text-primary">A inteligência artificial está processando seu comando...</span>
+            </div>
+            <Button variant="ghost" size="small" className="h-8 w-8 rounded-lg hover:bg-primary/10 text-primary" onClick={onStop}>
+              <StopCircle2Icon size={16} />
+            </Button>
+          </div>
+        ) : showPlaceholder ? (
+          <AiMenuInputPlaceholder onPlaceholderClick={handleOnPlaceholderClick} placeholder={dynamicPlaceholder} />
+        ) : (
+          <>
+            <div className="relative w-full flex-1">
+              {!promptValue && (
+                <div suppressHydrationWarning className="absolute inset-0 pointer-events-none px-4 py-2 pt-[0.5rem] flex items-start z-30 pr-6">
+                   <span suppressHydrationWarning className="tiptap-ai-prompt-input-placeholder-text leading-[1.5] font-normal">
+                     {dynamicPlaceholder}
+                   </span>
+                </div>
+              )}
+              <Combobox
+                autoSelect="always"
+                autoFocus={autoFocus}
+                render={
+                  <TextareaAutosize
+                    onChange={(e) => setPromptValue(e.target.value)}
+                    value={promptValue}
+                    onKeyDown={handleKeyDown}
+                    onFocus={handleFocus}
+                    onBlur={handleTextareaBlur}
+                    className="tiptap-ai-prompt-input-content relative z-20"
+                    placeholder=""
+                    autoFocus={autoFocus}
+                    style={{
+                      display: showPlaceholder ? "none" : "flex",
+                    }}
+                  />
+                }
+              />
+            </div>
+
+            <AiPromptInputToolbar
+              showPlaceholder={showPlaceholder}
+              onInputSubmit={handleSubmit}
+              onToneChange={onToneChange}
+              isEmpty={!promptValue?.trim()}
+            />
+          </>
+        )}
+      </div>
     </div>
   )
 }

@@ -29,6 +29,7 @@ export const messageAwareness = 1
 
 export class SupabaseYjsProvider extends Observable<string> {
   public awareness: awarenessProtocol.Awareness
+  public isSynced: boolean = false
   private channel: RealtimeChannel
   private doc: Y.Doc
   private isSubscribed: boolean = false
@@ -268,6 +269,7 @@ export class SupabaseYjsProvider extends Observable<string> {
     this.channel.subscribe((status) => {
       if (status === "SUBSCRIBED") {
         this.isSubscribed = true
+        this.isSynced = true
         console.log(`[SupabaseYjsProvider] Connected to ${this.channelName}`)
         
         const encoder = encoding.createEncoder()

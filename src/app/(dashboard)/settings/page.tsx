@@ -175,7 +175,7 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative z-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start relative z-10">
         <div className="lg:col-span-3 space-y-2 sticky top-0">
           {menuItems.map((item) => {
             const Icon = item.icon;
@@ -185,15 +185,15 @@ export default function SettingsPage() {
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
                 className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-black uppercase tracking-widest transition-all duration-300 group",
+                  "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-200 group",
                   isActive 
-                    ? "bg-primary text-primary-foreground shadow-sm" 
-                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                    ? "bg-primary/10 text-primary border border-primary/20" 
+                    : "text-muted-foreground hover:bg-muted/40 hover:text-foreground border border-transparent"
                 )}
               >
-                <Icon size={16} className={cn(isActive ? "text-primary-foreground" : "group-hover:text-primary transition-colors")} />
+                <Icon size={13} className={cn(isActive ? "text-primary" : "text-muted-foreground/50 group-hover:text-primary transition-colors")} />
                 {item.name}
-                {isActive && <ChevronRight size={14} className="ml-auto opacity-50" />}
+                {isActive && <ChevronRight size={11} className="ml-auto opacity-40" />}
               </button>
             );
           })}
@@ -202,48 +202,48 @@ export default function SettingsPage() {
         <div className="lg:col-span-9 space-y-6 text-left">
           {activeTab === "perfil" && (
             <div className="animate-in slide-in-from-bottom-2 duration-500 text-left">
-              <Card className="bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] overflow-hidden text-left shadow-[0_0_50px_rgba(0,0,0,0.1)]">
-                <div className="h-32 w-full bg-gradient-to-r from-primary/10 via-card to-background pt-4 pr-4 flex justify-end items-start relative">
+              <Card className="bg-card/40 backdrop-blur-md border border-border/50 rounded-[24px] overflow-hidden text-left shadow-[0_0_40px_rgba(0,0,0,0.08)]">
+                <div className="h-20 w-full bg-gradient-to-r from-primary/10 via-card to-background pt-3 pr-4 flex justify-end items-start relative">
                   <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay" />
-                  <Badge className="bg-primary/20 text-primary border-primary/30 font-bold text-xs uppercase tracking-widest">Sessão Ativa</Badge>
+                  <Badge className="bg-primary/20 text-primary border-primary/30 font-bold text-[10px] uppercase tracking-widest">Sessão Ativa</Badge>
                 </div>
-                <div className="px-8 pb-8 -mt-12 relative z-10 text-left">
-                  <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 text-left">
-                    <div className="flex items-end gap-6 text-left">
-                      <Avatar className="h-32 w-32 border-4 border-background shadow-xl">
+                <div className="px-6 pb-6 -mt-10 relative z-10 text-left">
+                  <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 text-left">
+                    <div className="flex items-end gap-4 text-left">
+                      <Avatar className="h-20 w-20 border-4 border-background shadow-xl">
                         <AvatarImage src={profile?.avatar_url || "https://github.com/shadcn.png"} />
-                        <AvatarFallback className="bg-muted text-muted-foreground font-black text-2xl">{fullName?.slice(0,2).toUpperCase() || "US"}</AvatarFallback>
+                        <AvatarFallback className="bg-muted text-muted-foreground font-black text-xl">{fullName?.slice(0,2).toUpperCase() || "US"}</AvatarFallback>
                       </Avatar>
-                      <div className="mb-2 text-left">
-                        <h2 className="text-3xl font-black tracking-tight text-foreground">{fullName || 'Usuário'}</h2>
-                        <p className="text-sm text-muted-foreground font-medium italic">Perfil Profissional ExtraJus</p>
+                      <div className="mb-1 text-left">
+                        <h2 className="text-xl font-black tracking-tight text-foreground">{fullName || 'Usuário'}</h2>
+                        <p className="text-xs text-muted-foreground font-medium italic">Perfil Profissional ExtraJus</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-12 text-left">
-                    <div className="space-y-6 text-left">
-                      <h3 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground border-b border-border pb-2 text-left">Identidade</h3>
-                      <div className="space-y-4 text-left">
-                        <div className="space-y-2 text-left">
-                          <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 text-left">
-                            <FileText size={10} /> Nome Completo
+                  <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                    <div className="space-y-4 text-left">
+                      <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground border-b border-border/50 pb-1.5 text-left">Identidade</h3>
+                      <div className="space-y-3 text-left">
+                        <div className="space-y-1.5 text-left">
+                          <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5 text-left">
+                            <FileText size={9} /> Nome Completo
                           </label>
                           <input 
                             type="text" 
-                            className="w-full bg-muted/30 border border-border rounded-lg px-4 py-2.5 text-sm transition-all outline-none text-left"
+                            className="w-full bg-muted/30 border border-border/60 rounded-lg px-3 py-2 text-xs transition-all outline-none focus:border-primary/30 text-left"
                             placeholder="Seu nome..."
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
                           />
                         </div>
-                        <div className="space-y-2 text-left">
-                          <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 text-left">
-                            <Briefcase size={10} /> Ocupação
+                        <div className="space-y-1.5 text-left">
+                          <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5 text-left">
+                            <Briefcase size={9} /> Ocupação
                           </label>
                           <input 
                             type="text" 
-                            className="w-full bg-muted/30 border border-border rounded-lg px-4 py-2.5 text-sm transition-all outline-none text-left"
+                            className="w-full bg-muted/30 border border-border/60 rounded-lg px-3 py-2 text-xs transition-all outline-none focus:border-primary/30 text-left"
                             placeholder="Ex: Advogado(a), Diretor(a) Jurídico(a), etc."
                             value={occupation}
                             onChange={(e) => setOccupation(e.target.value)}
@@ -252,46 +252,46 @@ export default function SettingsPage() {
                       </div>
                     </div>
 
-                    <div className="space-y-6 text-left">
-                      <h3 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground border-b border-border pb-2 text-left">Segurança</h3>
-                      <div className="space-y-4 text-left">
-                        <div className="space-y-2 text-left">
-                          <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 text-left">
-                            <FileText size={10} /> E-mail Principal
+                    <div className="space-y-4 text-left">
+                      <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground border-b border-border/50 pb-1.5 text-left">Segurança</h3>
+                      <div className="space-y-3 text-left">
+                        <div className="space-y-1.5 text-left">
+                          <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5 text-left">
+                            <FileText size={9} /> E-mail Principal
                           </label>
                           <input 
                             type="email" 
-                            className="w-full bg-muted/30 border border-border rounded-lg px-4 py-2.5 text-sm opacity-50 cursor-not-allowed text-left"
+                            className="w-full bg-muted/30 border border-border/60 rounded-lg px-3 py-2 text-xs opacity-50 cursor-not-allowed text-left"
                             value={profile?.email || ''}
                             disabled
                           />
                         </div>
-                        <div className="space-y-2 text-left">
-                          <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 text-left">
-                            <Zap size={10} /> Nova Senha
+                        <div className="space-y-1.5 text-left">
+                          <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5 text-left">
+                            <Zap size={9} /> Nova Senha
                           </label>
                           <input 
                             type="password" 
-                            className="w-full bg-muted/30 border border-border rounded-lg px-4 py-2.5 text-sm transition-all outline-none text-left"
+                            className="w-full bg-muted/30 border border-border/60 rounded-lg px-3 py-2 text-xs transition-all outline-none focus:border-primary/30 text-left"
                             placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                           />
-                          <p className="text-xs text-muted-foreground italic text-left">Deixe em branco para manter a senha atual.</p>
+                          <p className="text-[10px] text-muted-foreground/60 italic text-left">Deixe em branco para manter a senha atual.</p>
                         </div>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="mt-12 pt-8 border-t flex flex-col md:flex-row justify-between items-center gap-6 text-left">
-                    <div className="flex items-center gap-4 text-muted-foreground text-left">
-                       <Shield size={20} className="opacity-20" />
-                       <p className="text-xs font-medium leading-relaxed max-w-xs text-left">Alterações sensíveis podem exigir revalidação via e-mail para garantir a segurança da conta.</p>
+                  <div className="mt-6 pt-5 border-t border-border/50 flex flex-col md:flex-row justify-between items-center gap-4 text-left">
+                    <div className="flex items-center gap-3 text-muted-foreground text-left">
+                       <Shield size={14} className="opacity-20 shrink-0" />
+                       <p className="text-[10px] font-medium leading-relaxed max-w-xs text-left">Alterações sensíveis podem exigir revalidação via e-mail para garantir a segurança da conta.</p>
                     </div>
                     <Button 
                       disabled={isSaving}
                       onClick={handleSave}
-                      className="bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest rounded-xl px-10 h-14 text-xs transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
+                      className="bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest rounded-xl px-8 h-10 text-[10px] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none shrink-0"
                     >
                       {isSaving ? "Salvando..." : "Salvar Configurações"}
                     </Button>
@@ -302,60 +302,58 @@ export default function SettingsPage() {
           )}
 
           {activeTab === "ai" && isMaster && (
-            <div className="space-y-6 animate-in slide-in-from-bottom-2 duration-500 text-left">
-              <Card className="rounded-xl p-8 relative overflow-hidden text-left">
-                 <div className="relative z-10 space-y-8 text-left">
-                   <div className="flex items-center gap-4 text-left">
-                     <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
-                        <Cpu size={24} className="text-primary" />
+            <div className="space-y-4 animate-in slide-in-from-bottom-2 duration-500 text-left">
+              <Card className="rounded-[20px] p-5 relative overflow-hidden text-left border border-border/50 bg-card/40 backdrop-blur-md">
+                 <div className="relative z-10 space-y-5 text-left">
+                   <div className="flex items-center gap-3 text-left">
+                     <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shrink-0">
+                        <Cpu size={16} className="text-primary" />
                      </div>
                      <div className="text-left">
-                       <h3 className="text-xl font-bold text-foreground tracking-tight">Configuração de IA</h3>
-                       <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold">Ajuste os parâmetros da inteligência analítica</p>
+                       <h3 className="text-base font-bold text-foreground tracking-tight">Configuração de IA</h3>
+                       <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Ajuste os parâmetros da inteligência analítica</p>
                      </div>
                    </div>
 
-                   <div className="space-y-8 text-left">
-                     <div className="space-y-4 text-left">
+                   <div className="space-y-5 text-left">
+                     <div className="space-y-3 text-left">
                         <div className="flex justify-between items-end text-left">
                           <div className="text-left">
-                            <span className="text-sm font-bold text-foreground">Rigor de Análise</span>
-                            <p className="text-xs text-muted-foreground">Define o nível de profundidade das auditorias contratuais.</p>
+                            <span className="text-xs font-bold text-foreground">Rigor de Análise</span>
+                            <p className="text-[10px] text-muted-foreground">Define o nível de profundidade das auditorias contratuais.</p>
                           </div>
-                          <span className="text-xs font-mono font-bold text-primary text-left">NÍVEL {aiRigor.toString().padStart(2, '0')}</span>
+                          <span className="text-[10px] font-mono font-bold text-primary text-left">NÍVEL {aiRigor.toString().padStart(2, '0')}</span>
                         </div>
-                        <div className="flex items-center gap-4 text-left">
-                          <input 
-                            type="range" 
-                            min="1" 
-                            max="10" 
-                            value={aiRigor} 
-                            onChange={(e) => setAiRigor(Number(e.target.value))}
-                            className="w-full accent-primary bg-muted rounded-lg h-2 cursor-pointer appearance-none border border-border"
-                          />
-                        </div>
+                        <input 
+                          type="range" 
+                          min="1" 
+                          max="10" 
+                          value={aiRigor} 
+                          onChange={(e) => setAiRigor(Number(e.target.value))}
+                          className="w-full accent-primary bg-muted rounded-lg h-1.5 cursor-pointer appearance-none border border-border/50"
+                        />
                      </div>
 
-                     <div className="space-y-4 text-left">
+                     <div className="space-y-3 text-left">
                         <div className="flex justify-between items-center text-left">
                           <div className="space-y-0.5 text-left">
-                            <span className="text-sm font-bold text-foreground">Modo de Sugestão</span>
-                            <p className="text-xs text-muted-foreground">Define o estilo de redação e argumentação da IA.</p>
+                            <span className="text-xs font-bold text-foreground">Modo de Sugestão</span>
+                            <p className="text-[10px] text-muted-foreground">Define o estilo de redação e argumentação da IA.</p>
                           </div>
-                          <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5">
+                          <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5 text-[9px]">
                             {aiMode === "Conservador" ? "Alto Rigor" : aiMode === "Inovador" ? "Alta Agilidade" : "Equilibrado"}
                           </Badge>
                         </div>
-                        <div className="grid grid-cols-3 gap-3 text-left">
+                        <div className="grid grid-cols-3 gap-2 text-left">
                           {["Conservador", "Equilibrado", "Inovador"].map((mode) => (
                             <button 
                               key={mode}
                               onClick={() => setAiMode(mode)}
                               className={cn(
-                                "py-3 px-4 rounded-xl text-xs font-bold border transition-all active:scale-95",
+                                "py-2 px-3 rounded-lg text-[10px] font-bold border transition-all active:scale-95",
                                 mode === aiMode 
                                   ? "bg-primary/10 border-primary/30 text-primary" 
-                                  : "bg-muted border-border text-muted-foreground hover:border-primary/20"
+                                  : "bg-muted/40 border-border/50 text-muted-foreground hover:border-primary/20"
                               )}
                             >
                               {mode}
@@ -364,124 +362,102 @@ export default function SettingsPage() {
                         </div>
                      </div>
 
-                     <div className="h-[1px] bg-border" />
+                     <div className="h-px bg-border/40" />
 
                      <div className="flex items-center justify-between text-left">
                         <div className="text-left">
-                           <span className="text-sm font-bold text-foreground">Análise de Risco em Tempo Real</span>
-                           <p className="text-xs text-muted-foreground text-left">Ativa o monitoramento constante de cláusulas sensíveis durante a edição.</p>
+                           <span className="text-xs font-bold text-foreground">Análise de Risco em Tempo Real</span>
+                           <p className="text-[10px] text-muted-foreground text-left">Ativa o monitoramento constante de cláusulas sensíveis durante a edição.</p>
                         </div>
                         <button 
                           onClick={() => setAiRealtime(!aiRealtime)}
                           className={cn(
-                            "w-12 h-6 rounded-full relative border transition-all duration-300",
+                            "w-10 h-5 rounded-full relative border transition-all duration-300 shrink-0 ml-4",
                             aiRealtime 
                               ? "bg-primary/20 border-primary/30" 
                               : "bg-muted border-border"
                           )}
                         >
                            <div className={cn(
-                             "absolute top-1 w-4 h-4 bg-primary rounded-full transition-all duration-300",
-                             aiRealtime ? "right-1" : "left-1"
+                             "absolute top-0.5 w-3.5 h-3.5 bg-primary rounded-full transition-all duration-300",
+                             aiRealtime ? "right-0.5" : "left-0.5"
                            )} />
                         </button>
                      </div>
                      
-                     <div className="mt-8 pt-6 border-t flex justify-end text-left">
+                     <div className="pt-4 border-t border-border/40 flex justify-end text-left">
                        <Button 
                          disabled={isSaving}
                          onClick={handleSaveAi}
-                         className="bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest rounded-xl px-10 h-14 text-xs transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
+                         className="bg-primary text-primary-foreground hover:opacity-90 font-black uppercase tracking-widest rounded-xl px-6 h-9 text-[10px] transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
                        >
-                         {isSaving ? "Salvando..." : "Salvar Configurações de IA"}
+                         {isSaving ? "Salvando..." : "Salvar IA"}
                        </Button>
                      </div>
-                   </div>
-                 </div>
-              </Card>
-            </div>
-          )}
+                    </div>
+                  </div>
+               </Card>
+             </div>
+           )}
 
-          {activeTab === "faturamento" && (
-            <div className="space-y-6 animate-in slide-in-from-bottom-2 duration-500 text-left">
-              <Card className="rounded-xl p-8 relative overflow-hidden text-left">
-                <div className="relative z-10 space-y-8 text-left">
+           {activeTab === "faturamento" && (
+            <div className="space-y-4 animate-in slide-in-from-bottom-2 duration-500 text-left">
+              <Card className="rounded-[20px] p-5 relative overflow-hidden text-left border border-border/50 bg-card/40 backdrop-blur-md">
+                <div className="relative z-10 space-y-5 text-left">
                   <div className="flex items-center justify-between text-left">
-                    <div className="flex items-center gap-4 text-left">
-                      <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
-                         <CreditCard size={24} className="text-primary" />
+                    <div className="flex items-center gap-3 text-left">
+                      <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shrink-0">
+                         <CreditCard size={16} className="text-primary" />
                       </div>
                       <div className="text-left">
-                        <h3 className="text-xl font-bold text-foreground tracking-tight">Faturamento & Créditos</h3>
-                        <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold text-left">Gerencie seu saldo de processamento IA</p>
+                        <h3 className="text-base font-bold text-foreground tracking-tight">Faturamento &amp; Créditos</h3>
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold text-left">Gerencie seu saldo de processamento IA</p>
                       </div>
                     </div>
                     <div className="text-right">
-                       <span className="text-xs font-black text-muted-foreground uppercase tracking-widest block mb-1">Saldo Atual</span>
+                       <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest block mb-0.5">Saldo Atual</span>
                        <div className="flex items-baseline gap-1 justify-end">
-                          <span className="text-3xl font-black text-primary">{profile?.credits || 0}</span>
-                          <span className="text-xs font-bold text-muted-foreground">CRÉDITOS</span>
+                          <span className="text-2xl font-black text-primary">{profile?.credits || 0}</span>
+                          <span className="text-[10px] font-bold text-muted-foreground">CRÉDITOS</span>
                        </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-left">
                     {[
-                      { 
-                        credits: 150, 
-                        price: 19.90, 
-                        label: "Pacote Operacional", 
-                        desc: "Ideal para testes, com volume seguro de Sinapses.", 
-                        popular: false,
-                        text: "text-foreground",
-                        border: "border-border hover:border-primary/30 hover:scale-[1.01]"
-                      },
-                      { 
-                        credits: 500, 
-                        price: 49.90, 
-                        label: "Arsenal Avançado", 
-                        desc: "O preferido. Bônus de Sinapses e alta performance.", 
-                        popular: true,
-                        text: "text-primary",
-                        border: "border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.06)] hover:border-primary scale-[1.02]"
-                      },
-                      { 
-                        credits: 1200, 
-                        price: 99.90, 
-                        label: "Arsenal Supremo", 
-                        desc: "Poder irrestrito. Alto bônus de Sinapses para escalar.", 
-                        popular: false,
-                        text: "text-primary/90",
-                        border: "border-border hover:border-primary/30 hover:scale-[1.01]"
-                      },
+                      { credits: 150, price: 19.90, label: "Pacote Operacional", desc: "Ideal para testes, com volume seguro de Sinapses.", popular: false, text: "text-foreground" },
+                      { credits: 500, price: 49.90, label: "Arsenal Avançado", desc: "O preferido. Bônus de Sinapses e alta performance.", popular: true, text: "text-primary" },
+                      { credits: 1200, price: 99.90, label: "Arsenal Supremo", desc: "Poder irrestrito. Alto bônus de Sinapses para escalar.", popular: false, text: "text-primary/90" },
                     ].map((pkg) => (
                       <div 
                         key={pkg.credits}
                         className={cn(
-                          "p-6 rounded-2xl border transition-all duration-300 cursor-pointer group relative overflow-hidden flex flex-col h-full bg-card text-card-foreground text-left",
-                          pkg.popular ? "border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.06)] hover:border-primary scale-[1.02]" : "border-border hover:border-primary/30 hover:scale-[1.01]"
+                          "p-4 rounded-xl border transition-all duration-300 cursor-pointer group relative overflow-hidden flex flex-col bg-card text-card-foreground text-left",
+                          pkg.popular
+                            ? "border-primary/50 shadow-[0_0_15px_rgba(var(--primary),0.05)] hover:border-primary scale-[1.02]"
+                            : "border-border/60 hover:border-primary/30 hover:scale-[1.01]"
                         )}
                         onClick={() => handleBuyCredits(pkg)}
                       >
                         {pkg.popular && (
-                          <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-[8px] font-black px-3 py-1 rounded-bl-xl uppercase tracking-widest flex items-center gap-1 font-sans">
-                            <Sparkles size={8} /> Popular
+                          <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-[7px] font-black px-2.5 py-0.5 rounded-bl-xl uppercase tracking-widest flex items-center gap-1 font-sans">
+                            <Sparkles size={7} /> Popular
                           </div>
                         )}
-                        <span className="text-xs font-black text-muted-foreground uppercase tracking-widest block mb-2 text-left">{pkg.label}</span>
-                        <div className="flex items-baseline gap-1 mb-2 text-left">
-                           <span className={cn("text-2xl font-black font-mono tracking-tight", pkg.text)}>{pkg.credits}</span>
-                           <span className="text-xs font-bold text-muted-foreground">Sinapses</span>
+                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block mb-1.5">{pkg.label}</span>
+                        <div className="flex items-baseline gap-1 mb-1.5">
+                           <span className={cn("text-xl font-black font-mono tracking-tight", pkg.text)}>{pkg.credits}</span>
+                           <span className="text-[10px] font-bold text-muted-foreground">Sinapses</span>
                         </div>
-                        <p className="text-sm text-muted-foreground leading-relaxed font-medium mb-6">
+                        <p className="text-xs text-muted-foreground leading-relaxed font-medium mb-4 flex-1">
                           {pkg.desc}
                         </p>
-                        <div className="flex items-center justify-between mt-auto pt-4 border-t border-border/50 text-left">
+                        <div className="flex items-center justify-between mt-auto pt-3 border-t border-border/40">
                            <div className="flex flex-col">
-                             <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Investimento</span>
-                             <span className="text-sm font-black text-foreground font-mono">R$ {pkg.price.toFixed(2).replace('.', ',')}</span>
+                             <span className="text-[7px] font-bold text-muted-foreground uppercase tracking-widest">Investimento</span>
+                             <span className="text-xs font-black text-foreground font-mono">R$ {pkg.price.toFixed(2).replace('.', ',')}</span>
                            </div>
-                           <Button size="sm" variant="ghost" className="h-8 px-3 text-xs font-black uppercase tracking-widest rounded-lg border border-border group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">Adquirir</Button>
+                           <Button size="sm" variant="ghost" className="h-7 px-2.5 text-[9px] font-black uppercase tracking-widest rounded-lg border border-border/60 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">Adquirir</Button>
                         </div>
                       </div>
                     ))}

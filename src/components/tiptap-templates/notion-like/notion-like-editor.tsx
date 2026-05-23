@@ -152,6 +152,17 @@ import { Indent } from "../../../components/tiptap-extension/indent-extension"
 import { BrandSVG } from "@/components/brand-svg"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
+const renderBoldText = (text: string) => {
+  if (!text) return ""
+  const parts = text.split(/(\*\*.*?\*\*)/g)
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={i} className="font-extrabold">{part.slice(2, -2)}</strong>
+    }
+    return part
+  })
+}
+
 function InviteButton({ room }: { room: string }) {
   const [copied, setCopied] = useState(false)
 
@@ -187,6 +198,7 @@ export interface NotionEditorProps {
   placeholder?: string
   templateSlug?: string | null
   readOnly?: boolean
+  isPublic?: boolean
 }
 
 export interface EditorProviderProps {
@@ -196,6 +208,7 @@ export interface EditorProviderProps {
   geminiKey: string | null
   templateSlug?: string | null
   readOnly?: boolean
+  isPublic?: boolean
 }
 
 /**
@@ -289,7 +302,7 @@ const ORACLE_INSIGHTS = {
 /**
  * Component that creates and provides the editor instance
  */
-export function EditorLayout() {
+export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) {
   const [oracleTab, setOracleTab] = useState("insights")
   const [fileName, setFileName] = useState("Documento_ExtraJus")
   const [userContracts, setUserContracts] = useState<any[]>([])
@@ -301,10 +314,51 @@ export function EditorLayout() {
   const [isFocused, setIsFocused] = useState(true)
   const [credits, setCredits] = useState<number | null>(null)
   const [contractStatus, setContractStatus] = useState<string | null>(null)
+  const [showEntranceGlow, setShowEntranceGlow] = useState(true)
+  const [editorFocused, setEditorFocused] = useState(false)
+  const [optimizedRisks, setOptimizedRisks] = useState<string[]>([])
+  const [pendingOptimization, setPendingOptimization] = useState<string | null>(null)
   const { user } = useUser()
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowEntranceGlow(false)
+    }, 6000)
+    return () => clearTimeout(timer)
+  }, [])
 
   const { state, updateState } = useAiMenuState()
   const { editor } = useContext(EditorContext)!
+
+  useEffect(() => {
+    const handleAiFinished = (e: any) => {
+      if (pendingOptimization && e.detail?.success) {
+        setOptimizedRisks(prev => [...prev, pendingOptimization])
+        setPendingOptimization(null)
+      } else if (e.detail?.success === false) {
+        setPendingOptimization(null) // Revert if failed
+      }
+    }
+    window.addEventListener("ai-generation-finished", handleAiFinished)
+    return () => window.removeEventListener("ai-generation-finished", handleAiFinished)
+  }, [pendingOptimization])
+
+  useEffect(() => {
+    if (!editor) return
+    const handleFocus = () => setEditorFocused(true)
+    const handleBlur = () => setEditorFocused(false)
+    
+    if (editor.isFocused) {
+      setEditorFocused(true)
+    }
+
+    editor.on("focus", handleFocus)
+    editor.on("blur", handleBlur)
+    return () => {
+      editor.off("focus", handleFocus)
+      editor.off("blur", handleBlur)
+    }
+  }, [editor])
   const { provider, room } = useCollab()
   const supabase = useMemo(() => createClient(), [])
 
@@ -476,6 +530,7 @@ export function EditorLayout() {
 
   const searchParams = useSearchParams()
   const readOnly = searchParams?.get("mode") === "preview" || searchParams?.get("readOnly") === "true" || !editor || !editor.isEditable
+  const docType = searchParams?.get("tipo") || "contrato"
 
   const [signerEmail, setSignerEmail] = useState("")
   const [sealingCode, setSealingCode] = useState("")
@@ -487,7 +542,7 @@ export function EditorLayout() {
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
   const [aiPromptOpen, setAiPromptOpen] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
-  const [fontSize, setFontSize] = useState<number>(16)
+  const [fontSize, setFontSize] = useState<number>(18)
   const [fontFamily, setFontFamily] = useState<string>("Cambria")
   const [isFontDropdownOpen, setIsFontDropdownOpen] = useState(false)
 
@@ -523,9 +578,12 @@ export function EditorLayout() {
   }, [wordCount])
 
   const auditScore = useMemo(() => {
-    if (!hasAudited) return 0;
-    return Math.max(0, 100 - (auditResults.length * 15));
-  }, [hasAudited, auditResults]);
+    if (!hasAudited) return 0
+    const unoptimizedRisks = auditResults.filter(r => !optimizedRisks.includes(r.id))
+    if (unoptimizedRisks.length === 0) return 100
+    const deductions = unoptimizedRisks.length * 5 // 5% por risco
+    return Math.max(0, 100 - deductions)
+  }, [auditResults, hasAudited, optimizedRisks]);
 
   const auditStatus = useMemo(() => {
     if (!hasAudited) return { label: "Inativa", color: "text-muted-foreground bg-muted border-border", barColor: "bg-muted", desc: "Sistema IA inativo. Inicie a auditoria para avaliar o documento." };
@@ -559,6 +617,7 @@ export function EditorLayout() {
     setIsAuditing(true);
     setAuditResults([]);
     setHasAudited(false);
+    setOptimizedRisks([]);
     const toastId = toast.loading("Analisando conformidade e riscos...");
     
     try {
@@ -571,7 +630,34 @@ export function EditorLayout() {
         toast.dismiss(toastId)
         return
       }
-      setAuditResults(results || [])
+      
+      let filteredResults: any[] = []
+      if (results && results.length > 0) {
+        const clauses = getClauses()
+        const assignedRiskIds = new Set<string>()
+
+        // Para cada cláusula, associa no máximo 1 risco
+        clauses.forEach((clause, idx, array) => {
+          const nextClause = array[idx + 1]
+          const start = clause.pos
+          const end = nextClause?.pos ?? editor.state.doc.content.size
+          const sectionText = editor.state.doc.textBetween(start, end).toLowerCase()
+
+          // Acha o primeiro risco que pertence a esta cláusula e que ainda não foi associado
+          const matchingRisk = results.find((risk: any) => {
+            if (assignedRiskIds.has(risk.id)) return false
+            const isMatch = sectionText.includes(risk.originalText.toLowerCase()) ||
+                            risk.originalText.toLowerCase().includes(sectionText.substring(0, 30).toLowerCase())
+            return isMatch
+          })
+
+          if (matchingRisk) {
+            filteredResults.push(matchingRisk)
+            assignedRiskIds.add(matchingRisk.id)
+          }
+        })
+      }
+      setAuditResults(filteredResults)
       setHasAudited(true)
       setIsAuditing(false)
       toast.success("Análise de conformidade concluída.", { id: toastId })
@@ -587,7 +673,7 @@ export function EditorLayout() {
     const clauses: { id: string; title: string; pos: number }[] = []
     editor.state.doc.descendants((node: any, pos: number) => {
       if (
-        (node.type.name === "heading" && node.attrs.level === 1) ||
+        (node.type.name === "heading" && (node.attrs.level === 1 || node.attrs.level === 2)) ||
         (node.type.name === "legalNode" && node.attrs.level === 1)
       ) {
         clauses.push({
@@ -633,10 +719,11 @@ export function EditorLayout() {
     const end = nextClausePos ?? editor.state.doc.content.size
     const sectionText = editor.state.doc.textBetween(start, end).toLowerCase()
     
-    return auditResults.filter(risk => 
+    const risks = auditResults.filter(risk => 
       sectionText.includes(risk.originalText.toLowerCase()) ||
       risk.originalText.toLowerCase().includes(sectionText.substring(0, 30).toLowerCase())
     )
+    return risks.slice(0, 1)
   }
 
   const scrollToPosition = (pos: number) => {
@@ -644,7 +731,7 @@ export function EditorLayout() {
     editor.chain().focus().setTextSelection(pos).scrollIntoView().run()
   }
 
-  const handleOptimizeClause = (clausePos: number, nextClausePos?: number) => {
+  const handleOptimizeClause = (clausePos: number, nextClausePos?: number, riskId?: string) => {
     if (!editor) return
     const start = clausePos
     const end = nextClausePos ?? editor.state.doc.content.size
@@ -665,6 +752,10 @@ export function EditorLayout() {
     
     // Abre o menu da IA para exibir os controles de carregamento e aceite
     setAiPromptOpen(true)
+    
+    if (riskId) {
+      setPendingOptimization(riskId)
+    }
   }
 
   const handleConfirmSignature = async () => {
@@ -832,11 +923,133 @@ export function EditorLayout() {
         .scrollbar-minimalist::-webkit-scrollbar-thumb:hover {
           background: var(--primary) !important;
         }
+        @keyframes border-spin {
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+        @keyframes pulse-shadow {
+          0%, 100% {
+            box-shadow: 0 0 25px -5px hsl(var(--primary)/0.15), 0 0 15px -5px hsl(var(--primary)/0.05);
+          }
+          50% {
+            box-shadow: 0 0 45px 5px hsl(var(--primary)/0.35), 0 0 25px 0px hsl(var(--primary)/0.15);
+          }
+        }
+        .editor-glow-container {
+          position: relative;
+          padding: 2.5px;
+          border-radius: 32px;
+          overflow: hidden;
+          background: hsl(var(--border)/0.4);
+          transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .editor-glow-container::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: conic-gradient(
+            transparent,
+            hsl(var(--primary)/0.1),
+            hsl(var(--primary)/0.9),
+            hsl(var(--primary)/0.4),
+            transparent 50%
+          );
+          animation: border-spin 6s linear infinite;
+          pointer-events: none;
+          z-index: 0;
+          opacity: 0;
+          transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .editor-glow-container.glowing::before {
+          opacity: 1;
+        }
+        .editor-glow-container.glowing {
+          animation: pulse-shadow 3.5s ease-in-out infinite;
+          background: transparent;
+        }
+        .editor-glow-content {
+          position: relative;
+          z-index: 10;
+          width: 100%;
+          height: 100%;
+          border-radius: 30px;
+        }
+        @keyframes placeholder-text-shimmer {
+          0% {
+            background-position: -200% 0;
+          }
+          100% {
+            background-position: 200% 0;
+          }
+        }
+        @keyframes placeholder-bars-shimmer {
+          0% {
+            background-position: -200% 0, 0 0;
+          }
+          100% {
+            background-position: 200% 0, 0 0;
+          }
+        }
+        @keyframes skeleton-breath {
+          0%, 100% {
+            opacity: 0.35;
+          }
+          50% {
+            opacity: 0.65;
+          }
+        }
+        .tiptap.ProseMirror p.is-empty.with-slash::before {
+          background: linear-gradient(
+            90deg,
+            var(--placeholder-color, rgba(120,120,120,0.4)) 20%,
+            hsl(var(--primary)/0.65) 40%,
+            hsl(var(--primary)/0.95) 50%,
+            hsl(var(--primary)/0.65) 60%,
+            var(--placeholder-color, rgba(120,120,120,0.4)) 80%
+          );
+          background-size: 200% 100%;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          text-fill-color: transparent;
+          animation: placeholder-text-shimmer 3.5s infinite linear;
+          font-weight: 700;
+          font-style: italic;
+          opacity: 0.8;
+          transition: all 0.3s ease;
+        }
+        .tiptap.ProseMirror p.is-empty.with-slash::after {
+          content: '';
+          display: block;
+          margin-top: 24px;
+          height: 52px;
+          width: 90%;
+          background: 
+            linear-gradient(90deg, transparent, hsl(var(--primary)/0.25), transparent) no-repeat,
+            linear-gradient(to bottom, 
+              hsl(var(--muted)/0.35) 0px, hsl(var(--muted)/0.35) 10px, 
+              transparent 10px, transparent 20px,
+              hsl(var(--muted)/0.25) 20px, hsl(var(--muted)/0.25) 30px, 
+              transparent 30px, transparent 40px,
+              hsl(var(--muted)/0.15) 40px, hsl(var(--muted)/0.15) 50px
+            );
+          background-size: 200% 100%, auto;
+          background-position: -200% 0, 0 0;
+          mask-image: linear-gradient(to right, black 85%, transparent);
+          -webkit-mask-image: linear-gradient(to right, black 85%, transparent);
+          animation: placeholder-bars-shimmer 2.5s infinite linear, skeleton-breath 3.5s ease-in-out infinite;
+          pointer-events: none;
+          border-radius: 6px;
+        }
       ` }} />
       
       <header className="fixed top-0 left-0 w-full h-12 border-b border-border bg-background/60 backdrop-blur-2xl flex items-center justify-between px-6 z-[100] transition-all duration-500 hover:bg-background/80 group">
         <div className="flex items-center gap-4">
-          {!readOnly ? (
+          {!readOnly && !isPublic && (
             <div className="flex items-center gap-2">
               <Link href="/dashboard">
                 <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-300 group/back">
@@ -844,7 +1057,8 @@ export function EditorLayout() {
                 </Button>
               </Link>
             </div>
-          ) : (
+          )}
+          {readOnly && (
             <Badge variant="outline" className="bg-red-500/10 text-red-400 border-red-500/20 text-[9px] font-black uppercase">Somente Leitura</Badge>
           )}
           <div className="flex items-center gap-3">
@@ -907,12 +1121,12 @@ export function EditorLayout() {
         <div className="flex-none flex items-center gap-2">
           {!readOnly && (
             <div className="flex items-center gap-2 pr-4 border-r border-border/50">
-              <ExportButton />
-              <SignModal title={fileName} />
+              {wordCount > 5 && <ExportButton isPublic={isPublic} docType={docType} title={fileName} content={editor?.getHTML() || ""} />}
+              {!isPublic && <SignModal title={fileName} />}
             </div>
           )}
 
-          {!readOnly && (
+          {!readOnly && !isPublic && (
             <Button
               variant="ghost"
               size="sm"
@@ -950,15 +1164,15 @@ export function EditorLayout() {
                 <div className="flex items-center justify-between border-b border-border/40 pb-2.5">
                    <div className="flex items-center gap-2">
                      <Zap size={12} className="text-primary" />
-                     <span className="text-xs font-black uppercase tracking-[0.2em] text-foreground">Tipografia</span>
+                     <span className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Tipografia</span>
                    </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-black uppercase tracking-widest text-muted-foreground/60">Fonte</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Fonte</label>
                   <div className="relative group/select">
                     <button 
                       onClick={() => setIsFontDropdownOpen(!isFontDropdownOpen)}
-                      className="w-full bg-muted/30 border border-border/60 text-foreground text-sm font-bold py-2.5 px-3 rounded-xl flex items-center justify-between transition-all outline-none focus:ring-2 focus:ring-primary/20 hover:border-primary/20 text-left"
+                      className="w-full bg-muted/30 border border-border/60 text-foreground text-xs font-bold py-2.5 px-3 rounded-xl flex items-center justify-between transition-all outline-none focus:ring-2 focus:ring-primary/20 hover:border-primary/20 text-left"
                     >
                       <span>
                         {fontFamily === "Cambria" && "Cambria (Serifa)"}
@@ -989,7 +1203,7 @@ export function EditorLayout() {
                                 setIsFontDropdownOpen(false)
                               }}
                               className={cn(
-                                "w-full text-left text-sm py-2 px-2.5 rounded-lg flex items-center justify-between font-bold transition-all",
+                                "w-full text-left text-xs py-2 px-2.5 rounded-lg flex items-center justify-between font-bold transition-all",
                                 fontFamily === font.value
                                   ? "bg-primary text-primary-foreground"
                                   : "text-foreground/70 hover:bg-primary/5 hover:text-primary"
@@ -1006,27 +1220,27 @@ export function EditorLayout() {
                 </div>
                 <div className="space-y-2.5">
                   <div className="flex justify-between items-center">
-                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground/60">Tamanho</label>
-                    <span className="text-xs font-black text-primary bg-primary/10 px-2 rounded-full border border-primary/10">{fontSize}px</span>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Tamanho</label>
+                    <span className="text-[10px] font-black text-primary bg-primary/10 px-2 rounded-full border border-primary/10">{fontSize}px</span>
                   </div>
                   <Slider value={[fontSize]} onValueChange={(val) => setFontSize(Array.isArray(val) ? val[0] : val)} min={12} max={26} step={1} />
                 </div>
               </div>
               <div className="flex items-center gap-3 mb-6 shrink-0 pt-10 border-t border-border/40">
-                <Library size={18} className="text-primary" />
-                <h3 className="text-sm font-black uppercase tracking-[0.2em]">Biblioteca</h3>
+                <Library size={16} className="text-primary" />
+                <h3 className="text-xs font-black uppercase tracking-[0.2em]">Biblioteca</h3>
               </div>
               <div className="relative mb-6 shrink-0">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={14} />
-                <input type="text" placeholder="Filtrar documentos..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-muted/30 border border-border/60 rounded-xl pl-8 pr-3 py-2 text-sm placeholder:text-muted-foreground/40 font-semibold" />
+                <input type="text" placeholder="Filtrar documentos..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-muted/30 border border-border/60 rounded-xl pl-8 pr-3 py-2 text-xs placeholder:text-muted-foreground/40 font-semibold" />
               </div>
               <ScrollArea className="flex-1 w-full">
                 <div className="space-y-6 pb-6">
                   <div className="space-y-3">
-                    <p className="text-xs font-black text-muted-foreground uppercase tracking-[0.25em] border-b border-border pb-1">Seus Documentos</p>
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.25em] border-b border-border pb-1">Seus Documentos</p>
                     <div className="space-y-0.5">
                       {filteredContracts.map(c => (
-                        <Link key={c.id} href={`/editor?room=${c.id}`} className="w-full min-w-0 text-left text-[13px] py-2 px-2.5 hover:bg-primary/5 hover:text-primary rounded-lg flex items-center justify-between font-normal text-foreground/70 transition-all gap-2">
+                        <Link key={c.id} href={`/editor?room=${c.id}`} className="w-full min-w-0 text-left text-xs py-2 px-2.5 hover:bg-primary/5 hover:text-primary rounded-lg flex items-center justify-between font-normal text-foreground/70 transition-all gap-2">
                           <span className="truncate flex-1 min-w-0">{c.title || "Documento"}</span>
                           <Zap size={12} className={cn("shrink-0 opacity-0 group-hover:opacity-100", c.status === 'signed' ? "text-emerald-500" : "text-primary")} />
                         </Link>
@@ -1044,14 +1258,19 @@ export function EditorLayout() {
             {/* Subtle occult background glow behind the sheet */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/3 dark:bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse duration-[6000ms]" />
 
-            <div className="w-full max-w-[840px] mx-auto bg-card/90 dark:bg-card/75 backdrop-blur-xl border border-border/60 rounded-[32px] px-12 md:px-20 pt-16 pb-16 md:pt-20 md:pb-24 relative shadow-2xl transition-all duration-500 animate-in fade-in duration-1000 min-h-[800px] md:min-h-[1188px]">
-               {/* Grain overlay for paper feel */}
-               <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-[32px]" />
+            <div className={cn(
+              "w-full max-w-[840px] mx-auto editor-glow-container transition-all duration-700 shadow-2xl",
+              (showEntranceGlow || editorFocused) && "glowing"
+            )}>
+              <div className="w-full h-full bg-card/90 dark:bg-card/75 backdrop-blur-xl rounded-[30px] px-12 md:px-20 pt-16 pb-16 md:pt-20 md:pb-24 relative min-h-[800px] md:min-h-[1188px] editor-glow-content">
+                {/* Grain overlay for paper feel */}
+                <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-[30px]" />
 
-               <div className="relative z-10">
-                 {!readOnly && <BubbleMenu editor={editor} />}
-                 <EditorContentArea />
-               </div>
+                <div className="relative z-10">
+                  {!readOnly && <BubbleMenu editor={editor} />}
+                  <EditorContentArea />
+                </div>
+              </div>
             </div>
           </main>
           
@@ -1115,11 +1334,10 @@ export function EditorLayout() {
           ) : (
             <div className="p-6 flex flex-col h-full overflow-hidden min-h-0 space-y-6">
               <div className="flex items-center justify-between border-b border-border/40 pb-4">
-                <div className="flex items-center gap-3">
-                  <BrainCircuit size={18} className={cn("text-primary", isAuditing && "animate-pulse")} />
-                  <h3 className="text-sm font-black uppercase tracking-[0.2em]">Radar Analítico</h3>
+                <div className="flex items-center gap-2">
+                  <BrainCircuit size={12} className={cn("text-primary", isAuditing && "animate-pulse")} />
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Auditoria Jurídica</h3>
                 </div>
-                <Button onClick={runAudit} disabled={isAuditing} variant="outline" size="sm" className="h-8 text-xs font-bold uppercase tracking-wider text-primary border-primary/20 hover:bg-primary/5 hover:border-primary transition-all">Analisar</Button>
               </div>
               {/* Seção 1: Score ou Iniciar Auditoria (Fixado no topo) */}
               <div className="shrink-0">
@@ -1172,7 +1390,8 @@ export function EditorLayout() {
                       {getClauses().map((clause, idx, array) => {
                         const nextClause = array[idx + 1]
                         const clauseRisks = getClauseRisks(clause.pos, nextClause?.pos)
-                        const hasRisk = clauseRisks.length > 0
+                        const hasUnoptimizedRisk = clauseRisks.some(risk => !optimizedRisks.includes(risk.id))
+                        const hasRisk = clauseRisks.length > 0 && hasUnoptimizedRisk
                         const subItems = getClauseSubItems(clause.pos, nextClause?.pos)
                         const visibleSubItems = subItems.slice(0, 4)
                         const hasMore = subItems.length > 4
@@ -1234,24 +1453,53 @@ export function EditorLayout() {
                               {/* Se houver risco correspondente a esta cláusula, renderiza abaixo dela de forma integrada */}
                               {hasAudited && hasRisk && (
                                 <div className="pl-3 space-y-2.5 border-l border-red-500/40 mt-1.5">
-                                  {clauseRisks.map((risk) => (
+                                  {clauseRisks.map((risk) => {
+                                    const isOptimized = optimizedRisks.includes(risk.id)
+                                    const isPending = pendingOptimization === risk.id
+                                    
+                                    if (isOptimized) {
+                                      return (
+                                        <div key={risk.id} className="p-3 rounded-xl border bg-emerald-50/50 dark:bg-emerald-950/10 border-emerald-200/50 dark:border-emerald-500/20 space-y-2">
+                                          <span className="text-[11px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest flex items-center gap-1.5 opacity-80">
+                                            <ShieldCheck size={12} className="text-emerald-600 dark:text-emerald-500" />
+                                            Risco Neutralizado
+                                          </span>
+                                          <Button 
+                                            size="sm" 
+                                            disabled
+                                            className="w-full text-[10px] font-bold uppercase tracking-widest h-7 rounded-lg transition-all bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-500/30 opacity-70"
+                                          >
+                                            Redação Otimizada
+                                          </Button>
+                                        </div>
+                                      )
+                                    }
+                                    
+                                    return (
                                       <div key={risk.id} className="p-4 rounded-xl border bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-500/40 space-y-3 shadow-lg shadow-red-900/5">
                                         <span className="text-xs font-black text-red-600 dark:text-red-500 uppercase tracking-widest flex items-center gap-1.5">
                                           <ShieldAlert size={14} className="text-red-600 dark:text-red-500" />
                                           Atenção
                                         </span>
                                         <p className="text-[13px] font-medium leading-relaxed text-red-900 dark:text-red-100/90">
-                                          {risk.reason}
+                                          {renderBoldText(risk.reason)}
                                         </p>
                                         <Button 
                                           size="sm" 
-                                          onClick={() => handleOptimizeClause(clause.pos, nextClause?.pos)}
-                                          className="w-full bg-red-100 hover:bg-red-200 text-red-800 border border-red-300 dark:bg-red-950 dark:hover:bg-red-900 dark:text-red-400 dark:border-red-500/30 hover:text-red-900 dark:hover:text-red-300 text-xs font-bold uppercase tracking-widest h-9 rounded-lg transition-all"
+                                          disabled={isPending}
+                                          onClick={() => handleOptimizeClause(clause.pos, nextClause?.pos, risk.id)}
+                                          className={cn(
+                                            "w-full text-xs font-bold uppercase tracking-widest h-9 rounded-lg transition-all",
+                                            isPending
+                                              ? "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900 dark:text-amber-400"
+                                              : "bg-red-100 hover:bg-red-200 text-red-800 border border-red-300 dark:bg-red-950 dark:hover:bg-red-900 dark:text-red-400 dark:border-red-500/30 hover:text-red-900 dark:hover:text-red-300"
+                                          )}
                                         >
-                                          Otimizar Cláusula
+                                          {isPending ? "Otimizando..." : "Otimizar Redação"}
                                         </Button>
                                       </div>
-                                  ))}
+                                    )
+                                  })}
                                 </div>
                               )}
                             </div>
@@ -1271,9 +1519,22 @@ export function EditorLayout() {
 }
 
 export function EditorProvider(props: EditorProviderProps) {
-  const { provider, ydoc, placeholder = "Comece a redigir...", geminiKey, templateSlug, readOnly } = props
+  const { provider, ydoc, placeholder = "Comece a redigir...", geminiKey, templateSlug, readOnly, isPublic } = props
   const { user } = useUser()
   const { setTocContent } = useToc()
+  const { room } = useCollab()
+
+  const [isSynced, setIsSynced] = useState(provider?.isSynced ?? false)
+
+  useEffect(() => {
+    if (!provider) return
+    setIsSynced(provider.isSynced)
+    const handleStatus = (event: any) => {
+      if (event?.status === "connected" || event[0]?.status === "connected") setIsSynced(true)
+    }
+    provider.on("status", handleStatus)
+    return () => provider.off("status", handleStatus)
+  }, [provider])
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -1325,24 +1586,51 @@ export function EditorProvider(props: EditorProviderProps) {
     checkAndFill()
   }, [editor, templateSlug])
 
+  // Load saved content if this is a newly purchased/created contract with no Yjs updates yet
+  useEffect(() => {
+    if (!editor || !room) return
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(room)
+    if (!isUuid) return
+
+    const loadPurchasedContent = async () => {
+      await new Promise(resolve => setTimeout(resolve, 800)) // Wait for Yjs provider to sync/initialize
+      if (editor.isEmpty) {
+        const client = createClient()
+        // 1. Verify if we have any Yjs updates in the database for this contract
+        const { data: logs } = await client.from('yjs_updates').select('id').eq('contract_id', room).limit(1)
+        
+        // 2. If there are no Yjs updates, load the content from the 'documents' table
+        if (!logs || logs.length === 0) {
+          console.log("[NotionEditor] Newly purchased contract detected. Loading content fallback...")
+          const { data: docData } = await client.from("documents").select("content, title").eq("id", room).single()
+          if (docData?.content) {
+            editor.commands.setContent(docData.content)
+            toast.success("Documento carregado da sua conta.")
+          }
+        }
+      }
+    }
+    loadPurchasedContent()
+  }, [editor, room])
+
   const contextValue = useMemo(() => (editor ? { editor } : null), [editor])
-  if (!editor || !contextValue) return <LoadingSpinner />
+  if (!editor || !contextValue || !isSynced) return <LoadingSpinner text="Sincronizando ambiente da inteligência artificial..." />
 
   return (
     <EditorContext.Provider value={contextValue}>
-      <EditorLayout />
+      <EditorLayout isPublic={isPublic} />
     </EditorContext.Provider>
   )
 }
 
-export function NotionEditor({ room, placeholder = "Comece a redigir...", templateSlug, readOnly }: NotionEditorProps) {
+export function NotionEditor({ room, placeholder = "Comece a redigir...", templateSlug, readOnly, isPublic }: NotionEditorProps) {
   return (
     <UserProvider>
       <CollabProvider room={room} key={room}>
         <AiProvider>
           <TocProvider>
             <AiMenuStateProvider>
-              <NotionEditorContent placeholder={placeholder} templateSlug={templateSlug} readOnly={readOnly} />
+              <NotionEditorContent placeholder={placeholder} templateSlug={templateSlug} readOnly={readOnly} isPublic={isPublic} />
             </AiMenuStateProvider>
           </TocProvider>
         </AiProvider>
@@ -1351,7 +1639,7 @@ export function NotionEditor({ room, placeholder = "Comece a redigir...", templa
   )
 }
 
-export function NotionEditorContent({ placeholder, templateSlug, readOnly: propReadOnly }: { placeholder?: string, templateSlug?: string | null, readOnly?: boolean }) {
+export function NotionEditorContent({ placeholder, templateSlug, readOnly: propReadOnly, isPublic }: { placeholder?: string, templateSlug?: string | null, readOnly?: boolean, isPublic?: boolean }) {
   const { provider, ydoc, setupError: collabSetupError, room } = useCollab()
   const { geminiKey, setupError: aiSetupError } = useAi()
   const [contractStatus, setContractStatus] = useState<string | null>(null)
@@ -1373,5 +1661,5 @@ export function NotionEditorContent({ placeholder, templateSlug, readOnly: propR
   if (collabSetupError || aiSetupError) return <SetupErrorMessage aiSetupError={aiSetupError} collabSetupError={collabSetupError} />
   if (!provider || !geminiKey) return <LoadingSpinner />
 
-  return <EditorProvider provider={provider} ydoc={ydoc} placeholder={placeholder} geminiKey={geminiKey} templateSlug={templateSlug} readOnly={readOnly} />
+  return <EditorProvider provider={provider} ydoc={ydoc} placeholder={placeholder} geminiKey={geminiKey} templateSlug={templateSlug} readOnly={readOnly} isPublic={isPublic} />
 }

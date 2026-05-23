@@ -155,11 +155,22 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
           userPrompt
         });
 
+        // Obter tipo de documento (Foco Contrato) e limpar sugestão anterior
+        const localDocType = "contrato";
+        if (typeof window !== "undefined") {
+          window.localStorage.removeItem("extrajus_ai_suggestion");
+          window.dispatchEvent(new Event("ai-suggestion-updated"));
+        }
+
         let finalPrompt: string
 
         if (isDocEmpty) {
           // Documento vazio: cria do zero
-          finalPrompt = `O documento está vazio. Crie um contrato completo com base nesta solicitação:\n\n${userPrompt}`
+          const docTypeName = "um contrato";
+          const docTypeSufix = "o";
+          const exampleSuggest = "Inclua uma cláusula de multa de 10% por rescisão antecipada";
+
+          finalPrompt = `O documento está vazio. Crie ${docTypeName} complet${docTypeSufix} com base nesta solicitação:\n\n${userPrompt}\n\nIMPORTANTE: No final absoluto da sua resposta (após todo o HTML d${docTypeSufix} contrato), adicione uma tag <suggestion> contendo UM EXEMPLO DE COMANDO DE EDIÇÃO cirúrgica que o usuário poderia digitar no chat para blindar ou aprimorar este documento. O texto deve ser um comando direto de alteração, e NÃO UMA PERGUNTA. Exemplo: <suggestion>${exampleSuggest}</suggestion>`
         } else {
           // Documento com conteúdo: edição cirúrgica estruturada
           finalPrompt = `DOCUMENTO ATUAL (HTML completo):
@@ -174,9 +185,6 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
         // Snapshot para Desfazer
         const previousContent = currentHtml
         this.storage.generatedWith = { previousContent }
-
-        // Obter tipo de documento do localStorage (Foco IA)
-        const localDocType = typeof window !== "undefined" ? window.localStorage.getItem("extrajus_ai_doc_type") || "contrato" : "contrato";
 
         // Chamada de API segura para o servidor Next.js
         const response = await fetch("/api/ai/ritual", {
@@ -214,7 +222,25 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
             if (done) break
 
             accumulatedText += decoder.decode(value, { stream: true })
-            const streamSafeContent = sanitiseAiHtmlStream(accumulatedText)
+            
+            // Intercepta e remove a tag <suggestion> para não sujar o editor
+            let streamSafeContent = accumulatedText
+            const suggestionMatch = accumulatedText.match(/<suggestion>([\s\S]*)/i)
+            
+            if (suggestionMatch) {
+              streamSafeContent = accumulatedText.substring(0, suggestionMatch.index)
+              let suggestionText = suggestionMatch[1]
+              const hasClosingTag = suggestionText.toLowerCase().includes("</suggestion>")
+              if (hasClosingTag) {
+                 suggestionText = suggestionText.replace(/<\/suggestion>[\s\S]*/i, "").trim()
+                 if (typeof window !== "undefined") {
+                   window.localStorage.setItem("extrajus_ai_suggestion", suggestionText)
+                   window.dispatchEvent(new Event("ai-suggestion-updated"))
+                 }
+              }
+            }
+
+            streamSafeContent = sanitiseAiHtmlStream(streamSafeContent)
             this.storage.response = streamSafeContent
 
             // Somente atualiza em tempo real se for uma geração completa do zero
@@ -288,7 +314,21 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
           }
         } else {
           // Geração completa do zero
-          finalContent = sanitiseAiHtml(accumulatedText)
+          let rawText = accumulatedText
+          const suggestionMatch = rawText.match(/<suggestion>([\s\S]*)/i)
+          if (suggestionMatch) {
+            rawText = rawText.substring(0, suggestionMatch.index)
+            // Também tenta salvar caso o stream tenha pulado o evento por algum motivo
+            let suggestionText = suggestionMatch[1]
+            if (suggestionText.toLowerCase().includes("</suggestion>")) {
+               suggestionText = suggestionText.replace(/<\/suggestion>[\s\S]*/i, "").trim()
+               if (typeof window !== "undefined") {
+                 window.localStorage.setItem("extrajus_ai_suggestion", suggestionText)
+                 window.dispatchEvent(new Event("ai-suggestion-updated"))
+               }
+            }
+          }
+          finalContent = sanitiseAiHtml(rawText)
         }
 
         if (finalContent) {
@@ -305,6 +345,11 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
         toast.error(error.message || "O sistema IA falhou em responder. Verifique sua conexão.")
       } finally {
         editor.commands.aiGenerationSetIsLoading(false)
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("ai-generation-finished", { 
+            detail: { success: this.storage.state === "idle" } 
+          }))
+        }
       }
     }
 
@@ -428,7 +473,8 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
               },
               body: JSON.stringify({
                 prompt: text,
-                instructionType: "audit"
+                instructionType: "audit",
+                docType: "contrato"
               })
             })
 

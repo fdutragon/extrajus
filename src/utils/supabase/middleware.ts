@@ -38,10 +38,8 @@ export async function updateSession(request: NextRequest) {
     // we continue as if there's no user to allow redirection or public access.
   }
 
-  // List of protected routes that require authentication
   const protectedRoutes = [
     '/dashboard',
-    '/editor',
     '/brain',
     '/signatures',
     '/settings',

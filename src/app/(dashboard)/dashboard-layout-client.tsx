@@ -16,11 +16,7 @@ import {
   Command,
   Brain,
   Mail,
-  HelpCircle,
-  ZoomIn,
-  ZoomOut,
-  Minus,
-  Plus
+  HelpCircle
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -48,22 +44,12 @@ export default function DashboardLayoutClient({
   const supabase = createClient();
   const [isPending, startTransition] = useTransition();
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
-  const [zoom, setZoom] = useState<number>(100);
 
-  // Apply zoom to html root
+  // Reset zoom styles if previously applied
   useEffect(() => {
-    const saved = localStorage.getItem('extrajus-zoom');
-    if (saved) setZoom(Number(saved));
+    document.documentElement.style.fontSize = "";
+    localStorage.removeItem('extrajus-zoom');
   }, []);
-
-  useEffect(() => {
-    document.documentElement.style.fontSize = `${zoom}%`;
-    localStorage.setItem('extrajus-zoom', String(zoom));
-  }, [zoom]);
-
-  const handleZoomIn  = () => setZoom(z => Math.min(z + 5, 130));
-  const handleZoomOut = () => setZoom(z => Math.max(z - 5, 80));
-  const handleZoomReset = () => setZoom(100);
 
   useEffect(() => {
     profileRef.current = profile;
@@ -749,35 +735,6 @@ export default function DashboardLayoutClient({
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Zoom control */}
-            <div className="hidden md:flex items-center gap-1 bg-muted/30 border border-border/40 rounded-lg px-1.5 py-1">
-              <button
-                onClick={handleZoomOut}
-                disabled={zoom <= 80}
-                className="w-5 h-5 flex items-center justify-center rounded-md text-muted-foreground/60 hover:text-foreground hover:bg-muted transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                title="Diminuir fonte"
-              >
-                <Minus size={10} />
-              </button>
-              <button
-                onClick={handleZoomReset}
-                className="min-w-[32px] text-center text-[9px] font-black font-mono text-muted-foreground/50 hover:text-primary transition-colors px-1"
-                title="Resetar zoom"
-              >
-                {zoom}%
-              </button>
-              <button
-                onClick={handleZoomIn}
-                disabled={zoom >= 130}
-                className="w-5 h-5 flex items-center justify-center rounded-md text-muted-foreground/60 hover:text-foreground hover:bg-muted transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                title="Aumentar fonte"
-              >
-                <Plus size={10} />
-              </button>
-            </div>
-
-            <div className="h-3 w-px bg-border/50 mx-0.5" />
-
             {/* User */}
             <div className="flex items-center gap-2.5 cursor-pointer group">
               <div className="hidden lg:flex flex-col text-right">

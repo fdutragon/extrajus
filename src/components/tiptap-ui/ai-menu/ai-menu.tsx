@@ -242,6 +242,7 @@ export function AiMenuContent({
           ref={tiptapAiPromptInputRef}
           isLoading={aiGenerationIsLoading}
           autoFocus={false}
+          isEditing={!editor?.isEmpty}
           onStop={() => {
             if (!editor) return
             ;(editor.chain() as any).aiReject({ type: "reset" }).run()
@@ -300,6 +301,7 @@ export function AiMenuContent({
           <AiMenuInputTextarea
             ref={tiptapAiPromptInputRef}
             isLoading={aiGenerationIsLoading}
+            isEditing={!editor?.isEmpty}
             onStop={() => {
               if (!editor) return
               ;(editor.chain() as any).aiReject({ type: "reset" }).run()

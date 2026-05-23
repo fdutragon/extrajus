@@ -26,8 +26,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { UserPlus, Check } from "lucide-react"
+import { createClient } from "@/utils/supabase/client"
 import { NotionEditor } from "@/components/tiptap-templates/notion-like/notion-like-editor"
 import { SignModal } from "@/components/tiptap-ui/sign-modal/sign-modal"
 import { CollaborationUsers } from "@/components/tiptap-templates/notion-like/notion-like-editor-collaboration-users"
@@ -71,8 +72,29 @@ function EditorContent() {
   const templateSlug = searchParams.get("template")
   const mode = searchParams.get("mode")
   const readOnly = mode === "preview" || searchParams.get("readOnly") === "true"
+  const [isPublic, setIsPublic] = useState<boolean | null>(null)
 
-  return <NotionEditor room={room} templateSlug={templateSlug} readOnly={readOnly} />
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      setIsPublic(!user)
+    }
+    checkAuth()
+  }, [])
+
+  if (isPublic === null) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <BrainCircuit className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm font-black uppercase tracking-widest text-muted-foreground">Iniciando Motor...</p>
+        </div>
+      </div>
+    )
+  }
+
+  return <NotionEditor room={room} templateSlug={templateSlug} readOnly={readOnly} isPublic={isPublic} />
 }
 
 export default function EditorPage() {

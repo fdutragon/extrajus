@@ -64,10 +64,43 @@ export async function POST(request: Request) {
 
       if (updateTxError) throw updateTxError;
 
-      // 3. Adicionar créditos ao usuário recalibrado (ou fallback original se valor customizado)
-      // R$ 19,90 (1990 centavos) -> 150 Sinapses
-      // R$ 49,90 (4990 centavos) -> 500 Sinapses
-      // R$ 99,90 (9990 centavos) -> 1200 Sinapses
+      // Intercept paydoc flows
+      if (externalId.startsWith("paydoc_")) {
+        const docId = externalId.replace("paydoc_", "");
+        
+        // Adiciona 1000 créditos
+        const { error: updateProfileError } = await supabase.rpc('increment_credits', {
+          user_id: transaction.user_id,
+          amount: 1000
+        });
+
+        if (updateProfileError) {
+          const { data: profile } = await supabase.from('profiles').select('credits').eq('id', transaction.user_id).single();
+          const newCredits = (profile?.credits || 0) + 1000;
+          await supabase.from('profiles').update({ credits: newCredits }).eq('id', transaction.user_id);
+        }
+
+        // Destrava o documento
+        const { error: updateDocError } = await supabase
+          .from("documents")
+          .update({ is_paid: true })
+          .eq("id", docId);
+
+        if (updateDocError) console.error("Erro ao destravar documento:", updateDocError);
+
+        // Também atualiza o status na tabela de contratos do usuário
+        const { error: updateContractError } = await supabase
+          .from("contracts")
+          .update({ status: "draft" })
+          .eq("id", docId);
+
+        if (updateContractError) console.error("Erro ao destravar contrato correspondente:", updateContractError);
+
+        console.log(`[Webhook] Documento e Contrato ${docId} destravados e 1000 créditos adicionados ao usuário ${transaction.user_id}`);
+        return NextResponse.json({ success: true });
+      }
+
+      // 3. Adicionar créditos ao usuário recalibrado (fluxo padrão de recarga)
       let creditsToAdd = Math.floor(amount / 13);
       const amountCents = amount; // amount vem em centavos do GG Pix
       if (amountCents === 1990) {

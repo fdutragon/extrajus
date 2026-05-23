@@ -5,7 +5,7 @@ import type { Editor } from "@tiptap/react"
 import { Button } from "../../../../components/tiptap-ui-primitive/button"
 import type { TextOptions } from "../../../../components/tiptap-extension/gemini-ai-extension"
 import { useUiEditorState } from "../../../../hooks/use-ui-editor-state"
-import { Check, X } from "lucide-react"
+import { Trash2, Sparkles } from "lucide-react"
  
 import "../../../../components/tiptap-ui/ai-menu/ai-menu-actions/ai-menu-actions.scss"
  
@@ -47,23 +47,24 @@ export function AiMenuActions({
         </span>
       </div>
  
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <Button
           variant="ghost"
-          className="h-8.5 px-3.5 rounded-xl border border-border/60 hover:bg-muted text-muted-foreground hover:text-foreground text-[11px] font-medium transition-all duration-200 flex items-center gap-1.5"
+          className="h-9 px-5 rounded-xl border border-red-500/20 bg-red-500/5 text-red-400 text-[13px] font-medium flex items-center gap-2 group/discard"
           onClick={handleDiscard}
         >
-          <X size={12} />
-          Descartar
+          <Trash2 size={15} className="shrink-0" />
+          <span>Descartar</span>
         </Button>
  
         <Button
-          className="h-8.5 px-4 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-[11px] font-semibold transition-all duration-200 active:scale-[0.98] border border-primary/20 flex items-center gap-1.5"
+          variant="ghost"
+          className="h-9 px-6 rounded-xl bg-primary/25 border border-primary text-primary text-[13px] font-medium shadow-[0_0_20px_rgba(var(--primary),0.25)] transition-all duration-300 active:scale-[0.97] flex items-center gap-2.5 relative group/apply"
           onClick={handleApply}
           disabled={aiGenerationIsLoading}
         >
-          <Check size={12} />
-          Aplicar sugestão
+          <Sparkles size={15} className="relative z-10 transition-transform group-hover/apply:scale-110 shrink-0" />
+          <span className="relative z-10">Aplicar sugestão</span>
         </Button>
       </div>
     </div>

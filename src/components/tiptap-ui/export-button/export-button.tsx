@@ -4,9 +4,34 @@ import { Button } from "@/components/ui/button"
 import { Download, Loader2 } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
+import { CheckoutModal } from "@/components/checkout/checkout-modal"
 
-export function ExportButton() {
+export function ExportButton({ 
+  isPublic = false,
+  docType = "contrato",
+  title = "Documento",
+  content = ""
+}: { 
+  isPublic?: boolean
+  docType?: string
+  title?: string
+  content?: string
+}) {
   const [isExporting, setIsExporting] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleExportClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    if (isPublic) {
+      setIsModalOpen(true)
+    } else {
+      handleExport()
+    }
+  }
+
+
 
   const handleExport = async (e?: React.MouseEvent) => {
     if (e) {
@@ -25,21 +50,25 @@ export function ExportButton() {
     })
 
     try {
-      // 1. Chamar a rota segura de cobrança de créditos no backend (Custa exatamente 2 créditos)
-      const res = await fetch("/api/billing/charge-download", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" }
-      })
+      let data: any = {}
 
-      const data = await res.json()
+      if (!isPublic) {
+        // 1. Chamar a rota segura de cobrança de créditos no backend (Custa exatamente 2 créditos)
+        const res = await fetch("/api/billing/charge-download", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" }
+        })
 
-      if (!res.ok) {
-        // Se falhar (saldo insuficiente), abre o modal de planos de Sinapses automaticamente!
-        toast.error(data.error || "Saldo de Sinapses insuficiente para download.", { id: exportToast, duration: 5000 })
-        
-        // Disparar evento para abrir modal de planos de Sinapses
-        window.dispatchEvent(new CustomEvent("open-plans-modal"))
-        return
+        data = await res.json()
+
+        if (!res.ok) {
+          // Se falhar (saldo insuficiente), abre o modal de planos de Sinapses automaticamente!
+          toast.error(data.error || "Saldo de Sinapses insuficiente para download.", { id: exportToast, duration: 5000 })
+          
+          // Disparar evento para abrir modal de planos de Sinapses
+          window.dispatchEvent(new CustomEvent("open-plans-modal"))
+          return
+        }
       }
 
       // Se passou da cobrança, inicia a exportação física do DOCX
@@ -174,7 +203,9 @@ export function ExportButton() {
       URL.revokeObjectURL(url)
 
       // Notificar se for você (isentado) ou usuário comum (cobrado)
-      if (data.isMaster) {
+      if (isPublic) {
+        toast.success("Download gratuito liberado com sucesso!", { id: exportToast })
+      } else if (data.isMaster) {
         toast.success("Download master gratuito liberado com sucesso!", { id: exportToast })
       } else {
         toast.success("Download concluído! Debitadas 2 Sinapses do seu saldo.", { id: exportToast })
@@ -191,21 +222,35 @@ export function ExportButton() {
   }
 
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="h-8 gap-2 px-4 text-muted-foreground hover:text-foreground dark:hover:bg-primary/5 rounded-full transition-all group border border-transparent hover:border-border/40 flex items-center justify-center"
-      onClick={handleExport}
-      disabled={isExporting}
-    >
-      {isExporting ? (
-        <Loader2 size={12} className="animate-spin text-primary" />
-      ) : (
-        <Download size={12} className="transition-transform" />
+    <>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-8 gap-2 px-4 text-muted-foreground hover:text-foreground dark:hover:bg-primary/5 rounded-full transition-all group border border-transparent hover:border-border/40 flex items-center justify-center"
+        onClick={handleExportClick}
+        disabled={isExporting}
+      >
+        {isExporting ? (
+          <Loader2 size={12} className="animate-spin text-primary" />
+        ) : (
+          <Download size={12} className="transition-transform" />
+        )}
+        <span className="text-[9px] font-black uppercase tracking-[0.2em] leading-none">
+          {isExporting ? "Exportando" : "Baixar"}
+        </span>
+      </Button>
+
+      {/* Checkout Paywall para Visitantes */}
+      {isPublic && (
+        <CheckoutModal 
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={() => handleExport()}
+          documentContent={content}
+          docType={docType}
+          title={title}
+        />
       )}
-      <span className="text-[9px] font-black uppercase tracking-[0.2em] leading-none">
-        {isExporting ? "Exportando" : "Baixar"}
-      </span>
-    </Button>
+    </>
   )
 }

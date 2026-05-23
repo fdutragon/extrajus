@@ -5,6 +5,17 @@ import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 
+const renderBoldText = (text: string) => {
+  if (!text) return ""
+  const parts = text.split(/(\*\*.*?\*\*)/g)
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={i} className="font-extrabold">{part.slice(2, -2)}</strong>
+    }
+    return part
+  })
+}
+
 export interface RiskAnalysisItem {
   originalText: string
   suggestion: string
@@ -80,12 +91,12 @@ export const RiskAuditSidebar = ({ isLoading, analysis }: RiskAuditSidebarProps)
 
                       <div className="pt-2">
                         <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">SUGESTÃO DA IA:</p>
-                        <p className="text-[11px] font-bold text-foreground leading-relaxed border-l-2 border-primary pl-3">{item.suggestion}</p>
+                        <p className="text-[11px] font-bold text-foreground leading-relaxed border-l-2 border-primary pl-3">{renderBoldText(item.suggestion)}</p>
                       </div>
 
                       <div className="pt-2">
                         <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">JUSTIFICATIVA TÉCNICA:</p>
-                        <p className="text-[10px] text-muted-foreground leading-relaxed">{item.reason}</p>
+                        <p className="text-[10px] text-muted-foreground leading-relaxed">{renderBoldText(item.reason)}</p>
                       </div>
                    </div>
                 </div>

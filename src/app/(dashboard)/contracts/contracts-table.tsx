@@ -101,7 +101,7 @@ export function ContractsTable({ initialContracts }: { initialContracts: any[] }
                         {(() => {
                           const t = contract.title || 'Contrato Sem Título';
                           const minors = ['de', 'da', 'do', 'das', 'dos', 'e', 'ou', 'em', 'para', 'com', 'por', 'sem', 'sob'];
-                          return t.toLowerCase().split(' ').map((w, i) => (i > 0 && minors.includes(w)) ? w : w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                          return t.toLowerCase().split(' ').map((w: string, i: number) => (i > 0 && minors.includes(w)) ? w : w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
                         })()}
                       </Link>
                       <span className="text-xs text-muted-foreground font-mono mt-0.5 truncate">ID: {contract.id.slice(0, 8)}</span>

@@ -10,6 +10,7 @@ export interface BaseAiMenuInputProps {
   isLoading?: boolean
   onPlaceholderClick?: () => void
   autoFocus?: boolean
+  isEditing?: boolean
 }
 
 export interface AiMenuInputTextareaProps

@@ -10,121 +10,107 @@ export async function POST(req: Request) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json(
-        { error: "Acesso não autorizado. Por favor, faça login." },
-        { status: 401 }
-      );
-    }
-
     const aiRigor = user?.user_metadata?.ai_rigor ?? 8;
     const aiMode = user?.user_metadata?.ai_mode ?? "Inovador";
 
     const { prompt, instructionType, docType } = await req.json();
 
-    // Validar e descontar créditos de Sinapses (6 para geração, 3 para auditoria, 1 para refinamento)
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("credits")
-      .eq("id", user.id)
-      .single();
+    if (user) {
+      // Validar e descontar créditos de Sinapses (6 para geração, 3 para auditoria, 1 para refinamento)
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("credits")
+        .eq("id", user.id)
+        .single();
 
-    const currentCredits = profile?.credits ?? 0;
-    
-    let cost = 10;
-    if (instructionType === "generation") {
-      cost = 100;
-    } else if (instructionType === "audit") {
-      cost = 40; // Auditoria completa lê o contrato inteiro
+      const currentCredits = profile?.credits ?? 0;
+      
+      let cost = 10;
+      if (instructionType === "generation") {
+        cost = 100;
+      } else if (instructionType === "audit") {
+        cost = 40; // Auditoria completa lê o contrato inteiro
+      }
+
+      if (currentCredits < cost) {
+        return NextResponse.json(
+          { error: `Saldo de Sinapses insuficiente. Esta operação exige ${cost} Sinapses, mas você possui apenas ${currentCredits}.` },
+          { status: 403 }
+        );
+      }
+
+      // Deduzir créditos e registrar auditoria no ledger
+      await supabase
+        .from("profiles")
+        .update({ credits: currentCredits - cost })
+        .eq("id", user.id);
+
+      await supabase
+        .from("credit_ledger")
+        .insert({
+          user_id: user.id,
+          amount: -cost,
+          action_type: 
+            instructionType === "generation" 
+              ? "contract_forged" 
+              : instructionType === "audit" 
+                ? "ai_contract_audited" 
+                : "ai_ritual_refinement",
+        });
     }
-
-    if (currentCredits < cost) {
-      return NextResponse.json(
-        { error: `Saldo de Sinapses insuficiente. Esta operação exige ${cost} Sinapses, mas você possui apenas ${currentCredits}.` },
-        { status: 403 }
-      );
-    }
-
-    // Deduzir créditos e registrar auditoria no ledger
-    await supabase
-      .from("profiles")
-      .update({ credits: currentCredits - cost })
-      .eq("id", user.id);
-
-    await supabase
-      .from("credit_ledger")
-      .insert({
-        user_id: user.id,
-        amount: -cost,
-        action_type: 
-          instructionType === "generation" 
-            ? "contract_forged" 
-            : instructionType === "audit" 
-              ? "ai_contract_audited" 
-              : "ai_ritual_refinement",
-      });
 
     const modelName = "gemini-2.5-flash";
 
     // 1. Fluxo de Auditoria de Riscos Jurídicos
     if (instructionType === "audit") {
-      let systemInstruction = `Você é a EXTRAJUS AI, assistente profissional de conformidade jurídica com rigor absoluto em conformidade com as leis civis, comerciais e de usura (incluindo o Código Civil brasileiro, Código de Defesa do Consumidor e a Lei de Usura).
-Sua função é analisar detalhadamente a minuta contratual fornecida, identificar riscos jurídicos graves, brechas contratuais, ambiguidades e cláusulas abusivas ou ilegais.
+      let systemInstruction = `Você é a EXTRAJUS AI, assistente profissional de conformidade jurídica com rigor absoluto em conformidade com as leis e normas jurídicas brasileiras.`;
+
+      if (docType === "notificacao") {
+        systemInstruction += `\nSua função é analisar detalhadamente a Notificação Extrajudicial fornecida, identificar riscos jurídicos graves, fragilidades probatórias, ambiguidades, tom inadequado, excessos que possam configurar coação e ausência de prazos peremptórios claros.
 
 DIRETRIZES ESPECÍFICAS DE CONFORMIDADE:
-1. JUROS E ENCARGOS ABUSIVOS (CRÍTICO): Você DEVE identificar e apontar imediatamente qualquer cláusula que estabeleça taxas de juros moratórios ou remuneratórios excessivas, ilegais ou que caracterizem usura/juros abusivos (como taxas absurdas de 1000% ao mês, ou taxas que excedam o limite legal padrão de 1% ao mês ou a taxa SELIC). Sugira a redução imediata para o limite legal de 1% ao mês.
-2. MULTAS DESPROPORCIONAIS: Aponte multas rescisórias ou moratórias excessivas (superiores a 2% em relações de consumo ou superiores a 10%-20% em contratos cíveis e comerciais).
-3. ERROS E CONTRADIÇÕES: Aponte contradições de prazos, valores, falta de foro de eleição ou ausência de regras sobre responsabilidade e inadimplemento.
+1. ILEGALIDADES FLAGRANTES (CRÍTICO): Aponte APENAS abusos de direito escandalosos, cobranças ilegais, extorsão ou ameaças criminosas. NÃO aponte expressões legais padrão como "sob as penas da lei", "medidas cabíveis" ou "ajuizamento de ação", pois são exercícios regulares do direito.
+2. IGNORAR ESPAÇOS EM BRANCO E PLACEHOLDERS: É expressamente PROIBIDO gerar alertas para campos não preenchidos (ex: "[Nome]", "XXXXX", "[Endereço]"). O foco é apenas no mérito jurídico.
+3. ERROS TÉCNICOS GRAVES: Aponte apenas se os fatos ou prazos exigidos forem materialmente impossíveis ou contrários à lei.`;
+      } else if (docType === "peticao") {
+        systemInstruction += `\nSua função é analisar detalhadamente a Petição fornecida, identificar riscos processuais, inépcia, faltas de fundamento jurídico, inadequação dos pedidos, ambiguidades e falhas técnicas.
 
-Formato estrito de retorno (retorne APENAS um array JSON válido sem decorações markdown adicionais fora dele):
-[{"originalText": "texto exato do contrato a ser corrigido", "suggestion": "nova redação sugerida (pode conter HTML simples)", "reason": "fundamentação jurídica e técnica detalhada do risco ou da abusividade"}]`;
+DIRETRIZES ESPECÍFICAS DE CONFORMIDADE:
+1. INÉPCIA E PEDIDOS (CRÍTICO): Aponte imediatamente se os pedidos são indeterminados, genéricos, se falta fundamentação ou se há contradição escancarada com os fatos.
+2. COMPETÊNCIA E LEGITIMIDADE: Aponte possíveis riscos na identificação do juízo ou qualificação deficiente das partes.
+3. ERROS TÉCNICOS: Aponte contradições processuais ou falta de requisitos legais essenciais do CPC.`;
+      } else {
+        systemInstruction += `\nSua função é analisar detalhadamente a minuta contratual fornecida, identificar riscos jurídicos graves, brechas contratuais, ambiguidades e cláusulas abusivas ou ilegais.
+
+DIRETRIZES ESPECÍFICAS DE CONFORMIDADE:
+1. ILEGALIDADES FLAGRANTES (CRÍTICO): Você DEVE identificar e apontar APENAS cláusulas ilegais, nulas de pleno direito ou abusivas (ex: juros acima do limite legal, multas rescisórias confiscatórias ou renúncia a direitos indisponíveis).
+2. IGNORAR ESPAÇOS EM BRANCO E PLACEHOLDERS: É expressamente PROIBIDO gerar alertas para campos não preenchidos (ex: "[Nome]", "XXXXX", "R$ ______"). O foco é apenas na ilegalidade das regras contratuais.
+3. IGNORAR TERMOS PADRÃO: NÃO gere alertas para linguagem jurídica formal ou dura, desde que esteja dentro da legalidade. Foco exclusivo em brechas jurídicas materiais e desequilíbrios contratuais severos.`;
+      }
+
+      systemInstruction += `\n\nFormato estrito de retorno (retorne APENAS um array JSON válido sem decorações markdown adicionais fora dele):
+[{"originalText": "texto exato do documento a ser corrigido", "suggestion": "nova redação sugerida (pode conter HTML simples)", "reason": "fundamentação jurídica e técnica detalhada do risco ou da falha"}]`;
 
       systemInstruction += `\nNÍVEL DE RIGOR DE AUDITORIA ATIVO: Nível ${aiRigor}/10. ${
         aiRigor >= 8 
-          ? "Diretriz crítica: Seja extremamente exigente, detalhista, pedante, conservador e implacável em identificar riscos contratuais, apontando até mesmo cláusulas com potencial de dubiedade mínima, pequenos desequilíbrios de responsabilidade ou ambiguidades formais." 
-          : aiRigor <= 4 
-            ? "Diretriz crítica: Concentre-se exclusivamente em apontar riscos contratuais graves e de extrema relevância jurídica estrutural. Ignore detalhes menores, preciosismo técnico ou formalismo tradicional de baixa relevância prática."
-            : "Diretriz crítica: Adote uma postura de rigor equilibrado padrão de mercado, identificando riscos contratuais típicos e cláusulas sensíveis comuns."
+          ? "Diretriz crítica: Seja extremamente exigente em identificar riscos materiais, mas NUNCA alerte sobre espaços em branco, formatação ou jargões jurídicos protetivos padrão (ex: 'sob as penas da lei'). Foco 100% em detectar ilegalidades contratuais, prazos nulos e multas abusivas." 
+          : "Diretriz crítica: Concentre-se exclusivamente em apontar riscos e nulidades graves de extrema relevância jurídica estrutural. Ignore detalhes menores e campos não preenchidos."
       }`;
 
-      // GROQ INJECTION PARA VELOCIDADE BRUTAL NA AUDITORIA
+      // AUDITORIA COM MODELO CUSTOMIZADO
       try {
-        const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            model: "llama-3.1-70b-versatile",
-            temperature: 0.2,
-            messages: [
-              { role: "system", content: systemInstruction },
-              { role: "user", content: `Analise este contrato e aponte todos os riscos, brechas e abusividades de acordo com as diretrizes de rigor:\n\n${prompt}` }
-            ]
-          })
-        });
-
-        if (!groqResponse.ok) {
-          throw new Error("Groq API failed");
-        }
-
-        const data = await groqResponse.json();
-        const responseText = data.choices[0].message.content;
-        
-        return NextResponse.json({ text: responseText });
-      } catch (err) {
-        console.error("Groq fallback falhou, tentando Gemini...", err);
-        // Fallback para Gemini caso o Groq falhe
         const auditModel = genAI.getGenerativeModel({
-          model: modelName,
+          model: "gemini-3.1-flash-lite",
           systemInstruction: systemInstruction,
         }, { apiVersion: "v1beta" });
 
-        const result = await auditModel.generateContent(`Analise este contrato e aponte todos os riscos, brechas e abusividades de acordo com as diretrizes de rigor:\n\n${prompt}`);
+        const result = await auditModel.generateContent(`Analise este documento e aponte todos os riscos, brechas e abusividades de acordo com as diretrizes de rigor:\n\n${prompt}`);
         const responseText = result.response.text();
         
         return NextResponse.json({ text: responseText });
+      } catch (err: any) {
+        console.error("Auditoria falhou:", err);
+        return NextResponse.json({ error: "Falha ao processar a auditoria." }, { status: 500 });
       }
     }
  
@@ -170,29 +156,35 @@ REGRAS CRÍTICAS DE RETORNO (OBRIGATÓRIAS):
     // 3. Fluxo de Geração / Edição de Cláusulas Jurídicas (Streaming)
     let systemInstruction = "";
     
-    if (user?.email === "felipedutra@outlook.com" && docType === "notificacao") {
-      systemInstruction = `Você é a EXTRAJUS AI, a Inteligência Artificial especializada em Engenharia Jurídica da plataforma ExtraJus. Sua função é redigir, analisar e otimizar NOTIFICAÇÕES EXTRAJUDICIAIS e comunicações formais com precisão técnica e terminologia formal.
+    if (docType === "notificacao") {
+      systemInstruction = `Você é a EXTRAJUS AI, a inteligência artificial definitiva e letal em Engenharia Jurídica da plataforma ExtraJus. Sua missão é redigir NOTIFICAÇÕES EXTRAJUDICIAIS extremamente robustas, completas ("completaço"), juridicamente blindadas, ricas em termos jurídicos formais de alta densidade e tecnicidade jurídica brasileira.
 
-REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
+REGRAS DE CONTEÚDO E DIREITO (OBRIGATÓRIAS):
+1. ALTA DENSIDADE E ROBUSTEZ JURÍDICA: A redação não deve ser genérica ou curta. Escreva textos longos, completos, detalhados e minuciosos. A fundamentação fática e jurídica deve ser exaustiva.
+2. VOCABULÁRIO JURÍDICO DE ELITE: Empregue terminologia jurídica formal e erudita da doutrina e jurisprudência brasileira (ex: "inadimplemento absoluto", "mora debitoris", "notificação premonitória", "purgação da mora", "resilição unilateral", "perdas e danos", "cominação de astreintes", "medidas assecuratórias e constritivas", "intercalação de medidas de urgência", "sob as penas da lei").
+3. ESTRUTURA COMPLETA DA NOTIFICAÇÃO:
+   - Identificação do destinatário no topo (Nome Completo/Razão Social, Endereço Completo, CPF/CNPJ).
+   - Preâmbulo formal apresentando com precisão a finalidade jurídica da notificação.
+   - Relato minucioso dos fatos e da conduta ensejadora do ato.
+   - Fundamentação Jurídica sólida citando artigos pertinentes da legislação brasileira (Código Civil, CDC, CPC, etc.).
+   - Requerimento explícito contendo prazo peremptório (ex: 24 horas, 3 dias, 5 dias úteis) para o cumprimento da providência requerida.
+   - Advertência peremptória das consequências e medidas judiciais/criminais a serem adotadas em caso de inércia ou silêncio (ex: busca e apreensão, arresto, tutela de urgência, perdas e danos).
+
+REGRAS DE FORMATAÇÃO E ESPAÇAMENTO (ESTRITAS):
 1. Use APENAS HTML. NUNCA use Markdown.
-2. Título principal centralizado: <h1 data-node-text-align="center"><strong>[TÍTULO DA NOTIFICAÇÃO]</strong></h1>. O uso do atributo data-node-text-align="center" na tag h1 é OBRIGATÓRIO para garantir o alinhamento centralizado.
-3. Parágrafos normais: <p>...</p> (NÃO inclua atributos style).
-4. PROIBIÇÃO ABSOLUTA DE CLÁUSULAS, LEGAL NODES E NOTAS: Notificações não possuem cláusulas numeradas, capítulos estruturados ou divisões em Legal Nodes. NUNCA use tags div com data-type="legal-node" ou data-level. Use parágrafos simples (<p>...</p>) para todo o texto corrido.
-5. Estrutura recomendada:
-   - Identificação do destinatário no topo (Nome/Razão Social, Endereço, CPF/CNPJ).
-   - Preâmbulo formal apresentando a finalidade da notificação.
-   - Relato conciso e preciso dos Fatos e do descumprimento/fundamento jurídico relevante.
-   - Solicitação clara da providência requerida e fixação de prazo peremptório (ex: 24h, 5 dias, etc.) para cumprimento voluntário.
-   - Advertência explícita sobre as medidas judiciais cabíveis em caso de inércia.
-6. Seção de Data e Assinaturas (Fim da Notificação): Inclua exatamente 1 parágrafo vazio com quebra (<p><br></p>) antes da data para espaçamento compacto. A data e os campos de assinatura devem vir centralizados (usando data-node-text-align="center" e style="text-align: center;"). Cada campo de assinatura deve conter OBRIGATORIAMENTE a linha física de assinatura usando underline puro (__________________________________________) centralizado ACIMA do rótulo da parte em negrito.
-   Exemplo:
+2. Título principal centralizado: <h1 data-node-text-align="center"><strong>NOTIFICAÇÃO EXTRAJUDICIAL</strong></h1>.
+3. Títulos de seções: Use exclusivamente tags <h2> para os títulos das seções (ex: <h2><strong>I. DOS FATOS</strong></h2>, <h2><strong>II. DOS FUNDAMENTOS</strong></h2>).
+4. PROIBIÇÃO ABSOLUTA DE CLÁUSULAS E LEGAL NODES: Notificações não possuem cláusulas contratuais. NUNCA use divs com data-type="legal-node" ou menções a "Cláusulas". Use apenas <p>...</p> para os textos e <h2> para títulos de seções.
+5. PROIBIÇÃO DE LINHAS VAZIAS E ESPAÇOS EM BRANCO (CRÍTICO):
+   - NUNCA insira parágrafos vazios (<p><br></p>) ou tags <br> entre os parágrafos normais ou entre as seções.
+   - O editor gerencia o espaçamento de forma automática pelo CSS (com margens adequadas em <p> e <h2>). 
+   - A geração de qualquer parágrafo vazio ou tag <br> intermediária resulta em buracos e espaçamentos gigantescos e inaceitáveis. Portanto, os parágrafos de texto e cabeçalhos devem ser gerados em sequência imediata.
+6. Seção de Assinatura Compacta: No final do documento, insira um único parágrafo de quebra (<p><br></p>) e centralize a data e os campos de assinatura (usando data-node-text-align="center" e style="text-align: center;"). A assinatura deve vir compactada:
    <p><br></p>
-   <p data-node-text-align="center" style="text-align: center; margin-top: 24px;">[Cidade] - [UF], [Dia] de [Mês] de [Ano].</p>
-   <p><br></p>
-   <p><br></p>
-   <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
+   <p data-node-text-align="center" style="text-align: center;">[Cidade] - [UF], [Dia] de [Mês] de [Ano].</p>
+   <p data-node-text-align="center" style="text-align: center; margin-top: 30px;">__________________________________________</p>
    <p data-node-text-align="center" style="text-align: center;"><strong>NOTIFICANTE</strong></p>
-7. Retorne APENAS o HTML sem estilos inline (exceto pelos atributos obrigatórios de alinhamento e espaçamento). Sem explicações.`;
+7. Retorne EXCLUSIVAMENTE o código HTML correspondente, sem explicações ou comentários adicionais.`;
     } else if (user?.email === "felipedutra@outlook.com" && docType === "peticao") {
       systemInstruction = `Você é a EXTRAJUS AI, a Inteligência Artificial especializada em Engenharia Jurídica da plataforma ExtraJus. Sua função é redigir, analisar e otimizar PETIÇÕES JUDICIAIS, peças processuais e requerimentos judiciais com extrema precisão processual e terminologia jurídica formal de alto nível.
 
