@@ -98,18 +98,20 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
 
   // Developer simulation: Creates account and completes payment instantly
   const handleDevSimulateAll = async () => {
+    if (!name.trim() || !email.trim()) {
+      toast.error("Por favor, preencha o Nome e o E-mail no formulário antes de clicar em simular!")
+      return
+    }
+
     setLoading(true)
     try {
-      const mockName = `Cadelo Dev ${Math.floor(Math.random() * 1000)}`
-      const mockEmail = `cadelo_dev_${Date.now()}@extrajus.com.br`
-      
-      // 1. Create transaction and account
+      // 1. Create transaction and account using the actual user inputted name and email
       const res = await fetch("/api/billing/checkout-doc", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: mockName,
-          email: mockEmail,
+          name: name.trim(),
+          email: email.trim(),
           content: documentContent,
           doc_type: docType,
           title
@@ -125,7 +127,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
         externalId: data.externalId
       })
       
-      toast.success("Conta simulada gerada! Processando pagamento...")
+      toast.success(`Conta gerada para ${email.trim()}! Processando pagamento...`)
       
       // 2. Direct call to mark transaction complete
       const statusRes = await fetch("/api/billing/status", {
