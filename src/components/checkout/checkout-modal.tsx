@@ -49,23 +49,8 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             setStep("success")
             clearInterval(interval)
 
-            // Silent login bypass to avoid email confirmation / magiclink redirection loops
-            if (data.email && data.tempPassword) {
-              try {
-                const supabase = createClient()
-                await supabase.auth.signInWithPassword({
-                  email: data.email,
-                  password: data.tempPassword
-                })
-              } catch (authErr) {
-                console.error("Erro no login automático silencioso:", authErr)
-              }
-            }
-
-            const docId = pixData.externalId.replace("paydoc_", "")
             setTimeout(() => {
               onSuccess()
-              window.location.href = `/editor?room=${docId}`
             }, 2000)
           }
         }
@@ -155,23 +140,8 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
       // 3. Transition to success
       setStep("success")
 
-      // Silent login bypass to avoid email confirmation / magiclink redirection loops in simulation
-      if (statusData.email && statusData.tempPassword) {
-        try {
-          const supabase = createClient()
-          await supabase.auth.signInWithPassword({
-            email: statusData.email,
-            password: statusData.tempPassword
-          })
-        } catch (authErr) {
-          console.error("Erro no login automático silencioso dev:", authErr)
-        }
-      }
-
-      const docId = data.externalId.replace("paydoc_", "")
       setTimeout(() => {
         onSuccess()
-        window.location.href = `/editor?room=${docId}`
       }, 2000)
 
     } catch (err: any) {
@@ -198,23 +168,8 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
       toast.success("Confirmação de pagamento simulada com sucesso!")
       setStep("success")
 
-      // Silent login bypass to avoid email confirmation / magiclink redirection loops in simulation
-      if (data.email && data.tempPassword) {
-        try {
-          const supabase = createClient()
-          await supabase.auth.signInWithPassword({
-            email: data.email,
-            password: data.tempPassword
-          })
-        } catch (authErr) {
-          console.error("Erro no login automático silencioso dev-only:", authErr)
-        }
-      }
-
-      const docId = pixData.externalId.replace("paydoc_", "")
       setTimeout(() => {
         onSuccess()
-        window.location.href = `/editor?room=${docId}`
       }, 2000)
     } catch (err: any) {
       toast.error(err.message)
