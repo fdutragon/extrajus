@@ -268,7 +268,7 @@ export async function POST(request: Request) {
           `;
 
           let sendResult = await resendInstance.emails.send({
-            from: "ExtraJus AI <documentos@contato.extrajus.com.br>",
+            from: "ExtraJus AI <documentos@extrajus.pro>",
             to: userData.user.email,
             subject: `⚔️ Seu documento oficial foi liberado: ${docData.title || 'Contrato'}`,
             html: emailHtml
