@@ -67,6 +67,15 @@ export async function POST(request: Request) {
       if (createError) throw createError;
       if (!newUser.user) throw new Error("Falha ao criar usuário");
       userId = newUser.user.id;
+
+      // Forçar créditos iniciais de exatamente 300 para o novo usuário criado no checkout
+      const { error: setCreditsError } = await supabaseAdmin
+        .from("profiles")
+        .update({ credits: 300 })
+        .eq("id", userId);
+      if (setCreditsError) {
+        console.error("Erro ao forçar créditos iniciais de 300:", setCreditsError.message);
+      }
     }
 
     // 2. Create document record as unpaid

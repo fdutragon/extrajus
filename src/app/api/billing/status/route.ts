@@ -132,22 +132,10 @@ export async function POST(request: Request) {
     let emailAddress: string | undefined = undefined;
     let tempPassword: string | undefined = undefined;
 
-    // 3. Se for paydoc, destravar doc e adicionar créditos
+    // 3. Se for paydoc, destravar doc
     if (externalId.startsWith("paydoc_")) {
       const docId = externalId.replace("paydoc_", "");
       
-      // Adiciona 1000 créditos
-      const { error: updateProfileError } = await supabaseAdmin.rpc('increment_credits', {
-        user_id: transaction.user_id,
-        amount: 1000
-      });
-
-      if (updateProfileError) {
-        const { data: profile } = await supabaseAdmin.from('profiles').select('credits').eq('id', transaction.user_id).single();
-        const newCredits = (profile?.credits || 0) + 1000;
-        await supabaseAdmin.from('profiles').update({ credits: newCredits }).eq('id', transaction.user_id);
-      }
-
       // Destrava documento
       await supabaseAdmin
         .from("documents")

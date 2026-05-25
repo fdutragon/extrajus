@@ -96,18 +96,6 @@ export async function POST(request: Request) {
       if (externalId.startsWith("paydoc_")) {
         const docId = externalId.replace("paydoc_", "");
         
-        // Adiciona 1000 créditos
-        const { error: updateProfileError } = await supabase.rpc('increment_credits', {
-          user_id: transaction.user_id,
-          amount: 1000
-        });
-
-        if (updateProfileError) {
-          const { data: profile } = await supabase.from('profiles').select('credits').eq('id', transaction.user_id).single();
-          const newCredits = (profile?.credits || 0) + 1000;
-          await supabase.from('profiles').update({ credits: newCredits }).eq('id', transaction.user_id);
-        }
-
         // Destrava o documento
         const { error: updateDocError } = await supabase
           .from("documents")
@@ -124,7 +112,7 @@ export async function POST(request: Request) {
 
         if (updateContractError) console.error("Erro ao destravar contrato correspondente:", updateContractError);
 
-        console.log(`[Webhook] Documento e Contrato ${docId} destravados e 1000 créditos adicionados ao usuário ${transaction.user_id}`);
+        console.log(`[Webhook] Documento e Contrato ${docId} destravados com sucesso para o usuário ${transaction.user_id}`);
         return NextResponse.json({ success: true });
       }
 

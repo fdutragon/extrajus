@@ -24,7 +24,7 @@ export async function POST(req: Request) {
         .single();
 
       const currentCredits = profile?.credits ?? 0;
-      
+
       let cost = 10;
       if (instructionType === "generation") {
         cost = 100;
@@ -50,11 +50,11 @@ export async function POST(req: Request) {
         .insert({
           user_id: user.id,
           amount: -cost,
-          action_type: 
-            instructionType === "generation" 
-              ? "contract_forged" 
-              : instructionType === "audit" 
-                ? "ai_contract_audited" 
+          action_type:
+            instructionType === "generation"
+              ? "contract_forged"
+              : instructionType === "audit"
+                ? "ai_contract_audited"
                 : "ai_ritual_refinement",
         });
     }
@@ -91,29 +91,28 @@ DIRETRIZES ESPECÍFICAS DE CONFORMIDADE:
       systemInstruction += `\n\nFormato estrito de retorno (retorne APENAS um array JSON válido sem decorações markdown adicionais fora dele):
 [{"originalText": "texto exato do documento a ser corrigido", "suggestion": "nova redação sugerida (pode conter HTML simples)", "reason": "fundamentação jurídica e técnica detalhada do risco ou da falha"}]`;
 
-      systemInstruction += `\nNÍVEL DE RIGOR DE AUDITORIA ATIVO: Nível ${aiRigor}/10. ${
-        aiRigor >= 8 
-          ? "Diretriz crítica: Seja extremamente exigente em identificar riscos materiais, mas NUNCA alerte sobre espaços em branco, formatação ou jargões jurídicos protetivos padrão (ex: 'sob as penas da lei'). Foco 100% em detectar ilegalidades contratuais, prazos nulos e multas abusivas." 
-          : "Diretriz crítica: Concentre-se exclusivamente em apontar riscos e nulidades graves de extrema relevância jurídica estrutural. Ignore detalhes menores e campos não preenchidos."
-      }`;
+      systemInstruction += `\nNÍVEL DE RIGOR DE AUDITORIA ATIVO: Nível ${aiRigor}/10. ${aiRigor >= 8
+        ? "Diretriz crítica: Seja extremamente exigente em identificar riscos materiais, mas NUNCA alerte sobre espaços em branco, formatação ou jargões jurídicos protetivos padrão (ex: 'sob as penas da lei'). Foco 100% em detectar ilegalidades contratuais, prazos nulos e multas abusivas."
+        : "Diretriz crítica: Concentre-se exclusivamente em apontar riscos e nulidades graves de extrema relevância jurídica estrutural. Ignore detalhes menores e campos não preenchidos."
+        }`;
 
       // AUDITORIA COM MODELO CUSTOMIZADO
       try {
         const auditModel = genAI.getGenerativeModel({
-          model: "gemini-3.1-flash-lite",
+          model: "gemini-2.5-flash",
           systemInstruction: systemInstruction,
         }, { apiVersion: "v1beta" });
 
         const result = await auditModel.generateContent(`Analise este documento e aponte todos os riscos, brechas e abusividades de acordo com as diretrizes de rigor:\n\n${prompt}`);
         const responseText = result.response.text();
-        
+
         return NextResponse.json({ text: responseText });
       } catch (err: any) {
         console.error("Auditoria falhou:", err);
         return NextResponse.json({ error: "Falha ao processar a auditoria." }, { status: 500 });
       }
     }
- 
+
     // 2. Fluxo de Edição Cirúrgica (Diff Engine)
     if (instructionType === "surgical") {
       const surgicalSystemInstruction = `Você é o Motor de Diffs da EXTRAJUS AI. Sua função é receber um contrato em HTML, analisar a solicitação de alteração do usuário e fornecer EXCLUSIVAMENTE o trecho a ser substituído.
@@ -127,12 +126,12 @@ REGRAS CRÍTICAS DE RETORNO (OBRIGATÓRIAS):
 3. O conteúdo de <replace> deve conter a nova versão do trecho formatada em HTML limpo, seguindo as regras de formatação (parágrafos <p> ou divs de legal-node se for uma cláusula completa).
 4. Se a solicitação pedir para ADICIONAR algo novo, o <search> deve ser o trecho imediatamente ANTES de onde a adição deve entrar, e o <replace> deve ser esse mesmo trecho seguido da nova adição.
 5. Se pedir para DELETAR, o <replace> deve ser vazio.`;
- 
+
       const model = genAI.getGenerativeModel({
         model: modelName,
         systemInstruction: surgicalSystemInstruction,
       }, { apiVersion: "v1beta" });
- 
+
       const result = await model.generateContentStream(prompt);
       const stream = new ReadableStream({
         async start(controller) {
@@ -143,7 +142,7 @@ REGRAS CRÍTICAS DE RETORNO (OBRIGATÓRIAS):
           controller.close();
         },
       });
- 
+
       return new Response(stream, {
         headers: {
           "Content-Type": "text/event-stream",
@@ -152,10 +151,10 @@ REGRAS CRÍTICAS DE RETORNO (OBRIGATÓRIAS):
         },
       });
     }
- 
+
     // 3. Fluxo de Geração / Edição de Cláusulas Jurídicas (Streaming)
     let systemInstruction = "";
-    
+
     if (docType === "notificacao") {
       systemInstruction = `Você é a EXTRAJUS AI, a inteligência artificial definitiva e letal em Engenharia Jurídica da plataforma ExtraJus. Sua missão é redigir NOTIFICAÇÕES EXTRAJUDICIAIS extremamente robustas, completas ("completaço"), juridicamente blindadas, ricas em termos jurídicos formais de alta densidade e tecnicidade jurídica brasileira.
 
@@ -254,7 +253,7 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
     }
 
     systemInstruction += "\nESTILO DE SUGESTÃO E REDAÇÃO REQUERIDO: " + aiMode + ". " + (
-      aiMode === "Conservador" 
+      aiMode === "Conservador"
         ? "Diretriz de estilo crítica: Adote um tom extremamente clássico, altamente formal, tradicional, defensivo, conservador e focado na máxima proteção contratual e blindagem minuciosa de responsabilidades da parte protegida."
         : aiMode === "Inovador"
           ? "Diretriz de estilo crítica: Adote um tom moderno, focado em agilidade, flexibilidade comercial, novas práticas do ecossistema tecnológico/startups e uso de redação clara e simplificada (estilo plain language para alta velocidade de negócios)."
