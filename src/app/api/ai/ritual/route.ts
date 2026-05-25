@@ -246,7 +246,11 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
    <p><br></p>
    <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
    <p data-node-text-align="center" style="text-align: center;"><strong>CONTRATADO</strong></p>
-9. Retorne APENAS o HTML sem estilos inline (exceto pelos atributos obrigatórios de alinhamento e espaçamento nos elementos centralizados da regra 2 e regra 8). Sem explicações.`;
+9. Retorne APENAS o HTML sem estilos inline (exceto pelos atributos obrigatórios de alinhamento e espaçamento nos elementos centralizados da regra 2 e regra 8). Sem explicações.
+10. ENCARGOS FINANCEIROS E MULTAS DENTRO DOS LIMITES LEGAIS (CRÍTICO): NUNCA deixe espaços em branco ou placeholders para taxas de juros, multa de atraso ou penalidades financeiras. Você DEVE preencher os percentuais de forma automática e precisa, respeitando rigorosamente os limites da legislação brasileira de acordo com a natureza do contrato:
+    - MULTA MORATÓRIA (Atraso no pagamento): Fixe exatamente em 2% em contratos de consumo (CDC) ou até 10% em contratos comerciais e civis gerais.
+    - JUROS MORATÓRIOS: Fixe exatamente em 1% ao mês (ou pro rata die) em conformidade com o Código Civil brasileiro.
+    - MULTA RESCISÓRIA/COMPENSATÓRIA: Fixe em patamares razoáveis e proporcionais (geralmente entre 10% e 20% do saldo contratual remanescente, ou equivalente a 1 a 3 mensalidades em contratos de prestação continuada/locação), em estrita observância aos artigos 412 e 413 do Código Civil, evitando cláusulas leoninas ou abusivas.`;
     }
 
     systemInstruction += "\nESTILO DE SUGESTÃO E REDAÇÃO REQUERIDO: " + aiMode + ". " + (
