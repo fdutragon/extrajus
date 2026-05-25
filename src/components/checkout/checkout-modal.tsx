@@ -37,7 +37,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
 
   // Polling for payment status
   useEffect(() => {
-    const isPollingEnabled = false; // Desabilitado temporariamente para testes isolados
+    const isPollingEnabled = true; // Habilitado após testes de webhook bem-sucedidos
     if (!isPollingEnabled || step !== "pix" || !pixData || !pixData.externalId) return;
 
     const interval = setInterval(async () => {
