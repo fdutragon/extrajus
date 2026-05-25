@@ -37,7 +37,8 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
 
   // Polling for payment status
   useEffect(() => {
-    if (step !== "pix" || !pixData?.externalId) return
+    const isPollingEnabled = false; // Desabilitado temporariamente para testes isolados
+    if (!isPollingEnabled || step !== "pix" || !pixData || !pixData.externalId) return;
 
     const interval = setInterval(async () => {
       try {
@@ -263,7 +264,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             <div className="pt-1">
               <div className="text-[11px] font-bold text-muted-foreground mb-1">Valor de liberação</div>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-3xl font-black text-foreground">R$ 27,00</span>
+                <span className="text-3xl font-black text-foreground">R$ 1,00</span>
                 <span className="text-[11px] text-muted-foreground font-medium">Taxa única • Sem mensalidade</span>
               </div>
             </div>
@@ -324,10 +325,10 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                     disabled={loading} 
                     className="w-full h-11 bg-gradient-to-r from-primary via-violet-600 to-primary hover:from-primary/90 hover:to-violet-600/90 text-primary-foreground font-black tracking-[0.12em] uppercase rounded-xl transition-all shadow-[0_3px_15px_rgba(139,92,246,0.2)] hover:shadow-[0_3px_25px_rgba(139,92,246,0.35)] flex items-center justify-center gap-2 duration-300 transform hover:-translate-y-0.5 border border-primary/20"
                   >
-                    {loading ? <BrainCircuit className="animate-spin text-primary-foreground" /> : "Gerar PIX - R$ 27,00"}
+                    {loading ? <BrainCircuit className="animate-spin text-primary-foreground" /> : "Gerar PIX - R$ 1,00"}
                   </Button>
 
-                  {process.env.NODE_ENV === "development" && (
+                  {(process.env.NODE_ENV === "development" || email.toLowerCase().trim() === "felipedutra@outlook.com") && (
                     <Button 
                       type="button" 
                       onClick={handleDevSimulateAll} 
@@ -363,7 +364,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                     {copied ? "Chave Copiada!" : "Copiar Código Pix"}
                   </Button>
 
-                  {process.env.NODE_ENV === "development" && (
+                  {(process.env.NODE_ENV === "development" || email.toLowerCase().trim() === "felipedutra@outlook.com") && (
                     <Button 
                       onClick={handleDevSimulatePaymentOnly} 
                       disabled={loading}

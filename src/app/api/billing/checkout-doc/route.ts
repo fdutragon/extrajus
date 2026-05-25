@@ -99,7 +99,7 @@ export async function POST(request: Request) {
     }
 
     const externalId = `paydoc_${doc.id}`;
-    const amountCents = 2700; // R$ 27,00
+    const amountCents = 100; // R$ 1,00
 
     // 3. Register transaction
     const { error: dbError } = await supabaseAdmin

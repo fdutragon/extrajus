@@ -9,20 +9,48 @@ export async function POST(request: Request) {
     console.log("[Webhook GG Pix] Recebido:", payload);
 
     // Validação de segurança e origem do Webhook
-    const signature = request.headers.get("X-GG-Signature");
-    const authorization = request.headers.get("Authorization");
+    const signature = request.headers.get("X-GG-Signature") || request.headers.get("x-gg-signature");
+    const authorization = request.headers.get("Authorization") || request.headers.get("authorization");
 
     const secret = process.env.GGPIX_WEBHOOK_SECRET || process.env.GGPIX_API_KEY || "";
+
+    console.log("[Webhook GG Pix Debug] Dados de validação:", {
+      signature,
+      authorization: authorization ? `${authorization.substring(0, 15)}...` : null,
+      hasSecret: !!secret,
+      secretLength: secret.length,
+      secretPrefix: secret ? secret.substring(0, 8) : "",
+      usingFallbackKey: !process.env.GGPIX_WEBHOOK_SECRET && !!process.env.GGPIX_API_KEY
+    });
 
     if (secret) {
       const isSimpleToken = authorization === secret || authorization === `Bearer ${secret}` || signature === secret;
       
       let isHmacValid = false;
+      let computedHash = "";
+      let bodyText = "";
+
       if (signature && !isSimpleToken) {
-        const bodyText = await bodyClone.text();
-        const hash = crypto.createHmac("sha256", secret).update(bodyText).digest("hex");
-        isHmacValid = signature === hash;
+        try {
+          bodyText = await bodyClone.text();
+          computedHash = crypto.createHmac("sha256", secret).update(bodyText).digest("hex");
+          isHmacValid = signature === computedHash;
+          
+          console.log("[Webhook GG Pix Debug] HMAC processado:", {
+            isHmacValid,
+            signature,
+            computedHash,
+            bodyLength: bodyText.length
+          });
+        } catch (err: any) {
+          console.error("[Webhook GG Pix Debug] Falha ao ler stream ou computar HMAC:", err.message);
+        }
       }
+
+      console.log("[Webhook GG Pix Debug] Status final de autenticação:", {
+        isSimpleToken,
+        isHmacValid
+      });
 
       if (!isSimpleToken && !isHmacValid) {
         console.warn("[Webhook GG Pix] Bloqueada tentativa de requisição falsa sem assinatura válida.");

@@ -84,11 +84,6 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  // Apenas em desenvolvimento!
-  if (process.env.NODE_ENV !== "development") {
-    return NextResponse.json({ error: "Proibido em produção" }, { status: 403 });
-  }
-
   try {
     const { externalId } = await request.json();
 
@@ -110,6 +105,21 @@ export async function POST(request: Request) {
 
     if (fetchError || !transaction) {
       return NextResponse.json({ error: "Transação não encontrada" }, { status: 404 });
+    }
+
+    // Verificar se é o usuário master para liberar o bypass de simulação em produção
+    let isMasterUser = false;
+    try {
+      const { data: userData } = await supabaseAdmin.auth.admin.getUserById(transaction.user_id);
+      if (userData?.user?.email === "felipedutra@outlook.com") {
+        isMasterUser = true;
+      }
+    } catch (e) {
+      console.error("Erro ao verificar usuário master para bypass:", e);
+    }
+
+    if (process.env.NODE_ENV !== "development" && !isMasterUser) {
+      return NextResponse.json({ error: "Proibido em produção" }, { status: 403 });
     }
 
     // 2. Atualizar transação

@@ -29,7 +29,7 @@ import { useSearchParams } from "next/navigation"
 import { useState, useEffect } from "react"
 import { UserPlus, Check } from "lucide-react"
 import { createClient } from "@/utils/supabase/client"
-import { NotionEditor } from "@/components/tiptap-templates/notion-like/notion-like-editor"
+import { NotionEditor, LoadingSpinner } from "@/components/tiptap-templates/notion-like/notion-like-editor"
 import { SignModal } from "@/components/tiptap-ui/sign-modal/sign-modal"
 import { CollaborationUsers } from "@/components/tiptap-templates/notion-like/notion-like-editor-collaboration-users"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -84,14 +84,7 @@ function EditorContent() {
   }, [])
 
   if (isPublic === null) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <BrainCircuit className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-sm font-black uppercase tracking-widest text-muted-foreground">Iniciando Motor...</p>
-        </div>
-      </div>
-    )
+    return <LoadingSpinner text="Iniciando Motor..." />
   }
 
   return <NotionEditor room={room} templateSlug={templateSlug} readOnly={readOnly} isPublic={isPublic} />
@@ -99,7 +92,7 @@ function EditorContent() {
 
 export default function EditorPage() {
   return (
-    <Suspense fallback={<div>Carregando...</div>}>
+    <Suspense fallback={<LoadingSpinner text="Carregando..." />}>
       <EditorContent />
     </Suspense>
   )
