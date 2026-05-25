@@ -1,6 +1,8 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import crypto from "crypto";
+import { Resend } from "resend";
+import { getSecret } from "@/utils/secrets";
 
 export async function POST(request: Request) {
   try {
@@ -111,6 +113,135 @@ export async function POST(request: Request) {
           .eq("id", docId);
 
         if (updateContractError) console.error("Erro ao destravar contrato correspondente:", updateContractError);
+
+        // Buscar dados do documento para o envio do e-mail via Resend
+        try {
+          const { data: docData } = await supabase
+            .from("documents")
+            .select("title, content")
+            .eq("id", docId)
+            .single();
+
+          const { data: userData } = await supabase.auth.admin.getUserById(transaction.user_id);
+          
+          const resendKey = getSecret("RESEND_API_KEY") || process.env.RESEND_API_KEY;
+          
+          if (resendKey && userData?.user?.email && docData?.content) {
+            const resendInstance = new Resend(resendKey);
+            
+            const emailHtml = `
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <meta charset="utf-8">
+                <style>
+                  body {
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                    background-color: #09090b;
+                    color: #f4f4f5;
+                    margin: 0;
+                    padding: 40px 20px;
+                  }
+                  .container {
+                    max-width: 650px;
+                    margin: 0 auto;
+                    background-color: #09090b;
+                    border: 1px solid rgba(139, 92, 246, 0.15);
+                    border-radius: 24px;
+                    padding: 40px;
+                    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+                  }
+                  .logo {
+                    text-align: center;
+                    margin-bottom: 30px;
+                  }
+                  .logo h2 {
+                    color: #8b5cf6;
+                    font-weight: 900;
+                    letter-spacing: 0.1em;
+                    margin: 0;
+                    text-transform: uppercase;
+                  }
+                  .greeting {
+                    font-size: 18px;
+                    font-weight: bold;
+                    margin-bottom: 20px;
+                    color: #ffffff;
+                  }
+                  .message {
+                    font-size: 14px;
+                    line-height: 1.6;
+                    color: #a1a1aa;
+                    margin-bottom: 30px;
+                  }
+                  .document-box {
+                    background-color: #ffffff;
+                    color: #18181b;
+                    border-radius: 16px;
+                    padding: 30px;
+                    margin-bottom: 30px;
+                    border: 1px solid rgba(0,0,0,0.05);
+                    max-height: 500px;
+                    overflow-y: auto;
+                    font-family: 'Cambria', 'Georgia', serif;
+                  }
+                  .document-box h1 {
+                    text-align: center;
+                    font-size: 18px;
+                    color: #000000;
+                    margin-bottom: 20px;
+                  }
+                  .document-box p {
+                    font-size: 11px;
+                    line-height: 1.5;
+                    margin-bottom: 10px;
+                    text-align: justify;
+                  }
+                  .footer {
+                    text-align: center;
+                    font-size: 11px;
+                    color: #52525b;
+                    border-top: 1px solid rgba(255, 255, 255, 0.05);
+                    padding-top: 20px;
+                    margin-top: 30px;
+                  }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <div class="logo">
+                    <h2>ExtraJus</h2>
+                  </div>
+                  <div class="greeting">Olá, ${userData.user.user_metadata?.full_name || 'Cliente'}!</div>
+                  <div class="message">
+                    Seu pagamento foi confirmado com sucesso. Como parte do seu desbloqueio de documento, aqui está a minuta oficial do seu <strong>${docData.title || 'Documento ExtraJus'}</strong> em formato digital.
+                    <br><br>
+                    Você pode visualizar o texto completo abaixo ou copiá-lo diretamente para uso. Caso precise realizar alterações futuras no editor ou fazer novas exportações em formato DOCX, você poderá fazê-las na plataforma ExtraJus.
+                  </div>
+                  <div class="document-box">
+                    ${docData.content}
+                  </div>
+                  <div class="footer">
+                    Este é um e-mail automático enviado pela ExtraJus. Por favor, não responda a esta mensagem.
+                    <br>
+                    © ${new Date().getFullYear()} ExtraJus. Todos os direitos reservados.
+                  </div>
+                </div>
+              </body>
+              </html>
+            `;
+
+            await resendInstance.emails.send({
+              from: "ExtraJus AI <documentos@contato.extrajus.com.br>",
+              to: userData.user.email,
+              subject: `⚔️ Seu documento oficial foi liberado: ${docData.title || 'Contrato'}`,
+              html: emailHtml
+            });
+            console.log(`[Webhook] E-mail com contrato enviado com sucesso para ${userData.user.email}`);
+          }
+        } catch (emailErr: any) {
+          console.error("[Webhook] Erro no envio de e-mail com contrato:", emailErr.message);
+        }
 
         console.log(`[Webhook] Documento e Contrato ${docId} destravados com sucesso para o usuário ${transaction.user_id}`);
         return NextResponse.json({ success: true });
