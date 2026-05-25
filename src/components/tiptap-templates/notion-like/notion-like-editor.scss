@@ -104,7 +104,7 @@ body {
   hr {
     margin: 2.5rem 0;
     border: 0;
-    border-top: 1.5px solid rgba(229, 176, 59, 0.2);
+    border-top: 1.5px solid color-mix(in srgb, var(--primary) 20%, transparent);
   }
 
   table {
@@ -178,7 +178,7 @@ body {
     }
 
     hr {
-      border-top-color: rgba(229, 176, 59, 0.25);
+      border-top-color: color-mix(in srgb, var(--primary) 25%, transparent);
     }
 
     table {
