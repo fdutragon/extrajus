@@ -267,13 +267,30 @@ export async function POST(request: Request) {
             </html>
           `;
 
-          await resendInstance.emails.send({
+          let sendResult = await resendInstance.emails.send({
             from: "ExtraJus AI <documentos@contato.extrajus.com.br>",
             to: userData.user.email,
             subject: `⚔️ Seu documento oficial foi liberado: ${docData.title || 'Contrato'}`,
             html: emailHtml
           });
-          console.log(`[Simulação Billing Status] E-mail com contrato enviado com sucesso para ${userData.user.email}`);
+
+          if (sendResult.error) {
+            console.warn(`[Simulação Billing Status] Falha ao enviar com remetente oficial (Código ${sendResult.error.statusCode}). Tentando fallback sandbox...`);
+            sendResult = await resendInstance.emails.send({
+              from: "ExtraJus AI <onboarding@resend.dev>",
+              to: userData.user.email,
+              subject: `⚔️ [Sandbox] Seu documento oficial foi liberado: ${docData.title || 'Contrato'}`,
+              html: emailHtml
+            });
+            
+            if (sendResult.error) {
+              console.error("[Simulação Billing Status] Falha no fallback do Resend:", sendResult.error);
+            } else {
+              console.log(`[Simulação Billing Status] E-mail enviado com remetente sandbox (onboarding) para ${userData.user.email}`);
+            }
+          } else {
+            console.log(`[Simulação Billing Status] E-mail com contrato enviado com sucesso para ${userData.user.email}`);
+          }
         }
       } catch (emailErr: any) {
         console.error("[Simulação Billing Status] Erro no envio de e-mail com contrato:", emailErr.message);
