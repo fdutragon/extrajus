@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Biblioteca de Modelos | ExtraJus",
     description: "Modelos de contratos blindados e prontos para uso. O padrão ouro da engenharia jurídica.",
-    url: "https://extrajus.com.br/arsenal",
+    url: "https://extrajus.com.br/modelos",
     siteName: "ExtraJus",
     images: [
       {
@@ -55,7 +55,7 @@ export default function ArsenalLayout({
             "@type": "CollectionPage",
             "name": "Biblioteca de Modelos ExtraJus",
             "description": "Biblioteca de modelos de contratos e documentos jurídicos de alta performance.",
-            "url": "https://extrajus.com.br/arsenal",
+            "url": "https://extrajus.com.br/modelos",
             "provider": {
               "@type": "Organization",
               "name": "ExtraJus",

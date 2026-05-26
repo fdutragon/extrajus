@@ -257,7 +257,7 @@ export default async function DashboardPage() {
                     <p className="text-xs text-muted-foreground leading-relaxed font-medium mb-5 pr-2">
                       Acesso aos modelos de contratos prontos validados por nossa equipe jurídica.
                     </p>
-                    <Link href="/arsenal" className="block w-full">
+                    <Link href="/modelos" className="block w-full">
                       <Button
                         variant="outline"
                         size="sm"

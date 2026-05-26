@@ -214,7 +214,7 @@ export default function DashboardLayoutClient({
           router.push("/brain");
         } else if (key === "a") {
           e.preventDefault();
-          router.push("/arsenal");
+          router.push("/modelos");
         } else if (key === "k") {
           e.preventDefault();
           setIsShortcutsOpen(prev => !prev);
@@ -464,7 +464,7 @@ export default function DashboardLayoutClient({
     { name: "Caixa de Entrada", href: "/inbox", icon: Mail },
     { name: "Contratos", href: "/contracts", icon: FileText },
     { name: "Assinaturas", href: "/signatures", icon: PenTool },
-    { name: "Modelos", href: "/arsenal", icon: Zap },
+    { name: "Modelos", href: "/modelos", icon: Zap },
     { name: "Créditos de IA", href: "/brain", icon: Brain },
   ];
 

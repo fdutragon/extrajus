@@ -45,7 +45,7 @@ export async function updateSession(request: NextRequest) {
     '/settings',
     '/admin',
     '/contracts',
-    '/arsenal'
+    '/modelos'
   ]
 
   const isProtectedRoute = protectedRoutes.some(route => 

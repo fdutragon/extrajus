@@ -96,7 +96,7 @@ export async function POST(request: Request) {
         title: "Forja Customizada Concluída! ⚔️",
         message: `Seu modelo de contrato solicitado foi analisado e forjado pelos nossos arquitetos jurídicos. Resposta: "${answer}"`,
         type: 'forge_response',
-        link: '/arsenal'
+        link: '/modelos'
       });
 
     if (notificationError) throw notificationError;
