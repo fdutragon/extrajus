@@ -33,10 +33,10 @@ export async function signup(formData: FormData) {
   const user = data.user
   if (user) {
     try {
-      // Force initial credits to exactly 150 using the service role admin client (bypasses RLS)
+      // Force initial credits to exactly 300 using the service role admin client (bypasses RLS)
       await supabaseAdmin
         .from('profiles')
-        .update({ credits: 150 })
+        .update({ credits: 300 })
         .eq('id', user.id)
       
       // 3. Authenticate immediately to set cookies and create active session
@@ -53,7 +53,7 @@ export async function signup(formData: FormData) {
         resendInstance.emails.send({
           from: 'ExtraJus <boasvindas@extrajus.pro>',
           to: email,
-          subject: '⚡ Bem-vindo à ExtraJus: Seu Arsenal de Inteligência Jurídica',
+          subject: '⚡ Bem-vindo à ExtraJus: Sua Plataforma de Inteligência Jurídica',
           html: `
             <!DOCTYPE html>
             <html>
@@ -193,13 +193,13 @@ export async function signup(formData: FormData) {
                   </div>
                   <div class="divider"></div>
                   <h1>Bem-vindo à ExtraJus.</h1>
-                  <div class="subheadline">Seu Arsenal de Inteligência Jurídica</div>
+                  <div class="subheadline">Sua Plataforma de Inteligência Jurídica</div>
                   <p>
                     Seu acesso à <strong>ExtraJus</strong> foi ativado com sucesso. Você acaba de se conectar à inteligência cirúrgica mais eficiente do mercado corporativo para geração, revisão e assinatura eletrônica de contratos.
                   </p>
                   
                   <p style="text-align: center; font-weight: bold; color: #c5a880; font-size: 13px;">
-                    ⚡ Sua conta foi ativada com 150 Sinapses de boas-vindas para você iniciar as suas auditorias imediatamente.
+                    ⚡ Sua conta foi ativada com 300 créditos de boas-vindas para você iniciar as suas análises imediatamente.
                   </p>
 
                   <div class="features">
@@ -208,8 +208,8 @@ export async function signup(formData: FormData) {
                       <p class="feature-desc">Edite cláusulas e parágrafos de forma milimétrica. O editor inteligente reescreve o conteúdo sem alterar formatação ou recuos externos.</p>
                     </div>
                     <div class="feature-item">
-                      <div class="feature-title"><span style="color: #c5a880;">🛡️</span> RADAR DE SAÚDE</div>
-                      <p class="feature-desc">Audite seus documentos em tempo real. Identifique brechas de rescisão perigosas, multas incoerentes e termos ambíguos instantaneamente.</p>
+                      <div class="feature-title"><span style="color: #c5a880;">🛡️</span> RADAR DE CONFORMIDADE</div>
+                      <p class="feature-desc">Analise seus documentos em tempo real. Identifique brechas de rescisão perigosas, multas incoerentes e termos ambíguos instantaneamente.</p>
                     </div>
                     <div class="feature-item">
                       <div class="feature-title"><span style="color: #c5a880;">📜</span> ASSINATURA DIGITAL</div>

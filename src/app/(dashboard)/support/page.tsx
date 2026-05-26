@@ -46,7 +46,7 @@ export default function SupportPage() {
     try {
       const { error } = await supabase.from('notifications').insert({
         user_id: user.id,
-        title: `🛠️ Solicitação de Forja: ${forgeDescription.substring(0, 30)}...`,
+        title: `🛠️ Solicitação de Modelo: ${forgeDescription.substring(0, 30)}...`,
         message: forgeDescription,
         type: 'forge',
         read: false
@@ -54,11 +54,11 @@ export default function SupportPage() {
 
       if (error) throw error;
 
-      toast.success("Solicitação de forja enviada! O acompanhamento será feito na sua Caixa de Entrada.");
+      toast.success("Solicitação de modelo enviada! O acompanhamento será feito na sua Caixa de Entrada.");
       setForgeDescription("");
     } catch (err: any) {
       console.error(err);
-      toast.error(err.message || "Erro ao solicitar forja.");
+      toast.error(err.message || "Erro ao solicitar modelo.");
     } finally {
       setIsForaging(false);
     }
@@ -110,16 +110,16 @@ export default function SupportPage() {
             <span className="text-xs font-black uppercase tracking-widest text-primary">Suporte ExtraJus</span>
          </div>
          <h1 className="text-3xl font-black tracking-tight text-foreground uppercase italic">
-            Suporte & Forja Customizada
+            Suporte & Elaboração de Modelos
          </h1>
          <p className="text-xs text-muted-foreground font-bold tracking-wide">
-            Solicite modelos sob medida forjados pelos nossos generais ou abra chamados técnicos de suporte.
+            Solicite modelos sob medida elaborados pelos nossos engenheiros jurídicos ou abra chamados técnicos de suporte.
          </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
          
-         {/* Painel 1: Solicitar Forja */}
+         {/* Painel 1: Solicitar Modelo */}
          <div className="bg-card border border-border rounded-3xl p-8 relative overflow-hidden flex flex-col justify-between h-full">
             <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
                <Zap size={120} className="text-primary animate-pulse" />
@@ -128,16 +128,16 @@ export default function SupportPage() {
             <div className="space-y-6">
                <div className="space-y-1">
                   <h3 className="text-sm font-black tracking-wide text-foreground mb-1 flex items-center gap-2">
-                     <Zap size={16} className="text-primary" /> Solicitar Forja de Modelo
+                     <Zap size={16} className="text-primary" /> Solicitar Modelo sob Medida
                   </h3>
                   <p className="text-xs text-muted-foreground font-bold tracking-wide">
-                     Descreva detalhadamente o modelo de documento jurídico que você precisa. Nossos arquitetos vão estruturá-lo e adicioná-lo ao seu arsenal.
+                     Descreva detalhadamente o modelo de documento jurídico que você precisa. Nossa equipe vai estruturá-lo e adicioná-lo à sua biblioteca.
                   </p>
                </div>
 
                <form onSubmit={handleRequestForge} className="space-y-5">
                   <div className="space-y-2">
-                     <label className="text-xs font-black text-muted-foreground/80 block mb-1.5">O Que Você Deseja Forjar?</label>
+                     <label className="text-xs font-black text-muted-foreground/80 block mb-1.5">O Que Você Deseja Solicitar?</label>
                      <textarea 
                        placeholder="Ex: Contrato de Prestação de Serviços de TI com cláusula de proteção de PI pesada e multa de rescisão abusiva..."
                        value={forgeDescription}
@@ -153,9 +153,9 @@ export default function SupportPage() {
                     disabled={isForaging}
                     className="w-full h-11 rounded-xl text-xs font-black tracking-wide bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
                   >
-                     {isForaging ? "Convocando Arquitetos..." : (
+                     {isForaging ? "Enviando Solicitação..." : (
                        <>
-                         Solicitar Forja sob Medida <ArrowRight size={12} />
+                         Solicitar Elaboração de Modelo <ArrowRight size={12} />
                        </>
                      )}
                   </Button>
@@ -163,7 +163,7 @@ export default function SupportPage() {
             </div>
 
             <div className="mt-8 pt-6 border-t border-border flex items-center gap-2 text-[8px] font-black text-primary tracking-wide">
-               <ShieldCheck size={12} /> Modelos submetidos aos padrões rígidos de compliance do império
+               <ShieldCheck size={12} /> Modelos submetidos aos padrões rígidos de conformidade e excelência
             </div>
          </div>
 
@@ -179,7 +179,7 @@ export default function SupportPage() {
                      <LifeBuoy size={16} className="text-primary" /> Central de Chamados & Suporte
                   </h3>
                   <p className="text-xs text-muted-foreground font-bold tracking-wide">
-                     Encontrou alguma anomalia, precisa de ajuda com assinaturas, saldo, ou quer tirar alguma dúvida? Deixe sua mensagem e nosso general Felipe responderá na sua caixa de entrada.
+                     Encontrou alguma anomalia, precisa de ajuda com assinaturas, saldo, ou quer tirar alguma dúvida? Deixe sua mensagem e nossos especialistas responderão na sua caixa de entrada.
                   </p>
                </div>
 
@@ -211,7 +211,7 @@ export default function SupportPage() {
             </div>
 
             <div className="mt-8 pt-6 border-t border-border flex items-center gap-2 text-[8px] font-black text-emerald-500 tracking-wide">
-               <ShieldCheck size={12} /> Canal de comunicação criptografado e seguro com os generais
+               <ShieldCheck size={12} /> Canal de comunicação criptografado e altamente seguro
             </div>
          </div>
 

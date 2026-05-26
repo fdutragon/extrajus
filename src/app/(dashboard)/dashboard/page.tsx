@@ -79,8 +79,8 @@ export default async function DashboardPage() {
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-4">
-            <Badge variant="outline" className="text-[9px] uppercase tracking-[0.3em] font-black border-primary/30 text-primary bg-primary/5 px-3 py-1 rounded-full animate-pulse">Core System</Badge>
-            <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">Neural Network Online</span>
+            <Badge variant="outline" className="text-[9px] uppercase tracking-[0.3em] font-black border-primary/30 text-primary bg-primary/5 px-3 py-1 rounded-full animate-pulse">Plataforma</Badge>
+            <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">Inteligência Ativa</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground">
             Comando <span className="text-muted-foreground/30 font-light">/</span> <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/50 bg-clip-text text-transparent">{profile?.full_name?.split(' ')[0] || 'Geral'}</span>
@@ -95,7 +95,7 @@ export default async function DashboardPage() {
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
             <div className="relative z-10 flex items-center gap-2">
               <PlusCircle size={16} className="transition-transform duration-500 group-hover:rotate-90 group-hover:scale-110" />
-              Forjar Novo Contrato
+              Elaborar Novo Contrato
             </div>
           </Button>
         </form>
@@ -225,7 +225,7 @@ export default async function DashboardPage() {
                     <div className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-background animate-pulse" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-black text-foreground tracking-tight">Núcleo Synapse</h3>
+                    <h3 className="text-lg font-black text-foreground tracking-tight">Painel do Usuário</h3>
                     <p className="text-[9px] text-primary/80 uppercase tracking-[0.2em] font-black">Online & Operacional</p>
                   </div>
                 </div>
@@ -236,12 +236,12 @@ export default async function DashboardPage() {
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
                         <Zap size={14} className="text-primary" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-primary">Reservatório</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-primary">Saldo de Créditos</span>
                       </div>
                       <span className="text-xs font-black font-mono text-primary bg-primary/10 px-2 py-0.5 rounded-md border border-primary/20">{profile?.credits || 0}</span>
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed font-medium mb-5 pr-2">
-                      Sua carga neural está ativa. Refine acordos ou blinde cláusulas com a IA.
+                      Seu saldo de créditos está ativo. Otimize seus acordos ou analise cláusulas com a IA.
                     </p>
                     <BuyCreditsButton />
                   </div>
@@ -250,12 +250,12 @@ export default async function DashboardPage() {
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
                         <Package size={14} className="text-primary" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-primary">Arsenal Base</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-primary">Modelos de Contratos</span>
                       </div>
                       <span className="text-xs font-black font-mono text-foreground bg-muted border border-border px-2 py-0.5 rounded-md">{templateCount || 0}</span>
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed font-medium mb-5 pr-2">
-                      Acesso aos moldes de contratos imutáveis testados em campo de batalha.
+                      Acesso aos modelos de contratos prontos validados por nossa equipe jurídica.
                     </p>
                     <Link href="/arsenal" className="block w-full">
                       <Button
@@ -264,7 +264,7 @@ export default async function DashboardPage() {
                         className="w-full h-10 gap-2 rounded-xl border-border/60 hover:border-primary/50 bg-background/50 hover:bg-primary/5 text-muted-foreground hover:text-primary font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-300"
                       >
                         <FileText size={14} className="text-muted-foreground group-hover/item:text-primary transition-colors" />
-                        Abrir Arsenal
+                        Abrir Biblioteca
                       </Button>
                     </Link>
                   </div>

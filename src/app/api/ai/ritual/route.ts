@@ -61,55 +61,54 @@ export async function POST(req: Request) {
 
     const modelName = "gemini-2.5-flash";
 
-    // 1. Fluxo de Auditoria de Riscos Jurídicos
+    // 1. Fluxo de Sugestões de Cláusulas Complementares (Radar IA)
     if (instructionType === "audit") {
-      let systemInstruction = `Você é a EXTRAJUS AI, assistente profissional de conformidade jurídica com rigor absoluto em conformidade com as leis e normas jurídicas brasileiras.`;
+      let systemInstruction = `Você é a EXTRAJUS AI, assistente profissional de engenharia jurídica com rigor absoluto na elaboração e blindagem de contratos e instrumentos jurídicos brasileiros.`;
 
       if (docType === "notificacao") {
-        systemInstruction += `\nSua função é analisar detalhadamente a Notificação Extrajudicial fornecida, identificar riscos jurídicos graves, fragilidades probatórias, ambiguidades, tom inadequado, excessos que possam configurar coação e ausência de prazos peremptórios claros.
+        systemInstruction += `\nSua função é analisar detalhadamente a Notificação Extrajudicial fornecida e sugerir parágrafos ou cláusulas complementares para aumentar a força coercitiva, clareza probatória, definir prazos peremptórios e blindar seus termos contra contestações.
 
-DIRETRIZES ESPECÍFICAS DE CONFORMIDADE:
-1. ILEGALIDADES FLAGRANTES (CRÍTICO): Aponte APENAS abusos de direito escandalosos, cobranças ilegais, extorsão ou ameaças criminosas. NÃO aponte expressões legais padrão como "sob as penas da lei", "medidas cabíveis" ou "ajuizamento de ação", pois são exercícios regulares do direito.
-2. IGNORAR ESPAÇOS EM BRANCO E PLACEHOLDERS: É expressamente PROIBIDO gerar alertas para campos não preenchidos (ex: "[Nome]", "XXXXX", "[Endereço]"). O foco é apenas no mérito jurídico.
-3. ERROS TÉCNICOS GRAVES: Aponte apenas se os fatos ou prazos exigidos forem materialmente impossíveis ou contrários à lei.`;
+DIRETRIZES ESPECÍFICAS DE SUGESTÃO:
+1. SUGESTÕES ESTRATÉGICAS (CRÍTICO): Sugira cláusulas que reforcem a notificação (ex: fixação de penalidades moratórias, detalhamento de consequências judiciais, clareza nos prazos e formas de resposta).
+2. IGNORAR ESPAÇOS EM BRANCO: Ignore campos não preenchidos.
+3. CONEXÃO COM O TEXTO: Cada sugestão deve ser vinculada a uma parte/frase do texto original para que o usuário possa inseri-la de forma contextualizada.`;
       } else if (docType === "peticao") {
-        systemInstruction += `\nSua função é analisar detalhadamente a Petição fornecida, identificar riscos processuais, inépcia, faltas de fundamento jurídico, inadequação dos pedidos, ambiguidades e falhas técnicas.
+        systemInstruction += `\nSua função é analisar detalhadamente a Petição fornecida e sugerir teses jurídicas fundamentais, pedidos secundários, reforço de fundamentação ou produção de provas adicionais importantes que possam estar ausentes.
 
-DIRETRIZES ESPECÍFICAS DE CONFORMIDADE:
-1. INÉPCIA E PEDIDOS (CRÍTICO): Aponte imediatamente se os pedidos são indeterminados, genéricos, se falta fundamentação ou se há contradição escancarada com os fatos.
-2. COMPETÊNCIA E LEGITIMIDADE: Aponte possíveis riscos na identificação do juízo ou qualificação deficiente das partes.
-3. ERROS TÉCNICOS: Aponte contradições processuais ou falta de requisitos legais essenciais do CPC.`;
+DIRETRIZES ESPECÍFICAS DE SUGESTÃO:
+1. SUGESTÕES PROCESSUAIS (CRÍTICO): Sugira teses e pedidos fundamentais (ex: tutela de urgência, inversão do ônus da prova, fixação de astreintes, detalhamento de danos específicos).
+2. CONEXÃO COM O TEXTO: Vincule cada sugestão a um trecho existente da petição para inserção ancorada.`;
       } else {
-        systemInstruction += `\nSua função é analisar detalhadamente a minuta contratual fornecida, identificar riscos jurídicos graves, brechas contratuais, ambiguidades e cláusulas abusivas ou ilegais.
+        systemInstruction += `\nSua função é analisar detalhadamente a minuta contratual fornecida e identificar cláusulas importantes e protetivas complementares que estão ausentes ou que podem ser sugeridas para resguardar os interesses do contratante (ex: cláusula de propriedade intelectual, sigilo/NDA, penalidades específicas, limites de indenização, prazos de tolerância, regras de rescisão, foro de eleição, etc.).
 
-DIRETRIZES ESPECÍFICAS DE CONFORMIDADE:
-1. ILEGALIDADES FLAGRANTES (CRÍTICO): Você DEVE identificar e apontar APENAS cláusulas ilegais, nulas de pleno direito ou abusivas (ex: juros acima do limite legal, multas rescisórias confiscatórias ou renúncia a direitos indisponíveis).
-2. IGNORAR ESPAÇOS EM BRANCO E PLACEHOLDERS: É expressamente PROIBIDO gerar alertas para campos não preenchidos (ex: "[Nome]", "XXXXX", "R$ ______"). O foco é apenas na ilegalidade das regras contratuais.
-3. IGNORAR TERMOS PADRÃO: NÃO gere alertas para linguagem jurídica formal ou dura, desde que esteja dentro da legalidade. Foco exclusivo em brechas jurídicas materiais e desequilíbrios contratuais severos.`;
+DIRETRIZES ESPECÍFICAS DE SUGESTÃO:
+1. IDENTIFICAR LACUNAS (CRÍTICO): Analise o contrato e sugira cláusulas vitais ausentes que farão a blindagem jurídica da minuta (Contrato de Guerra).
+2. MAPEAR TEXTO DE REFERÊNCIA: Cada cláusula sugerida deve conter como "originalText" o título ou o texto exato de uma cláusula existente no documento para servir de âncora de inserção.
+3. SEM ALERTAS MENORES: Ignore formatação ou campos vazios. Foco exclusivo em sugerir cláusulas ricas e completas de altíssima relevância jurídica.`;
       }
 
       systemInstruction += `\n\nFormato estrito de retorno (retorne APENAS um array JSON válido sem decorações markdown adicionais fora dele):
-[{"originalText": "texto exato do documento a ser corrigido", "suggestion": "nova redação sugerida (pode conter HTML simples)", "reason": "fundamentação jurídica e técnica detalhada do risco ou da falha"}]`;
+[{"originalText": "texto ou título exato de uma cláusula existente no documento para ancorar a nova sugestão", "suggestion": "nova redação sugerida em HTML simples para a cláusula complementar (sem numeração manual)", "reason": "fundamentação jurídica explicativa de por que esta nova cláusula é altamente recomendada"}]`;
 
-      systemInstruction += `\nNÍVEL DE RIGOR DE AUDITORIA ATIVO: Nível ${aiRigor}/10. ${aiRigor >= 8
-        ? "Diretriz crítica: Seja extremamente exigente em identificar riscos materiais, mas NUNCA alerte sobre espaços em branco, formatação ou jargões jurídicos protetivos padrão (ex: 'sob as penas da lei'). Foco 100% em detectar ilegalidades contratuais, prazos nulos e multas abusivas."
-        : "Diretriz crítica: Concentre-se exclusivamente em apontar riscos e nulidades graves de extrema relevância jurídica estrutural. Ignore detalhes menores e campos não preenchidos."
+      systemInstruction += `\nNÍVEL DE RIGOR DE ANÁLISE ATIVO: Nível ${aiRigor}/10. ${aiRigor >= 8
+        ? "Diretriz crítica: Seja extremamente exigente e sugira cláusulas complementares de alta blindagem corporativa e riqueza terminológica."
+        : "Diretriz crítica: Sugira apenas cláusulas essenciais e amplamente comuns de grande impacto estrutural."
         }`;
 
-      // AUDITORIA COM MODELO CUSTOMIZADO
+      // ANÁLISE COM MODELO CUSTOMIZADO
       try {
         const auditModel = genAI.getGenerativeModel({
           model: "gemini-2.5-flash",
           systemInstruction: systemInstruction,
         }, { apiVersion: "v1beta" });
 
-        const result = await auditModel.generateContent(`Analise este documento e aponte todos os riscos, brechas e abusividades de acordo com as diretrizes de rigor:\n\n${prompt}`);
+        const result = await auditModel.generateContent(`Analise este documento e sugira cláusulas protetoras complementares fundamentais de acordo com as diretrizes:\n\n${prompt}`);
         const responseText = result.response.text();
 
         return NextResponse.json({ text: responseText });
       } catch (err: any) {
-        console.error("Auditoria falhou:", err);
-        return NextResponse.json({ error: "Falha ao processar a auditoria." }, { status: 500 });
+        console.error("Análise de cláusulas falhou:", err);
+        return NextResponse.json({ error: "Falha ao processar sugestões de cláusulas." }, { status: 500 });
       }
     }
 

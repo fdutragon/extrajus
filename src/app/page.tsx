@@ -130,17 +130,17 @@ export default function Home() {
       <section className="relative pt-40 pb-24 px-6">
         <div className="max-w-4xl mx-auto text-center relative z-10 space-y-6">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/5 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest animate-in fade-in slide-in-from-bottom-4 duration-1000">
-            <Sparkles size={11} className="animate-pulse" /> Inteligência Artificial para Criação e Auditoria Legal
+            <Sparkles size={11} className="animate-pulse" /> Inteligência Artificial para Criação e Análise Legal
           </div>
           {/* Headline Reduzida & Consistente */}
           <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.1] text-foreground animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
             O Modelo de Contrato Perfeito. <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/90 to-purple-400">
-              Gerado, Auditado e Assinado por IA.
+              Gerado, Analisado e Assinado por IA.
             </span>
           </h1>          {/* Subheadline Reduzida & Focada em Google Ads "Modelo de Contrato" */}
           <p className="text-[13px] md:text-base text-muted-foreground/90 max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
-            Pare de copiar PDFs genéricos e perigosos da internet que colocam sua empresa em risco. Use nossa inteligência cirúrgica para <span className="text-foreground font-bold">criar, auditar e assinar</span> contratos profissionais sob medida em segundos.
+            Pare de copiar PDFs genéricos e perigosos da internet que colocam sua empresa em risco. Use nossa inteligência cirúrgica para <span className="text-foreground font-bold">criar, analisar e assinar</span> contratos profissionais sob medida em segundos.
           </p>
 
           {/* Botões do Hero Melhores & Premium */}
@@ -194,7 +194,7 @@ export default function Home() {
                   </div>
                   <div className="flex items-center gap-4 pt-2">
                     <div className="px-3 py-1 bg-primary/10 border border-primary/25 rounded-lg text-[9px] font-black text-primary uppercase tracking-widest">
-                      IA ExtraJus // Auditoria em Tempo Real
+                      IA ExtraJus // Análise em Tempo Real
                     </div>
                   </div>
                   <div className="space-y-3 pt-2">
@@ -206,7 +206,7 @@ export default function Home() {
                 {/* Right Sidebar Mockup (Mapa do Instrumento & Auditoria) */}
                 <div className="w-48 border-l border-border bg-card/45 p-4 text-left space-y-4 hidden lg:block">
                   <div className="flex items-center justify-between border-b border-border/40 pb-2">
-                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Saúde do Contrato</span>
+                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Conformidade do Contrato</span>
                     <span className="text-[8px] font-black text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">98%</span>
                   </div>
                   <div className="space-y-3">
@@ -234,7 +234,7 @@ export default function Home() {
                       <MousePointer2 size={12} />
                     </div>
                     <div>
-                      <p className="text-[9px] font-black text-foreground uppercase tracking-wide">Ajuste Neural</p>
+                      <p className="text-[9px] font-black text-foreground uppercase tracking-wide">Sugestão de Ajuste</p>
                       <p className="text-[8px] text-muted-foreground tracking-tight">Cláusula otimizada com sucesso</p>
                     </div>
                   </div>
@@ -274,13 +274,13 @@ export default function Home() {
                 <div className="space-y-3 opacity-80">
                   <p className="text-foreground font-bold">Cláusula de rescisão imotivada</p>
                   <p className="text-emerald-500 bg-emerald-500/5 px-2.5 py-1.5 rounded-xl border border-emerald-500/20 italic">
-                    + [Ajuste Neural]: Qualquer uma das partes poderá rescindir o presente instrumento mediante aviso prévio por escrito com antecedência mínima de 30 dias...
+                    + [Sugestão Otimizada]: Qualquer uma das partes poderá rescindir o presente instrumento mediante aviso prévio por escrito com antecedência mínima de 30 dias...
                   </p>
                   <div className="h-4 w-3/4 bg-primary/5 rounded border border-primary/10" />
                 </div>
                 <div className="absolute bottom-5 left-5 right-5 h-11 bg-background border border-border rounded-xl shadow-sm flex items-center px-4 gap-2">
                   <span className="text-primary animate-pulse">✨</span>
-                  <span className="text-muted-foreground font-sans font-bold text-[8.5px] uppercase tracking-wider">Injetando blindagem financeira no objeto...</span>
+                  <span className="text-muted-foreground font-sans font-bold text-[8.5px] uppercase tracking-wider">Ajustando garantias financeiras no objeto...</span>
                 </div>
               </div>
             </BentoCard>
@@ -289,14 +289,14 @@ export default function Home() {
               className="md:col-span-4 h-[420px]"
               title="Radar Anti-Erros"
               subtitle="Proteção e rigor automatizados"
-              description="Esqueça a insegurança. A plataforma analisa cada linha em tempo real, auditando se há termos ambíguos, brechas de multa ou cláusulas essenciais em falta."
+              description="Esqueça a insegurança. A plataforma analisa cada linha em tempo real, verificando se há termos ambíguos, brechas de multa ou cláusulas essenciais em falta."
             >
               <div className="mt-4 space-y-4">
                 <div className="p-5 rounded-2xl bg-primary/5 border border-primary/25 transition-all duration-300 hover:border-primary/50 group/stat">
-                  <p className="text-[9px] font-black text-primary uppercase tracking-widest mb-1.5 font-sans">Saúde Legal</p>
+                  <p className="text-[9px] font-black text-primary uppercase tracking-widest mb-1.5 font-sans">Conformidade Legal</p>
                   <div className="flex items-baseline gap-2">
                     <p className="text-3xl font-black text-foreground tracking-tight font-sans">98%</p>
-                    <span className="text-[8px] font-black px-2 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/20 uppercase tracking-wider">Blindado</span>
+                    <span className="text-[8px] font-black px-2 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/20 uppercase tracking-wider">Seguro</span>
                   </div>
                 </div>
                 <div className="p-5 rounded-2xl bg-muted/50 border border-border transition-all duration-300 hover:border-primary/20 group/stat">
@@ -314,7 +314,7 @@ export default function Home() {
               className="md:col-span-4 h-[350px]"
               title="Navegação Inteligente"
               subtitle="Resumo estruturado do contrato"
-              description="Visualize a anatomia jurídica do seu documento por meio de um índice neural interativo. Acesse e edite qualquer bloco de cláusula em um piscar de olhos."
+              description="Visualize a anatomia jurídica do seu documento por meio de um sumário interativo. Acesse e edite qualquer bloco de cláusula em um piscar de olhos."
             >
               <div className="mt-6 pl-4 space-y-3 border-l-2 border-primary/20">
                 <div className="text-[9.5px] font-black uppercase tracking-wider text-foreground flex items-center justify-between">
@@ -466,7 +466,7 @@ export default function Home() {
             </h2>
 
             <p className="text-[13px] md:text-sm text-muted-foreground leading-relaxed font-medium">
-              Elimine burocracias antigas. Colete assinaturas digitais plenamente seguras com logs de auditoria completos (IP, hashes criptográficos e geolocalização) direto pelo celular do seu contratante.
+              Elimine burocracias antigas. Colete assinaturas digitais plenamente seguras com histórico de assinaturas completo (IP, hashes criptográficos e geolocalização) direto pelo celular do seu contratante.
             </p>
 
             <Link href="/signatures">
@@ -570,7 +570,7 @@ export default function Home() {
               Perguntas Frequentes
             </h2>
             <p className="text-[13px] md:text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed font-medium">
-              Esclareça suas dúvidas técnicas e jurídicas e comece a forjar documentos blindados agora.
+              Esclareça suas dúvidas técnicas e jurídicas e comece a elaborar documentos seguros agora.
             </p>
           </div>
 
@@ -589,7 +589,7 @@ export default function Home() {
             />
             <FAQItem
               question="Qual a vantagem de usar a ExtraJus em vez de baixar um modelo pronto do Google?"
-              answer="Modelos baixados da internet são estáticos, desatualizados e costumam conter termos que não se aplicam ao seu cenário real, gerando brechas fatais de rescisão. A ExtraJus gera modelos dinâmicos, audita o texto em busca de contradições de datas/valores e melhora o contrato conforme as suas respostas."
+              answer="Modelos baixados da internet são estáticos, desatualizados e costumam conter termos que não se aplicam ao seu cenário real, gerando brechas fatais de rescisão. A ExtraJus gera modelos dinâmicos, analisa o texto em busca de contradições de datas/valores e melhora o contrato conforme as suas respostas."
             />
             <FAQItem
               question="Posso fazer o upload de contratos antigos que eu já costumo utilizar?"

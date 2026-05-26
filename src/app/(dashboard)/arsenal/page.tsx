@@ -154,11 +154,11 @@ export default function ArsenalPage() {
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-4">
-            <Badge variant="outline" className="text-[9px] uppercase tracking-[0.3em] font-black border-primary/30 text-primary bg-primary/5 px-3 py-1 rounded-full animate-pulse">Master Library</Badge>
-            <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">Contract Intelligence</span>
+            <Badge variant="outline" className="text-[9px] uppercase tracking-[0.3em] font-black border-primary/30 text-primary bg-primary/5 px-3 py-1 rounded-full animate-pulse">Biblioteca Principal</Badge>
+            <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">Modelos de Contratos</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground">
-            Arsenal <span className="text-muted-foreground/30 font-light">/</span> <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/50 bg-clip-text text-transparent">Templates</span>
+            Modelos <span className="text-muted-foreground/30 font-light">/</span> <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/50 bg-clip-text text-transparent">Biblioteca</span>
           </h1>
           <p className="text-sm text-muted-foreground mt-2 max-w-md">
             Acesso imediato a documentos de alto desempenho, estruturados para conformidade jurídica e proteção de operações complexas.
@@ -170,7 +170,7 @@ export default function ArsenalPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={14} />
             <input 
               type="text" 
-              placeholder="Search templates..." 
+              placeholder="Buscar modelos..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-muted/30 border border-border/50 rounded-xl pl-9 pr-4 py-2.5 text-sm focus:ring-1 focus:ring-primary/30 transition-all outline-none placeholder:text-muted-foreground/50"

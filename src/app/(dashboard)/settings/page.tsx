@@ -163,11 +163,11 @@ export default function SettingsPage() {
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-4">
-            <Badge variant="outline" className="text-[9px] uppercase tracking-[0.3em] font-black border-primary/30 text-primary bg-primary/5 px-3 py-1 rounded-full animate-pulse">System Config</Badge>
-            <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">Account Management</span>
+            <Badge variant="outline" className="text-[9px] uppercase tracking-[0.3em] font-black border-primary/30 text-primary bg-primary/5 px-3 py-1 rounded-full animate-pulse">Configurações</Badge>
+            <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">Gerenciamento da Conta</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground">
-            Settings <span className="text-muted-foreground/30 font-light">/</span> <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/50 bg-clip-text text-transparent">Control</span>
+            Configurações <span className="text-muted-foreground/30 font-light">/</span> <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/50 bg-clip-text text-transparent">Controle</span>
           </h1>
           <p className="text-sm text-muted-foreground mt-2 max-w-md">
             Gerencie as preferências da sua conta, parâmetros de inteligência artificial e faturamento.
@@ -320,7 +320,7 @@ export default function SettingsPage() {
                         <div className="flex justify-between items-end text-left">
                           <div className="text-left">
                             <span className="text-xs font-bold text-foreground">Rigor de Análise</span>
-                            <p className="text-[10px] text-muted-foreground">Define o nível de profundidade das auditorias contratuais.</p>
+                            <p className="text-[10px] text-muted-foreground">Define o nível de profundidade das análises contratuais.</p>
                           </div>
                           <span className="text-[10px] font-mono font-bold text-primary text-left">NÍVEL {aiRigor.toString().padStart(2, '0')}</span>
                         </div>
@@ -366,8 +366,8 @@ export default function SettingsPage() {
 
                      <div className="flex items-center justify-between text-left">
                         <div className="text-left">
-                           <span className="text-xs font-bold text-foreground">Análise de Risco em Tempo Real</span>
-                           <p className="text-[10px] text-muted-foreground text-left">Ativa o monitoramento constante de cláusulas sensíveis durante a edição.</p>
+                           <span className="text-xs font-bold text-foreground">Análise de Cláusulas em Tempo Real</span>
+                           <p className="text-[10px] text-muted-foreground text-left">Ativa o monitoramento constante de cláusulas durante a edição.</p>
                         </div>
                         <button 
                           onClick={() => setAiRealtime(!aiRealtime)}
@@ -425,9 +425,9 @@ export default function SettingsPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-left">
                     {[
-                      { credits: 150, price: 19.90, label: "Pacote Operacional", desc: "Ideal para testes, com volume seguro de Sinapses.", popular: false, text: "text-foreground" },
-                      { credits: 500, price: 49.90, label: "Arsenal Avançado", desc: "O preferido. Bônus de Sinapses e alta performance.", popular: true, text: "text-primary" },
-                      { credits: 1200, price: 99.90, label: "Arsenal Supremo", desc: "Poder irrestrito. Alto bônus de Sinapses para escalar.", popular: false, text: "text-primary/90" },
+                      { credits: 150, price: 19.90, label: "Pacote Operacional", desc: "Ideal para testes, com volume seguro de créditos.", popular: false, text: "text-foreground" },
+                      { credits: 500, price: 49.90, label: "Biblioteca Avançada", desc: "O preferido. Bônus de créditos e alta performance.", popular: true, text: "text-primary" },
+                      { credits: 1200, price: 99.90, label: "Biblioteca Suprema", desc: "Poder irrestrito. Alto bônus de créditos para escalar.", popular: false, text: "text-primary/90" },
                     ].map((pkg) => (
                       <div 
                         key={pkg.credits}
@@ -447,7 +447,7 @@ export default function SettingsPage() {
                         <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block mb-1.5">{pkg.label}</span>
                         <div className="flex items-baseline gap-1 mb-1.5">
                            <span className={cn("text-xl font-black font-mono tracking-tight", pkg.text)}>{pkg.credits}</span>
-                           <span className="text-[10px] font-bold text-muted-foreground">Sinapses</span>
+                           <span className="text-[10px] font-bold text-muted-foreground">Créditos</span>
                         </div>
                         <p className="text-xs text-muted-foreground leading-relaxed font-medium mb-4 flex-1">
                           {pkg.desc}

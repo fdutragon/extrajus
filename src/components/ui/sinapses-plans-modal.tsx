@@ -51,7 +51,7 @@ export function SinapsesPlansModal() {
             console.log("[Google Ads] Conversão disparada com sucesso!", pixData.externalId);
           }
 
-          toast.success("💥 Pacto Neural Confirmado! Suas Sinapses já foram injetadas no seu arsenal.");
+          toast.success("💥 Pagamento Confirmado! Seus créditos de inteligência artificial já estão disponíveis em sua conta.");
           
           // Notifica outras partes do app para atualizar o saldo
           window.dispatchEvent(new Event('profile-updated'));
@@ -81,14 +81,14 @@ export function SinapsesPlansModal() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           amountCents: pkg.price * 100, 
-          description: `ExtraJus: ${pkg.credits} Sinapses` 
+          description: `ExtraJus: ${pkg.credits} Créditos` 
         })
       });
       const data = await response.json();
       if (data.error) throw new Error(data.error);
       setPixData(data);
       setTimeLeft(600);
-      toast.success("💥 Pedido de Crédito Ativo! Efetue o Pix para adicionar suas Sinapses.");
+      toast.success("💥 Pedido de Crédito Ativo! Efetue o Pix para adicionar seus créditos.");
     } catch (error: any) {
       toast.error(error.message || "Erro ao gerar Pix.");
     } finally {
@@ -144,10 +144,10 @@ export function SinapsesPlansModal() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="text-[9px] uppercase tracking-widest font-black border-primary/30 text-primary bg-primary/5 px-2.5 py-0.5 rounded-full">
-                {isPaid ? "Pacto Confirmado" : "Energia Esgotada"}
+                {isPaid ? "Pagamento Confirmado" : "Créditos Esgotados"}
               </Badge>
               <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">
-                {isPaid ? "Ritual Complete" : "Needs Charge"}
+                {isPaid ? "Transação Concluída" : "Aguardando Pagamento"}
               </span>
             </div>
             {pixData && !isPaid && (
@@ -160,16 +160,16 @@ export function SinapsesPlansModal() {
           <DialogTitle className="text-2xl font-black tracking-tight text-foreground flex items-center gap-2.5">
             <Brain className="text-primary animate-pulse shrink-0 w-7 h-7 filter drop-shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
             {isPaid ? (
-              <span>Sinapses <span className="bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-400 bg-clip-text text-transparent">Injetadas no Arsenal</span></span>
+              <span>Créditos <span className="bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-400 bg-clip-text text-transparent">Adicionados com Sucesso</span></span>
             ) : (
-              <span>Adquirir <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">Sinapses de Poder</span></span>
+              <span>Adquirir <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">Créditos de IA</span></span>
             )}
           </DialogTitle>
           
           <DialogDescription className="text-[12.5px] text-muted-foreground leading-relaxed font-medium">
             {isPaid 
-              ? "Sua transação de alta performance foi confirmada. O ritual foi concluído e suas sinapses extras estão ativas."
-              : "Você esgotou seu saldo de Sinapses. Escolha um dos pacotes de alta performance abaixo para adquirir créditos via Pix e continuar gerando seus contratos."}
+              ? "Sua transação de alta performance foi confirmada. Seus novos créditos de IA já estão ativos para uso."
+              : "Seu saldo de créditos de IA terminou. Escolha um dos pacotes abaixo para adquirir novos créditos via Pix e continuar gerando seus documentos jurídicos."}
           </DialogDescription>
         </DialogHeader>
 
@@ -183,8 +183,8 @@ export function SinapsesPlansModal() {
                   credits: 150, 
                   price: 19.90, 
                   label: "Pacote Operacional", 
-                  desc: "Ideal para testes, com volume seguro de Sinapses.", 
-                  estimate: "Forja ~1 contrato completo",
+                  desc: "Ideal para testes, com volume seguro de créditos.", 
+                  estimate: "Elabora ~1 contrato completo",
                   popular: false,
                   text: "text-foreground",
                   border: "border-border hover:border-primary/30 hover:scale-[1.01]"
@@ -192,9 +192,9 @@ export function SinapsesPlansModal() {
                 { 
                   credits: 500, 
                   price: 49.90, 
-                  label: "Arsenal Avançado", 
-                  desc: "O preferido. Bônus de Sinapses e alta performance.", 
-                  estimate: "Forja ~5 contratos completos",
+                  label: "Biblioteca Avançada", 
+                  desc: "O preferido. Bônus de créditos e alta performance.", 
+                  estimate: "Elabora ~5 contratos completos",
                   popular: true,
                   text: "text-primary",
                   border: "border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.06)] hover:border-primary scale-[1.02]"
@@ -202,9 +202,9 @@ export function SinapsesPlansModal() {
                 { 
                   credits: 1200, 
                   price: 99.90, 
-                  label: "Arsenal Supremo", 
-                  desc: "Poder irrestrito. Alto bônus de Sinapses para escalar.", 
-                  estimate: "Forja ~12 contratos completos",
+                  label: "Biblioteca Suprema", 
+                  desc: "Alto volume de créditos para demandas complexas.", 
+                  estimate: "Elabora ~12 contratos completos",
                   popular: false,
                   text: "text-primary/90",
                   border: "border-border hover:border-primary/30 hover:scale-[1.01]"
@@ -228,7 +228,7 @@ export function SinapsesPlansModal() {
                   
                   <div className="flex items-baseline gap-1 mb-2 text-left">
                     <span className={cn("text-3xl font-black font-mono tracking-tight", pkg.text)}>{pkg.credits}</span>
-                    <span className="text-[10px] font-bold text-muted-foreground">Sinapses</span>
+                    <span className="text-[10px] font-bold text-muted-foreground">Créditos</span>
                   </div>
                   
                   <p className="text-[11px] text-muted-foreground leading-relaxed font-medium mb-3">
@@ -268,8 +268,8 @@ export function SinapsesPlansModal() {
             <div className="p-16 text-center border border-dashed border-primary/20 rounded-3xl bg-primary/[0.01] animate-pulse flex flex-col items-center justify-center space-y-4">
               <Loader2 className="text-primary animate-spin w-10 h-10" />
               <div className="space-y-1">
-                <p className="text-xs font-black uppercase tracking-widest text-primary">Invocando Protocolo de Pagamento...</p>
-                <p className="text-[11px] text-muted-foreground font-medium">Conectando-se ao Banco Central de forma blindada</p>
+                <p className="text-xs font-black uppercase tracking-widest text-primary">Gerando Protocolo de Pagamento...</p>
+                <p className="text-[11px] text-muted-foreground font-medium">Conectando-se ao Banco Central com segurança máxima</p>
               </div>
             </div>
           )}
@@ -300,17 +300,17 @@ export function SinapsesPlansModal() {
                   <div className="space-y-1.5 text-left">
                     <h4 className="text-xs font-black uppercase tracking-widest text-emerald-500 flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                      Aguardando Confirmação Neural
+                      Aguardando Confirmação de Pagamento
                     </h4>
                     <p className="text-[11.5px] text-muted-foreground leading-relaxed font-medium">
-                      Escaneie o QR Code com o aplicativo de qualquer banco. O saldo de **{selectedPkg.credits} Sinapses** será creditado instantaneamente na sua conta após o pagamento!
+                      Escaneie o QR Code com o aplicativo de qualquer banco. O saldo de **{selectedPkg.credits} Créditos** será creditado instantaneamente na sua conta após o pagamento!
                     </p>
                   </div>
                   
                   {/* Pacote Resumido */}
                   <div className="bg-muted/80 border border-border rounded-xl p-3 flex justify-between items-center">
                     <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wide">Pacote Selecionado</span>
-                    <span className="text-xs font-black text-foreground font-mono">{selectedPkg.credits} Sinapses / R$ {selectedPkg.price}</span>
+                    <span className="text-xs font-black text-foreground font-mono">{selectedPkg.credits} Créditos / R$ {selectedPkg.price}</span>
                   </div>
 
                   {/* Campo Copia e Cola Metálico */}
@@ -357,21 +357,21 @@ export function SinapsesPlansModal() {
 
               <div className="space-y-2">
                 <h3 className="text-xl font-black uppercase tracking-widest text-emerald-500 bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-400 bg-clip-text text-transparent animate-pulse">
-                  Pacto Neural Concluído!
+                  Créditos Adicionados!
                 </h3>
                 <p className="text-[12.0px] text-muted-foreground max-w-md mx-auto leading-relaxed font-medium">
-                  Seu ritual de recarga foi aceito com sucesso. Suas novas **{selectedPkg.credits} Sinapses de Poder** já estão disponíveis no seu arsenal para forjar contratos perfeitos.
+                  A recarga de créditos foi efetuada com sucesso. Seus novos **{selectedPkg.credits} créditos de IA** já estão disponíveis em sua conta para a elaboração de documentos.
                 </p>
               </div>
 
               <div className="max-w-xs mx-auto bg-muted/40 border border-border rounded-2xl p-4 space-y-2 text-[11px] font-mono text-left">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Pacote Invocado:</span>
+                  <span className="text-muted-foreground">Pacote Selecionado:</span>
                   <span className="font-bold text-foreground">{selectedPkg.label}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Energia Adquirida:</span>
-                  <span className="font-bold text-emerald-500">{selectedPkg.credits} Sinapses</span>
+                  <span className="text-muted-foreground">Créditos Adquiridos:</span>
+                  <span className="font-bold text-emerald-500">{selectedPkg.credits} Créditos</span>
                 </div>
                 <div className="flex justify-between border-t border-border/60 pt-2 mt-2">
                   <span className="text-muted-foreground">ID da Transação:</span>
@@ -384,7 +384,7 @@ export function SinapsesPlansModal() {
                   onClick={() => setIsOpen(false)}
                   className="bg-emerald-600 text-white hover:bg-emerald-500 border border-emerald-500/30 rounded-2xl px-8 py-3 text-[10px] font-black uppercase tracking-widest transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.15)]"
                 >
-                  Canalizar Energia e Fechar
+                  Confirmar e Fechar
                 </Button>
               </div>
             </div>
@@ -394,7 +394,7 @@ export function SinapsesPlansModal() {
           <div className="flex items-center justify-between pt-5 border-t border-border mt-5">
             <span className="text-[10px] text-muted-foreground font-bold italic flex items-center gap-1.5">
               <ShieldCheck size={13} className="text-primary" /> 
-              Ambiente Blindado • ExtraJus S/A Realtime Payment Gateway
+              Ambiente Seguro • ExtraJus S/A Realtime Payment Gateway
             </span>
             <Button 
               variant="outline" 

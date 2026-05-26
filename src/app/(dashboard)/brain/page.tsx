@@ -182,11 +182,11 @@ export default function BrainPage() {
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-4">
-            <Badge variant="outline" className="text-[9px] uppercase tracking-[0.3em] font-black border-primary/30 text-primary bg-primary/5 px-3 py-1 rounded-full animate-pulse">Neural Network</Badge>
-            <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">Network Visualization</span>
+            <Badge variant="outline" className="text-[9px] uppercase tracking-[0.3em] font-black border-primary/30 text-primary bg-primary/5 px-3 py-1 rounded-full animate-pulse">Rede Neural</Badge>
+            <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">Visualização da Rede</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground">
-            Brain <span className="text-muted-foreground/30 font-light">/</span> <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/50 bg-clip-text text-transparent">Synapses</span>
+            Rede <span className="text-muted-foreground/30 font-light">/</span> <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/50 bg-clip-text text-transparent">Conexões</span>
           </h1>
           <p className="text-sm text-muted-foreground mt-2 max-w-md">
             Mapeie suas conexões e documentos estratégicos. Visualize a estrutura de sinapses ativas em tempo real.
@@ -196,7 +196,7 @@ export default function BrainPage() {
         <div className="flex items-center gap-3 relative z-10">
            <div className="flex items-center gap-2 bg-muted/30 px-4 py-2 rounded-xl border border-border/50 backdrop-blur-sm">
              <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-             <span className="text-xs font-black uppercase text-primary tracking-widest">Sync: 99.8%</span>
+             <span className="text-xs font-black uppercase text-primary tracking-widest">Sincronização: 99.8%</span>
            </div>
         </div>
       </div>

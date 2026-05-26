@@ -256,8 +256,8 @@ export default function DashboardLayoutClient({
           // Notificação visual de recarga
           if (oldProfile && newProfile.credits > oldProfile.credits) {
             const added = newProfile.credits - oldProfile.credits;
-            toast.success(`💥 Arsenal Recarregado! +${added} Créditos adicionados!`, {
-              description: `Confirmado via Pix. Seu novo saldo é de ${newProfile.credits} créditos de poder.`,
+            toast.success(`💥 Créditos Adicionados! +${added} novos créditos adicionados!`, {
+              description: `Confirmado via Pix. Seu novo saldo é de ${newProfile.credits} créditos.`,
               duration: 10000,
             });
           }
@@ -460,12 +460,12 @@ export default function DashboardLayoutClient({
   const isAdmin = adminEmails.includes(profile?.email || '');
 
   const baseNavItems = [
-    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Inbox", href: "/inbox", icon: Mail },
+    { name: "Painel", href: "/dashboard", icon: LayoutDashboard },
+    { name: "Caixa de Entrada", href: "/inbox", icon: Mail },
     { name: "Contratos", href: "/contracts", icon: FileText },
     { name: "Assinaturas", href: "/signatures", icon: PenTool },
-    { name: "Arsenal", href: "/arsenal", icon: Zap },
-    { name: "Sinapses", href: "/brain", icon: Brain },
+    { name: "Modelos", href: "/arsenal", icon: Zap },
+    { name: "Créditos de IA", href: "/brain", icon: Brain },
   ];
 
   const navItems = isAdmin
@@ -517,7 +517,7 @@ export default function DashboardLayoutClient({
               isCollapsed && "hidden lg:hidden"
             )}>
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.18em]">Arsenal de Poder</span>
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-[0.18em]">Painel de Operações</span>
                 <div className="flex gap-1">
                   <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                   <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
@@ -543,7 +543,7 @@ export default function DashboardLayoutClient({
                   <span className="text-[9px] text-muted-foreground font-medium font-mono">disponíveis</span>
                 </div>
                 <p className="text-[9px] text-muted-foreground/80 mt-1 leading-normal">
-                  Forje contratos (100) ou refine com IA (10).
+                  Crie contratos (100) ou refine com IA (10).
                 </p>
               </Link>
 
@@ -682,7 +682,7 @@ export default function DashboardLayoutClient({
                </div>
                <div className="bg-primary/5 rounded-lg p-2.5 border border-primary/10">
                  <p className="text-xs text-primary/80 leading-tight italic font-medium font-mono">
-                   "Auditoria de risco ativa em todos os contratos."
+                   "Análise de cláusulas ativa em todos os contratos."
                  </p>
                </div>
             </div>
@@ -727,7 +727,7 @@ export default function DashboardLayoutClient({
               className="relative group flex items-center gap-1.5 bg-muted/40 hover:bg-muted border border-border/40 hover:border-primary/20 rounded-lg pl-6 pr-3 py-1.5 text-muted-foreground hover:text-foreground transition-all outline-none cursor-pointer whitespace-nowrap"
             >
               <Zap className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground/50 group-hover:text-primary transition-colors shrink-0" size={10} />
-              <span className="font-medium text-[11px] hidden sm:block">Shortcuts</span>
+              <span className="font-medium text-[11px] hidden sm:block">Atalhos</span>
               <kbd className="flex items-center gap-0.5 text-[8px] bg-background/80 border border-border/60 px-1.5 py-0.5 rounded font-mono font-bold group-hover:text-primary transition-colors shrink-0">
                 Alt+K
               </kbd>
@@ -890,11 +890,11 @@ export default function DashboardLayoutClient({
                     <kbd className="text-xs font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-muted-foreground font-bold shadow-sm">Alt + I</kbd>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded-xl bg-muted/40 border border-border/60 hover:bg-muted/80 transition-colors">
-                    <span className="text-[11.5px] font-medium text-foreground">Sinapses (Grafo de Conexões)</span>
+                    <span className="text-[11.5px] font-medium text-foreground">Rede de Conexões (Grafo)</span>
                     <kbd className="text-xs font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-muted-foreground font-bold shadow-sm">Alt + S</kbd>
                   </div>
                   <div className="flex items-center justify-between p-2 rounded-xl bg-muted/40 border border-border/60 hover:bg-muted/80 transition-colors">
-                    <span className="text-[11.5px] font-medium text-foreground">Arsenal (Ferramentas de IA)</span>
+                    <span className="text-[11.5px] font-medium text-foreground">Modelos (Biblioteca de Modelos)</span>
                     <kbd className="text-xs font-mono bg-background border border-border/80 px-1.5 py-0.5 rounded text-muted-foreground font-bold shadow-sm">Alt + A</kbd>
                   </div>
                 </div>

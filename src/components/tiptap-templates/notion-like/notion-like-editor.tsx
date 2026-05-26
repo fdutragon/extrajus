@@ -731,20 +731,20 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
     editor.chain().focus().setTextSelection(pos).scrollIntoView().run()
   }
 
-  const handleOptimizeClause = (clausePos: number, nextClausePos?: number, riskId?: string) => {
+  const handleOptimizeClause = (clausePos: number, nextClausePos?: number, riskId?: string, suggestionReason?: string) => {
     if (!editor) return
     const start = clausePos
     const end = nextClausePos ?? editor.state.doc.content.size
     
-    // Seleciona a cláusula inteira
+    // Seleciona a cláusula de referência
     editor.chain().focus().setTextSelection({ from: start, to: end }).scrollIntoView().run()
     
-    // Prompt automático letal
-    const optimizePrompt = "Reescreva esta cláusula para remover riscos, fechar brechas jurídicas e blindar os termos com linguagem altamente formal e protetora (Contrato de Guerra)."
+    // Prompt automático que adiciona a cláusula complementar sugerida
+    const addPrompt = `Reescreva este trecho inserindo uma nova cláusula complementar logo abaixo dele. A nova cláusula complementar deve ser sobre: "${suggestionReason || 'termos adicionais protetivos'}". Mantenha a cláusula atual intacta e crie a nova logo após ela, formatada seguindo a estrutura de nós do editor, com linguagem altamente formal, protetora e cirúrgica (Contrato de Guerra).`
     
     // Dispara a geração da IA substituindo a seleção
     ;(editor.chain() as any).aiTextPrompt({
-      text: optimizePrompt,
+      text: addPrompt,
       insert: true,
       stream: true,
       format: "rich-text",
@@ -1336,7 +1336,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
               <div className="flex items-center justify-between border-b border-border/40 pb-4">
                 <div className="flex items-center gap-2">
                   <BrainCircuit size={12} className={cn("text-primary", isAuditing && "animate-pulse")} />
-                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Auditoria Jurídica</h3>
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Sugestões de Cláusulas</h3>
                 </div>
               </div>
               {/* Seção 1: Score ou Iniciar Auditoria (Fixado no topo) */}
@@ -1346,23 +1346,23 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
                     <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
                     <div className="flex items-center gap-1.5">
                       <Brain size={14} className="text-primary animate-pulse" />
-                      <span className="text-[10px] font-black text-primary uppercase tracking-widest">Radar de Conformidade</span>
+                      <span className="text-[10px] font-black text-primary uppercase tracking-widest">Radar de Cláusulas</span>
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      Rode o radar analítico para escanear inconsistências, brechas jurídicas e calcular o score de proteção do instrumento.
+                      Rode a análise inteligente para escanear o documento e sugerir cláusulas protetoras complementares sob demanda.
                     </p>
                     <Button 
                       onClick={runAudit} 
                       disabled={isAuditing} 
                       className="w-full bg-transparent border border-primary/50 text-primary hover:bg-primary hover:border-primary hover:text-primary-foreground text-[10px] font-black uppercase tracking-[0.2em] h-8 rounded-xl transition-all shadow-[0_0_10px_rgba(var(--primary),0.05)] hover:shadow-[0_0_20px_rgba(var(--primary),0.2)]"
                     >
-                      Rolar Análise IA
+                      Rolar Sugestões IA
                     </Button>
                   </div>
                 ) : (
                   <div className="p-5 rounded-2xl bg-muted/30 border space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-black text-muted-foreground uppercase">Score de Segurança</span>
+                      <span className="text-xs font-black text-muted-foreground uppercase">Proteção Estimada</span>
                       <span className={cn("text-xs font-black uppercase px-2 py-0.5 rounded-full", auditStatus.color)}>{auditStatus.label}</span>
                     </div>
                     <div className="flex items-baseline gap-1">
@@ -1377,7 +1377,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
               {/* Seção 2: Árvore Interativa de Cláusulas (Mapa do Instrumento) */}
               <div className="flex flex-col flex-1 min-h-0 space-y-4">
                 <div className="flex items-center gap-2 border-b border-border/40 pb-2 shrink-0">
-                  <span className="text-xs font-black text-muted-foreground uppercase tracking-widest">Mapa do Instrumento</span>
+                  <span className="text-xs font-black text-muted-foreground uppercase tracking-widest">Estrutura do Contrato</span>
                 </div>
                 
                 <ScrollArea className="flex-1 pr-3 scrollbar-minimalist min-h-0">
@@ -1404,12 +1404,12 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
                               !hasAudited 
                                 ? "border-muted-foreground/30" 
                                 : hasRisk 
-                                  ? "border-red-500 bg-red-950/20" 
+                                  ? "border-amber-500 bg-amber-950/20" 
                                   : "border-emerald-500 bg-emerald-950/20"
                             )}>
                               {hasAudited && (
                                 hasRisk 
-                                  ? <div className="h-1.5 w-1.5 rounded-full bg-red-500" />
+                                  ? <div className="h-1.5 w-1.5 rounded-full bg-amber-500" />
                                   : <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                               )}
                             </div>
@@ -1424,7 +1424,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
                                 </span>
                                 {hasAudited && (
                                   hasRisk 
-                                    ? <span className="text-xs font-black uppercase text-red-600 dark:text-red-400 tracking-wider">⚠️ Risco</span>
+                                    ? <span className="text-xs font-black uppercase text-amber-600 dark:text-amber-400 tracking-wider">💡 Sugestão</span>
                                     : <span className="text-xs font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">✅ OK</span>
                                 )}
                               </button>
@@ -1452,7 +1452,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
 
                               {/* Se houver risco correspondente a esta cláusula, renderiza abaixo dela de forma integrada */}
                               {hasAudited && hasRisk && (
-                                <div className="pl-3 space-y-2.5 border-l border-red-500/40 mt-1.5">
+                                <div className="pl-3 space-y-2.5 border-l border-amber-500/40 mt-1.5">
                                   {clauseRisks.map((risk) => {
                                     const isOptimized = optimizedRisks.includes(risk.id)
                                     const isPending = pendingOptimization === risk.id
@@ -1462,40 +1462,40 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
                                         <div key={risk.id} className="p-3 rounded-xl border bg-emerald-50/50 dark:bg-emerald-950/10 border-emerald-200/50 dark:border-emerald-500/20 space-y-2">
                                           <span className="text-[11px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest flex items-center gap-1.5 opacity-80">
                                             <ShieldCheck size={12} className="text-emerald-600 dark:text-emerald-500" />
-                                            Risco Neutralizado
+                                            Cláusula Adicionada
                                           </span>
                                           <Button 
                                             size="sm" 
                                             disabled
                                             className="w-full text-[10px] font-bold uppercase tracking-widest h-7 rounded-lg transition-all bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-500/30 opacity-70"
                                           >
-                                            Redação Otimizada
+                                            Cláusula Inserida
                                           </Button>
                                         </div>
                                       )
                                     }
                                     
                                     return (
-                                      <div key={risk.id} className="p-4 rounded-xl border bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-500/40 space-y-3 shadow-lg shadow-red-900/5">
-                                        <span className="text-xs font-black text-red-600 dark:text-red-500 uppercase tracking-widest flex items-center gap-1.5">
-                                          <ShieldAlert size={14} className="text-red-600 dark:text-red-500" />
-                                          Atenção
+                                      <div key={risk.id} className="p-4 rounded-xl border bg-amber-500/5 dark:bg-amber-500/5 border-amber-500/20 space-y-3 shadow-lg shadow-amber-950/5">
+                                        <span className="text-xs font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
+                                          <Brain size={14} className="text-amber-600 dark:text-amber-400 animate-pulse" />
+                                          Cláusula Sugerida
                                         </span>
-                                        <p className="text-[13px] font-medium leading-relaxed text-red-900 dark:text-red-100/90">
+                                        <p className="text-[13px] font-medium leading-relaxed text-foreground/80">
                                           {renderBoldText(risk.reason)}
                                         </p>
                                         <Button 
                                           size="sm" 
                                           disabled={isPending}
-                                          onClick={() => handleOptimizeClause(clause.pos, nextClause?.pos, risk.id)}
+                                          onClick={() => handleOptimizeClause(clause.pos, nextClause?.pos, risk.id, risk.reason)}
                                           className={cn(
                                             "w-full text-xs font-bold uppercase tracking-widest h-9 rounded-lg transition-all",
                                             isPending
                                               ? "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900 dark:text-amber-400"
-                                              : "bg-red-100 hover:bg-red-200 text-red-800 border border-red-300 dark:bg-red-950 dark:hover:bg-red-900 dark:text-red-400 dark:border-red-500/30 hover:text-red-900 dark:hover:text-red-300"
+                                              : "bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400"
                                           )}
                                         >
-                                          {isPending ? "Otimizando..." : "Otimizar Redação"}
+                                          {isPending ? "Adicionando..." : "Adicionar Cláusula"}
                                         </Button>
                                       </div>
                                     )
