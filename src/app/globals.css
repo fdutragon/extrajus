@@ -11,8 +11,8 @@
   --color-gold: #c5a880;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
+  --font-sans: Outfit, sans-serif;
+  --font-mono: monospace;
   --font-heading: var(--font-heading);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -78,47 +78,59 @@
 }
 
 :root {
-  --background: oklch(0.982 0.003 60); /* Alabastro Quente / Papel Linho de Luxo */
-  --foreground: oklch(0.22 0.01 45); /* Bronze Escuro / Grafite Imperial */
-  --card: oklch(1 0 0); /* Branco Puro Soft */
-  --card-foreground: oklch(0.22 0.01 45);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.01 45);
-  --primary: oklch(0.55 0.18 290); /* Ametista Imperial */
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.955 0.005 60); /* Creme Suave Secundário */
-  --secondary-foreground: oklch(0.22 0.01 45);
-  --muted: oklch(0.955 0.005 60);
-  --muted-foreground: oklch(0.48 0.015 65); /* Bronze Muted Elegante */
-  --accent: oklch(0.94 0.006 60);
-  --accent-foreground: oklch(0.22 0.01 45);
-  --destructive: oklch(0.55 0.18 25); /* Escarlate de Guerra */
-  --border: oklch(0.90 0.006 60); /* Linha Bronze Suave */
-  --input: oklch(0.90 0.006 60);
-  --ring: oklch(0.55 0.18 290);
-  --chart-1: oklch(0.55 0.18 290);
-  --chart-2: oklch(0.48 0.16 290);
-  --chart-3: oklch(0.40 0.14 290);
-  --chart-4: oklch(0.62 0.19 290);
-  --chart-5: oklch(0.35 0.12 290);
+  --background: oklch(0.9911 0 0); /* Alabastro Quente / Papel Linho de Luxo */
+  --foreground: oklch(0.2046 0 0); /* Bronze Escuro / Grafite Imperial */
+  --card: oklch(0.9911 0 0); /* Branco Puro Soft */
+  --card-foreground: oklch(0.2046 0 0);
+  --popover: oklch(0.9911 0 0);
+  --popover-foreground: oklch(0.4386 0 0);
+  --primary: oklch(0.8348 0.1302 160.9080); /* Ametista Imperial */
+  --primary-foreground: oklch(0.2626 0.0147 166.4589);
+  --secondary: oklch(0.9940 0 0); /* Creme Suave Secundário */
+  --secondary-foreground: oklch(0.2046 0 0);
+  --muted: oklch(0.9461 0 0);
+  --muted-foreground: oklch(0.2435 0 0); /* Bronze Muted Elegante */
+  --accent: oklch(0.9461 0 0);
+  --accent-foreground: oklch(0.2435 0 0);
+  --destructive: oklch(0.5523 0.1927 32.7272); /* Escarlate de Guerra */
+  --border: oklch(0.9037 0 0); /* Linha Bronze Suave */
+  --input: oklch(0.9731 0 0);
+  --ring: oklch(0.8348 0.1302 160.9080);
+  --chart-1: oklch(0.8348 0.1302 160.9080);
+  --chart-2: oklch(0.6231 0.1880 259.8145);
+  --chart-3: oklch(0.6056 0.2189 292.7172);
+  --chart-4: oklch(0.7686 0.1647 70.0804);
+  --chart-5: oklch(0.6959 0.1491 162.4796);
   --radius: 0.5rem;
-  --sidebar: oklch(0.972 0.004 60); /* Sidebar Alabastro Suave Sombreada */
-  --shadow-opacity: 0.06;
-  --shadow-blur: 12px;
+  --sidebar: oklch(0.9911 0 0); /* Sidebar Alabastro Suave Sombreada */
+  --shadow-opacity: 0.17;
+  --shadow-blur: 3px;
   --shadow-spread: 0px;
   --shadow-offset-x: 0px;
-  --shadow-offset-y: 3px;
-  --letter-spacing: -0.01em;
+  --shadow-offset-y: 1px;
+  --letter-spacing: 0.025em;
   --spacing: 0.25rem;
-  --shadow-2xs: 0px 1px 2px 0px hsl(30 10% 20% / 0.03);
-  --shadow-xs: 0px 1px 2px 0px hsl(30 10% 20% / 0.03);
-  --shadow-sm: 0px 2px 4px 0px hsl(30 10% 20% / 0.05), 0px 1px 2px -1px hsl(30 10% 20% / 0.05);
-  --shadow: 0px 4px 8px -1px hsl(30 10% 20% / 0.06), 0px 2px 4px -2px hsl(30 10% 20% / 0.06);
-  --shadow-md: 0px 10px 18px -3px hsl(30 10% 20% / 0.07), 0px 4px 8px -4px hsl(30 10% 20% / 0.07);
-  --shadow-lg: 0px 20px 28px -5px hsl(30 10% 20% / 0.08), 0px 8px 12px -6px hsl(30 10% 20% / 0.08);
-  --shadow-xl: 0px 25px 50px -12px hsl(30 10% 20% / 0.15);
-  --shadow-2xl: 0px 30px 60px -15px hsl(30 10% 20% / 0.2);
-  --tracking-normal: -0.01em;
+  --shadow-2xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.09);
+  --shadow-xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.09);
+  --shadow-sm: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 1px 2px -1px hsl(0 0% 0% / 0.17);
+  --shadow: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 1px 2px -1px hsl(0 0% 0% / 0.17);
+  --shadow-md: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 2px 4px -1px hsl(0 0% 0% / 0.17);
+  --shadow-lg: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 4px 6px -1px hsl(0 0% 0% / 0.17);
+  --shadow-xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 8px 10px -1px hsl(0 0% 0% / 0.17);
+  --shadow-2xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.43);
+  --tracking-normal: 0.025em;
+  --destructive-foreground: oklch(0.9934 0.0032 17.2118);
+  --sidebar-foreground: oklch(0.5452 0 0);
+  --sidebar-primary: oklch(0.8348 0.1302 160.9080);
+  --sidebar-primary-foreground: oklch(0.2626 0.0147 166.4589);
+  --sidebar-accent: oklch(0.9461 0 0);
+  --sidebar-accent-foreground: oklch(0.2435 0 0);
+  --sidebar-border: oklch(0.9037 0 0);
+  --sidebar-ring: oklch(0.8348 0.1302 160.9080);
+  --font-sans: Outfit, sans-serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: monospace;
+  --shadow-color: #000000;
 }
 
 .dark {
@@ -130,8 +142,8 @@
   --card-foreground: oklch(0.9288 0.0126 255.5078);
   --popover: oklch(0.2603 0 0);
   --popover-foreground: oklch(0.7348 0 0);
-  --primary: oklch(0.65 0.20 300); /* Ametista Mística Luminosa */
-  --primary-foreground: oklch(0.985 0 0); /* Contraste Branco Puro */
+  --primary: oklch(0.4365 0.1044 156.7556); /* Ametista Mística Luminosa */
+  --primary-foreground: oklch(0.9213 0.0135 167.1556); /* Contraste Branco Puro */
   --secondary: oklch(0.2603 0 0);
   --secondary-foreground: oklch(0.9851 0 0);
   --muted: oklch(0.2393 0 0);
@@ -141,20 +153,20 @@
   --destructive: oklch(0.3123 0.0852 29.7877);
   --border: oklch(0.2809 0 0);
   --input: oklch(0.2603 0 0);
-  --ring: oklch(0.65 0.20 300);
-  --chart-1: oklch(0.65 0.20 300);
+  --ring: oklch(0.8003 0.1821 151.7110);
+  --chart-1: oklch(0.8003 0.1821 151.7110);
   --chart-2: oklch(0.7137 0.1434 254.6240);
   --chart-3: oklch(0.7090 0.1592 293.5412);
   --chart-4: oklch(0.8369 0.1644 84.4286);
   --chart-5: oklch(0.7845 0.1325 181.9120);
   --sidebar: oklch(0.1822 0 0);
   --sidebar-foreground: oklch(0.6301 0 0);
-  --sidebar-primary: oklch(0.65 0.20 300);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.4365 0.1044 156.7556);
+  --sidebar-primary-foreground: oklch(0.9213 0.0135 167.1556);
   --sidebar-accent: oklch(0.3132 0 0);
   --sidebar-accent-foreground: oklch(0.9851 0 0);
   --sidebar-border: oklch(0.2809 0 0);
-  --sidebar-ring: oklch(0.65 0.20 300);
+  --sidebar-ring: oklch(0.8003 0.1821 151.7110);
   --destructive-foreground: oklch(0.9368 0.0045 34.3092);
   --radius: 0.5rem;
   --shadow-color: #000000;
@@ -163,7 +175,7 @@
   --shadow-spread: 0px;
   --shadow-offset-x: 0px;
   --shadow-offset-y: 1px;
-  --letter-spacing: 0.01em;
+  --letter-spacing: 0.025em;
   --spacing: 0.25rem;
   --shadow-2xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.09);
   --shadow-xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.09);
@@ -173,6 +185,9 @@
   --shadow-lg: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 4px 6px -1px hsl(0 0% 0% / 0.17);
   --shadow-xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 8px 10px -1px hsl(0 0% 0% / 0.17);
   --shadow-2xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.43);
+  --font-sans: Outfit, sans-serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: monospace;
 }
 
 @layer base {
