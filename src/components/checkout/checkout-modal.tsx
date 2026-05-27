@@ -147,6 +147,17 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
       if (!statusRes.ok) throw new Error(statusData.error || "Falha ao simular confirmação de pagamento")
 
       // 3. Transition to success
+      // Dispara o evento de conversão de compra do Google Ads na simulação dev
+      if (typeof window !== "undefined" && (window as any).gtag) {
+        (window as any).gtag('event', 'conversion', {
+          'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
+          'value': 29.90,
+          'currency': 'BRL',
+          'transaction_id': data.externalId
+        });
+        console.log("[Google Ads] Conversão disparada via Simulação Dev (All)!", data.externalId);
+      }
+
       setStep("success")
 
     } catch (err: any) {
@@ -169,6 +180,17 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
 
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || "Falha ao simular confirmação de pagamento")
+
+      // Dispara o evento de conversão de compra do Google Ads na simulação dev
+      if (typeof window !== "undefined" && (window as any).gtag) {
+        (window as any).gtag('event', 'conversion', {
+          'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
+          'value': 29.90,
+          'currency': 'BRL',
+          'transaction_id': pixData.externalId
+        });
+        console.log("[Google Ads] Conversão disparada via Simulação Dev (PaymentOnly)!", pixData.externalId);
+      }
 
       toast.success("Confirmação de pagamento simulada com sucesso!")
       setStep("success")
