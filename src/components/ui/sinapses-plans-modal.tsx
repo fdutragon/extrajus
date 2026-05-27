@@ -43,7 +43,7 @@ export function SinapsesPlansModal() {
           // Dispara o evento de conversão do Google Ads no frontend
           if (typeof window !== "undefined" && (window as any).gtag) {
             (window as any).gtag('event', 'conversion', {
-              'send_to': 'AW-18156533859/_9riCLjnm68cEOPw2tFD',
+              'send_to': 'AW-18191879169/_9riCLjnm68cEOPw2tFD',
               'value': selectedPkg?.price || 1.0,
               'currency': 'BRL',
               'transaction_id': pixData.externalId

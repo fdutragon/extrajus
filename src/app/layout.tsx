@@ -53,14 +53,14 @@ export default function RootLayout({
     >
       <head />
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-background text-foreground">
-        {/* Google Tag (gtag.js) */}
-        <Script async src="https://www.googletagmanager.com/gtag/js?id=AW-18156533859" strategy="afterInteractive" />
+        {/* Google tag (gtag.js) */}
+        <Script async src="https://www.googletagmanager.com/gtag/js?id=AW-18191879169" strategy="afterInteractive" />
         <Script id="google-analytics" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'AW-18156533859');
+            gtag('config', 'AW-18191879169');
           `}
         </Script>
         <ThemeProvider
