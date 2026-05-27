@@ -1182,7 +1182,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
 
       <div className={cn("flex-1 flex pt-12 relative overflow-hidden h-full transition-all duration-700", !isFocused && "filter blur-[45px] select-none pointer-events-none")}>
         {!readOnly && (
-          <aside className={cn("h-full border-r border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", leftSidebarOpen ? "w-[20vw] min-w-[280px] max-w-[420px]" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
+          <aside className={cn("h-full border-r border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", leftSidebarOpen ? "w-[22vw] min-w-[300px] max-w-[440px]" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
             <div className="px-4 py-6 flex flex-col h-full overflow-hidden w-full">
               <div className="space-y-5 mb-8 shrink-0">
                 <div className="flex items-center justify-between border-b border-border/40 pb-2.5">
@@ -1284,7 +1284,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
 
 
             <div className={cn(
-              "w-full max-w-[840px] mx-auto editor-glow-container transition-all duration-700 shadow-2xl",
+              "w-full max-w-[760px] mx-auto editor-glow-container transition-all duration-700 shadow-2xl",
               (showEntranceGlow || editorFocused) && "glowing"
             )}>
               <div className="w-full h-full bg-card/90 dark:bg-card/75 backdrop-blur-xl rounded-[30px] px-10 md:px-16 pt-12 pb-12 md:pt-16 md:pb-20 relative min-h-[800px] md:min-h-[1188px] editor-glow-content">
@@ -1306,7 +1306,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
           )}
         </div>
 
-        <aside className={cn("h-full border-l border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", rightSidebarOpen ? "w-[22vw] min-w-[300px] max-w-[420px]" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
+        <aside className={cn("h-full border-l border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", rightSidebarOpen ? "w-[24vw] min-w-[320px] max-w-[440px]" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
           {readOnly ? (
             <div className="p-6 flex flex-col h-full justify-between">
               {contractStatus === 'signed' ? (
