@@ -218,6 +218,36 @@ body {
   min-height: 100%;
   display: flex;
   flex-direction: column;
+
+  header {
+    height: clamp(40px, 4.5vh, 64px) !important;
+    padding: 0 clamp(1rem, 2vw, 2rem) !important;
+    
+    input, span {
+      font-size: clamp(9px, 0.7vw, 11px) !important;
+    }
+
+    .absolute.left-1\/2 {
+      gap: clamp(1rem, 3vw, 6rem) !important;
+      
+      .flex.items-center.gap-2 {
+        gap: clamp(0.25rem, 0.5vw, 0.75rem) !important;
+      }
+
+      button.group\/ai-toggle {
+        height: 100% !important;
+        padding: 0 clamp(1rem, 2vw, 2.5rem) !important;
+        
+        span {
+          font-size: clamp(10px, 0.8vw, 13px) !important;
+        }
+      }
+    }
+  }
+
+  .flex-1.flex.pt-12 {
+    padding-top: clamp(40px, 4.5vh, 64px) !important;
+  }
 }
 
 .notion-like-editor-content {

@@ -111,7 +111,9 @@
       word-break: normal;
     }
 
-    &__label {
+    &__label,
+    .collaboration-cursor__label {
+      display: none;
       color: var(--tt-collaboration-carets-label);
       border-radius: 0.25rem;
       border-bottom-left-radius: 0;

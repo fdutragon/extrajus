@@ -694,16 +694,33 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
   const getClauses = () => {
     if (!editor) return []
     const clauses: { id: string; title: string; pos: number }[] = []
+    let foundObject = false
+    
     editor.state.doc.descendants((node: any, pos: number) => {
       if (
         (node.type.name === "heading" && (node.attrs.level === 1 || node.attrs.level === 2)) ||
         (node.type.name === "legalNode" && node.attrs.level === 1)
       ) {
-        clauses.push({
-          id: `clause-${pos}`,
-          title: node.textContent.trim(),
-          pos
-        })
+        const title = node.textContent.trim().toUpperCase()
+        
+        // Critério de início: Ignora tudo antes da primeira menção a "OBJETO" ou se for puramente nomes de partes
+        if (!foundObject && (title.includes("OBJETO") || title.includes("DO OBJETO"))) {
+          foundObject = true
+        }
+
+        // Critério de parada: Para de adicionar se chegar no "FORO"
+        if (title.includes("FORO") || title.includes("DO FORO")) {
+          return false
+        }
+
+        // Só adiciona se já tiver passado pelas qualificações (encontrou Objeto)
+        if (foundObject) {
+          clauses.push({
+            id: `clause-${pos}`,
+            title: node.textContent.trim(),
+            pos
+          })
+        }
       }
       return true
     })
@@ -757,18 +774,63 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
   const handleOptimizeClause = (clausePos: number, nextClausePos?: number, riskId?: string, suggestionReason?: string) => {
     if (!editor) return
     const start = clausePos
-    const end = nextClausePos ?? editor.state.doc.content.size
+    let end = nextClausePos ?? editor.state.doc.content.size
+
+    // Prevenção Crítica: Se não houver próxima cláusula (última seção), 
+    // precisamos garantir que o 'end' não ultrapasse o início do FORO ou Assinaturas.
+    if (!nextClausePos) {
+      editor.state.doc.descendants((node: any, pos: number) => {
+        if (pos < start) return true
+        const text = node.textContent.toUpperCase()
+        if (text.includes("FORO") || text.includes("DO FORO") || text.includes("ASSINATURAS")) {
+          end = pos
+          return false
+        }
+        return true
+      })
+    }
     
     // Seleciona a cláusula de referência
-    editor.chain().focus().setTextSelection({ from: start, to: end }).scrollIntoView().run()
+    editor.chain().focus().setTextSelection({ from: start, to: end }).run()
     
-    // Prompt automático que adiciona a cláusula complementar sugerida
-    const addPrompt = `Reescreva este trecho inserindo uma nova cláusula complementar logo abaixo dele. A nova cláusula complementar deve ser sobre: "${suggestionReason || 'termos adicionais protetivos'}". Mantenha a cláusula atual intacta e crie a nova logo após ela, formatada seguindo a estrutura de nós do editor, com linguagem altamente formal, protetora e cirúrgica (Contrato de Guerra).`
+    // Scroll preciso para o início da cláusula com offset para o header fixo
+    const dom = editor.view.nodeDOM(start) || editor.view.domAtPos(start).node
+    const element = dom.nodeType === Node.TEXT_NODE ? dom.parentElement : (dom as HTMLElement)
     
-    // Dispara a geração da IA substituindo a seleção
+    if (element) {
+      const scrollContainer = document.querySelector('main')
+      if (scrollContainer) {
+        const headerHeight = 90 // Compensação para o header (clamp 48-72px) + margem de segurança
+        const rect = element.getBoundingClientRect()
+        const containerRect = scrollContainer.getBoundingClientRect()
+        
+        // Calcula a posição absoluta do elemento dentro do container de scroll
+        const scrollTarget = (rect.top - containerRect.top) + scrollContainer.scrollTop - headerHeight
+        
+        scrollContainer.scrollTo({
+          top: scrollTarget,
+          behavior: 'smooth'
+        })
+      }
+    }
+
+    // Prompt automático que REESCREVE a cláusula atual com as melhorias sugeridas
+    const addPrompt = `Reescreva a cláusula selecionada para aprimorar sua segurança jurídica e abrangência técnica, incorporando a seguinte otimização: "${suggestionReason || 'aperfeiçoamento de redação técnica'}".
+
+DIRETRIZES DE REDAÇÃO JURÍDICA:
+1. REESCREVA integralmente o conteúdo atual para assegurar coesão, sem criar novas cláusulas adjacentes.
+2. Utilize exclusivamente a estrutura de LegalNodes:
+   - Epígrafe/Título: <div data-type="legal-node" data-level="1">TÍTULO</div>
+   - Caput: <div data-type="legal-node" data-level="2">Texto...</div>
+   - Incisos/Parágrafos: <div data-type="legal-node" data-level="3">Texto do item...</div>
+3. CONCISÃO OBRIGATÓRIA: Evite parágrafos extensos. Se a matéria exigir detalhamento, fracione-a OBRIGATORIAMENTE em INCISOS (nível 3).
+4. É terminantemente PROIBIDO o uso de <p>, ul, ol ou numeração manual (o sistema gerencia a indexação).
+5. Empregue linguagem solene, técnica e erudita, priorizando a mitigação de riscos e a máxima preservação dos direitos da parte representada.`
+
+    // Dispara a geração da IA SUBSTITUINDO a seleção atual
     ;(editor.chain() as any).aiTextPrompt({
       text: addPrompt,
-      insert: true,
+      insert: false, // Alterado para false para substituir a cláusula selecionada
       stream: true,
       format: "rich-text",
     }).run()
@@ -1070,19 +1132,19 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
         }
       ` }} />
       
-      <header className="fixed top-0 left-0 w-full h-12 border-b border-border bg-background/60 backdrop-blur-2xl flex items-center justify-between px-6 z-[100] transition-all duration-500 hover:bg-background/80 group">
-        <div className="flex items-center gap-4">
+      <header className="fixed top-0 left-0 w-full h-[clamp(48px,5.5vh,72px)] border-b border-border bg-background/60 backdrop-blur-2xl flex items-center justify-between px-[clamp(1rem,2vw,2rem)] z-[100] transition-all duration-500 hover:bg-background/80 group">
+        <div className="flex items-center gap-[clamp(0.5rem,1vw,1rem)]">
           {!readOnly && !isPublic && (
             <div className="flex items-center gap-2">
               <Link href="/dashboard">
-                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-300 group/back">
+                <Button variant="ghost" size="icon" className="h-[clamp(32px,4vh,40px)] w-[clamp(32px,4vh,40px)] hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-300 group/back">
                   <ChevronLeft size={18} className="group-hover/back:-translate-x-0.5 transition-transform" />
                 </Button>
               </Link>
             </div>
           )}
           {readOnly && (
-            <Badge variant="outline" className="bg-red-500/10 text-red-400 border-red-500/20 text-[9px] font-black uppercase">Somente Leitura</Badge>
+            <Badge variant="outline" className="bg-red-500/10 text-red-400 border-red-500/20 text-[clamp(8px,0.6vw,9px)] font-black uppercase">Somente Leitura</Badge>
           )}
           <div className="flex items-center gap-3">
             {!readOnly ? (
@@ -1091,22 +1153,22 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
                   type="text"
                   value={fileName}
                   onChange={(e) => setFileName(e.target.value)}
-                  placeholder="Nome do contrato..."
-                  style={{ width: `${Math.max(12, fileName.length + 1)}ch` }}
-                  className="bg-transparent border-0 border-b border-transparent hover:border-border/60 focus:border-primary text-[10px] font-black uppercase tracking-widest text-foreground outline-none px-1 py-0.5 transition-all max-w-[280px] truncate"
+                  placeholder="Nome..."
+                  style={{ width: `${Math.min(20, Math.max(8, fileName.length + 1))}ch` }}
+                  className="bg-transparent border-0 border-b border-transparent hover:border-border/60 focus:border-primary text-[clamp(9px,0.7vw,11px)] font-black uppercase tracking-widest text-foreground outline-none px-1 py-0.5 transition-all max-w-[140px] truncate"
                 />
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 pointer-events-none select-none -ml-1">.docx</span>
+                <span className="text-[clamp(9px,0.7vw,11px)] font-black uppercase tracking-widest text-muted-foreground/40 pointer-events-none select-none -ml-1">.docx</span>
               </div>
             ) : (
-              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground truncate max-w-[160px]">{fileName}.docx</span>
+              <span className="text-[clamp(9px,0.7vw,11px)] font-black uppercase tracking-widest text-muted-foreground truncate max-w-[120px]">{fileName}.docx</span>
             )}
             {/* Version, word count and reading time removed for clean workspace layout */}
           </div>
         </div>
 
         {!readOnly && (
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-8 z-[110]">
-            <div className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity duration-500">
+          <div className="absolute left-1/2 top-0 -translate-x-1/2 flex items-center h-full gap-[clamp(1rem,3vw,6rem)] z-[110]">
+            <div className="flex items-center gap-[clamp(0.25rem,0.5vw,0.75rem)] opacity-60 hover:opacity-100 transition-opacity duration-500">
               <MarkButton type="bold" />
               <MarkButton type="italic" />
               <MarkButton type="underline" />
@@ -1118,7 +1180,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
               variant="ghost"
               onClick={() => setAiPromptOpen(prev => !prev)}
               className={cn(
-                "relative flex items-center justify-center px-5 h-12 rounded-none border-x border-primary/10 gap-2 overflow-hidden hover:bg-primary/5 transition-all select-none group/ai-toggle",
+                "relative flex items-center justify-center px-[clamp(1rem,2vw,2rem)] h-full rounded-none border-x border-primary/10 gap-2 overflow-hidden hover:bg-primary/5 transition-all select-none group/ai-toggle",
                 aiPromptOpen && "bg-primary/[0.04]"
               )}
             >
@@ -1130,9 +1192,9 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
                   (isAuditing || aiPromptOpen) && "animate-pulse text-primary"
                 )} 
               />
-              <span className={cn("text-[12px] font-black uppercase tracking-[0.2em] relative z-10 transition-colors", aiPromptOpen ? "text-primary" : "text-muted-foreground/60 group-hover/ai-toggle:text-primary/80")}>IA</span>
+              <span className={cn("text-[clamp(10px,0.8vw,13px)] font-black uppercase tracking-[0.2em] relative z-10 transition-colors", aiPromptOpen ? "text-primary" : "text-muted-foreground/60 group-hover/ai-toggle:text-primary/80")}>IA</span>
             </Button>
-            <div className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity duration-500">
+            <div className="flex items-center gap-[clamp(0.25rem,0.5vw,0.75rem)] opacity-60 hover:opacity-100 transition-opacity duration-500">
               <TextAlignButton align="left" />
               <TextAlignButton align="center" />
               <TextAlignButton align="right" />
@@ -1142,9 +1204,9 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
           </div>
         )}
 
-        <div className="flex-none flex items-center gap-2">
+        <div className="flex-none flex items-center gap-[clamp(0.4rem,0.8vw,1rem)]">
           {!readOnly && (
-            <div className="flex items-center gap-2 pr-4 border-r border-border/50">
+            <div className="flex items-center gap-[clamp(0.4rem,0.6vw,0.75rem)] pr-[clamp(0.5rem,1vw,1rem)] border-r border-border/50">
               {wordCount > 5 && <ExportButton isPublic={isPublic} docType={docType} title={fileName} content={editor?.getHTML() || ""} />}
               {!isPublic && <SignModal title={fileName} />}
             </div>
@@ -1155,7 +1217,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
               variant="ghost"
               size="sm"
               onClick={handleOpenPlans}
-              className="h-8 gap-1.5 px-3.5 rounded-xl text-primary hover:bg-primary/10 transition-all font-bold text-[9px] uppercase tracking-widest flex items-center border border-primary/20 bg-primary/5 hover:border-primary/45 shadow-sm shadow-primary/5 group"
+              className="h-[clamp(28px,3.5vh,36px)] gap-1.5 px-3.5 rounded-xl text-primary hover:bg-primary/10 transition-all font-bold text-[clamp(8px,0.6vw,10px)] uppercase tracking-widest flex items-center border border-primary/20 bg-primary/5 hover:border-primary/45 shadow-sm shadow-primary/5 group"
             >
               <Brain size={12} className="text-primary animate-pulse shrink-0 group-hover:scale-110 transition-transform" />
               <span>{credits !== null ? `${credits} Sinapses` : "..."}</span>
@@ -1449,8 +1511,8 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
                                 </span>
                                 {hasAudited && (
                                   hasRisk 
-                                    ? <span className="text-[9px] font-black uppercase text-amber-600 dark:text-amber-400 tracking-wider">💡 Sugestão</span>
-                                    : <span className="text-[9px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">✅ OK</span>
+                                    ? <Badge variant="outline" className="text-[7px] h-4 px-1.5 font-black uppercase bg-amber-500/10 text-amber-600 border-amber-500/20 hover:bg-amber-500/10">Sugestão</Badge>
+                                    : <Badge variant="outline" className="text-[7px] h-4 px-1.5 font-black uppercase bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/10">OK</Badge>
                                 )}
                               </button>
 
@@ -1502,10 +1564,12 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
                                     
                                     return (
                                       <div key={risk.id} className="p-3.5 rounded-xl border bg-amber-500/5 dark:bg-amber-500/5 border-amber-500/20 space-y-2 shadow-md shadow-amber-950/5">
-                                        <span className="text-[9.5px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
-                                          <Brain size={14} className="text-amber-600 dark:text-amber-400 animate-pulse" />
-                                          Cláusula Sugerida
-                                        </span>
+                                        <div className="flex items-center justify-between">
+                                          <Badge variant="outline" className="text-[8px] h-5 px-2 font-black uppercase bg-amber-500/10 text-amber-600 border-amber-500/20 hover:bg-amber-500/10">
+                                            Sugestão
+                                          </Badge>
+                                          <Brain size={12} className="text-amber-600/50 dark:text-amber-400/50 animate-pulse" />
+                                        </div>
                                         {risk.tipo && (
                                           <span className="text-[9px] font-black text-amber-600/70 dark:text-amber-400/60 uppercase tracking-widest block mb-0.5">
                                             {risk.tipo}

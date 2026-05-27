@@ -224,28 +224,29 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 relative z-10">
           
           {/* Painel Esquerdo: A Oferta Suprema (6 colunas) */}
-          <div className="md:col-span-6 flex flex-col justify-center border-b md:border-b-0 md:border-r border-border/60 pb-6 md:pb-0 md:pr-6 lg:pr-8 space-y-3">
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
-                <Zap size={12} className="text-primary animate-pulse filter drop-shadow-[0_0_4px_rgba(139,92,246,0.4)]" />
-                <span className="text-[11px] font-bold text-primary">Oferta de lançamento</span>
+          <div className="md:col-span-6 flex flex-col justify-center border-b md:border-b-0 md:border-r border-border/60 pb-6 md:pb-0 md:pr-6 lg:pr-8 space-y-4">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                <CheckCircle2 size={12} className="text-emerald-500 animate-pulse" />
+                <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Acesso Vitalício Liberado</span>
               </div>
               
-              <h3 className="text-[28px] font-black text-foreground leading-[1.1] tracking-tight">
-                Desbloqueie agora<br />
-                <span className="bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">seu contrato</span>
+              <h3 className="text-[36px] font-black text-foreground leading-[1.1] tracking-tight">
+                Adquira a sua<br />
+                <span className="bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">Minuta Oficial</span>
               </h3>
               
               <p className="text-[15px] text-muted-foreground leading-relaxed font-medium">
-                Obtenha a versão editável oficial <strong className="text-foreground font-bold">(.docx)</strong> deste instrumento, com acesso imediato ao download e plena liberdade para personalizar cada cláusula conforme sua realidade jurídica.
+                Finalize agora para baixar o arquivo editável em <strong className="text-foreground font-bold">Word (.DOCX)</strong>. O documento é seu: use, replique e adapte quantas vezes desejar, sem restrições ou taxas adicionais.
               </p>
             </div>
 
             {/* Box de Preço Único */}
-            <div className="pt-1">
-              <div className="text-[11px] font-bold text-muted-foreground mb-1">Valor de liberação</div>
+            <div className="pt-2">
+              <div className="text-[11px] font-black text-muted-foreground/60 uppercase tracking-widest mb-1">Investimento Único</div>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-3xl font-black text-foreground">R$ 29,90</span>
+                <span className="text-4xl font-black text-foreground">R$ 29,90</span>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase">/ download</span>
               </div>
             </div>
           </div>
@@ -255,17 +256,16 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             <DialogHeader className="mb-4">
               <DialogTitle className="flex items-center gap-2.5 text-base sm:text-lg font-black uppercase tracking-[0.12em] bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">
                 <Lock size={16} className="text-primary animate-pulse filter drop-shadow-[0_0_6px_rgba(139,92,246,0.4)]" />
-                {step === "form" ? "Dados de Acesso" : step === "pix" ? "Pagamento Pix" : "Sucesso!"}
+                {step === "form" ? "Liberar Contrato" : step === "pix" ? "Finalizar Pagamento" : "Sucesso!"}
               </DialogTitle>
               <DialogDescription className="text-xs text-muted-foreground font-medium tracking-wide mt-1 leading-relaxed">
-                {step === "form" 
-                  ? "Preencha os dados abaixo para receber as credenciais da sua conta e liberar o download." 
-                  : step === "pix" 
-                  ? "Escaneie o QR Code ou copie a chave Pix. O documento e o saldo serão liberados imediatamente após o pagamento."
-                  : "Seu pagamento foi confirmado com glória absoluta."}
+                {step === "form"
+                  ? "Gere o código PIX e receba o contrato oficial diretamente em seu e-mail após a confirmação."
+                  : step === "pix"
+                  ? "Efetue o pagamento via PIX para liberação instantânea do seu documento Word editável."
+                  : "Seu pagamento foi confirmado. O download está disponível abaixo."}
               </DialogDescription>
             </DialogHeader>
-
             {step === "form" && (
               <form onSubmit={handleCheckout} className="space-y-4 mt-2">
                 {/* Nome Completo Input Group */}
@@ -299,13 +299,23 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                 </div>
                 
                 {/* Action Buttons */}
-                <div className="pt-2 space-y-2">
+                <div className="pt-2">
                   <Button 
                     type="submit" 
                     disabled={loading} 
-                    className="w-full h-11 bg-gradient-to-r from-primary via-violet-600 to-primary hover:from-primary/90 hover:to-violet-600/90 text-primary-foreground font-black tracking-[0.12em] uppercase rounded-xl transition-all shadow-[0_3px_15px_rgba(139,92,246,0.2)] hover:shadow-[0_3px_25px_rgba(139,92,246,0.35)] flex items-center justify-center gap-2 duration-300 transform hover:-translate-y-0.5 border border-primary/20"
+                    className="w-full h-12 bg-gradient-to-r from-primary via-violet-600 to-primary hover:from-primary/90 hover:to-violet-600/90 text-primary-foreground font-black tracking-[0.15em] uppercase rounded-xl transition-all shadow-[0_4px_20px_rgba(139,92,246,0.3)] hover:shadow-[0_4px_30px_rgba(139,92,246,0.5)] flex items-center justify-center px-6 duration-300 transform hover:-translate-y-0.5 border border-primary/30 group"
                   >
-                    {loading ? <BrainCircuit className="animate-spin text-primary-foreground" /> : "Gerar PIX - R$ 29,90"}
+                    {loading ? (
+                      <div className="flex items-center gap-3">
+                        <BrainCircuit className="animate-spin text-primary-foreground" size={18} />
+                        <span>Processando...</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-3">
+                        <Zap size={18} className="text-primary-foreground animate-pulse" />
+                        <span>Gerar Código PIX</span>
+                      </div>
+                    )}
                   </Button>
                 </div>
               </form>
