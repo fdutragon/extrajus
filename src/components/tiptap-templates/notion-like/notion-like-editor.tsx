@@ -1381,7 +1381,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
                       disabled={isAuditing} 
                       className="w-full bg-transparent border border-primary/50 text-primary hover:bg-primary hover:border-primary hover:text-primary-foreground text-[9px] font-black uppercase tracking-[0.2em] h-8 rounded-xl transition-all shadow-[0_0_10px_rgba(var(--primary),0.05)] hover:shadow-[0_0_20px_rgba(var(--primary),0.2)]"
                     >
-                      Rolar Sugestões IA
+                      Analisar Cláusulas
                     </Button>
                   </div>
                 ) : (
