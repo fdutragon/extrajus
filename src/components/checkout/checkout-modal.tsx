@@ -314,10 +314,10 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                     <Button 
                       onClick={handleDevSimulatePaymentOnly} 
                       disabled={loading}
-                      className="w-full h-10 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400 font-black tracking-wider uppercase rounded-xl transition-all text-xs flex items-center justify-center gap-2 duration-300 shadow-[0_0_10px_rgba(245,158,11,0.03)]"
+                      className="w-full h-9 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400 font-black tracking-wider uppercase rounded-xl transition-all text-[9.5px] flex items-center justify-center gap-2 duration-300 shadow-[0_0_10px_rgba(245,158,11,0.03)]"
                     >
-                      <Zap size={13} className="text-amber-500 dark:text-amber-400 animate-pulse" />
-                      Simular Confirmação do Pagamento (Dev)
+                      <Zap size={12} className="text-amber-500 dark:text-amber-400 animate-pulse" />
+                      Simular Pagamento (Dev)
                     </Button>
                   )}
                 </div>
