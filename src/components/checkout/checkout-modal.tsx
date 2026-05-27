@@ -50,7 +50,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             if (typeof window !== "undefined" && (window as any).gtag) {
               (window as any).gtag('event', 'conversion', {
                 'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
-                'value': 9.90, // Valor real do download do documento
+                'value': 29.90, // Valor real do download do documento
                 'currency': 'BRL',
                 'transaction_id': pixData.externalId
               });
@@ -223,7 +223,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             <div className="pt-1">
               <div className="text-[11px] font-bold text-muted-foreground mb-1">Valor de liberação</div>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-3xl font-black text-foreground">R$ 29,00</span>
+                <span className="text-3xl font-black text-foreground">R$ 29,90</span>
               </div>
             </div>
           </div>
@@ -283,7 +283,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                     disabled={loading} 
                     className="w-full h-11 bg-gradient-to-r from-primary via-violet-600 to-primary hover:from-primary/90 hover:to-violet-600/90 text-primary-foreground font-black tracking-[0.12em] uppercase rounded-xl transition-all shadow-[0_3px_15px_rgba(139,92,246,0.2)] hover:shadow-[0_3px_25px_rgba(139,92,246,0.35)] flex items-center justify-center gap-2 duration-300 transform hover:-translate-y-0.5 border border-primary/20"
                   >
-                    {loading ? <BrainCircuit className="animate-spin text-primary-foreground" /> : "Gerar PIX - R$ 29,00"}
+                    {loading ? <BrainCircuit className="animate-spin text-primary-foreground" /> : "Gerar PIX - R$ 29,90"}
                   </Button>
                 </div>
               </form>
