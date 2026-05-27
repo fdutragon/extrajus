@@ -28,6 +28,85 @@ import {
 import { Underline } from "@tiptap/extension-underline"
 import { Link as TiptapLink } from "@tiptap/extension-link"
 import { BubbleMenu as BubbleMenuExtension } from "@tiptap/extension-bubble-menu"
+import { Extension } from "@tiptap/core"
+
+// Extensão para gerenciar o highlight de novos textos da IA
+const AiHighlightManager = Extension.create({
+  name: 'aiHighlightManager',
+
+  addGlobalAttributes() {
+    return [
+      {
+        types: ['paragraph', 'heading', 'blockquote', 'legalNode'],
+        attributes: {
+          aiHighlight: {
+            default: false,
+            parseHTML: element => element.hasAttribute('data-ai-highlight'),
+            renderHTML: attributes => {
+              if (!attributes.aiHighlight) return {}
+              return { 'data-ai-highlight': 'true' }
+            },
+          },
+        },
+      },
+    ]
+  },
+
+  addCommands(): any {
+    return {
+      clearAiHighlights: () => ({ tr, state, dispatch }: any) => {
+        let changed = false
+        state.doc.descendants((node: any, pos: number) => {
+          if (node.attrs && node.attrs.aiHighlight) {
+            tr.setNodeMarkup(pos, undefined, {
+              ...node.attrs,
+              aiHighlight: false,
+            })
+            changed = true
+          }
+        })
+        if (changed && dispatch) dispatch(tr)
+        return changed
+      },
+      removeHighlightAtSelection: () => ({ tr, state, dispatch }: any) => {
+        const { selection } = state
+        const { $from } = selection
+        let changed = false
+        
+        // Verifica o nó atual e ancestrais
+        for (let depth = $from.depth; depth >= 0; depth--) {
+          const node = $from.node(depth)
+          if (node.attrs && node.attrs.aiHighlight) {
+            const pos = $from.before(depth)
+            tr.setNodeMarkup(pos, undefined, {
+              ...node.attrs,
+              aiHighlight: false,
+            })
+            changed = true
+          }
+        }
+        
+        if (changed && dispatch) dispatch(tr)
+        return changed
+      }
+    }
+  },
+
+  addEvents() {
+    return {
+      // Remove o highlight ao clicar ou mover a seleção para dentro do texto
+      selectionUpdate: ({ editor }) => {
+        editor.commands.removeHighlightAtSelection()
+      },
+      // Remove o highlight ao digitar no nó
+      transaction: ({ transaction, editor }) => {
+        if (transaction.docChanged) {
+          editor.commands.removeHighlightAtSelection()
+        }
+      },
+    }
+  },
+})
 
 // --- Hooks ---
 import { useUiEditorState } from "../../../hooks/use-ui-editor-state"
@@ -370,7 +449,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
     }
     window.addEventListener("ai-generation-finished", handleAiFinished)
     return () => window.removeEventListener("ai-generation-finished", handleAiFinished)
-  }, [pendingOptimization])
+  }, [pendingOptimization, editor])
 
   useEffect(() => {
     if (!editor) return
@@ -841,6 +920,9 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
       })
     }
     
+    // Limpa highlights anteriores
+    ;(editor.commands as any).clearAiHighlights()
+
     // Seleciona a cláusula de referência
     editor.chain().focus().setTextSelection({ from: start, to: end }).run()
     
@@ -1710,7 +1792,7 @@ export function EditorProvider(props: EditorProviderProps) {
       TableHandleExtension, ListNormalizationExtension, LegalNode, VariableNode,
       ImageUploadNode.configure({ accept: "image/*", maxSize: MAX_FILE_SIZE, limit: 3, upload: handleImageUpload, onError: (error) => console.error("Upload failed:", error) }),
       UniqueID.configure({ types: ["table", "paragraph", "bulletList", "orderedList", "heading", "blockquote", "codeBlock", "tocNode", "legalNode"], filterTransaction: (transaction) => !isChangeOrigin(transaction) }),
-      Typography, UiState, TocNode.configure({ topOffset: 48 }), Gemini.configure({ apiKey: geminiKey || "" }), BubbleMenuExtension,
+      Typography, UiState, TocNode.configure({ topOffset: 48 }), Gemini.configure({ apiKey: geminiKey || "" }), BubbleMenuExtension, AiHighlightManager,
     ],
   })
 

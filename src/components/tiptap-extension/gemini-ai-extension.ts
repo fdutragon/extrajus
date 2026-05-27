@@ -279,7 +279,19 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
 
           if (searchMatch && replaceMatch) {
             const searchText = searchMatch[1].trim()
-            const replaceText = replaceMatch[1].trim()
+            let replaceText = replaceMatch[1].trim()
+
+            // Injeta o atributo de highlight da IA para que o usuário veja o que mudou
+            // Aplica tanto em divs de legal-node quanto em parágrafos
+            replaceText = replaceText
+              .replace(/<div([^>]*data-type="legal-node"[^>]*)>/gi, '<div$1 data-ai-highlight="true">')
+              .replace(/<p([^>]*)>/gi, '<p$1 data-ai-highlight="true">')
+
+            // Injeta o atributo de highlight da IA para que o usuário veja o que mudou
+            // Aplica tanto em divs de legal-node quanto em parágrafos
+            replaceText = replaceText
+              .replace(/<div([^>]*data-type="legal-node"[^>]*)>/gi, '<div$1 data-ai-highlight="true">')
+              .replace(/<p([^>]*)>/gi, '<p$1 data-ai-highlight="true">')
 
             const html = editor.getHTML()
             if (html.includes(searchText)) {
