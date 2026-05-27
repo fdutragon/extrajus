@@ -139,12 +139,27 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
         const currentHtml = editor.getHTML()
         const currentText = (editor.getText() || "").trim()
         
-        // Critério ultra-robusto para identificar se o documento está de fato vazio
+        const promptLower = (userPrompt || "").toLowerCase().trim();
+        const isCreationRequest = promptLower.startsWith("crie") || 
+                                  promptLower.startsWith("gerar") || 
+                                  promptLower.startsWith("elabore") ||
+                                  promptLower.startsWith("elaborar") || 
+                                  promptLower.startsWith("faça") || 
+                                  promptLower.startsWith("fazer") ||
+                                  promptLower.startsWith("create") || 
+                                  promptLower.startsWith("write") ||
+                                  promptLower.includes("crie um") ||
+                                  promptLower.includes("crie uma") ||
+                                  promptLower.includes("gerar um") ||
+                                  promptLower.includes("gerar uma");
+
+        // Critério ultra-robusto para identificar se o documento está de fato vazio ou deve ser gerado do zero
         const isDocEmpty = editor.isEmpty || 
-                           currentText.length < 10 || 
+                           currentText.length < 400 || 
                            currentHtml === "<p></p>" || 
                            currentHtml === "" ||
-                           !currentHtml;
+                           !currentHtml ||
+                           isCreationRequest;
 
         console.log("[Lilith AI Extension] runGemini called:", {
           currentTextLength: currentText.length,
