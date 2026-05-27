@@ -217,17 +217,45 @@ export interface EditorProviderProps {
  */
 export function LoadingSpinner({ text = "Estabelecendo Conexão..." }: { text?: string }) {
   return (
-    <div className="fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-background overflow-hidden">
-      {/* Background Ambience */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(var(--primary)/0.05),transparent_70%)] animate-pulse duration-[4000ms]" />
+    <div className="fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-zinc-950 overflow-hidden select-none">
+      {/* Background Dark Occult Luxury Ambience */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(229,176,59,0.06),transparent_65%)] animate-pulse duration-[4000ms]" />
       
-      <div className="relative flex flex-col items-center gap-8 animate-in fade-in zoom-in duration-1000">
-        {/* Logo area */}
-        <div className="relative group">
-          <div className="absolute -inset-10 bg-primary/10 blur-[60px] rounded-full animate-pulse transition-all duration-700" />
-          <div className="relative flex flex-col items-center">
-            <Logo iconSize={64} showText={false} className="flex-col text-center gap-4" />
+      {/* Subtle background grids */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
+
+      <div className="relative flex flex-col items-center gap-7 animate-in fade-in zoom-in-95 duration-1000">
+        
+        {/* Glowing Logo Container with Ring */}
+        <div className="relative flex items-center justify-center">
+          {/* Pulsing Outer Glow */}
+          <div className="absolute w-32 h-32 bg-primary/10 rounded-full blur-2xl animate-pulse duration-[2000ms]" />
+          
+          {/* Animated Spinner Ring */}
+          <div className="absolute w-24 h-24 rounded-full border-2 border-primary/10 border-t-primary/70 animate-spin duration-[1500ms]" />
+          
+          {/* Logo with premium style */}
+          <div className="relative p-4 rounded-full bg-black/40 border border-white/5 backdrop-blur-xl shadow-2xl flex items-center justify-center">
+            <Logo iconSize={48} showText={false} className="flex-col text-center" />
           </div>
+        </div>
+
+        {/* Loading Text and IA Status */}
+        <div className="flex flex-col items-center gap-2 max-w-xs text-center px-4 relative z-10">
+          <div className="flex items-center gap-1.5 justify-center">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
+            <span className="text-[9px] uppercase tracking-[0.25em] font-black text-primary/95">
+              Conexão Segura • IA Ativa
+            </span>
+          </div>
+
+          <h3 className="text-[13px] font-bold text-zinc-100 tracking-wide font-sans animate-pulse">
+            {text}
+          </h3>
+
+          <p className="text-[9.5px] text-zinc-500 font-mono tracking-wider uppercase italic select-none">
+            Iniciando Editor Supremo
+          </p>
         </div>
       </div>
     </div>
