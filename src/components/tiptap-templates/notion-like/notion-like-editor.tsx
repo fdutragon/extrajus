@@ -953,10 +953,10 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
         }
         @keyframes pulse-shadow {
           0%, 100% {
-            box-shadow: 0 0 20px -5px hsl(var(--primary)/0.08), 0 0 12px -5px hsl(var(--primary)/0.03);
+            box-shadow: 0 0 25px -5px hsl(var(--primary)/0.12), 0 0 15px -5px hsl(var(--primary)/0.04);
           }
           50% {
-            box-shadow: 0 0 35px 3px hsl(var(--primary)/0.18), 0 0 20px 0px hsl(var(--primary)/0.08);
+            box-shadow: 0 0 40px 4px hsl(var(--primary)/0.26), 0 0 25px 1px hsl(var(--primary)/0.12);
           }
         }
         .editor-glow-container {
