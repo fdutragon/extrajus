@@ -131,6 +131,7 @@ import { ListButton } from "../../../components/tiptap-ui/list-button"
 import { TextAlignButton } from "../../../components/tiptap-ui/text-align-button"
 import { LinkPopover } from "../../../components/tiptap-ui/link-popover"
 import { ColorTextPopover } from "../../../components/tiptap-ui/color-text-popover"
+import { UndoRedoButton } from "../../../components/tiptap-ui/undo-redo-button"
 import {
   AiMenu,
   AiMenuStateProvider,
@@ -431,12 +432,10 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
     // 1. Prevent copy, cut, paste events completely
     const handleCopy = (e: ClipboardEvent) => {
       e.preventDefault()
-      toast.error("Cópia restrita por diretiva de segurança.")
     }
 
     const handleCut = (e: ClipboardEvent) => {
       e.preventDefault()
-      toast.error("Remoção restrita por diretiva de segurança.")
     }
 
     const handlePaste = (e: ClipboardEvent) => {
@@ -450,7 +449,6 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
 
       if (isCtrlOrCmd && e.key?.toLowerCase() === "c") {
         e.preventDefault()
-        toast.error("Cópia bloqueada.")
       }
 
       if (isCtrlOrCmd && e.key?.toLowerCase() === "v") {
@@ -460,7 +458,6 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
 
       if (isCtrlOrCmd && e.key?.toLowerCase() === "x") {
         e.preventDefault()
-        toast.error("Corte bloqueado.")
       }
 
       if (isCtrlOrCmd && e.key?.toLowerCase() === "p") {
@@ -493,12 +490,10 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
 
     const handleDragStart = (e: DragEvent) => {
       e.preventDefault()
-      toast.error("Movimentação de texto desativada.")
     }
 
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault()
-      toast.error("Menu de contexto restrito por confidencialidade.")
     }
 
     const handleFocus = () => setIsFocused(true)
@@ -610,7 +605,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
 
     const docText = editor.getText().trim();
     if (docText.length < 150) {
-      toast.warning("🔒 O instrumento de pacto é muito curto! Digite ou forje pelo menos 150 caracteres para que o Radar Analítico possa escanear e auditar os riscos jurídicos.");
+      toast.warning("O instrumento do contrato é muito curto. Insira pelo menos 150 caracteres.");
       return;
     }
 
@@ -1087,8 +1082,9 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
               <MarkButton type="bold" />
               <MarkButton type="italic" />
               <MarkButton type="underline" />
-              <MarkButton type="strike" />
-              <ResetAllFormattingButton />
+              <span className="h-4 w-[1px] bg-border mx-1" />
+              <UndoRedoButton action="undo" />
+              <UndoRedoButton action="redo" />
             </div>
             <Button
               variant="ghost"
@@ -1158,8 +1154,8 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
 
       <div className={cn("flex-1 flex pt-12 relative overflow-hidden h-full transition-all duration-700", !isFocused && "filter blur-[45px] select-none pointer-events-none")}>
         {!readOnly && (
-          <aside className={cn("h-full border-r border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", leftSidebarOpen ? "w-[360px]" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
-            <div className="px-4 py-6 flex flex-col h-full overflow-hidden w-[360px]">
+          <aside className={cn("h-full border-r border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", leftSidebarOpen ? "w-[20vw] min-w-[280px] max-w-[420px]" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
+            <div className="px-4 py-6 flex flex-col h-full overflow-hidden w-full">
               <div className="space-y-5 mb-8 shrink-0">
                 <div className="flex items-center justify-between border-b border-border/40 pb-2.5">
                    <div className="flex items-center gap-2">
@@ -1262,7 +1258,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
               "w-full max-w-[840px] mx-auto editor-glow-container transition-all duration-700 shadow-2xl",
               (showEntranceGlow || editorFocused) && "glowing"
             )}>
-              <div className="w-full h-full bg-card/90 dark:bg-card/75 backdrop-blur-xl rounded-[30px] px-12 md:px-20 pt-16 pb-16 md:pt-20 md:pb-24 relative min-h-[800px] md:min-h-[1188px] editor-glow-content">
+              <div className="w-full h-full bg-card/90 dark:bg-card/75 backdrop-blur-xl rounded-[30px] px-10 md:px-16 pt-12 pb-12 md:pt-16 md:pb-20 relative min-h-[800px] md:min-h-[1188px] editor-glow-content">
                 {/* Grain overlay for paper feel */}
                 <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-[30px]" />
 
@@ -1281,7 +1277,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
           )}
         </div>
 
-        <aside className={cn("h-full border-l border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", rightSidebarOpen ? "w-[420px]" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
+        <aside className={cn("h-full border-l border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", rightSidebarOpen ? "w-[22vw] min-w-[300px] max-w-[420px]" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
           {readOnly ? (
             <div className="p-6 flex flex-col h-full justify-between">
               {contractStatus === 'signed' ? (
@@ -1289,14 +1285,14 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
                   <div className="p-4 bg-emerald-500/10 rounded-full border border-emerald-500/30 animate-pulse mb-2">
                     <ShieldCheck size={48} className="text-emerald-400" />
                   </div>
-                  <h3 className="text-base font-black uppercase tracking-[0.2em] text-emerald-400">Contrato Selado</h3>
+                  <h3 className="text-sm font-black uppercase tracking-[0.2em] text-emerald-400">Contrato Selado</h3>
                   <div className="space-y-4 max-w-xs">
-                    <p className="text-sm leading-relaxed text-muted-foreground">
+                    <p className="text-[11px] leading-relaxed text-muted-foreground">
                       Este instrumento jurídico foi totalmente assinado e selado digitalmente.
                     </p>
                     <div className="p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
-                      <span className="text-xs font-black text-emerald-400 uppercase tracking-widest block mb-1">Status da Assinatura</span>
-                      <span className="text-sm font-bold text-white">IMUTÁVEL & REGISTRADO</span>
+                      <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest block mb-1">Status da Assinatura</span>
+                      <span className="text-xs font-bold text-white">IMUTÁVEL & REGISTRADO</span>
                     </div>
                     <p className="text-xs text-muted-foreground/60 italic leading-normal">
                       Qualquer tentativa de edição foi bloqueada para preservar a integridade jurídica das assinaturas.
@@ -1308,32 +1304,32 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
                 <div className="space-y-6">
                   <div className="flex items-center gap-4">
                     <ShieldCheck size={24} className="text-primary animate-pulse" />
-                    <h3 className="text-sm font-black uppercase tracking-[0.2em]">Assinatura Digital</h3>
+                    <h3 className="text-xs font-black uppercase tracking-[0.2em]">Assinatura Digital</h3>
                   </div>
                   <div className="space-y-4">
-                    <p className="text-sm leading-relaxed text-muted-foreground">Revise o documento e preencha as credenciais para assinar.</p>
+                    <p className="text-xs leading-relaxed text-muted-foreground">Revise o documento e preencha as credenciais para assinar.</p>
                     <div className="space-y-3">
-                      <label className="text-xs font-black text-muted-foreground uppercase">E-mail</label>
-                      <input type="email" value={signerEmail} onChange={(e) => setSignerEmail(e.target.value)} placeholder="Seu e-mail..." className="w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-sm font-semibold" />
+                      <label className="text-[10px] font-black text-muted-foreground uppercase">E-mail</label>
+                      <input type="email" value={signerEmail} onChange={(e) => setSignerEmail(e.target.value)} placeholder="Seu e-mail..." className="w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-xs font-semibold" />
                     </div>
                     <div className="space-y-3">
-                      <label className="text-xs font-black text-muted-foreground uppercase">Código (6 dígitos)</label>
+                      <label className="text-[10px] font-black text-muted-foreground uppercase">Código (6 dígitos)</label>
                       <input type="text" maxLength={6} value={sealingCode} onChange={(e) => setSealingCode(e.target.value.replace(/\D/g, ''))} placeholder="123456" className="w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-center text-xl font-black tracking-[0.5em]" />
                     </div>
                     <div className="flex items-start gap-3 mt-4">
                       <input type="checkbox" id="consent" checked={consentCheck} onChange={(e) => setConsentCheck(e.target.checked)} className="mt-0.5 rounded text-primary focus:ring-0" />
-                      <label htmlFor="consent" className="text-xs text-muted-foreground leading-normal font-semibold cursor-pointer">Declaro que li e concordo com os termos.</label>
+                      <label htmlFor="consent" className="text-[11px] text-muted-foreground leading-normal font-semibold cursor-pointer">Declaro que li e concordo com os termos.</label>
                     </div>
                   </div>
                 </div>
               )}
               {contractStatus !== 'signed' && (
-                <Button onClick={handleConfirmSignature} disabled={isSealing || !consentCheck} className="w-full bg-primary py-6 rounded-2xl font-black text-sm uppercase">Assinar Instrumento</Button>
+                <Button onClick={handleConfirmSignature} disabled={isSealing || !consentCheck} className="w-full bg-primary py-5 rounded-2xl font-black text-xs uppercase">Assinar Instrumento</Button>
               )}
             </div>
           ) : (
-            <div className="p-6 flex flex-col h-full overflow-hidden min-h-0 space-y-6">
-              <div className="flex items-center justify-between border-b border-border/40 pb-4">
+            <div className="p-4 flex flex-col h-full overflow-hidden min-h-0 space-y-4">
+              <div className="flex items-center justify-between border-b border-border/40 pb-2">
                 <div className="flex items-center gap-2">
                   <BrainCircuit size={12} className={cn("text-primary", isAuditing && "animate-pulse")} />
                   <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Sugestões de Cláusulas</h3>
@@ -1342,34 +1338,34 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
               {/* Seção 1: Score ou Iniciar Auditoria (Fixado no topo) */}
               <div className="shrink-0">
                 {!hasAudited ? (
-                  <div className="p-5 rounded-2xl bg-primary/5 border border-primary/10 space-y-4 relative overflow-hidden">
+                  <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/10 space-y-3 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
                     <div className="flex items-center gap-1.5">
                       <Brain size={14} className="text-primary animate-pulse" />
-                      <span className="text-[10px] font-black text-primary uppercase tracking-widest">Radar de Cláusulas</span>
+                      <span className="text-[9px] font-black text-primary uppercase tracking-widest">Radar de Cláusulas</span>
                     </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
+                    <p className="text-[12px] text-muted-foreground leading-relaxed">
                       Rode a análise inteligente para escanear o documento e sugerir cláusulas protetoras complementares sob demanda.
                     </p>
                     <Button 
                       onClick={runAudit} 
                       disabled={isAuditing} 
-                      className="w-full bg-transparent border border-primary/50 text-primary hover:bg-primary hover:border-primary hover:text-primary-foreground text-[10px] font-black uppercase tracking-[0.2em] h-8 rounded-xl transition-all shadow-[0_0_10px_rgba(var(--primary),0.05)] hover:shadow-[0_0_20px_rgba(var(--primary),0.2)]"
+                      className="w-full bg-transparent border border-primary/50 text-primary hover:bg-primary hover:border-primary hover:text-primary-foreground text-[9px] font-black uppercase tracking-[0.2em] h-8 rounded-xl transition-all shadow-[0_0_10px_rgba(var(--primary),0.05)] hover:shadow-[0_0_20px_rgba(var(--primary),0.2)]"
                     >
                       Rolar Sugestões IA
                     </Button>
                   </div>
                 ) : (
-                  <div className="p-5 rounded-2xl bg-muted/30 border space-y-4">
+                  <div className="p-3.5 rounded-xl bg-muted/30 border space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-black text-muted-foreground uppercase">Proteção Estimada</span>
-                      <span className={cn("text-xs font-black uppercase px-2 py-0.5 rounded-full", auditStatus.color)}>{auditStatus.label}</span>
+                      <span className="text-[10px] font-black text-muted-foreground uppercase">Proteção Estimada</span>
+                      <span className={cn("text-[9px] font-black uppercase px-2 py-0.5 rounded-full", auditStatus.color)}>{auditStatus.label}</span>
                     </div>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-5xl font-black">{auditScore}</span>
-                      <span className="text-lg font-bold text-primary">%</span>
+                      <span className="text-2xl font-black">{auditScore}</span>
+                      <span className="text-[11px] font-bold text-primary">%</span>
                     </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed italic">{auditStatus.desc}</p>
+                    <p className="text-[12px] text-muted-foreground leading-relaxed italic">{auditStatus.desc}</p>
                   </div>
                 )}
               </div>
@@ -1377,7 +1373,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
               {/* Seção 2: Árvore Interativa de Cláusulas (Mapa do Instrumento) */}
               <div className="flex flex-col flex-1 min-h-0 space-y-4">
                 <div className="flex items-center gap-2 border-b border-border/40 pb-2 shrink-0">
-                  <span className="text-xs font-black text-muted-foreground uppercase tracking-widest">Estrutura do Contrato</span>
+                  <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Estrutura do Contrato</span>
                 </div>
                 
                 <ScrollArea className="flex-1 pr-3 scrollbar-minimalist min-h-0">
@@ -1386,7 +1382,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
                       <span className="text-xs text-muted-foreground font-semibold">Nenhuma cláusula identificada ainda.</span>
                     </div>
                   ) : (
-                    <div className="relative pl-5 pr-3 py-1 space-y-5 before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-[1.5px] before:bg-border/60">
+                    <div className="relative pl-5 pr-3 py-1 space-y-3.5 before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-[1.5px] before:bg-border/60">
                       {getClauses().map((clause, idx, array) => {
                         const nextClause = array[idx + 1]
                         const clauseRisks = getClauseRisks(clause.pos, nextClause?.pos)
@@ -1424,8 +1420,8 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
                                 </span>
                                 {hasAudited && (
                                   hasRisk 
-                                    ? <span className="text-xs font-black uppercase text-amber-600 dark:text-amber-400 tracking-wider">💡 Sugestão</span>
-                                    : <span className="text-xs font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">✅ OK</span>
+                                    ? <span className="text-[9px] font-black uppercase text-amber-600 dark:text-amber-400 tracking-wider">💡 Sugestão</span>
+                                    : <span className="text-[9px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">✅ OK</span>
                                 )}
                               </button>
 
@@ -1460,14 +1456,14 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
                                     if (isOptimized) {
                                       return (
                                         <div key={risk.id} className="p-3 rounded-xl border bg-emerald-50/50 dark:bg-emerald-950/10 border-emerald-200/50 dark:border-emerald-500/20 space-y-2">
-                                          <span className="text-[11px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest flex items-center gap-1.5 opacity-80">
+                                          <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest flex items-center gap-1.5 opacity-80">
                                             <ShieldCheck size={12} className="text-emerald-600 dark:text-emerald-500" />
                                             Cláusula Adicionada
                                           </span>
                                           <Button 
                                             size="sm" 
                                             disabled
-                                            className="w-full text-[10px] font-bold uppercase tracking-widest h-7 rounded-lg transition-all bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-500/30 opacity-70"
+                                            className="w-full text-[9px] font-bold uppercase tracking-widest h-7 rounded-lg transition-all bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-500/30 opacity-70"
                                           >
                                             Cláusula Inserida
                                           </Button>
@@ -1476,12 +1472,12 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
                                     }
                                     
                                     return (
-                                      <div key={risk.id} className="p-4 rounded-xl border bg-amber-500/5 dark:bg-amber-500/5 border-amber-500/20 space-y-3 shadow-lg shadow-amber-950/5">
-                                        <span className="text-xs font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
+                                      <div key={risk.id} className="p-3.5 rounded-xl border bg-amber-500/5 dark:bg-amber-500/5 border-amber-500/20 space-y-2 shadow-md shadow-amber-950/5">
+                                        <span className="text-[9.5px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
                                           <Brain size={14} className="text-amber-600 dark:text-amber-400 animate-pulse" />
                                           Cláusula Sugerida
                                         </span>
-                                        <p className="text-[13px] font-medium leading-relaxed text-foreground/80">
+                                        <p className="text-[13px] font-normal leading-relaxed text-foreground/80 text-justify">
                                           {renderBoldText(risk.reason)}
                                         </p>
                                         <Button 
@@ -1489,7 +1485,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
                                           disabled={isPending}
                                           onClick={() => handleOptimizeClause(clause.pos, nextClause?.pos, risk.id, risk.reason)}
                                           className={cn(
-                                            "w-full text-xs font-bold uppercase tracking-widest h-9 rounded-lg transition-all",
+                                            "w-full text-[9px] font-black uppercase tracking-widest h-8 rounded-xl transition-all",
                                             isPending
                                               ? "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900 dark:text-amber-400"
                                               : "bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400"
@@ -1541,7 +1537,7 @@ export function EditorProvider(props: EditorProviderProps) {
     editable: !readOnly,
     editorProps: { attributes: { class: "notion-like-editor" }, scrollThreshold: 0, scrollMargin: 0 },
     extensions: [
-      StarterKit.configure({ undoRedo: false, horizontalRule: false, dropcursor: { width: 2 } }),
+      StarterKit.configure({ horizontalRule: false, dropcursor: { width: 2 } }),
       HorizontalRule,
       TextAlign.configure({ types: ["heading", "paragraph", "legalNode"] }),
       Collaboration.configure({ document: ydoc }),

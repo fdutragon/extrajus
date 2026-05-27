@@ -237,12 +237,10 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
    <p><br></p>
    <p data-node-text-align="center" style="text-align: center; margin-top: 24px;">[Cidade] - [UF], [Dia] de [Mês] de [Ano].</p>
    <p><br></p>
-   <p><br></p>
-   <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
+   <p data-node-text-align="center" style="text-align: center; margin-top: 24px;">__________________________________________</p>
    <p data-node-text-align="center" style="text-align: center;"><strong>CONTRATANTE</strong></p>
    <p><br></p>
-   <p><br></p>
-   <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
+   <p data-node-text-align="center" style="text-align: center; margin-top: 24px;">__________________________________________</p>
    <p data-node-text-align="center" style="text-align: center;"><strong>CONTRATADO</strong></p>
 9. Retorne APENAS o HTML sem estilos inline (exceto pelos atributos obrigatórios de alinhamento e espaçamento nos elementos centralizados da regra 2 e regra 8). Sem explicações.
 10. ENCARGOS FINANCEIROS E MULTAS DENTRO DOS LIMITES LEGAIS (CRÍTICO): NUNCA deixe espaços em branco ou placeholders para taxas de juros, multa de atraso ou penalidades financeiras. Você DEVE preencher os percentuais de forma automática e precisa, respeitando rigorosamente os limites da legislação brasileira de acordo com a natureza do contrato:

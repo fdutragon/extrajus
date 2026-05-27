@@ -112,16 +112,6 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-3 pr-2">
             <ThemeToggle />
-            <Link href="/login">
-              <Button size="sm" variant="ghost" className="text-[10px] font-black uppercase tracking-widest hidden sm:flex">
-                Entrar
-              </Button>
-            </Link>
-            <Link href="/register">
-              <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/95 rounded-xl px-5 h-9 text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-sm border border-primary/20">
-                Criar Grátis
-              </Button>
-            </Link>
           </div>
         </div>
       </nav>
@@ -145,16 +135,16 @@ export default function Home() {
 
           {/* Botões do Hero Melhores & Premium */}
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-700">
-            <Link href="/register">
+            <Link href="#modelos">
               <Button size="lg" className="h-14 px-8 rounded-xl bg-primary text-primary-foreground font-black text-[11px] uppercase tracking-widest shadow-[0_0_25px_rgba(var(--primary),0.25)] hover:shadow-[0_0_35px_rgba(var(--primary),0.4)] hover:bg-primary/90 transition-all duration-300 group overflow-hidden border border-primary/30 active:scale-98">
                 <span className="relative z-10 flex items-center gap-2">
                   Gerar Contrato Personalizado <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </span>
               </Button>
             </Link>
-            <Link href="#modelos">
+            <Link href="#como-funciona">
               <Button variant="outline" size="lg" className="h-14 px-8 rounded-xl border-border bg-background/40 hover:bg-muted text-foreground font-black text-[10px] uppercase tracking-widest transition-all duration-300 backdrop-blur-sm active:scale-98">
-                Ver Catálogo de Modelos
+                Ver Como Funciona
               </Button>
             </Link>
           </div>
@@ -432,9 +422,9 @@ export default function Home() {
                   <h3 className="text-sm font-black text-foreground uppercase tracking-wider mb-2">{model.title}</h3>
                   <p className="text-[11.5px] text-muted-foreground leading-relaxed font-medium mb-6">{model.desc}</p>
                 </div>
-                <Link href="/register">
+                <Link href="#faq">
                   <Button variant="link" className="p-0 h-auto text-primary font-black text-[9px] uppercase tracking-widest group-hover:translate-x-1 transition-all flex items-center gap-1.5 justify-start">
-                    Personalizar Modelo <ChevronRight size={12} />
+                    Saber Mais <ChevronRight size={12} />
                   </Button>
                 </Link>
               </div>
@@ -442,9 +432,9 @@ export default function Home() {
           </div>
 
           <div className="text-center">
-            <Link href="/register">
+            <Link href="#faq">
               <Button variant="outline" className="rounded-xl px-8 h-12 border-primary/20 hover:border-primary/50 text-primary font-black text-[10px] uppercase tracking-widest backdrop-blur-sm transition-all duration-300 active:scale-98">
-                Ver Todos os 150+ Modelos Prontos
+                Tirar Dúvidas no FAQ
               </Button>
             </Link>
           </div>

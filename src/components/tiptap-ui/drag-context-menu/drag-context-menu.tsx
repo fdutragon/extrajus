@@ -394,7 +394,7 @@ export const DragContextMenu: React.FC<DragContextMenuProps> = ({
     editor.commands.setMeta("lockDragHandle", open)
   }, [editor, open])
 
-  const mainAxisOffset = 16
+  const mainAxisOffset = 4
 
   const dynamicPositions = useMemo(() => {
     return {
@@ -409,7 +409,7 @@ export const DragContextMenu: React.FC<DragContextMenuProps> = ({
           return {
             mainAxis: mainAxisOffset,
             // if height is more than 40px, then it's likely a block node
-            crossAxis: nodeHeight > 40 ? 0 : crossAxis,
+            crossAxis: nodeHeight > 40 ? -4 : crossAxis - 5,
           }
         }),
       ],
@@ -461,6 +461,7 @@ export const DragContextMenu: React.FC<DragContextMenuProps> = ({
           style={{
             display: "flex",
             flexDirection: "row",
+            alignItems: "center",
             ...(aiGenerationActive || isMobile || isTextSelectionValid(editor)
               ? { opacity: 0, pointerEvents: "none" }
               : {}),

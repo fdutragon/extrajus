@@ -49,8 +49,8 @@ body {
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid rgba(229, 176, 59, 0.25);
+    padding-bottom: 1.25rem;
+    border-bottom: 1.5px solid color-mix(in srgb, var(--foreground) 25%, transparent);
     margin-bottom: 2rem;
   }
 
@@ -167,7 +167,7 @@ body {
     }
 
     h1 {
-      border-bottom-color: rgba(229, 176, 59, 0.2);
+      border-bottom-color: color-mix(in srgb, var(--foreground) 20%, transparent);
     }
 
     blockquote {

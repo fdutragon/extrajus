@@ -97,16 +97,14 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
 6. Partes identificadas em preâmbulo com parágrafos (<p>). NUNCA use tabelas (<table>) no preâmbulo. Insira sempre DUAS linhas em branco (dois parágrafos <p></p><p></p>) entre a qualificação do Contratante e a do Contratado para espaçamento adequado. NUNCA crie cláusula "DAS PARTES".
 7. Primeira cláusula SEMPRE é o Objeto do contrato.
 8. Seção de Data e Assinaturas (Fim do Contrato): É OBRIGATÓRIO incluir exatamente 1 parágrafo vazio com quebra (<p><br></p>) antes da data para criar um espaçamento elegante e compacto. A data e os campos de assinatura devem vir centralizados (usando os atributos data-node-text-align="center" e style="text-align: center;"). Cada campo de assinatura deve conter OBRIGATORIAMENTE a linha física de assinatura exata usando underline puro (__________________________________________) centralizado ACIMA do rótulo da parte em negrito. NÃO insira campo de testemunhas. Siga ESTRITAMENTE o exemplo de HTML abaixo para esta seção:
-   <p><br></p>
-   <p data-node-text-align="center" style="text-align: center; margin-top: 24px;">[Cidade] - [UF], [Dia] de [Mês] de [Ano].</p>
-   <p><br></p>
-   <p><br></p>
-   <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
-   <p data-node-text-align="center" style="text-align: center;"><strong>CONTRATANTE</strong></p>
-   <p><br></p>
-   <p><br></p>
-   <p data-node-text-align="center" style="text-align: center;">__________________________________________</p>
-   <p data-node-text-align="center" style="text-align: center;"><strong>CONTRATADO</strong></p>
+    <p><br></p>
+    <p data-node-text-align="center" style="text-align: center; margin-top: 24px;">[Cidade] - [UF], [Dia] de [Mês] de [Ano].</p>
+    <p><br></p>
+    <p data-node-text-align="center" style="text-align: center; margin-top: 24px;">__________________________________________</p>
+    <p data-node-text-align="center" style="text-align: center;"><strong>CONTRATANTE</strong></p>
+    <p><br></p>
+    <p data-node-text-align="center" style="text-align: center; margin-top: 24px;">__________________________________________</p>
+    <p data-node-text-align="center" style="text-align: center;"><strong>CONTRATADO</strong></p>
 9. Retorne APENAS o HTML sem estilos inline (exceto pelos atributos obrigatórios de alinhamento e espaçamento nos elementos centralizados da regra 2 e regra 8). Sem explicações.`
 
 export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
@@ -458,7 +456,7 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
         if (text.trim().length < 150) {
           this.storage.state = "error"
           this.storage.auditResults = []
-          return Promise.reject(new Error("🔒 O instrumento de pacto é muito curto! Digite ou forje pelo menos 150 caracteres para que o Radar Analítico possa escanear e auditar os riscos jurídicos."))
+          return Promise.reject(new Error("O instrumento do contrato é muito curto. Insira pelo menos 150 caracteres."))
         }
 
         const runAudit = async () => {
