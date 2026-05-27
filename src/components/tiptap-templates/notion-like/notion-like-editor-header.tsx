@@ -149,7 +149,7 @@ export function NotionEditorHeader() {
             variant="ghost" 
             size="sm" 
             className={cn(
-              "h-7 gap-2 px-3 rounded-lg transition-all font-bold text-[9px] uppercase tracking-widest",
+              "h-7 gap-2 px-3 rounded-lg transition-all font-bold text-[9px] uppercase tracking-widest hidden",
               copied ? "text-emerald-500 bg-emerald-500/10" : "text-primary hover:bg-primary/10"
             )}
             onClick={handleInvite}
@@ -158,7 +158,9 @@ export function NotionEditorHeader() {
             {copied ? "Convidar" : "Convidar"}
           </Button>
           
-          <CollaborationUsers />
+          <div className="hidden">
+            <CollaborationUsers />
+          </div>
           <ThemeToggle />
         </div>
         

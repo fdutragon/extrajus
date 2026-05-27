@@ -131,7 +131,7 @@ export function SinapsesPlansModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="max-w-4xl sm:max-w-4xl bg-background border border-border rounded-3xl p-6 overflow-hidden md:p-8 shadow-[0_0_50px_rgba(var(--primary),0.06)] backdrop-blur-2xl text-left">
+      <DialogContent className="w-full max-w-[46rem] bg-background border border-border rounded-3xl p-5 overflow-hidden md:p-6 shadow-[0_0_50px_rgba(var(--primary),0.06)] backdrop-blur-2xl text-left">
         
         {/* Glow de Fundo e Partículas Integradas */}
         <div className="absolute -top-32 -right-32 w-80 h-80 bg-primary/5 rounded-full blur-[80px] pointer-events-none" />
@@ -143,15 +143,15 @@ export function SinapsesPlansModal() {
         <DialogHeader className="text-left space-y-3 relative z-10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-[9px] uppercase tracking-widest font-black border-primary/30 text-primary bg-primary/5 px-2.5 py-0.5 rounded-full">
+              <Badge variant="outline" className="text-[0.5625rem] uppercase tracking-widest font-black border-primary/30 text-primary bg-primary/5 px-2.5 py-0.5 rounded-full">
                 {isPaid ? "Pagamento Confirmado" : "Créditos Esgotados"}
               </Badge>
-              <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">
+              <span className="text-[0.5625rem] text-muted-foreground font-mono tracking-widest uppercase italic">
                 {isPaid ? "Transação Concluída" : "Aguardando Pagamento"}
               </span>
             </div>
             {pixData && !isPaid && (
-              <Badge variant="outline" className="text-[9px] font-mono border-emerald-500/30 text-emerald-500 bg-emerald-500/5 px-2.5 py-0.5 animate-pulse">
+              <Badge variant="outline" className="text-[0.5625rem] font-mono border-emerald-500/30 text-emerald-500 bg-emerald-500/5 px-2.5 py-0.5 animate-pulse">
                 🕒 Expira em {formatTime(timeLeft)}
               </Badge>
             )}
@@ -166,14 +166,14 @@ export function SinapsesPlansModal() {
             )}
           </DialogTitle>
           
-          <DialogDescription className="text-[12.5px] text-muted-foreground leading-relaxed font-medium">
+          <DialogDescription className="text-[0.78125rem] text-muted-foreground leading-relaxed font-medium">
             {isPaid 
               ? "Sua transação de alta performance foi confirmada. Seus novos créditos de IA já estão ativos para uso."
               : "Seu saldo de créditos de IA terminou. Escolha um dos pacotes abaixo para adquirir novos créditos via Pix e continuar gerando seus documentos jurídicos."}
           </DialogDescription>
         </DialogHeader>
-
-        <div className="mt-7 space-y-6 relative z-10 text-left">
+ 
+        <div className="mt-4.5 space-y-4.5 relative z-10 text-left">
           
           {/* PACOTES DISPONÍVEIS */}
           {!pixData && !isGeneratingPix && !isPaid && (
@@ -213,43 +213,43 @@ export function SinapsesPlansModal() {
                 <div 
                   key={pkg.credits}
                   className={cn(
-                    "p-6 rounded-2xl border transition-all duration-300 cursor-pointer group relative overflow-hidden flex flex-col h-full bg-card text-card-foreground text-left",
+                    "p-4.5 rounded-2xl border transition-all duration-300 cursor-pointer group relative overflow-hidden flex flex-col h-full bg-card text-card-foreground text-left",
                     pkg.border
                   )}
                   onClick={() => handleBuyCredits(pkg)}
                 >
                   {pkg.popular && (
-                    <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-[8px] font-black px-3 py-1 rounded-bl-xl uppercase tracking-widest flex items-center gap-1 font-sans">
+                    <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-[0.5rem] font-black px-3 py-1 rounded-bl-xl uppercase tracking-widest flex items-center gap-1 font-sans">
                       <Sparkles size={8} /> Popular
                     </div>
                   )}
                   
-                  <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest block mb-2">{pkg.label}</span>
+                  <span className="text-[0.5625rem] font-black text-muted-foreground uppercase tracking-widest block mb-2">{pkg.label}</span>
                   
                   <div className="flex items-baseline gap-1 mb-2 text-left">
                     <span className={cn("text-3xl font-black font-mono tracking-tight", pkg.text)}>{pkg.credits}</span>
-                    <span className="text-[10px] font-bold text-muted-foreground">Créditos</span>
+                    <span className="text-[0.625rem] font-bold text-muted-foreground">Créditos</span>
                   </div>
                   
-                  <p className="text-[11px] text-muted-foreground leading-relaxed font-medium mb-3">
+                  <p className="text-[0.6875rem] text-muted-foreground leading-relaxed font-medium mb-3">
                     {pkg.desc}
                   </p>
 
                   <div className="bg-muted/40 rounded-lg p-2 mb-6 border border-border/50 flex items-center gap-2">
                     <Brain size={12} className="text-primary/70" />
-                    <span className="text-[10px] font-bold text-foreground/80">{pkg.estimate}</span>
+                    <span className="text-[0.625rem] font-bold text-foreground/80">{pkg.estimate}</span>
                   </div>
 
                   <div className="flex items-center justify-between mt-auto pt-4 border-t border-border">
                     <div className="flex flex-col">
-                      <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Investimento</span>
+                      <span className="text-[0.5rem] font-bold text-muted-foreground uppercase tracking-widest">Investimento</span>
                       <span className="text-sm font-black text-foreground font-mono">R$ {pkg.price.toFixed(2).replace('.', ',')}</span>
                     </div>
                     <Button 
                       size="sm" 
                       variant="ghost" 
                       className={cn(
-                        "h-8 px-3 text-[9px] font-black uppercase tracking-widest rounded-lg border transition-all duration-300",
+                        "h-8 px-3 text-[0.5625rem] font-black uppercase tracking-widest rounded-lg border transition-all duration-300",
                         pkg.popular
                           ? "bg-primary text-primary-foreground border-primary hover:!bg-primary/90 hover:!text-primary-foreground"
                           : "border-border text-muted-foreground hover:!bg-primary hover:!text-primary-foreground hover:!border-primary"
@@ -269,7 +269,7 @@ export function SinapsesPlansModal() {
               <Loader2 className="text-primary animate-spin w-10 h-10" />
               <div className="space-y-1">
                 <p className="text-xs font-black uppercase tracking-widest text-primary">Gerando Protocolo de Pagamento...</p>
-                <p className="text-[11px] text-muted-foreground font-medium">Conectando-se ao Banco Central com segurança máxima</p>
+                <p className="text-[0.6875rem] text-muted-foreground font-medium">Conectando-se ao Banco Central com segurança máxima</p>
               </div>
             </div>
           )}
@@ -291,7 +291,7 @@ export function SinapsesPlansModal() {
                     level="Q"
                     includeMargin={false}
                   />
-                  <div className="mt-2 text-[8px] font-black text-black uppercase tracking-widest flex items-center gap-1">
+                  <div className="mt-2 text-[0.5rem] font-black text-black uppercase tracking-widest flex items-center gap-1">
                     <Landmark size={10} /> Pix Oficial Banco Central
                   </div>
                 </div>
@@ -302,29 +302,29 @@ export function SinapsesPlansModal() {
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
                       Aguardando Confirmação de Pagamento
                     </h4>
-                    <p className="text-[11.5px] text-muted-foreground leading-relaxed font-medium">
+                    <p className="text-[0.71875rem] text-muted-foreground leading-relaxed font-medium">
                       Escaneie o QR Code com o aplicativo de qualquer banco. O saldo de **{selectedPkg.credits} Créditos** será creditado instantaneamente na sua conta após o pagamento!
                     </p>
                   </div>
                   
                   {/* Pacote Resumido */}
                   <div className="bg-muted/80 border border-border rounded-xl p-3 flex justify-between items-center">
-                    <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wide">Pacote Selecionado</span>
+                    <span className="text-[0.625rem] text-muted-foreground font-bold uppercase tracking-wide">Pacote Selecionado</span>
                     <span className="text-xs font-black text-foreground font-mono">{selectedPkg.credits} Créditos / R$ {selectedPkg.price}</span>
                   </div>
 
                   {/* Campo Copia e Cola Metálico */}
                   <div className="space-y-1.5 text-left">
-                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest ml-1">Código Pix Copia e Cola</span>
+                    <span className="text-[0.5rem] font-black text-muted-foreground uppercase tracking-widest ml-1">Código Pix Copia e Cola</span>
                     <div className="flex gap-2">
                       <input 
                         readOnly 
                         value={pixData.pixCode} 
-                        className="flex-1 bg-muted border border-border rounded-xl px-4 py-2 text-[10px] font-mono text-foreground truncate text-left outline-none focus:border-primary/40"
+                        className="flex-1 bg-muted border border-border rounded-xl px-4 py-2 text-[0.625rem] font-mono text-foreground truncate text-left outline-none focus:border-primary/40"
                       />
                       <Button 
                         size="sm" 
-                        className="rounded-xl font-black text-[9px] uppercase tracking-widest h-9 bg-primary text-primary-foreground hover:!bg-primary/90 hover:!text-primary-foreground px-4 shrink-0"
+                        className="rounded-xl font-black text-[0.5625rem] uppercase tracking-widest h-9 bg-primary text-primary-foreground hover:!bg-primary/90 hover:!text-primary-foreground px-4 shrink-0"
                         onClick={handleCopy}
                       >
                         {copied ? <Check size={12} className="mr-1" /> : <Copy size={12} className="mr-1" />}
@@ -359,12 +359,12 @@ export function SinapsesPlansModal() {
                 <h3 className="text-xl font-black uppercase tracking-widest text-emerald-500 bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-400 bg-clip-text text-transparent animate-pulse">
                   Créditos Adicionados!
                 </h3>
-                <p className="text-[12.0px] text-muted-foreground max-w-md mx-auto leading-relaxed font-medium">
+                <p className="text-[0.75rem] text-muted-foreground max-w-[28rem] mx-auto leading-relaxed font-medium">
                   A recarga de créditos foi efetuada com sucesso. Seus novos **{selectedPkg.credits} créditos de IA** já estão disponíveis em sua conta para a elaboração de documentos.
                 </p>
               </div>
 
-              <div className="max-w-xs mx-auto bg-muted/40 border border-border rounded-2xl p-4 space-y-2 text-[11px] font-mono text-left">
+              <div className="max-w-[20rem] mx-auto bg-muted/40 border border-border rounded-2xl p-4 space-y-2 text-[0.6875rem] font-mono text-left">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Pacote Selecionado:</span>
                   <span className="font-bold text-foreground">{selectedPkg.label}</span>
@@ -375,14 +375,14 @@ export function SinapsesPlansModal() {
                 </div>
                 <div className="flex justify-between border-t border-border/60 pt-2 mt-2">
                   <span className="text-muted-foreground">ID da Transação:</span>
-                  <span className="font-bold text-foreground/85 text-[9px] truncate w-32 text-right">{pixData?.externalId}</span>
+                  <span className="font-bold text-foreground/85 text-[0.5625rem] truncate w-32 text-right">{pixData?.externalId}</span>
                 </div>
               </div>
 
               <div className="pt-2">
                 <Button 
                   onClick={() => setIsOpen(false)}
-                  className="bg-emerald-600 text-white hover:bg-emerald-500 border border-emerald-500/30 rounded-2xl px-8 py-3 text-[10px] font-black uppercase tracking-widest transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.15)]"
+                  className="bg-emerald-600 text-white hover:bg-emerald-500 border border-emerald-500/30 rounded-2xl px-8 py-3 text-[0.625rem] font-black uppercase tracking-widest transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.15)]"
                 >
                   Confirmar e Fechar
                 </Button>
@@ -392,14 +392,14 @@ export function SinapsesPlansModal() {
 
           {/* RODA PÉ DO MODAL */}
           <div className="flex items-center justify-between pt-5 border-t border-border mt-5">
-            <span className="text-[10px] text-muted-foreground font-bold italic flex items-center gap-1.5">
+            <span className="text-[0.625rem] text-muted-foreground font-bold italic flex items-center gap-1.5">
               <ShieldCheck size={13} className="text-primary" /> 
               Ambiente Seguro • ExtraJus S/A Realtime Payment Gateway
             </span>
             <Button 
               variant="outline" 
               onClick={() => setIsOpen(false)}
-              className="font-black text-[9px] uppercase tracking-widest rounded-xl h-9 border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+              className="font-black text-[0.5625rem] uppercase tracking-widest rounded-xl h-9 border-border text-muted-foreground hover:bg-muted hover:text-foreground"
             >
               Fechar
             </Button>

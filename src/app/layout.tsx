@@ -51,7 +51,26 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       className={`${sansFont.variable} ${headingFont.variable} h-full antialiased`}
     >
-      <head />
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                function adjustScale() {
+                  var dpr = window.devicePixelRatio || 1;
+                  var targetDPR = 1.25;
+                  var ratio = targetDPR / dpr;
+                  var clampedRatio = Math.max(0.75, Math.min(1.5, ratio));
+                  var basePercent = 102;
+                  document.documentElement.style.fontSize = (basePercent * clampedRatio) + '%';
+                }
+                adjustScale();
+                window.addEventListener('resize', adjustScale);
+              })();
+            `
+          }}
+        />
+      </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-background text-foreground">
         {/* Google tag (gtag.js) */}
         <Script async src="https://www.googletagmanager.com/gtag/js?id=AW-18191879169" strategy="afterInteractive" />

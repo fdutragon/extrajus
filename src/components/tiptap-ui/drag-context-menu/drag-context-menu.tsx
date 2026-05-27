@@ -404,12 +404,13 @@ export const DragContextMenu: React.FC<DragContextMenuProps> = ({
           const nodeHeight = rects.reference.height
           const dragHandleHeight = rects.floating.height
 
+          // True visual center of the node, shifted up to account for
+          // the paragraph's margin-bottom (12px) that inflates the bounding rect
           const crossAxis = nodeHeight / 2 - dragHandleHeight / 2
 
           return {
             mainAxis: mainAxisOffset,
-            // if height is more than 40px, then it's likely a block node
-            crossAxis: nodeHeight > 40 ? -4 : crossAxis - 5,
+            crossAxis: nodeHeight > 40 ? -4 : crossAxis - 1,
           }
         }),
       ],

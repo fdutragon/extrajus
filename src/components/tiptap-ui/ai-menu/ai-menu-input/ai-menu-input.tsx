@@ -59,8 +59,8 @@ export function AiMenuInputPlaceholder({
           {placeholder || "Digite instruções para criar seu contrato..."}
         </span>
       </div>
-      <Button data-style="primary" disabled>
-        <ArrowUpIcon className="tiptap-button-icon" />
+      <Button data-style="primary" disabled className="h-7 w-7 rounded-lg p-0 flex items-center justify-center shrink-0">
+        <ArrowUpIcon className="tiptap-button-icon w-3.5 h-3.5" />
       </Button>
     </div>
   )
@@ -158,8 +158,9 @@ export function AiPromptInputToolbar({
           disabled={isEmpty}
           data-style="primary"
           aria-label="Submit prompt"
+          className="h-7 w-7 rounded-lg p-0 flex items-center justify-center shrink-0"
         >
-          <ArrowUpIcon className="tiptap-button-icon" />
+          <ArrowUpIcon className="tiptap-button-icon w-3.5 h-3.5" />
         </Button>
       </ToolbarGroup>
     </Toolbar>
@@ -282,7 +283,7 @@ export function AiMenuInputTextarea({
       <div className="tiptap-ai-prompt-input-inner flex flex-col w-full h-full">
 
         {isLoading ? (
-          <div className="flex items-center justify-between w-full h-[3.25rem] px-4 bg-primary/5 rounded-2xl border border-primary/10 animate-pulse-subtle">
+          <div className="flex items-center justify-between w-full h-[2.85rem] px-4 bg-primary/5 rounded-xl border border-primary/10 animate-pulse-subtle">
             <div className="flex items-center gap-3">
                <BrainCircuit size={16} className="text-primary animate-spin duration-[3000ms]" />
                <span className="text-[11px] font-medium text-primary">A inteligência artificial está processando seu comando...</span>
@@ -297,8 +298,8 @@ export function AiMenuInputTextarea({
           <>
             <div className="relative w-full flex-1">
               {!promptValue && (
-                <div suppressHydrationWarning className="absolute inset-0 pointer-events-none px-4 py-2 pt-[0.5rem] flex items-start z-30 pr-6">
-                   <span suppressHydrationWarning className="tiptap-ai-prompt-input-placeholder-text leading-[1.5] font-bold">
+                <div suppressHydrationWarning className="absolute inset-0 pointer-events-none px-[0.6rem] py-[0.35rem] flex items-start z-30 pr-[0.6rem]">
+                   <span suppressHydrationWarning className="tiptap-ai-prompt-input-placeholder-text leading-[1.4] font-medium">
                      {dynamicPlaceholder}
                    </span>
                 </div>

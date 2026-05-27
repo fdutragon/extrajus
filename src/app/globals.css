@@ -205,7 +205,7 @@
   html {
     @apply font-sans scroll-smooth;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-    font-size: 116%; /* Escala a fonte do site inteiro proporcionalmente para excelente leitura */
+    font-size: 102%; /* Escala a fonte do site inteiro proporcionalmente para excelente leitura */
     scroll-padding-top: 100px;
   }
 

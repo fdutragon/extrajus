@@ -565,7 +565,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
   const [aiPromptOpen, setAiPromptOpen] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
-  const [fontSize, setFontSize] = useState<number>(16)
+  const [fontSize, setFontSize] = useState<number>(13)
   const [fontFamily, setFontFamily] = useState<string>("Cambria")
   const [isFontDropdownOpen, setIsFontDropdownOpen] = useState(false)
 
@@ -997,9 +997,28 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
   return (
     <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden relative font-sans selection:bg-primary/30">
       <style dangerouslySetInnerHTML={{ __html: `
+        .font-heading, :is(aside, header, [role="dialog"], .ai-prompt-wrapper) {
+          --font-heading: var(--font-sans) !important;
+          font-family: var(--font-sans) !important;
+        }
         .tiptap.ProseMirror {
           font-family: ${fontFamily === "Cambria" ? '"Cambria", "Georgia", serif' : fontFamily === "Inter" ? '"Inter", sans-serif' : fontFamily === "Times New Roman" ? '"Times New Roman", serif' : '"JetBrains Mono", monospace'} !important;
-          font-size: ${fontSize}px !important;
+          font-size: clamp(${(fontSize - 5) / 16}rem, calc(${(fontSize - 4.5) / 16}rem + 0.35vw), ${(fontSize + 4) / 16}rem) !important;
+        }
+        :is(aside, header, .ai-prompt-wrapper) .text-\\[14\\.5px\\] {
+          font-size: clamp(0.656rem, calc(0.46875rem + 0.4vw), 1rem) !important;
+        }
+        :is(aside, header, .ai-prompt-wrapper) .text-xs, :is(aside, header, .ai-prompt-wrapper) .text-\\[12px\\], :is(aside, header, .ai-prompt-wrapper) .text-\\[13px\\] {
+          font-size: clamp(0.625rem, calc(0.5rem + 0.35vw), 0.8125rem) !important;
+        }
+        :is(aside, header, .ai-prompt-wrapper) .text-\\[11px\\] {
+          font-size: clamp(0.59375rem, calc(0.46875rem + 0.35vw), 0.75rem) !important;
+        }
+        :is(aside, header, .ai-prompt-wrapper) .text-\\[10px\\] {
+          font-size: clamp(0.53125rem, calc(0.40625rem + 0.3vw), 0.6875rem) !important;
+        }
+        :is(aside, header, .ai-prompt-wrapper) .text-\\[9\\.5px\\], :is(aside, header, .ai-prompt-wrapper) .text-\\[9px\\] {
+          font-size: clamp(0.5rem, calc(0.375rem + 0.3vw), 0.625rem) !important;
         }
         .scrollbar-minimalist::-webkit-scrollbar {
           width: 3px !important;
@@ -1139,19 +1158,19 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         }
       ` }} />
       
-      <header className="fixed top-0 left-0 w-full h-[clamp(48px,5.5vh,72px)] border-b border-border bg-background/60 backdrop-blur-2xl flex items-center justify-between px-[clamp(1rem,2vw,2rem)] z-[100] transition-all duration-500 hover:bg-background/80 group">
-        <div className="flex items-center gap-[clamp(0.5rem,1vw,1rem)]">
+      <header className="fixed top-0 left-0 w-full h-[clamp(2.5rem,4vh,3.25rem)] border-b border-border bg-background/60 backdrop-blur-2xl flex items-center justify-between px-3 z-[100] transition-all duration-500 hover:bg-background/80 group">
+        <div className="flex items-center gap-1.5">
           {!readOnly && !isPublic && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <Link href="/dashboard">
-                <Button variant="ghost" size="icon" className="h-[clamp(32px,4vh,40px)] w-[clamp(32px,4vh,40px)] hover:bg-primary/10 hover:text-primary rounded-xl transition-all duration-300 group/back">
+                <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-primary/10 hover:text-primary rounded-lg transition-all duration-300 group/back">
                   <ChevronLeft size={18} className="group-hover/back:-translate-x-0.5 transition-transform" />
                 </Button>
               </Link>
             </div>
           )}
           {readOnly && (
-            <Badge variant="outline" className="bg-red-500/10 text-red-400 border-red-500/20 text-[clamp(8px,0.6vw,9px)] font-black uppercase">Somente Leitura</Badge>
+            <Badge variant="outline" className="bg-red-500/10 text-red-400 border-red-500/20 text-[9px] font-black uppercase">Somente Leitura</Badge>
           )}
           <div className="flex items-center gap-3">
             {!readOnly ? (
@@ -1161,25 +1180,25 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                   value={fileName}
                   onChange={(e) => setFileName(e.target.value)}
                   placeholder="Nome..."
-                  style={{ width: `${Math.min(20, Math.max(8, fileName.length + 1))}ch` }}
-                  className="bg-transparent border-0 border-b border-transparent hover:border-border/60 focus:border-primary text-[clamp(9px,0.7vw,11px)] font-black uppercase tracking-widest text-foreground outline-none px-1 py-0.5 transition-all max-w-[140px] truncate"
+                  style={{ width: `${Math.min(28, Math.max(8, fileName.length + 1))}ch` }}
+                  className="bg-transparent border-0 border-b border-transparent hover:border-border/60 focus:border-primary text-[9px] font-black uppercase tracking-widest text-foreground outline-none px-0.5 py-0.5 transition-all max-w-[220px] truncate"
                 />
-                <span className="text-[clamp(9px,0.7vw,11px)] font-black uppercase tracking-widest text-muted-foreground/40 pointer-events-none select-none -ml-1">.docx</span>
+                <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 pointer-events-none select-none -ml-1">.docx</span>
               </div>
             ) : (
-              <span className="text-[clamp(9px,0.7vw,11px)] font-black uppercase tracking-widest text-muted-foreground truncate max-w-[120px]">{fileName}.docx</span>
+              <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground truncate max-w-[220px]">{fileName}.docx</span>
             )}
             {/* Version, word count and reading time removed for clean workspace layout */}
           </div>
         </div>
 
         {!readOnly && (
-          <div className="absolute left-1/2 top-0 -translate-x-1/2 flex items-center h-full gap-[clamp(1rem,3vw,6rem)] z-[110]">
-            <div className="flex items-center gap-[clamp(0.25rem,0.5vw,0.75rem)] opacity-60 hover:opacity-100 transition-opacity duration-500">
+          <div className="absolute left-1/2 top-0 -translate-x-1/2 flex items-center h-full gap-2 z-[110]">
+            <div className="flex items-center gap-0.5 opacity-60 hover:opacity-100 transition-opacity duration-500">
               <MarkButton type="bold" />
               <MarkButton type="italic" />
               <MarkButton type="underline" />
-              <span className="h-4 w-[1px] bg-border mx-1" />
+              <span className="h-3 w-[1px] bg-border mx-1" />
               <UndoRedoButton action="undo" />
               <UndoRedoButton action="redo" />
             </div>
@@ -1187,7 +1206,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               variant="ghost"
               onClick={() => setAiPromptOpen(prev => !prev)}
               className={cn(
-                "relative flex items-center justify-center px-[clamp(1rem,2vw,2rem)] h-full rounded-none border-x border-primary/10 gap-2 overflow-hidden hover:bg-primary/5 transition-all select-none group/ai-toggle",
+                "relative flex items-center justify-center px-2.5 h-full rounded-none border-x border-primary/10 gap-1.5 overflow-hidden hover:bg-primary/5 transition-all select-none group/ai-toggle",
                 aiPromptOpen && "bg-primary/[0.04]"
               )}
             >
@@ -1199,9 +1218,9 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                   (isAuditing || aiPromptOpen) && "animate-pulse text-primary"
                 )} 
               />
-              <span className={cn("text-[clamp(10px,0.8vw,13px)] font-black uppercase tracking-[0.2em] relative z-10 transition-colors", aiPromptOpen ? "text-primary" : "text-muted-foreground/60 group-hover/ai-toggle:text-primary/80")}>IA</span>
+              <span className={cn("text-[9px] font-black uppercase tracking-[0.2em] relative z-10 transition-colors", aiPromptOpen ? "text-primary" : "text-muted-foreground/60 group-hover/ai-toggle:text-primary/80")}>IA</span>
             </Button>
-            <div className="flex items-center gap-[clamp(0.25rem,0.5vw,0.75rem)] opacity-60 hover:opacity-100 transition-opacity duration-500">
+            <div className="flex items-center gap-0.5 opacity-60 hover:opacity-100 transition-opacity duration-500">
               <TextAlignButton align="left" />
               <TextAlignButton align="center" />
               <TextAlignButton align="right" />
@@ -1211,9 +1230,9 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
           </div>
         )}
 
-        <div className="flex-none flex items-center gap-[clamp(0.4rem,0.8vw,1rem)]">
+        <div className="flex-none flex items-center gap-1.5">
           {!readOnly && (
-            <div className="flex items-center gap-[clamp(0.4rem,0.6vw,0.75rem)] pr-[clamp(0.5rem,1vw,1rem)] border-r border-border/50">
+            <div className="flex items-center gap-1 pr-1.5 border-r border-border/50">
               {wordCount > 5 && <ExportButton isPublic={isPublic} docType={docType} title={fileName} content={editor?.getHTML() || ""} />}
               {!isPublic && <SignModal title={fileName} />}
             </div>
@@ -1224,7 +1243,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               variant="ghost"
               size="sm"
               onClick={handleOpenPlans}
-              className="h-[clamp(28px,3.5vh,36px)] gap-1.5 px-3.5 rounded-xl text-primary hover:bg-primary/10 transition-all font-bold text-[clamp(8px,0.6vw,10px)] uppercase tracking-widest flex items-center border border-primary/20 bg-primary/5 hover:border-primary/45 shadow-sm shadow-primary/5 group"
+              className="h-6 gap-1 px-2 rounded-md text-primary hover:bg-primary/10 transition-all font-bold text-[8px] uppercase tracking-widest flex items-center border border-primary/20 bg-primary/5 hover:border-primary/45 shadow-sm shadow-primary/5 group"
             >
               <Brain size={12} className="text-primary animate-pulse shrink-0 group-hover:scale-110 transition-transform" />
               <span>{credits !== null ? `${credits} Sinapses` : "..."}</span>
@@ -1237,37 +1256,27 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         </div>
       </header>
 
-      {!isFocused && (
-        <div className="absolute inset-0 top-12 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[5px] z-[99999] select-none pointer-events-none">
-          <div className="text-center p-8 bg-background/90 border border-primary/20 rounded-3xl max-w-md shadow-2xl backdrop-blur-md">
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4 animate-pulse">
-              <ShieldAlert className="w-6 h-6 text-primary" />
-            </div>
-            <h2 className="text-sm font-black uppercase tracking-[0.2em] text-foreground mb-2">Proteção Confidencial</h2>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-widest leading-relaxed">Conteúdo ocultado automaticamente por diretiva de segurança.</p>
-          </div>
-        </div>
-      )}
 
-      <div className={cn("flex-1 flex pt-12 relative overflow-hidden h-full transition-all duration-700", !isFocused && "filter blur-[45px] select-none pointer-events-none")}>
+
+      <div className={cn("flex-1 flex pt-[clamp(2.5rem,4vh,3.25rem)] relative overflow-hidden h-full transition-all duration-700")}>
         {!readOnly && (
-          <aside className={cn("h-full border-r border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", leftSidebarOpen ? "w-[22vw] min-w-[300px] max-w-[440px]" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
+          <aside className={cn("h-full border-r border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", leftSidebarOpen ? "w-[21vw] min-w-[16rem] max-w-[24.5rem]" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
             <div className="px-4 py-6 flex flex-col h-full overflow-hidden w-full">
               <div className="space-y-5 mb-8 shrink-0">
                 <div className="flex items-center justify-between border-b border-border/40 pb-2.5">
                    <div className="flex items-center gap-2">
                      <Zap size={12} className="text-primary" />
-                     <span className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Tipografia</span>
+                     <h3 className="text-[11px] font-medium uppercase tracking-[0.2em] text-foreground">Tipografia</h3>
                    </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Fonte</label>
+                  <label className="font-heading text-[10px] font-medium uppercase tracking-widest text-muted-foreground/60">Fonte</label>
                   <div className="relative group/select">
                     <button 
                       onClick={() => setIsFontDropdownOpen(!isFontDropdownOpen)}
-                      className="w-full bg-muted/30 border border-border/60 text-foreground text-xs font-bold py-2.5 px-3 rounded-xl flex items-center justify-between transition-all outline-none focus:ring-2 focus:ring-primary/20 hover:border-primary/20 text-left"
+                      className="w-full bg-muted/30 border border-border/60 text-foreground text-[11px] font-bold py-2.5 px-3 rounded-xl flex items-center justify-between transition-all outline-none focus:ring-2 focus:ring-primary/20 hover:border-primary/20 text-left"
                     >
-                      <span>
+                      <span className="font-heading font-medium">
                         {fontFamily === "Cambria" && "Cambria (Serifa)"}
                         {fontFamily === "Inter" && "Inter (Sans)"}
                         {fontFamily === "Times New Roman" && "Times (Formal)"}
@@ -1296,13 +1305,13 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                                 setIsFontDropdownOpen(false)
                               }}
                               className={cn(
-                                "w-full text-left text-xs py-2 px-2.5 rounded-lg flex items-center justify-between font-bold transition-all",
+                                "w-full text-left text-[11px] py-2 px-2.5 rounded-lg flex items-center justify-between font-bold transition-all",
                                 fontFamily === font.value
                                   ? "bg-primary text-primary-foreground"
                                   : "text-foreground/70 hover:bg-primary/5 hover:text-primary"
                               )}
                             >
-                              <span>{font.label}</span>
+                              <span className="font-heading font-medium">{font.label}</span>
                               {fontFamily === font.value && <Check size={12} className="shrink-0" />}
                             </button>
                           ))}
@@ -1313,15 +1322,15 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                 </div>
                 <div className="space-y-2.5">
                   <div className="flex justify-between items-center">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Tamanho</label>
-                    <span className="text-[10px] font-black text-primary bg-primary/10 px-2 rounded-full border border-primary/10">{fontSize}px</span>
+                    <label className="font-heading text-[10px] font-medium uppercase tracking-widest text-muted-foreground/60">Tamanho</label>
+                    <span className="font-heading text-[10px] font-medium text-primary bg-primary/10 px-2 rounded-full border border-primary/10">{fontSize}px</span>
                   </div>
                   <Slider value={[fontSize]} onValueChange={(val) => setFontSize(Array.isArray(val) ? val[0] : val)} min={12} max={26} step={1} />
                 </div>
               </div>
               <div className="flex items-center gap-3 mb-6 shrink-0 pt-10 border-t border-border/40">
                 <Library size={16} className="text-primary" />
-                <h3 className="text-xs font-black uppercase tracking-[0.2em]">Biblioteca</h3>
+                <h3 className="text-[11px] font-medium uppercase tracking-[0.2em] text-foreground">Biblioteca</h3>
               </div>
               <div className="relative mb-6 shrink-0">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={14} />
@@ -1330,11 +1339,11 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               <ScrollArea className="flex-1 w-full">
                 <div className="space-y-6 pb-6">
                   <div className="space-y-3">
-                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.25em] border-b border-border pb-1">Seus Documentos</p>
+                    <p className="font-heading text-[10px] font-medium text-muted-foreground uppercase tracking-[0.25em] border-b border-border pb-1">Seus Documentos</p>
                     <div className="space-y-0.5">
                       {filteredContracts.map(c => (
                         <Link key={c.id} href={`/editor?room=${c.id}`} className="w-full min-w-0 text-left text-xs py-2 px-2.5 hover:bg-primary/5 hover:text-primary rounded-lg flex items-center justify-between font-normal text-foreground/70 transition-all gap-2">
-                          <span className="truncate flex-1 min-w-0">{c.title || "Documento"}</span>
+                          <span className="font-heading font-medium truncate flex-1 min-w-0">{c.title || "Documento"}</span>
                           <Zap size={12} className={cn("shrink-0 opacity-0 group-hover:opacity-100", c.status === 'signed' ? "text-emerald-500" : "text-primary")} />
                         </Link>
                       ))}
@@ -1347,16 +1356,16 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         )}
 
         <div className="flex-1 relative flex flex-col min-w-0 overflow-hidden">
-          <main className="flex-1 overflow-y-auto custom-scrollbar bg-transparent px-8 py-8 relative z-10">
+          <main className="flex-1 overflow-y-auto custom-scrollbar bg-transparent p-[clamp(1rem,2vw,2rem)] relative z-10">
             {/* Subtle occult background glow behind the sheet */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/3 dark:bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse duration-[6000ms]" />
 
 
             <div className={cn(
-              "w-full max-w-[760px] mx-auto editor-glow-container transition-all duration-700 shadow-2xl",
+              "w-full max-w-[clamp(37.5rem,45vw,56.25rem)] mx-auto editor-glow-container transition-all duration-700 shadow-2xl",
               (showEntranceGlow || editorFocused) && "glowing"
             )}>
-              <div className="w-full h-full bg-card/90 dark:bg-card/75 backdrop-blur-xl rounded-[30px] px-10 md:px-16 pt-12 pb-12 md:pt-16 md:pb-20 relative min-h-[800px] md:min-h-[1188px] editor-glow-content">
+              <div className="w-full h-full bg-card/90 dark:bg-card/75 backdrop-blur-xl rounded-[30px] px-[clamp(2rem,4.5vw,4.5rem)] py-[clamp(2.5rem,4.5vw,5.5rem)] relative min-h-[50rem] md:min-h-[74.25rem] editor-glow-content">
                 {/* Grain overlay for paper feel */}
                 <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-[30px]" />
 
@@ -1369,13 +1378,13 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
           </main>
           
           {!readOnly && aiPromptOpen && (
-            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-full max-w-[640px] z-[100] px-4 transition-all duration-500 animate-in fade-in slide-in-from-bottom-5">
+            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-full max-w-[30rem] z-[100] px-4 transition-all duration-500 animate-in fade-in slide-in-from-bottom-5 ai-prompt-wrapper">
                <AiMenu plain={true} />
             </div>
           )}
         </div>
 
-        <aside className={cn("h-full border-l border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", rightSidebarOpen ? "w-[24vw] min-w-[320px] max-w-[440px]" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
+        <aside className={cn("sidebar-right h-full border-l border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", rightSidebarOpen ? "w-[22vw] min-w-[17rem] max-w-[26rem]" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
           {readOnly ? (
             <div className="p-6 flex flex-col h-full justify-between">
               {contractStatus === 'signed' ? (
@@ -1383,16 +1392,16 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                   <div className="p-4 bg-emerald-500/10 rounded-full border border-emerald-500/30 animate-pulse mb-2">
                     <ShieldCheck size={48} className="text-emerald-400" />
                   </div>
-                  <h3 className="text-sm font-black uppercase tracking-[0.2em] text-emerald-400">Contrato Selado</h3>
+                  <h3 className="font-heading font-medium text-xs uppercase tracking-[0.2em] text-emerald-400">Contrato Selado</h3>
                   <div className="space-y-4 max-w-xs">
-                    <p className="text-[11px] leading-relaxed text-muted-foreground">
+                    <p className="font-heading font-medium text-[10px] leading-relaxed text-muted-foreground">
                       Este instrumento jurídico foi totalmente assinado e selado digitalmente.
                     </p>
                     <div className="p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
-                      <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest block mb-1">Status da Assinatura</span>
-                      <span className="text-xs font-bold text-white">IMUTÁVEL & REGISTRADO</span>
+                      <span className="font-heading font-medium text-[8px] text-emerald-400 uppercase tracking-widest block mb-1">Status da Assinatura</span>
+                      <span className="font-heading font-medium text-[11px] text-white">IMUTÁVEL & REGISTRADO</span>
                     </div>
-                    <p className="text-xs text-muted-foreground/60 italic leading-normal">
+                    <p className="font-heading font-medium text-[10px] text-muted-foreground/60 italic leading-normal">
                       Qualquer tentativa de edição foi bloqueada para preservar a integridade jurídica das assinaturas.
                     </p>
                   </div>
@@ -1402,27 +1411,27 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                 <div className="space-y-6">
                   <div className="flex items-center gap-4">
                     <ShieldCheck size={24} className="text-primary animate-pulse" />
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em]">Assinatura Digital</h3>
+                    <h3 className="font-heading font-medium text-[11px] uppercase tracking-[0.2em]">Assinatura Digital</h3>
                   </div>
                   <div className="space-y-4">
-                    <p className="text-xs leading-relaxed text-muted-foreground">Revise o documento e preencha as credenciais para assinar.</p>
+                    <p className="font-heading font-medium text-[10px] leading-relaxed text-muted-foreground">Revise o documento e preencha as credenciais para assinar.</p>
                     <div className="space-y-3">
-                      <label className="text-[10px] font-black text-muted-foreground uppercase">E-mail</label>
-                      <input type="email" value={signerEmail} onChange={(e) => setSignerEmail(e.target.value)} placeholder="Seu e-mail..." className="w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-xs font-semibold" />
+                      <label className="font-heading font-medium text-[9px] text-muted-foreground uppercase">E-mail</label>
+                      <input type="email" value={signerEmail} onChange={(e) => setSignerEmail(e.target.value)} placeholder="Seu e-mail..." className="font-heading font-medium w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-[11px] font-semibold" />
                     </div>
                     <div className="space-y-3">
-                      <label className="text-[10px] font-black text-muted-foreground uppercase">Código (6 dígitos)</label>
-                      <input type="text" maxLength={6} value={sealingCode} onChange={(e) => setSealingCode(e.target.value.replace(/\D/g, ''))} placeholder="123456" className="w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-center text-xl font-black tracking-[0.5em]" />
+                      <label className="font-heading font-medium text-[9px] text-muted-foreground uppercase">Código (6 dígitos)</label>
+                      <input type="text" maxLength={6} value={sealingCode} onChange={(e) => setSealingCode(e.target.value.replace(/\D/g, ''))} placeholder="123456" className="font-heading font-medium w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-center text-lg font-bold tracking-[0.5em]" />
                     </div>
                     <div className="flex items-start gap-3 mt-4">
                       <input type="checkbox" id="consent" checked={consentCheck} onChange={(e) => setConsentCheck(e.target.checked)} className="mt-0.5 rounded text-primary focus:ring-0" />
-                      <label htmlFor="consent" className="text-[11px] text-muted-foreground leading-normal font-semibold cursor-pointer">Declaro que li e concordo com os termos.</label>
+                      <label htmlFor="consent" className="font-heading font-medium text-[10px] text-muted-foreground leading-normal cursor-pointer">Declaro que li e concordo com os termos.</label>
                     </div>
                   </div>
                 </div>
               )}
               {contractStatus !== 'signed' && (
-                <Button onClick={handleConfirmSignature} disabled={isSealing || !consentCheck} className="w-full bg-primary py-5 rounded-2xl font-black text-xs uppercase">Assinar Instrumento</Button>
+                <Button onClick={handleConfirmSignature} disabled={isSealing || !consentCheck} className="font-heading font-medium w-full bg-primary py-5 rounded-2xl font-bold text-[11px] uppercase">Assinar Instrumento</Button>
               )}
             </div>
           ) : (
@@ -1430,7 +1439,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               <div className="flex items-center justify-between border-b border-border/40 pb-2">
                 <div className="flex items-center gap-2">
                   <BrainCircuit size={12} className={cn("text-primary", isAuditing && "animate-pulse")} />
-                  <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground">Sugestões de Cláusulas</h3>
+                  <h3 className="font-heading font-medium text-[11px] uppercase tracking-[0.2em] text-foreground">Sugestões de Cláusulas</h3>
                 </div>
               </div>
               {/* Seção 1: Score ou Iniciar Auditoria (Fixado no topo) */}
@@ -1438,17 +1447,13 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                 {!hasAudited ? (
                   <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/10 space-y-3 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
-                    <div className="flex items-center gap-1.5">
-                      <Brain size={14} className="text-primary animate-pulse" />
-                      <span className="text-[9px] font-black text-primary uppercase tracking-widest">Radar de Cláusulas</span>
-                    </div>
-                    <p className="text-[12px] text-muted-foreground leading-relaxed">
+                    <p className="font-heading font-medium text-xs text-muted-foreground leading-relaxed">
                       Rode a análise inteligente para escanear o documento e sugerir cláusulas protetoras complementares sob demanda.
                     </p>
                     <Button 
                       onClick={runAudit} 
                       disabled={isAuditing} 
-                      className="w-full bg-transparent border border-primary/50 text-primary hover:bg-primary hover:border-primary hover:text-primary-foreground text-[9px] font-black uppercase tracking-[0.2em] h-8 rounded-xl transition-all shadow-[0_0_10px_rgba(var(--primary),0.05)] hover:shadow-[0_0_20px_rgba(var(--primary),0.2)]"
+                      className="font-heading font-medium w-full bg-transparent border border-primary/50 text-primary hover:bg-primary hover:border-primary hover:text-primary-foreground text-[10px] font-bold uppercase tracking-[0.2em] h-8 rounded-xl transition-all shadow-[0_0_10px_rgba(var(--primary),0.05)] hover:shadow-[0_0_20px_rgba(var(--primary),0.2)]"
                     >
                       Analisar Cláusulas
                     </Button>
@@ -1456,14 +1461,14 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                 ) : (
                   <div className="p-3.5 rounded-xl bg-muted/30 border space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-black text-muted-foreground uppercase">Proteção Estimada</span>
-                      <span className={cn("text-[9px] font-black uppercase px-2 py-0.5 rounded-full", auditStatus.color)}>{auditStatus.label}</span>
+                      <span className="font-heading font-medium text-[11px] text-muted-foreground uppercase tracking-wider">Proteção Estimada</span>
+                      <span className={cn("font-heading font-medium text-[9.5px] uppercase px-2 py-0.5 rounded-full", auditStatus.color)}>{auditStatus.label}</span>
                     </div>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-2xl font-black">{auditScore}</span>
-                      <span className="text-[11px] font-bold text-primary">%</span>
+                      <span className="font-heading font-medium text-2xl">{auditScore}</span>
+                      <span className="font-heading font-medium text-[11px] text-primary">%</span>
                     </div>
-                    <p className="text-[12px] text-muted-foreground leading-relaxed italic">{auditStatus.desc}</p>
+                    <p className="font-heading font-medium text-xs text-muted-foreground leading-relaxed italic">{auditStatus.desc}</p>
                   </div>
                 )}
               </div>
@@ -1471,7 +1476,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               {/* Seção 2: Árvore Interativa de Cláusulas (Mapa do Instrumento) */}
               <div className="flex flex-col flex-1 min-h-0 space-y-4">
                 <div className="flex items-center gap-2 border-b border-border/40 pb-2 shrink-0">
-                  <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Estrutura do Contrato</span>
+                  <span className="font-heading font-medium text-xs text-muted-foreground uppercase tracking-widest">Estrutura do Contrato</span>
                 </div>
                 
                 <ScrollArea className="flex-1 pr-3 scrollbar-minimalist min-h-0">
@@ -1480,7 +1485,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                       <span className="text-xs text-muted-foreground font-semibold">Nenhuma cláusula identificada ainda.</span>
                     </div>
                   ) : (
-                    <div className="relative pl-5 pr-3 py-1 space-y-3.5 before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-[1.5px] before:bg-border/60">
+                    <div className="relative pl-[30px] pr-3 py-1 space-y-3.5 before:absolute before:left-[12.25px] before:top-2 before:bottom-2 before:w-[1.5px] before:bg-border/60">
                       {getClauses().map((clause, idx, array) => {
                         const nextClause = array[idx + 1]
                         const clauseRisks = getClauseRisks(clause.pos, nextClause?.pos)
@@ -1489,12 +1494,12 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                         const subItems = getClauseSubItems(clause.pos, nextClause?.pos)
                         const visibleSubItems = subItems.slice(0, 4)
                         const hasMore = subItems.length > 4
-
+ 
                         return (
                           <div key={clause.id} className="relative group/clause">
                             {/* Indicador de Status na Árvore */}
                             <div className={cn(
-                              "absolute -left-[23px] top-0.5 h-3.5 w-3.5 rounded-full border-2 bg-background flex items-center justify-center transition-all duration-300 z-10",
+                              "absolute -left-[24px] top-0.5 h-3.5 w-3.5 rounded-full border-2 bg-background flex items-center justify-center transition-all duration-300 z-10",
                               !hasAudited 
                                 ? "border-muted-foreground/30" 
                                 : hasRisk 
@@ -1507,22 +1512,22 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                                   : <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                               )}
                             </div>
-
+ 
                             <div className="space-y-2">
                               <button
                                 onClick={() => scrollToPosition(clause.pos)}
                                 className="flex items-center justify-between w-full text-left group-hover/clause:text-primary transition-all"
                               >
-                                <span className="text-[13px] font-bold uppercase tracking-wider truncate max-w-[220px] text-foreground/80 group-hover/clause:text-primary">
+                                <span className="font-heading font-medium text-xs uppercase tracking-wider truncate max-w-[220px] text-foreground/80 group-hover/clause:text-primary">
                                   {clause.title}
                                 </span>
                                 {hasAudited && (
                                   hasRisk 
-                                    ? <Badge variant="outline" className="text-[7px] h-4 px-1.5 font-black uppercase bg-amber-500/10 text-amber-600 border-amber-500/20 hover:bg-amber-500/10">Sugestão</Badge>
-                                    : <Badge variant="outline" className="text-[7px] h-4 px-1.5 font-black uppercase bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/10">OK</Badge>
+                                    ? <Badge variant="outline" className="font-heading font-medium text-[10px] h-4 px-1.5 uppercase bg-amber-500/10 text-amber-600 border-amber-500/20 hover:bg-amber-500/10">Sugestão</Badge>
+                                    : <Badge variant="outline" className="font-heading font-medium text-[10px] h-4 px-1.5 uppercase bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/10">OK</Badge>
                                 )}
                               </button>
-
+ 
                               {/* Sub-itens (Parágrafos da Cláusula) */}
                               {visibleSubItems.length > 0 && (
                                 <div className="pl-2.5 space-y-1 py-0.5 border-l border-border/20 ml-1">
@@ -1530,21 +1535,21 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                                     <button
                                       key={sub.id}
                                       onClick={() => scrollToPosition(sub.pos)}
-                                      className="flex items-center gap-1.5 text-left text-xs text-muted-foreground/60 hover:text-primary transition-all w-full min-w-0 group/sub"
+                                      className="flex items-center gap-1.5 text-left text-[11px] text-muted-foreground/60 hover:text-primary transition-all w-full min-w-0 group/sub"
                                     >
                                       <div className="h-0.5 w-1 bg-muted-foreground/20 group-hover/sub:bg-primary shrink-0 transition-colors" />
-                                      <span className="truncate flex-1 min-w-0 font-medium italic">
+                                      <span className="font-heading font-medium truncate flex-1 min-w-0 italic">
                                         {sub.text}
                                       </span>
                                     </button>
                                   ))}
                                   {hasMore && (
-                                    <span className="text-xs text-muted-foreground/40 pl-2.5 font-bold tracking-widest block leading-none">...</span>
+                                    <span className="font-heading font-medium text-xs text-muted-foreground/40 pl-2.5 tracking-widest block leading-none">...</span>
                                   )}
                                 </div>
                               )}
 
-                              {/* Se houver risco correspondente a esta cláusula, renderiza abaixo dela de forma integrada */}
+                              {/* Se de fato houver risco correspondente a esta cláusula, renderiza abaixo dela de forma integrada */}
                               {hasAudited && hasRisk && (
                                 <div className="pl-3 space-y-2.5 border-l border-amber-500/40 mt-1.5">
                                   {clauseRisks.map((risk) => {
@@ -1554,14 +1559,14 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                                     if (isOptimized) {
                                       return (
                                         <div key={risk.id} className="p-3 rounded-xl border bg-emerald-50/50 dark:bg-emerald-950/10 border-emerald-200/50 dark:border-emerald-500/20 space-y-2">
-                                          <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest flex items-center gap-1.5 opacity-80">
+                                          <span className="font-heading font-medium text-[11px] text-emerald-600 dark:text-emerald-500 uppercase tracking-widest flex items-center gap-1.5 opacity-80">
                                             <ShieldCheck size={12} className="text-emerald-600 dark:text-emerald-500" />
                                             Cláusula Adicionada
                                           </span>
                                           <Button 
                                             size="sm" 
                                             disabled
-                                            className="w-full text-[9px] font-bold uppercase tracking-widest h-7 rounded-lg transition-all bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-500/30 opacity-70"
+                                            className="font-heading font-medium w-full text-[10.5px] font-bold uppercase tracking-widest h-7 rounded-lg transition-all bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-500/30 opacity-70"
                                           >
                                             Cláusula Inserida
                                           </Button>
@@ -1571,18 +1576,12 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                                     
                                     return (
                                       <div key={risk.id} className="p-3.5 rounded-xl border bg-amber-500/5 dark:bg-amber-500/5 border-amber-500/20 space-y-2 shadow-md shadow-amber-950/5">
-                                        <div className="flex items-center justify-between">
-                                          <Badge variant="outline" className="text-[8px] h-5 px-2 font-black uppercase bg-amber-500/10 text-amber-600 border-amber-500/20 hover:bg-amber-500/10">
-                                            Sugestão
-                                          </Badge>
-                                          <Brain size={12} className="text-amber-600/50 dark:text-amber-400/50 animate-pulse" />
-                                        </div>
                                         {risk.tipo && (
-                                          <span className="text-[9px] font-black text-amber-600/70 dark:text-amber-400/60 uppercase tracking-widest block mb-0.5">
+                                          <span className="font-heading font-medium text-[9px] text-amber-600/70 dark:text-amber-400/60 uppercase tracking-widest block mb-0.5">
                                             {risk.tipo}
                                           </span>
                                         )}
-                                        <p className="text-[14.5px] font-normal leading-relaxed text-foreground/85 text-left">
+                                        <p className="font-heading font-medium text-[11px] leading-relaxed text-foreground/85 text-left">
                                           {renderBoldText(risk.reason)}
                                         </p>
                                         <Button 
@@ -1590,7 +1589,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                                           disabled={!!pendingOptimization}
                                           onClick={() => handleOptimizeClause(clause.pos, nextClause?.pos, risk.id, risk.reason)}
                                           className={cn(
-                                            "w-full text-[9px] font-black uppercase tracking-widest h-8 rounded-xl transition-all",
+                                            "font-heading font-medium w-full text-[10.5px] font-bold uppercase tracking-widest h-8 rounded-xl transition-all",
                                             isPending
                                               ? "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900 dark:text-amber-400"
                                               : "bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400",

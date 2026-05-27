@@ -98,7 +98,7 @@ export function SignModal({ title = "Documento Digital" }: { title?: string }) {
         }
       />
       
-      <DialogContent className="sm:max-w-[580px] bg-background border-border text-foreground rounded-3xl shadow-2xl p-0 overflow-hidden ring-1 ring-border animate-in zoom-in-95 duration-300">
+      <DialogContent className="w-full max-w-[36rem] bg-background border-border text-foreground rounded-3xl shadow-2xl p-0 overflow-hidden ring-1 ring-border animate-in zoom-in-95 duration-300">
         <div className="relative p-0 flex flex-col h-full max-h-[90vh]">
           {/* Top Decorative bar */}
           <div className="h-1.5 w-full bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />

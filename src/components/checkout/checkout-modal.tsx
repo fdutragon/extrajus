@@ -215,49 +215,48 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
           if (step === "success") return;
           if (!open) onClose();
           }}>
-          <DialogContent className="max-w-[95vw] md:max-w-[780px] lg:max-w-[850px] bg-background border border-border text-foreground rounded-[32px] shadow-[0_0_50px_rgba(139,92,246,0.15)] p-6 md:p-8 overflow-hidden transition-all duration-500">
+          <DialogContent className="w-full max-w-[92vw] md:max-w-[48rem] lg:max-w-[52rem] bg-background border border-border text-foreground rounded-[28px] shadow-[0_0_50px_rgba(139,92,246,0.15)] p-[1.375rem] overflow-hidden transition-all duration-500">
           {/* Soft Occult Ambient Highlights (Adaptive to Theme) */}
           <div className="absolute top-0 right-0 w-36 h-36 bg-primary/5 rounded-full blur-[60px] pointer-events-none" />
           <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-primary/5 rounded-full blur-[60px] pointer-events-none" />
           <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary/45 to-transparent" />
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 relative z-10">
 
           {/* Painel Esquerdo: A Oferta Suprema (6 colunas) */}
-          <div className="md:col-span-6 flex flex-col justify-center border-b md:border-b-0 md:border-r border-border/60 pb-6 md:pb-0 md:pr-6 lg:pr-8 space-y-4">
-            <div className="space-y-4">
+          <div className="md:col-span-6 flex flex-col justify-center border-b md:border-b-0 md:border-r border-border/60 pb-4 md:pb-0 md:pr-5 lg:pr-6 space-y-3">
+            <div className="space-y-3">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
                 <CheckCircle2 size={12} className="text-emerald-500 animate-pulse" />
                 <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Acesso Vitalício Liberado</span>
               </div>
 
-              <h3 className="text-[36px] font-black text-foreground leading-[1.1] tracking-tight">
-                Adquira a sua<br />
-                <span className="bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">Minuta Oficial</span>
+              <h3 className="text-[1.65rem] font-black text-foreground leading-[1.1] tracking-tight whitespace-nowrap">
+                Libere seu <span className="bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">Contrato</span>
               </h3>
 
-              <p className="text-[15px] text-muted-foreground leading-relaxed font-medium">
+              <p className="text-[0.875rem] text-muted-foreground leading-relaxed font-medium">
                 Finalize agora para baixar o arquivo editável em <strong className="text-foreground font-bold">Word (.DOCX)</strong>. O documento é seu: use, replique e adapte quantas vezes desejar, sem restrições ou taxas adicionais.
               </p>
             </div>
 
             {/* Box de Preço Único */}
-            <div className="pt-2">
-              <div className="text-[11px] font-black text-muted-foreground/60 uppercase tracking-widest mb-1">Investimento Único</div>
+            <div className="pt-1">
+              <div className="text-[0.625rem] font-black text-muted-foreground/60 uppercase tracking-widest mb-1">Investimento Único</div>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-4xl font-black text-foreground">R$ 37,00</span>                <span className="text-[10px] font-bold text-muted-foreground uppercase">/ download</span>
+                <span className="text-[1.75rem] font-black text-foreground">R$ 37,00</span>                <span className="text-[0.625rem] font-bold text-muted-foreground uppercase">/ download</span>
               </div>
             </div>
           </div>
 
           {/* Painel Direito: Formulário, PIX ou Sucesso (6 colunas) */}
-          <div className="md:col-span-6 flex flex-col justify-center min-h-[340px]">
-            <DialogHeader className="mb-4">
-              <DialogTitle className="flex items-center gap-2.5 text-base sm:text-lg font-black uppercase tracking-[0.12em] bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">
+          <div className="md:col-span-6 flex flex-col justify-center min-h-[280px]">
+            <DialogHeader className="mb-3">
+              <DialogTitle className="flex items-center gap-2.5 text-[1rem] font-black tracking-[0.12em] bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">
                 <Lock size={16} className="text-primary animate-pulse filter drop-shadow-[0_0_6px_rgba(139,92,246,0.4)]" />
-                {step === "form" ? "Liberar Contrato" : step === "pix" ? "Finalizar Pagamento" : "Sucesso!"}
+                {step === "form" ? "Finalizar Pedido" : step === "pix" ? "Finalizar Pagamento" : "Sucesso!"}
               </DialogTitle>
-              <DialogDescription className="text-xs text-muted-foreground font-medium tracking-wide mt-1 leading-relaxed">
+              <DialogDescription className="text-[0.72rem] text-muted-foreground font-medium tracking-wide mt-1 leading-relaxed">
                 {step === "form"
                   ? "Gere o código PIX e receba o contrato oficial diretamente em seu e-mail após a confirmação."
                   : step === "pix"
@@ -326,7 +325,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                 <div className="bg-muted/40 p-4 rounded-xl border border-border shadow-[0_0_20px_rgba(0,0,0,0.05)] relative overflow-hidden group hover:border-primary/20 transition-all duration-300">
                   <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <div className="p-2.5 bg-white rounded-lg shadow-xl relative z-10">
-                    <QRCodeSVG value={pixData.qrCode} size={150} />
+                    <QRCodeSVG value={pixData.qrCode} size={140} style={{ width: "8.75rem", height: "8.75rem", display: "block" }} />
                   </div>
                 </div>
                 
@@ -373,8 +372,8 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                     <CheckCircle2 size={32} className="text-emerald-500 animate-pulse" />
                   </div>
                   <div className="space-y-1 text-center">
-                    <h3 className="text-lg font-black bg-gradient-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent uppercase tracking-[0.08em]">Pagamento Aprovado</h3>
-                    <p className="text-xs text-muted-foreground font-medium">Sua minuta oficial foi totalmente liberada.</p>
+                    <h3 className="text-[1rem] font-black bg-gradient-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent uppercase tracking-[0.08em]">Pagamento Aprovado</h3>
+                    <p className="text-[0.72rem] text-muted-foreground font-medium">Sua minuta oficial foi totalmente liberada.</p>
                   </div>
 
                   <div className="w-full space-y-3 pt-2">
