@@ -953,10 +953,10 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
         }
         @keyframes pulse-shadow {
           0%, 100% {
-            box-shadow: 0 0 25px -5px hsl(var(--primary)/0.15), 0 0 15px -5px hsl(var(--primary)/0.05);
+            box-shadow: 0 0 20px -5px hsl(var(--primary)/0.08), 0 0 12px -5px hsl(var(--primary)/0.03);
           }
           50% {
-            box-shadow: 0 0 45px 5px hsl(var(--primary)/0.35), 0 0 25px 0px hsl(var(--primary)/0.15);
+            box-shadow: 0 0 35px 3px hsl(var(--primary)/0.18), 0 0 20px 0px hsl(var(--primary)/0.08);
           }
         }
         .editor-glow-container {
@@ -966,6 +966,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
           overflow: hidden;
           background: hsl(var(--border)/0.4);
           transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+          animation: pulse-shadow 4.5s ease-in-out infinite; /* Sempre ativo */
         }
         .editor-glow-container::before {
           content: '';
@@ -991,7 +992,6 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
           opacity: 1;
         }
         .editor-glow-container.glowing {
-          animation: pulse-shadow 3.5s ease-in-out infinite;
           background: transparent;
         }
         .editor-glow-content {
