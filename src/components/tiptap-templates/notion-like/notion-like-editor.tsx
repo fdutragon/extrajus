@@ -1505,7 +1505,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
                                           <Brain size={14} className="text-amber-600 dark:text-amber-400 animate-pulse" />
                                           Cláusula Sugerida
                                         </span>
-                                        <p className="text-[13px] font-normal leading-relaxed text-foreground/80 text-justify">
+                                        <p className="text-[13px] font-normal leading-relaxed text-foreground/80 text-left">
                                           {renderBoldText(risk.reason)}
                                         </p>
                                         <Button 
