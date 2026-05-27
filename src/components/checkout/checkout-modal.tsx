@@ -235,8 +235,8 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                 Libere seu <span className="bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">Contrato</span>
               </h3>
 
-              <p className="text-[0.875rem] text-muted-foreground leading-relaxed font-medium">
-                Finalize agora para baixar o arquivo editável em <strong className="text-foreground font-bold">Word (.DOCX)</strong>. O documento é seu: use, replique e adapte quantas vezes desejar, sem restrições ou taxas adicionais.
+              <p className="text-[0.825rem] text-muted-foreground leading-relaxed font-medium">
+                Finalize agora para baixar o arquivo editável em <strong className="text-foreground font-bold">Word (.DOCX)</strong>. O documento é seu: use, replique e adapte quantas vezes desejar, sem restrições.
               </p>
             </div>
 
@@ -256,7 +256,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                 <Lock size={16} className="text-primary animate-pulse filter drop-shadow-[0_0_6px_rgba(139,92,246,0.4)]" />
                 {step === "form" ? "Finalizar Pedido" : step === "pix" ? "Finalizar Pagamento" : "Sucesso!"}
               </DialogTitle>
-              <DialogDescription className="text-[0.72rem] text-muted-foreground font-medium tracking-wide mt-1 leading-relaxed">
+              <DialogDescription className="text-[0.825rem] text-muted-foreground font-medium tracking-wide mt-1 leading-relaxed">
                 {step === "form"
                   ? "Gere o código PIX e receba o contrato oficial diretamente em seu e-mail após a confirmação."
                   : step === "pix"

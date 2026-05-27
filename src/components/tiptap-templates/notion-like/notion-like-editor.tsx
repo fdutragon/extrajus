@@ -1310,7 +1310,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                 <div className="flex items-center justify-between border-b border-border/40 pb-2.5">
                    <div className="flex items-center gap-2">
                      <Zap size={12} className="text-primary" />
-                     <h3 className="text-[11px] font-medium uppercase tracking-[0.2em] text-foreground">Tipografia</h3>
+                     <h3 className="text-[11px] font-medium tracking-[0.2em] text-foreground">Tipografia</h3>
                    </div>
                 </div>
                 <div className="space-y-2">
@@ -1374,7 +1374,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               </div>
               <div className="flex items-center gap-3 mb-6 shrink-0 pt-10 border-t border-border/40">
                 <Library size={16} className="text-primary" />
-                <h3 className="text-[11px] font-medium uppercase tracking-[0.2em] text-foreground">Biblioteca</h3>
+                <h3 className="text-[11px] font-medium tracking-[0.2em] text-foreground">Biblioteca</h3>
               </div>
               <div className="relative mb-6 shrink-0">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={14} />
@@ -1383,7 +1383,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               <ScrollArea className="flex-1 w-full">
                 <div className="space-y-6 pb-6">
                   <div className="space-y-3">
-                    <p className="font-heading text-[10px] font-medium text-muted-foreground uppercase tracking-[0.25em] border-b border-border pb-1">Seus Documentos</p>
+                    <p className="font-heading text-[10px] font-medium text-muted-foreground tracking-[0.25em] border-b border-border pb-1">Seus Documentos</p>
                     <div className="space-y-0.5">
                       {filteredContracts.map(c => (
                         <Link key={c.id} href={`/editor?room=${c.id}`} className="w-full min-w-0 text-left text-xs py-2 px-2.5 hover:bg-primary/5 hover:text-primary rounded-lg flex items-center justify-between font-normal text-foreground/70 transition-all gap-2">
@@ -1479,11 +1479,11 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               )}
             </div>
           ) : (
-            <div className="p-4 flex flex-col h-full overflow-hidden min-h-0 space-y-4">
+            <div className="px-4 py-6 flex flex-col h-full overflow-hidden min-h-0 space-y-4">
               <div className="flex items-center justify-between border-b border-border/40 pb-2">
                 <div className="flex items-center gap-2">
                   <BrainCircuit size={12} className={cn("text-primary", isAuditing && "animate-pulse")} />
-                  <h3 className="font-heading font-medium text-[11px] uppercase tracking-[0.2em] text-foreground">Sugestões de Cláusulas</h3>
+                  <h3 className="font-heading font-medium text-[11px] tracking-[0.2em] text-foreground">Sugestões de Cláusulas</h3>
                 </div>
               </div>
               {/* Seção 1: Score ou Iniciar Auditoria (Fixado no topo) */}
@@ -1520,7 +1520,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               {/* Seção 2: Árvore Interativa de Cláusulas (Mapa do Instrumento) */}
               <div className="flex flex-col flex-1 min-h-0 space-y-4">
                 <div className="flex items-center gap-2 border-b border-border/40 pb-2 shrink-0">
-                  <span className="font-heading font-medium text-xs text-muted-foreground uppercase tracking-widest">Estrutura do Contrato</span>
+                  <span className="font-heading font-medium text-xs text-muted-foreground tracking-widest">Estrutura do Contrato</span>
                 </div>
                 
                 <ScrollArea className="flex-1 pr-3 scrollbar-minimalist min-h-0">
