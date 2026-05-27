@@ -88,7 +88,9 @@ DIRETRIZES ESPECÍFICAS DE SUGESTÃO:
       }
 
       systemInstruction += `\n\nFormato estrito de retorno (retorne APENAS um array JSON válido sem decorações markdown adicionais fora dele):
-[{"originalText": "texto ou título exato de uma cláusula existente no documento para ancorar a nova sugestão", "suggestion": "nova redação sugerida em HTML simples para a cláusula complementar (sem numeração manual)", "reason": "fundamentação jurídica explicativa de por que esta nova cláusula é altamente recomendada"}]`;
+[{"originalText": "texto ou título exato de uma cláusula existente no documento para ancorar a nova sugestão", "suggestion": "nova redação sugerida em HTML simples para a cláusula complementar (sem numeração manual)", "reason": "fundamentação jurídica explicativa de por que esta nova cláusula é altamente recomendada", "tipo": "nome curto e preciso da natureza jurídica desta sugestão em até 4 palavras (ex: Proteção de Dados, Foro de Eleição, Penalidade por Rescisão, Cláusula de Sigilo, Não-Concorrência, Limitação de Responsabilidade, Propriedade Intelectual, Rescisão por Justa Causa)"}]`;
+
+      systemInstruction += `\nREGRA CRÍTICA DE IDIOMA: Responda SEMPRE em Português do Brasil. NUNCA use termos, frases ou expressões em inglês no campo reason, tipo ou em qualquer parte do retorno. Toda fundamentação, nomenclatura e redação deve ser exclusivamente em português jurídico formal brasileiro.`;
 
       systemInstruction += `\nNÍVEL DE RIGOR DE ANÁLISE ATIVO: Nível ${aiRigor}/10. ${aiRigor >= 8
         ? "Diretriz crítica: Seja extremamente exigente e sugira cláusulas complementares de alta blindagem corporativa e riqueza terminológica."

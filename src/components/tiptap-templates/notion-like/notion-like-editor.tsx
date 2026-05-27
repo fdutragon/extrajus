@@ -1506,9 +1506,11 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
                                           <Brain size={14} className="text-amber-600 dark:text-amber-400 animate-pulse" />
                                           Cláusula Sugerida
                                         </span>
-                                        <span className="text-[9px] font-black text-amber-600/70 dark:text-amber-400/60 uppercase tracking-widest block mb-0.5">
-                                          {clause.title}
-                                        </span>
+                                        {risk.tipo && (
+                                          <span className="text-[9px] font-black text-amber-600/70 dark:text-amber-400/60 uppercase tracking-widest block mb-0.5">
+                                            {risk.tipo}
+                                          </span>
+                                        )}
                                         <p className="text-[14.5px] font-normal leading-relaxed text-foreground/85 text-left">
                                           {renderBoldText(risk.reason)}
                                         </p>
