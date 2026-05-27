@@ -50,7 +50,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             if (typeof window !== "undefined" && (window as any).gtag) {
               (window as any).gtag('event', 'conversion', {
                 'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
-                'value': 29.90, // Valor real do download do documento
+                'value': 37.00, // Valor real do download do documento
                 'currency': 'BRL',
                 'transaction_id': pixData.externalId
               });
@@ -151,78 +151,78 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
       if (typeof window !== "undefined" && (window as any).gtag) {
         (window as any).gtag('event', 'conversion', {
           'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
-          'value': 29.90,
+          'value': 37.00,
           'currency': 'BRL',
           'transaction_id': data.externalId
-        });
-        console.log("[Google Ads] Conversão disparada via Simulação Dev (All)!", data.externalId);
-      }
+          });
+          console.log("[Google Ads] Conversão disparada via Simulação Dev (All)!", data.externalId);
+          }
 
-      setStep("success")
+          setStep("success")
 
-    } catch (err: any) {
-      toast.error(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
+          } catch (err: any) {
+          toast.error(err.message)
+          } finally {
+          setLoading(false)
+          }
+          }
 
-  // Developer simulation: Confirms the active PIX payment
-  const handleDevSimulatePaymentOnly = async () => {
-    if (!pixData?.externalId) return
-    setLoading(true)
-    try {
-      const res = await fetch("/api/billing/status", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ externalId: pixData.externalId })
-      })
+          // Developer simulation: Confirms the active PIX payment
+          const handleDevSimulatePaymentOnly = async () => {
+          if (!pixData?.externalId) return
+          setLoading(true)
+          try {
+          const res = await fetch("/api/billing/status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ externalId: pixData.externalId })
+          })
 
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Falha ao simular confirmação de pagamento")
+          const data = await res.json()
+          if (!res.ok) throw new Error(data.error || "Falha ao simular confirmação de pagamento")
 
-      // Dispara o evento de conversão de compra do Google Ads na simulação dev
-      if (typeof window !== "undefined" && (window as any).gtag) {
-        (window as any).gtag('event', 'conversion', {
+          // Dispara o evento de conversão de compra do Google Ads na simulação dev
+          if (typeof window !== "undefined" && (window as any).gtag) {
+          (window as any).gtag('event', 'conversion', {
           'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
-          'value': 29.90,
+          'value': 37.00,
           'currency': 'BRL',
           'transaction_id': pixData.externalId
-        });
-        console.log("[Google Ads] Conversão disparada via Simulação Dev (PaymentOnly)!", pixData.externalId);
-      }
+          });
+          console.log("[Google Ads] Conversão disparada via Simulação Dev (PaymentOnly)!", pixData.externalId);
+          }
 
-      toast.success("Confirmação de pagamento simulada com sucesso!")
-      setStep("success")
-    } catch (err: any) {
-      toast.error(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
+          toast.success("Confirmação de pagamento simulada com sucesso!")
+          setStep("success")
+          } catch (err: any) {
+          toast.error(err.message)
+          } finally {
+          setLoading(false)
+          }
+          }
 
-  const copyPix = () => {
-    if (pixData?.code) {
-      navigator.clipboard.writeText(pixData.code)
-      setCopied(true)
-      toast.success("Código PIX copiado!")
-      setTimeout(() => setCopied(false), 2000)
-    }
-  }
+          const copyPix = () => {
+          if (pixData?.code) {
+          navigator.clipboard.writeText(pixData.code)
+          setCopied(true)
+          toast.success("Código PIX copiado!")
+          setTimeout(() => setCopied(false), 2000)
+          }
+          }
 
-  return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-      if (step === "success") return;
-      if (!open) onClose();
-    }}>
-      <DialogContent className="max-w-[95vw] md:max-w-[780px] lg:max-w-[850px] bg-background border border-border text-foreground rounded-[32px] shadow-[0_0_50px_rgba(139,92,246,0.15)] p-6 md:p-8 overflow-hidden transition-all duration-500">
-        {/* Soft Occult Ambient Highlights (Adaptive to Theme) */}
-        <div className="absolute top-0 right-0 w-36 h-36 bg-primary/5 rounded-full blur-[60px] pointer-events-none" />
-        <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-primary/5 rounded-full blur-[60px] pointer-events-none" />
-        <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary/45 to-transparent" />
+          return (
+          <Dialog open={isOpen} onOpenChange={(open) => {
+          if (step === "success") return;
+          if (!open) onClose();
+          }}>
+          <DialogContent className="max-w-[95vw] md:max-w-[780px] lg:max-w-[850px] bg-background border border-border text-foreground rounded-[32px] shadow-[0_0_50px_rgba(139,92,246,0.15)] p-6 md:p-8 overflow-hidden transition-all duration-500">
+          {/* Soft Occult Ambient Highlights (Adaptive to Theme) */}
+          <div className="absolute top-0 right-0 w-36 h-36 bg-primary/5 rounded-full blur-[60px] pointer-events-none" />
+          <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-primary/5 rounded-full blur-[60px] pointer-events-none" />
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary/45 to-transparent" />
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 relative z-10">
-          
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 relative z-10">
+
           {/* Painel Esquerdo: A Oferta Suprema (6 colunas) */}
           <div className="md:col-span-6 flex flex-col justify-center border-b md:border-b-0 md:border-r border-border/60 pb-6 md:pb-0 md:pr-6 lg:pr-8 space-y-4">
             <div className="space-y-4">
@@ -230,12 +230,12 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                 <CheckCircle2 size={12} className="text-emerald-500 animate-pulse" />
                 <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Acesso Vitalício Liberado</span>
               </div>
-              
+
               <h3 className="text-[36px] font-black text-foreground leading-[1.1] tracking-tight">
                 Adquira a sua<br />
                 <span className="bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">Minuta Oficial</span>
               </h3>
-              
+
               <p className="text-[15px] text-muted-foreground leading-relaxed font-medium">
                 Finalize agora para baixar o arquivo editável em <strong className="text-foreground font-bold">Word (.DOCX)</strong>. O documento é seu: use, replique e adapte quantas vezes desejar, sem restrições ou taxas adicionais.
               </p>
@@ -245,8 +245,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             <div className="pt-2">
               <div className="text-[11px] font-black text-muted-foreground/60 uppercase tracking-widest mb-1">Investimento Único</div>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-4xl font-black text-foreground">R$ 29,90</span>
-                <span className="text-[10px] font-bold text-muted-foreground uppercase">/ download</span>
+                <span className="text-4xl font-black text-foreground">R$ 37,00</span>                <span className="text-[10px] font-bold text-muted-foreground uppercase">/ download</span>
               </div>
             </div>
           </div>
