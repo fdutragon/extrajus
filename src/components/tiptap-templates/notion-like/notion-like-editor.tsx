@@ -565,7 +565,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
   const [aiPromptOpen, setAiPromptOpen] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
-  const [fontSize, setFontSize] = useState<number>(18)
+  const [fontSize, setFontSize] = useState<number>(16)
   const [fontFamily, setFontFamily] = useState<string>("Cambria")
   const [isFontDropdownOpen, setIsFontDropdownOpen] = useState(false)
 
@@ -1505,6 +1505,9 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
                                         <span className="text-[9.5px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
                                           <Brain size={14} className="text-amber-600 dark:text-amber-400 animate-pulse" />
                                           Cláusula Sugerida
+                                        </span>
+                                        <span className="text-[9px] font-black text-amber-600/70 dark:text-amber-400/60 uppercase tracking-widest block mb-0.5">
+                                          {clause.title}
                                         </span>
                                         <p className="text-[14.5px] font-normal leading-relaxed text-foreground/85 text-left">
                                           {renderBoldText(risk.reason)}
