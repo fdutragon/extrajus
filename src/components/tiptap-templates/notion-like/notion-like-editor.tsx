@@ -30,6 +30,13 @@ import { Link as TiptapLink } from "@tiptap/extension-link"
 import { BubbleMenu as BubbleMenuExtension } from "@tiptap/extension-bubble-menu"
 import { Extension } from "@tiptap/core"
 
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    clearAiHighlights: () => ReturnType
+    removeHighlightAtSelection: () => ReturnType
+  }
+}
+
 // Extensão para gerenciar o highlight de novos textos da IA
 const AiHighlightManager = Extension.create({
   name: 'aiHighlightManager',
@@ -92,18 +99,13 @@ const AiHighlightManager = Extension.create({
     }
   },
 
-  addEvents() {
-    return {
-      // Remove o highlight ao clicar ou mover a seleção para dentro do texto
-      selectionUpdate: ({ editor }) => {
-        editor.commands.removeHighlightAtSelection()
-      },
-      // Remove o highlight ao digitar no nó
-      transaction: ({ transaction, editor }) => {
-        if (transaction.docChanged) {
-          editor.commands.removeHighlightAtSelection()
-        }
-      },
+  onSelectionUpdate({ editor }) {
+    ;(editor.commands as any).removeHighlightAtSelection()
+  },
+
+  onTransaction({ transaction, editor }) {
+    if (transaction.docChanged) {
+      ;(editor.commands as any).removeHighlightAtSelection()
     }
   },
 })
@@ -926,27 +928,6 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
     // Seleciona a cláusula de referência
     editor.chain().focus().setTextSelection({ from: start, to: end }).run()
     
-    // Scroll preciso para o início da cláusula com offset para o header fixo
-    const dom = editor.view.nodeDOM(start) || editor.view.domAtPos(start).node
-    const element = dom.nodeType === Node.TEXT_NODE ? dom.parentElement : (dom as HTMLElement)
-    
-    if (element) {
-      const scrollContainer = document.querySelector('main')
-      if (scrollContainer) {
-        const headerHeight = 90 // Compensação para o header (clamp 48-72px) + margem de segurança
-        const rect = element.getBoundingClientRect()
-        const containerRect = scrollContainer.getBoundingClientRect()
-        
-        // Calcula a posição absoluta do elemento dentro do container de scroll
-        const scrollTarget = (rect.top - containerRect.top) + scrollContainer.scrollTop - headerHeight
-        
-        scrollContainer.scrollTo({
-          top: scrollTarget,
-          behavior: 'smooth'
-        })
-      }
-    }
-
     // Prompt automático que REESCREVE a cláusula atual com as melhorias sugeridas
     const addPrompt = `Reescreva a cláusula selecionada para aprimorar sua segurança jurídica e abrangência técnica, incorporando a seguinte otimização: "${suggestionReason || 'aperfeiçoamento de redação técnica'}".
 
@@ -1641,7 +1622,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
  
                             <div className="space-y-2">
                               <button
-                                onClick={() => scrollToPosition(clause.pos)}
+                                onClick={() => editor.chain().focus().setTextSelection(clause.pos).run()}
                                 className="flex items-center justify-between w-full text-left group-hover/clause:text-primary transition-all"
                               >
                                 <span className="font-heading font-medium text-xs uppercase tracking-wider truncate max-w-[220px] text-foreground/80 group-hover/clause:text-primary">
@@ -1660,7 +1641,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                                   {visibleSubItems.map((sub) => (
                                     <button
                                       key={sub.id}
-                                      onClick={() => scrollToPosition(sub.pos)}
+                                      onClick={() => editor.chain().focus().setTextSelection(sub.pos).run()}
                                       className="flex items-center gap-1.5 text-left text-[11px] text-muted-foreground/60 hover:text-primary transition-all w-full min-w-0 group/sub"
                                     >
                                       <div className="h-0.5 w-1 bg-muted-foreground/20 group-hover/sub:bg-primary shrink-0 transition-colors" />

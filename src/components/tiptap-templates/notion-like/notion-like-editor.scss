@@ -107,6 +107,17 @@ body {
     border-top: 1.5px solid color-mix(in srgb, var(--primary) 20%, transparent);
   }
 
+  // AI Highlight Global Styles
+  [data-ai-highlight="true"] {
+    background: rgba(139, 92, 246, 0.08); /* Violeta Lilith suave */
+    border-radius: 6px;
+    padding: 2px 6px;
+    box-shadow: inset 2px 0 0 0 #8b5cf6;
+    animation: ai-pulse-highlight 3s infinite ease-in-out;
+    cursor: pointer;
+    transition: all 0.5s ease;
+  }
+
   table {
     border-collapse: collapse;
     margin: 2rem 0;

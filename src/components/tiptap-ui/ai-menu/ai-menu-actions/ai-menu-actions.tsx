@@ -34,6 +34,7 @@ export function AiMenuActions({
  
   const handleApply = useCallback(() => {
     if (!editor) return
+    ;(editor.commands as any).clearAiHighlights()
     ;(editor.commands as any).aiAccept()
     onAccept?.()
   }, [editor, onAccept])

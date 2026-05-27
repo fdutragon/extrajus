@@ -103,7 +103,7 @@ function sanitiseAttributes(html: string): string {
     // Remove javascript: href
     .replace(/href="javascript:[^"]*"/gi, 'href="#"')
     // Remove data-* except Tiptap-specific ones we need
-    .replace(/\s+data-(?!type|level|text-align|background|node-id|id)[a-z-]+=["'][^"']*["']/gi, "")
+    .replace(/\s+data-(?!type|level|text-align|background|node-id|id|ai-highlight)[a-z-]+=["'][^"']*["']/gi, "")
     // Remove class attributes from inline elements (let Tiptap handle styling)
     .replace(/(<(?:strong|em|s|u|code|mark|sup|sub|a)\b[^>]*)\s+class="[^"]*"/gi, "$1")
 }

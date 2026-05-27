@@ -37,6 +37,16 @@ export const LegalNode = Node.create<LegalNodeOptions>({
           }
         },
       },
+      aiHighlight: {
+        default: false,
+        parseHTML: (element) => element.hasAttribute("data-ai-highlight"),
+        renderHTML: (attributes) => {
+          if (!attributes.aiHighlight) return {}
+          return {
+            "data-ai-highlight": "true",
+          }
+        },
+      },
     }
   },
 
