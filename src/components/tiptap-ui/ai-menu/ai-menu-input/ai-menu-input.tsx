@@ -283,13 +283,13 @@ export function AiMenuInputTextarea({
       <div className="tiptap-ai-prompt-input-inner flex flex-col w-full h-full">
 
         {isLoading ? (
-          <div className="flex items-center justify-between w-full h-[2.85rem] px-4 bg-primary/5 rounded-xl border border-primary/10 animate-pulse-subtle">
-            <div className="flex items-center gap-3">
-               <BrainCircuit size={16} className="text-primary animate-spin duration-[3000ms]" />
-               <span className="text-[11px] font-medium text-primary">A inteligência artificial está processando seu comando...</span>
+          <div className="flex items-center justify-between w-full px-[1rem] py-[0.65rem] bg-primary/5 rounded-xl border border-primary/10 animate-pulse-subtle">
+            <div className="flex items-center gap-[0.6rem]">
+               <BrainCircuit className="text-primary animate-spin duration-[3000ms] shrink-0" style={{ width: '0.9rem', height: '0.9rem' }} />
+               <span className="text-[0.72rem] font-semibold text-primary leading-none">A inteligência artificial está processando seu comando...</span>
             </div>
-            <Button variant="ghost" size="small" className="h-8 w-8 rounded-lg hover:bg-primary/10 text-primary" onClick={onStop}>
-              <StopCircle2Icon size={16} />
+            <Button variant="ghost" size="small" className="rounded-lg hover:bg-primary/10 text-primary shrink-0" style={{ width: '1.75rem', height: '1.75rem' }} onClick={onStop}>
+              <StopCircle2Icon style={{ width: '0.875rem', height: '0.875rem' }} />
             </Button>
           </div>
         ) : showPlaceholder ? (

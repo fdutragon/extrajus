@@ -768,7 +768,51 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
 
   const scrollToPosition = (pos: number) => {
     if (!editor) return
-    editor.chain().focus().setTextSelection(pos).scrollIntoView().run()
+
+    // 1. Move o cursor para o início do nó sem forçar scroll automático do TipTap
+    editor.chain().focus().setTextSelection(pos).run()
+
+    // 2. Aguarda o próximo frame para o DOM refletir a seleção
+    requestAnimationFrame(() => {
+      try {
+        // 3. Obtém o nó DOM real na posição ProseMirror
+        const domInfo = editor.view.domAtPos(pos)
+        let element: HTMLElement | null = domInfo.node.nodeType === Node.TEXT_NODE
+          ? domInfo.node.parentElement
+          : (domInfo.node as HTMLElement)
+
+        // 4. Sobe na árvore até encontrar um bloco de nível de parágrafo/heading real
+        while (element && element.nodeType === Node.ELEMENT_NODE) {
+          const display = window.getComputedStyle(element).display
+          if (display === 'block' || display === 'table' || element.tagName === 'P' || element.tagName === 'H1' || element.tagName === 'H2' || element.tagName === 'H3' || element.dataset?.type === 'legal-node') {
+            break
+          }
+          element = element.parentElement
+        }
+
+        if (!element) return
+
+        // 5. Encontra o container de scroll principal
+        const scrollContainer = document.querySelector('main') as HTMLElement | null
+        if (!scrollContainer) return
+
+        // 6. Altura do header fixo + margem de respiro visual
+        const HEADER_OFFSET = 88
+
+        // 7. Calcula a posição absoluta dentro do scrollContainer
+        const elementRect = element.getBoundingClientRect()
+        const containerRect = scrollContainer.getBoundingClientRect()
+        const absoluteTop = elementRect.top - containerRect.top + scrollContainer.scrollTop
+
+        // 8. Desliza suavemente até o início exato do bloco
+        scrollContainer.scrollTo({
+          top: absoluteTop - HEADER_OFFSET,
+          behavior: 'smooth',
+        })
+      } catch {
+        // Fallback silencioso se o DOM ainda não estiver pronto
+      }
+    })
   }
 
   const handleOptimizeClause = (clausePos: number, nextClausePos?: number, riskId?: string, suggestionReason?: string) => {
