@@ -2,7 +2,7 @@
 **System Architecture & API Integration Specification**
 
 ## 1. Executive Summary & Tool Purpose
-"Trademark Integration Engine" is an internal Command Line Interface (CLI) and backend service built in Node.js and TypeScript. The primary goal of the tool is to automate and streamline daily marketing operations for our consulting firm. 
+"Trademark Integration Engine" is an internal Command Line Interface (CLI) and backend service built in Node.js and TypeScript. The primary goal of the tool is to automate and streamline daily marketing operations for our consulting firm.vv
 
 The tool interacts with the Google Ads API to perform three core functions:
 1. **Performance Reporting:** Fetching daily performance statistics (clicks, impressions, cost, CTR, and conversions) to aggregate ROI and feed our internal business intelligence databases.
