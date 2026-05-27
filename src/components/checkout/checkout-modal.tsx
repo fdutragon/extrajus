@@ -46,6 +46,17 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
         if (res.ok) {
           const data = await res.json()
           if (data.status === "COMPLETE") {
+            // Dispara o evento de conversão de compra do Google Ads no frontend
+            if (typeof window !== "undefined" && (window as any).gtag) {
+              (window as any).gtag('event', 'conversion', {
+                'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
+                'value': 9.90, // Valor real do download do documento
+                'currency': 'BRL',
+                'transaction_id': pixData.externalId
+              });
+              console.log("[Google Ads] Conversão de compra de contrato disparada com sucesso!", pixData.externalId);
+            }
+
             setStep("success")
             clearInterval(interval)
           }
