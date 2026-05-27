@@ -1282,6 +1282,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
             {/* Subtle occult background glow behind the sheet */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/3 dark:bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse duration-[6000ms]" />
 
+
             <div className={cn(
               "w-full max-w-[840px] mx-auto editor-glow-container transition-all duration-700 shadow-2xl",
               (showEntranceGlow || editorFocused) && "glowing"
@@ -1505,7 +1506,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
                                           <Brain size={14} className="text-amber-600 dark:text-amber-400 animate-pulse" />
                                           Cláusula Sugerida
                                         </span>
-                                        <p className="text-[13px] font-normal leading-relaxed text-foreground/80 text-left">
+                                        <p className="text-[14.5px] font-normal leading-relaxed text-foreground/85 text-left">
                                           {renderBoldText(risk.reason)}
                                         </p>
                                         <Button 

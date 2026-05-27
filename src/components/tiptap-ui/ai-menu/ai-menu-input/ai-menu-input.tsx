@@ -298,7 +298,7 @@ export function AiMenuInputTextarea({
             <div className="relative w-full flex-1">
               {!promptValue && (
                 <div suppressHydrationWarning className="absolute inset-0 pointer-events-none px-4 py-2 pt-[0.5rem] flex items-start z-30 pr-6">
-                   <span suppressHydrationWarning className="tiptap-ai-prompt-input-placeholder-text leading-[1.5] font-normal">
+                   <span suppressHydrationWarning className="tiptap-ai-prompt-input-placeholder-text leading-[1.5] font-bold">
                      {dynamicPlaceholder}
                    </span>
                 </div>

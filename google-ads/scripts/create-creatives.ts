@@ -3,9 +3,9 @@ import { loadConfig } from '../src/config/loader';
 
 async function main() {
   const args = process.argv.slice(2);
-  let campaignId = '23883333812'; // Default to the newly created campaign in 511-889-4801
-  let customerIdOverride: string | undefined = undefined;
-  let finalUrl = 'https://www.registrodemarca-oficial.com.br';
+  let campaignId = '23884108760'; // Default to the newly created campaign in 511-889-4801
+  let customerIdOverride: string | undefined = '511-889-4801';
+  let finalUrl = 'https://extrajus.com.br/editor';
 
   const campIdx = args.indexOf('--campaignId');
   if (campIdx !== -1 && args[campIdx + 1]) {
@@ -40,7 +40,7 @@ async function main() {
     console.log('1. Criando o Grupo de Anúncios (Ad Group)...');
     
     // Nome do grupo de anúncios (com sufixo temporal para evitar erros de duplicidade)
-    const adGroupName = `Grupo de Pesquisa INPI - Principal - ${Date.now()}`;
+    const adGroupName = `Grupo de Pesquisa ExtraJus - Contratos - ${Date.now()}`;
 
     const adGroupResponse = await customer.adGroups.create([
       {
@@ -66,22 +66,22 @@ async function main() {
 
     // Lista de Headlines de alta conversão para Registro de Marca
     const headlines = [
-      { text: 'Registro de Marca Oficial' },
-      { text: 'Proteja Sua Marca no INPI' },
-      { text: 'Consulta de Marca Gratuita' },
-      { text: 'Registro de Logotipo INPI' },
-      { text: 'Evite Plágios e Cópias' },
-      { text: 'Garanta Seu Nome Comercial' },
-      { text: 'Proteção Exclusiva de Marca' },
-      { text: 'Registro Rápido e Seguro' },
+      { text: 'Crie Seu Contrato Online' },
+      { text: 'IA Jurídica: Pronto na Hora' },
+      { text: 'Seu Contrato Feito por IA' },
+      { text: 'Sem Mensalidade ou Taxas' },
+      { text: 'Contrato Personalizado' },
+      { text: 'Faça Seu Contrato Agora' },
+      { text: 'Baixe em PDF na Hora' },
+      { text: 'Proteção Jurídica Prática' },
     ];
 
     // Lista de Descrições de alta conversão (Máximo de 90 caracteres por descrição no Google Ads!)
     const descriptions = [
-      { text: 'Evite cópias e proteja sua empresa. Faça uma consulta de viabilidade gratuita hoje.' },
-      { text: 'Garanta a propriedade exclusiva da sua marca. Assessoria completa e especializada.' },
-      { text: 'Seu nome comercial protegido por lei no Brasil. Registro rápido e sem burocracia.' },
-      { text: 'Consulta grátis de marcas e patentes. Fale com um consultor e registre sua marca.' },
+      { text: 'Esqueça advogados lentos. Nossa IA gera seu contrato personalizado em 1 minuto.' },
+      { text: 'Sem burocracia e sem mensalidade. Edite online, valide com segurança e baixe em PDF.' },
+      { text: 'Não arrisque seu negócio com acordos de boca. Crie contratos com segurança e economia.' },
+      { text: 'A inteligência artificial que gera contratos perfeitos. Finalize o seu em segundos.' },
     ];
 
     const adGroupAdResponse = await customer.adGroupAds.create([
