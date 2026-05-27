@@ -780,11 +780,18 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
     // precisamos garantir que o 'end' não ultrapasse o início do FORO ou Assinaturas.
     if (!nextClausePos) {
       editor.state.doc.descendants((node: any, pos: number) => {
-        if (pos < start) return true
-        const text = node.textContent.toUpperCase()
-        if (text.includes("FORO") || text.includes("DO FORO") || text.includes("ASSINATURAS")) {
+        if (pos <= start) return true
+        
+        const text = node.textContent.trim().toUpperCase()
+        // Verifica se é um título ou um parágrafo que inicia a seção de encerramento
+        const isLikelyEndSection = 
+          (node.type.name === "heading") || 
+          (node.type.name === "legalNode" && node.attrs.level === 1) ||
+          (node.type.name === "paragraph" && text.length < 50 && (text.startsWith("FORO") || text.startsWith("DO FORO") || text.startsWith("ELEIÇÃO")))
+
+        if (isLikelyEndSection && (text.includes("FORO") || text.includes("DO FORO") || text.includes("ASSINATURAS") || text.includes("DATA E ASSINATURA"))) {
           end = pos
-          return false
+          return false // Para o escaneamento aqui
         }
         return true
       })
@@ -1580,13 +1587,14 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                                         </p>
                                         <Button 
                                           size="sm" 
-                                          disabled={isPending}
+                                          disabled={!!pendingOptimization}
                                           onClick={() => handleOptimizeClause(clause.pos, nextClause?.pos, risk.id, risk.reason)}
                                           className={cn(
                                             "w-full text-[9px] font-black uppercase tracking-widest h-8 rounded-xl transition-all",
                                             isPending
                                               ? "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900 dark:text-amber-400"
-                                              : "bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400"
+                                              : "bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400",
+                                            !!pendingOptimization && !isPending && "opacity-50 cursor-not-allowed grayscale"
                                           )}
                                         >
                                           {isPending ? "Adicionando..." : "Adicionar Cláusula"}
