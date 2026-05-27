@@ -1593,7 +1593,13 @@ export function EditorProvider(props: EditorProviderProps) {
     ],
   })
 
-  useEffect(() => { if (editor) editor.setEditable(!readOnly) }, [editor, readOnly])
+  const { aiGenerationIsLoading, aiGenerationActive } = useUiEditorState(editor)
+
+  useEffect(() => {
+    if (!editor) return
+    const isDocEmptyAndNotGenerating = editor.getText().trim().length < 100 && !aiGenerationIsLoading && !aiGenerationActive
+    editor.setEditable(!readOnly && !isDocEmptyAndNotGenerating)
+  }, [editor, readOnly, aiGenerationIsLoading, aiGenerationActive])
 
   useEffect(() => {
     if (!editor || !templateSlug) return
