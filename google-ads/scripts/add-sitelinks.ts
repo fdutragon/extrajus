@@ -45,9 +45,9 @@ async function main() {
     ];
 
     const sitelinkAssets = sitelinksData.map(sl => ({
-      asset: {
+      create: { // Operação de criação
         type: 'SITELINK',
-        sitelink_asset: { // Esta é a propriedade correta dentro do 'asset'
+        sitelink_asset: {
           link_text: sl.linkText,
           description1: sl.description1,
           description2: sl.description2,
