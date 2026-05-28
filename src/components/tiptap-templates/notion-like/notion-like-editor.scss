@@ -45,13 +45,20 @@ body {
   }
 
   h1 {
-    font-size: 1.6rem;
+    font-size: 1.35rem;
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    padding-bottom: 1.25rem;
+    padding-bottom: 1rem;
     border-bottom: 1.5px solid color-mix(in srgb, var(--foreground) 25%, transparent);
-    margin-bottom: 2rem;
+    margin-bottom: 1.75rem;
+
+    @media screen and (max-width: 768px) {
+      font-size: 1.1rem;
+      padding-bottom: 0.75rem;
+      margin-bottom: 1.25rem;
+      letter-spacing: 0.06em;
+    }
   }
 
   h2 {

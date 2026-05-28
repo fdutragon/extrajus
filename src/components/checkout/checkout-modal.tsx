@@ -215,7 +215,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
           if (step === "success") return;
           if (!open) onClose();
           }}>
-          <DialogContent className="w-full max-w-[92vw] md:max-w-[48rem] lg:max-w-[52rem] bg-background border border-border text-foreground rounded-[28px] shadow-[0_0_50px_rgba(139,92,246,0.15)] p-[1.375rem] overflow-hidden transition-all duration-500">
+          <DialogContent className="w-full max-w-[92vw] md:max-w-[48rem] lg:max-w-[52rem] bg-background border border-border text-foreground rounded-[28px] shadow-[0_0_50px_rgba(139,92,246,0.15)] p-[1.375rem] max-h-[94vh] overflow-y-auto custom-scrollbar transition-all duration-500">
           {/* Soft Occult Ambient Highlights (Adaptive to Theme) */}
           <div className="absolute top-0 right-0 w-36 h-36 bg-primary/5 rounded-full blur-[60px] pointer-events-none" />
           <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-primary/5 rounded-full blur-[60px] pointer-events-none" />
@@ -231,11 +231,11 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                 <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Acesso Vitalício Liberado</span>
               </div>
 
-              <h3 className="text-[1.65rem] font-black text-foreground leading-[1.1] tracking-tight whitespace-nowrap">
+              <h3 className="text-[1.65rem] max-sm:text-[1.3rem] font-black text-foreground leading-[1.1] tracking-tight whitespace-nowrap">
                 Libere seu <span className="bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">Contrato</span>
               </h3>
 
-              <p className="text-[0.825rem] text-muted-foreground leading-relaxed font-medium">
+              <p className="text-[0.825rem] max-sm:text-[0.75rem] text-muted-foreground leading-relaxed font-medium">
                 Finalize agora para baixar o arquivo editável em <strong className="text-foreground font-bold">Word (.DOCX)</strong>. O documento é seu: use, replique e adapte quantas vezes desejar, sem restrições.
               </p>
             </div>
@@ -244,7 +244,8 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             <div className="pt-1">
               <div className="text-[0.625rem] font-black text-muted-foreground/60 uppercase tracking-widest mb-1">Investimento Único</div>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-[1.75rem] font-black text-foreground">R$ 37,00</span>                <span className="text-[0.625rem] font-bold text-muted-foreground uppercase">/ download</span>
+                <span className="text-[1.75rem] max-sm:text-[1.4rem] font-black text-foreground">R$ 37,00</span>
+                <span className="text-[0.625rem] font-bold text-muted-foreground uppercase">/ download</span>
               </div>
             </div>
           </div>

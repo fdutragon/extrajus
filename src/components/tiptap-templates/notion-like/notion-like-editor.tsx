@@ -188,7 +188,10 @@ import {
   Activity,
   Sparkles,
   MousePointer2,
-  Eye
+  Eye,
+  Type,
+  Minus,
+  Plus
 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
@@ -204,6 +207,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { useSearchParams } from "next/navigation"
 import { CollaborationUsers } from "../../../components/tiptap-templates/notion-like/notion-like-editor-collaboration-users"
 import { SignModal } from "../../../components/tiptap-ui/sign-modal/sign-modal"
+import { OnboardingModal } from "../../../components/tiptap-ui/onboarding-modal/onboarding-modal"
 import { cn } from "@/lib/utils"
 import { TurnIntoDropdown } from "../../../components/tiptap-ui/turn-into-dropdown"
 import { MarkButton } from "../../../components/tiptap-ui/mark-button"
@@ -429,6 +433,22 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
   const [optimizedRisks, setOptimizedRisks] = useState<string[]>([])
   const [pendingOptimization, setPendingOptimization] = useState<string | null>(null)
   const { user } = useUser()
+  const [showOnboarding, setShowOnboarding] = useState(false)
+
+  const handleSelectTemplate = (prompt: string) => {
+    setShowOnboarding(false)
+    if (editor) {
+      editor.commands.clearContent()
+      setTimeout(() => {
+        ;(editor.chain() as any).aiTextPrompt({
+          text: prompt,
+          insert: true,
+          stream: true,
+          format: "rich-text",
+        }).run()
+      }, 300)
+    }
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -645,6 +665,17 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
   const [aiPromptOpen, setAiPromptOpen] = useState(true)
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const isMobileOrTablet = window.innerWidth < 1024
+      if (isMobileOrTablet) {
+        setLeftSidebarOpen(false)
+        setRightSidebarOpen(false)
+        setAiPromptOpen(false)
+      }
+    }
+  }, [])
   const [isSaving, setIsSaving] = useState(false)
   const [fontSize, setFontSize] = useState<number>(13)
   const [fontFamily, setFontFamily] = useState<string>("Cambria")
@@ -958,6 +989,11 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
   }
 
   const handleConfirmSignature = async () => {
+    if (isPublic) {
+      window.dispatchEvent(new Event("open-plans-modal"))
+      return
+    }
+
     if (!signerEmail) {
       toast.error("Informe seu e-mail.")
       return
@@ -1276,10 +1312,50 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               </Link>
             </div>
           )}
+          {!readOnly && (
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => {
+                const nextState = !leftSidebarOpen;
+                setLeftSidebarOpen(nextState);
+                if (nextState) setAiPromptOpen(false);
+              }}
+              className={cn(
+                "h-6 w-6 hover:bg-primary/10 hover:text-primary rounded-lg transition-all",
+                leftSidebarOpen && "bg-primary/10 text-primary"
+              )}
+            >
+              <PanelLeft size={14} />
+            </Button>
+          )}
+          {!readOnly && (
+            <div className="flex items-center gap-1 bg-muted/30 border border-border/40 rounded-lg p-0.5 sm:hidden">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setFontSize(prev => Math.max(12, prev - 1))}
+                className="h-5 w-5 hover:bg-primary/10 hover:text-primary rounded-md p-0 flex items-center justify-center"
+              >
+                <Minus size={10} />
+              </Button>
+              <div className="flex items-center px-1.5 min-w-[1.6rem] justify-center select-none">
+                <span className="text-[9px] font-black text-foreground">{fontSize}</span>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setFontSize(prev => Math.min(26, prev + 1))}
+                className="h-5 w-5 hover:bg-primary/10 hover:text-primary rounded-md p-0 flex items-center justify-center"
+              >
+                <Plus size={10} />
+              </Button>
+            </div>
+          )}
           {readOnly && (
             <Badge variant="outline" className="bg-red-500/10 text-red-400 border-red-500/20 text-[9px] font-black uppercase">Somente Leitura</Badge>
           )}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 max-sm:hidden">
             {!readOnly ? (
               <div className="flex items-center group/title relative">
                 <input
@@ -1288,19 +1364,19 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                   onChange={(e) => setFileName(e.target.value)}
                   placeholder="Nome..."
                   style={{ width: `${Math.min(28, Math.max(8, fileName.length + 1))}ch` }}
-                  className="bg-transparent border-0 border-b border-transparent hover:border-border/60 focus:border-primary text-[9px] font-black uppercase tracking-widest text-foreground outline-none px-0.5 py-0.5 transition-all max-w-[220px] truncate"
+                  className="bg-transparent border-0 border-b border-transparent hover:border-border/60 focus:border-primary text-[9px] font-black uppercase tracking-widest text-foreground outline-none px-0.5 py-0.5 transition-all max-w-[220px] max-lg:max-w-[120px] max-sm:max-w-[80px] truncate"
                 />
                 <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 pointer-events-none select-none -ml-1">.docx</span>
               </div>
             ) : (
-              <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground truncate max-w-[220px]">{fileName}.docx</span>
+              <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground truncate max-w-[220px] max-lg:max-w-[120px] max-sm:max-w-[80px]">{fileName}.docx</span>
             )}
             {/* Version, word count and reading time removed for clean workspace layout */}
           </div>
         </div>
 
         {!readOnly && (
-          <div className="absolute left-1/2 top-0 -translate-x-1/2 flex items-center h-full gap-2 z-[110]">
+          <div className="absolute left-1/2 top-0 -translate-x-1/2 flex items-center h-full gap-2 z-[110] max-lg:hidden">
             <div className="flex items-center gap-0.5 opacity-60 hover:opacity-100 transition-opacity duration-500">
               <MarkButton type="bold" />
               <MarkButton type="italic" />
@@ -1337,12 +1413,65 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
           </div>
         )}
 
+        {/* Centralized AI Icon only for mobile screen */}
+        {!readOnly && (
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:hidden z-[110]">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setAiPromptOpen(prev => !prev)}
+              className={cn(
+                "h-7 w-7 text-primary hover:bg-primary/10 rounded-lg transition-all border border-primary/20 bg-primary/5 shadow-sm shadow-primary/5",
+                aiPromptOpen && "bg-primary/20 text-primary border-primary/40 shadow-sm shadow-primary/10"
+              )}
+            >
+              <BrainCircuit size={15} className={cn(isAuditing && "animate-pulse")} />
+            </Button>
+          </div>
+        )}
+
         <div className="flex-none flex items-center gap-1.5">
           {!readOnly && (
-            <div className="flex items-center gap-1 pr-1.5 border-r border-border/50">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setAiPromptOpen(prev => !prev)}
+              className={cn(
+                "h-6 w-6 hover:bg-primary/10 hover:text-primary rounded-lg transition-all lg:hidden max-sm:hidden",
+                aiPromptOpen && "bg-primary/10 text-primary"
+              )}
+            >
+              <BrainCircuit size={14} className={cn(isAuditing && "animate-pulse")} />
+            </Button>
+          )}
+
+          {!readOnly && (
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => {
+                const nextState = !rightSidebarOpen;
+                setRightSidebarOpen(nextState);
+                if (nextState) setAiPromptOpen(false);
+              }}
+              className={cn(
+                "h-6 w-6 hover:bg-primary/10 hover:text-primary rounded-lg transition-all max-sm:hidden",
+                rightSidebarOpen && "bg-primary/10 text-primary"
+              )}
+            >
+              <PanelRight size={14} />
+            </Button>
+          )}
+
+          {!readOnly && (
+            <>
               {wordCount > 5 && <ExportButton isPublic={isPublic} docType={docType} title={fileName} content={editor?.getHTML() || ""} />}
-              {!isPublic && <SignModal title={fileName} />}
-            </div>
+              {!isPublic && (
+                <div className="flex items-center gap-1 pr-1.5 border-r border-border/50 max-sm:hidden">
+                  <SignModal title={fileName} />
+                </div>
+              )}
+            </>
           )}
 
           {!readOnly && !isPublic && (
@@ -1350,7 +1479,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               variant="ghost"
               size="sm"
               onClick={handleOpenPlans}
-              className="h-6 gap-1 px-2 rounded-md text-primary hover:bg-primary/10 transition-all font-bold text-[8px] uppercase tracking-widest flex items-center border border-primary/20 bg-primary/5 hover:border-primary/45 shadow-sm shadow-primary/5 group"
+              className="h-6 gap-1 px-2 rounded-md text-primary hover:bg-primary/10 transition-all font-bold text-[8px] uppercase tracking-widest flex items-center border border-primary/20 bg-primary/5 hover:border-primary/45 shadow-sm shadow-primary/5 group max-sm:hidden"
             >
               <Brain size={12} className="text-primary animate-pulse shrink-0 group-hover:scale-110 transition-transform" />
               <span>{credits !== null ? `${credits} Sinapses` : "..."}</span>
@@ -1367,7 +1496,17 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
 
       <div className={cn("flex-1 flex pt-[clamp(2.5rem,4vh,3.25rem)] relative overflow-hidden h-full transition-all duration-700")}>
         {!readOnly && (
-          <aside className={cn("h-full border-r border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", leftSidebarOpen ? "w-[21vw] min-w-[16rem] max-w-[24.5rem]" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
+          <>
+            {leftSidebarOpen && (
+              <div 
+                onClick={() => setLeftSidebarOpen(false)} 
+                className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden pt-[clamp(2.5rem,4vh,3.25rem)]"
+              />
+            )}
+            <aside className={cn(
+              "h-full border-r border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30 max-lg:fixed max-lg:top-[clamp(2.5rem,4vh,3.25rem)] max-lg:bottom-0 max-lg:left-0 max-lg:z-50 max-lg:bg-background/95 max-lg:backdrop-blur-3xl max-lg:border-r max-lg:border-border max-lg:shadow-2xl",
+              leftSidebarOpen ? "w-[21vw] min-w-[16rem] max-w-[24.5rem] max-lg:w-[75vw] max-lg:max-w-[20rem]" : "w-0 opacity-0 pointer-events-none overflow-hidden max-lg:hidden"
+            )}>
             <div className="px-4 py-6 flex flex-col h-full overflow-hidden w-full">
               <div className="space-y-5 mb-8 shrink-0">
                 <div className="flex items-center justify-between border-b border-border/40 pb-2.5">
@@ -1448,31 +1587,48 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                   <div className="space-y-3">
                     <p className="font-heading text-[10px] font-medium text-muted-foreground tracking-[0.25em] border-b border-border pb-1">Seus Documentos</p>
                     <div className="space-y-0.5">
-                      {filteredContracts.map(c => (
-                        <Link key={c.id} href={`/editor?room=${c.id}`} className="w-full min-w-0 text-left text-xs py-2 px-2.5 hover:bg-primary/5 hover:text-primary rounded-lg flex items-center justify-between font-normal text-foreground/70 transition-all gap-2">
-                          <span className="font-heading font-medium truncate flex-1 min-w-0">{c.title || "Documento"}</span>
-                          <Zap size={12} className={cn("shrink-0 opacity-0 group-hover:opacity-100", c.status === 'signed' ? "text-emerald-500" : "text-primary")} />
-                        </Link>
-                      ))}
+                      {isPublic ? (
+                        <>
+                          <button onClick={() => window.dispatchEvent(new Event("open-plans-modal"))} className="w-full min-w-0 text-left text-xs py-2 px-2.5 hover:bg-primary/5 hover:text-primary rounded-lg flex items-center justify-between font-normal text-foreground/70 transition-all gap-2">
+                            <span className="font-heading font-medium truncate flex-1 min-w-0">Contrato de Prestação de Serviços</span>
+                            <Zap size={12} className="shrink-0 opacity-0 group-hover:opacity-100 text-primary" />
+                          </button>
+                          <button onClick={() => window.dispatchEvent(new Event("open-plans-modal"))} className="w-full min-w-0 text-left text-xs py-2 px-2.5 hover:bg-primary/5 hover:text-primary rounded-lg flex items-center justify-between font-normal text-foreground/70 transition-all gap-2">
+                            <span className="font-heading font-medium truncate flex-1 min-w-0">Contrato de Locação</span>
+                            <Zap size={12} className="shrink-0 opacity-0 group-hover:opacity-100 text-primary" />
+                          </button>
+                          <button onClick={() => window.dispatchEvent(new Event("open-plans-modal"))} className="w-full min-w-0 text-left text-xs py-2 px-2.5 hover:bg-primary/5 hover:text-primary rounded-lg flex items-center justify-between font-normal text-foreground/70 transition-all gap-2">
+                            <span className="font-heading font-medium truncate flex-1 min-w-0">Acordo de Confidencialidade (NDA)</span>
+                            <Zap size={12} className="shrink-0 opacity-0 group-hover:opacity-100 text-primary" />
+                          </button>
+                        </>
+                      ) : (
+                        filteredContracts.map(c => (
+                          <Link key={c.id} href={`/editor?room=${c.id}`} className="w-full min-w-0 text-left text-xs py-2 px-2.5 hover:bg-primary/5 hover:text-primary rounded-lg flex items-center justify-between font-normal text-foreground/70 transition-all gap-2">
+                            <span className="font-heading font-medium truncate flex-1 min-w-0">{c.title || "Documento"}</span>
+                            <Zap size={12} className={cn("shrink-0 opacity-0 group-hover:opacity-100", c.status === 'signed' ? "text-emerald-500" : "text-primary")} />
+                          </Link>
+                        ))
+                      )}
                     </div>
                   </div>
                 </div>
               </ScrollArea>
             </div>
           </aside>
-        )}
+        </>)}
 
         <div className="flex-1 relative flex flex-col min-w-0 overflow-hidden">
-          <main className="flex-1 overflow-y-auto custom-scrollbar bg-transparent p-[clamp(1rem,2vw,2rem)] relative z-10">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent p-2 sm:p-[clamp(1rem,2vw,2rem)] relative z-10">
             {/* Subtle occult background glow behind the sheet */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/3 dark:bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse duration-[6000ms]" />
 
 
             <div className={cn(
-              "w-full max-w-[clamp(37.5rem,45vw,56.25rem)] mx-auto editor-glow-container transition-all duration-700 shadow-2xl",
+              "w-full max-w-full lg:max-w-[clamp(37.5rem,45vw,56.25rem)] mx-auto editor-glow-container transition-all duration-700 shadow-2xl",
               (showEntranceGlow || editorFocused) && "glowing"
             )}>
-              <div className="w-full h-full bg-card/90 dark:bg-card/75 backdrop-blur-xl rounded-[30px] px-[clamp(2rem,4.5vw,4.5rem)] py-[clamp(2.5rem,4.5vw,5.5rem)] relative min-h-[50rem] md:min-h-[74.25rem] editor-glow-content">
+              <div className="w-full h-full bg-card/90 dark:bg-card/75 backdrop-blur-xl rounded-[30px] px-4 py-8 sm:px-[clamp(2rem,4.5vw,4.5rem)] sm:py-[clamp(2.5rem,4.5vw,5.5rem)] relative min-h-[50rem] md:min-h-[74.25rem] editor-glow-content">
                 {/* Grain overlay for paper feel */}
                 <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-[30px]" />
 
@@ -1485,13 +1641,23 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
           </main>
           
           {!readOnly && aiPromptOpen && (
-            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-full max-w-[30rem] z-[100] px-4 transition-all duration-500 animate-in fade-in slide-in-from-bottom-5 ai-prompt-wrapper">
+            <div className="absolute bottom-12 max-sm:bottom-3 left-1/2 -translate-x-1/2 w-full max-w-[30rem] z-[100] px-4 transition-all duration-500 animate-in fade-in slide-in-from-bottom-5 ai-prompt-wrapper">
                <AiMenu plain={true} />
             </div>
           )}
         </div>
 
-        <aside className={cn("sidebar-right h-full border-l border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30", rightSidebarOpen ? "w-[22vw] min-w-[17rem] max-w-[26rem]" : "w-0 opacity-0 pointer-events-none overflow-hidden")}>
+        <>
+          {rightSidebarOpen && (
+            <div 
+              onClick={() => setRightSidebarOpen(false)} 
+              className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden pt-[clamp(2.5rem,4vh,3.25rem)]"
+            />
+          )}
+          <aside className={cn(
+            "sidebar-right h-full border-l border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30 max-lg:fixed max-lg:top-[clamp(2.5rem,4vh,3.25rem)] max-lg:bottom-0 max-lg:right-0 max-lg:z-50 max-lg:bg-background/95 max-lg:backdrop-blur-3xl max-lg:border-l max-lg:border-border max-lg:shadow-2xl",
+            rightSidebarOpen ? "w-[22vw] min-w-[17rem] max-w-[26rem] max-lg:w-[75vw] max-lg:max-w-[20rem]" : "w-0 opacity-0 pointer-events-none overflow-hidden max-lg:hidden"
+          )}>
           {readOnly ? (
             <div className="p-6 flex flex-col h-full justify-between">
               {contractStatus === 'signed' ? (
@@ -1721,6 +1887,9 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             </div>
           )}
         </aside>
+      </>
+        
+        <OnboardingModal isOpen={showOnboarding} onClose={() => setShowOnboarding(false)} onSelectTemplate={handleSelectTemplate} />
       </div>
     </div>
   )

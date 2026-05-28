@@ -226,7 +226,7 @@ export function ExportButton({
       <Button
         variant="ghost"
         size="sm"
-        className="h-8 gap-2 px-4 text-muted-foreground hover:text-foreground dark:hover:bg-primary/5 rounded-full transition-all group border border-transparent hover:border-border/40 flex items-center justify-center"
+        className="h-8 gap-2 max-sm:gap-0 px-4 max-sm:px-0 max-sm:w-8 max-sm:h-8 text-muted-foreground hover:text-foreground dark:hover:bg-primary/5 rounded-full transition-all group border border-transparent hover:border-border/40 flex items-center justify-center shrink-0"
         onClick={handleExportClick}
         disabled={isExporting}
       >
@@ -235,7 +235,7 @@ export function ExportButton({
         ) : (
           <Download size={12} className="transition-transform" />
         )}
-        <span className="text-[9px] font-black uppercase tracking-[0.2em] leading-none">
+        <span className="text-[9px] font-black uppercase tracking-[0.2em] leading-none max-sm:hidden">
           {isExporting ? "Exportando" : "Baixar"}
         </span>
       </Button>

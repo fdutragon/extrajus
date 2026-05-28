@@ -219,3 +219,17 @@
   background-clip: text;
   animation: placeholder-text-shimmer 3.5s infinite linear;
 }
+
+@media screen and (max-width: 640px) {
+  .tiptap-ai-prompt-input-inner {
+    padding: 0.35rem 0.5rem !important;
+    border-radius: 0.75rem !important;
+  }
+  .tiptap-ai-prompt-input {
+    border-radius: 0.75rem !important;
+  }
+  .tiptap-ai-prompt-input-content {
+    min-height: 2.15rem !important;
+    padding: 0.25rem 0.45rem !important;
+  }
+}
