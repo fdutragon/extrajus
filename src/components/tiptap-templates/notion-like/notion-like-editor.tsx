@@ -1472,7 +1472,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                 aiPromptOpen ? "text-primary scale-110" : "text-muted-foreground/60"
               )}
             >
-              <BrainCircuit className={cn("w-[28px] h-[28px] relative z-10", (isAuditing || aiPromptOpen) && "animate-pulse text-primary")} />
+              <BrainCircuit className={cn("w-[32px] h-[32px] relative z-10", (isAuditing || aiPromptOpen) && "animate-pulse text-primary")} />
             </Button>
           </div>
         )}
@@ -1506,7 +1506,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
 
           {!readOnly && (
             <>
-              <div className="max-sm:scale-125 max-sm:mr-1">
+              <div className="max-sm:scale-[1.35] max-sm:mr-2">
                 <ExportButton isPublic={isPublic} docType={docType} title={fileName} content={editor?.getHTML() || ""} />
               </div>
               {!isPublic && (

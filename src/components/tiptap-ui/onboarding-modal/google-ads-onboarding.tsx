@@ -131,20 +131,20 @@ export function GoogleAdsOnboarding() {
           </div>
 
           {/* Text Content */}
-          <div className="space-y-4 relative z-10">
+          <div className="space-y-3 relative z-10">
             <h2 className="text-2xl font-black text-white leading-tight uppercase tracking-tight">
               {step.title} <br />
               <span className={cn("text-primary drop-shadow-[0_0_15px_rgba(var(--primary-rgb),0.5)]", step.color)}>
                 {step.highlight}
               </span>
             </h2>
-            <p className="text-sm text-zinc-400 font-medium leading-relaxed px-4">
+            <p className="text-[15.5px] text-zinc-300 font-medium leading-relaxed px-2">
               {step.description}
             </p>
           </div>
 
           {/* Action Button */}
-          <div className="relative z-10 w-full pt-4">
+          <div className="relative z-10 w-full pt-2">
             <Button 
               onClick={handleNext}
               className="w-full h-14 rounded-2xl bg-white text-black hover:bg-zinc-200 font-black uppercase tracking-widest text-xs gap-2 group transition-all"
@@ -157,9 +157,6 @@ export function GoogleAdsOnboarding() {
           {/* Pointer to AI Prompt (only on last step) */}
           {isLastStep && (
             <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
-              <span className="text-[9px] font-black text-primary uppercase tracking-[0.3em] bg-primary/10 px-3 py-1 rounded-full border border-primary/20 backdrop-blur-md">
-                Escreva abaixo o que precisa
-              </span>
               <ArrowDown size={24} className="text-primary" />
             </div>
           )}
