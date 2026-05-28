@@ -710,7 +710,7 @@ export default function DashboardLayoutClient({
       {/* Main Content Island */}
       <div className="flex-1 flex flex-col min-w-0 bg-background border border-border rounded-r-xl rounded-l-none lg:rounded-l-none shadow-sm overflow-hidden relative transition-all duration-500">
         {/* Top Navigation Bar Integrated into Content Island */}
-        <header className="h-16 md:h-12 border-b border-border/50 flex items-center justify-between px-4 shrink-0 bg-background/80 backdrop-blur-xl z-30">
+        <header className="h-20 md:h-12 border-b border-border/50 flex items-center justify-between px-4 shrink-0 bg-background/80 backdrop-blur-xl z-30">
           <div className="flex items-center gap-2.5 flex-1">
             <button 
               onClick={() => setIsCollapsed(!isCollapsed)}
