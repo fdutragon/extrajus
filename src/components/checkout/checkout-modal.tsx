@@ -263,7 +263,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
 
           {/* Painel Esquerdo: A Oferta Suprema (6 colunas) */}
           <div className="md:col-span-6 flex flex-col justify-center border-b md:border-b-0 md:border-r border-border/60 pb-4 max-sm:pb-5 md:pb-0 md:pr-5 lg:pr-6 space-y-3 max-sm:space-y-3">
-            <div className="space-y-3 max-sm:space-y-2 max-sm:pt-2">
+            <div className="space-y-3 max-sm:space-y-2 max-sm:pt-2 max-sm:flex max-sm:flex-col max-sm:items-center max-sm:text-center">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 max-sm:py-0.5 max-sm:px-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
                 <CheckCircle2 size={12} className="text-emerald-500 animate-pulse" />
                 <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Acesso Vitalício Liberado</span>
@@ -279,7 +279,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             </div>
 
             {/* Box de Preço Único */}
-            <div className="pt-1 max-sm:pt-2">
+            <div className="pt-1 max-sm:pt-2 max-sm:flex max-sm:flex-col max-sm:items-center">
               <div className="text-[0.625rem] font-black text-muted-foreground/60 uppercase tracking-widest mb-1">Investimento Único</div>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-[1.75rem] max-sm:text-[1.35rem] font-black text-foreground">R$ 37,00</span>
@@ -315,10 +315,10 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             {step === "pix" && pixData && (
               <div className="flex flex-col items-center justify-center space-y-4 mt-2">
                 {/* Premium QR Code Container */}
-                <div className="bg-muted/40 p-4 rounded-xl border border-border shadow-[0_0_20px_rgba(0,0,0,0.05)] relative overflow-hidden group hover:border-primary/20 transition-all duration-300">
+                <div className="bg-muted/40 p-4 max-sm:p-3 rounded-xl border border-border shadow-[0_0_20px_rgba(0,0,0,0.05)] relative overflow-hidden group hover:border-primary/20 transition-all duration-300">
                   <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="p-2.5 bg-white rounded-lg shadow-xl relative z-10">
-                    <QRCodeSVG value={pixData.qrCode} size={140} style={{ width: "8.75rem", height: "8.75rem", display: "block" }} />
+                  <div className="p-2.5 max-sm:p-2 bg-white rounded-lg shadow-xl relative z-10">
+                    <QRCodeSVG value={pixData.qrCode} size={140} className="w-[8.75rem] h-[8.75rem] max-sm:w-[7rem] max-sm:h-[7rem] max-sm:!w-[7rem] max-sm:!h-[7rem]" style={{ display: "block" }} />
                   </div>
                 </div>
                 
