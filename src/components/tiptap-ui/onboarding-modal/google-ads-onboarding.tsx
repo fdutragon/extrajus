@@ -26,23 +26,23 @@ interface Step {
 
 const STEPS: Step[] = [
   {
-    title: "Excelência em",
-    highlight: "redação jurídica",
-    description: "Aumente sua produtividade com inteligência especializada. Gere estruturas complexas e petições fundamentadas em segundos.",
+    title: "Documentos prontos",
+    highlight: "em segundos",
+    description: "Crie contratos, termos e notificações oficiais sem complicação. Nossa inteligência artificial entende o que você precisa e redige o texto completo de forma instantânea, economizando horas de trabalho manual.",
     icon: <Zap size={32} />,
     color: "text-amber-500"
   },
   {
-    title: "Segurança e",
-    highlight: "conformidade",
-    description: "Documentos revisados com base na jurisprudência brasileira. Garanta precisão técnica e proteção jurídica em cada cláusula.",
+    title: "Linguagem clara e",
+    highlight: "profissional",
+    description: "Não precisa entender de leis para escrever como um especialista. O sistema utiliza os termos corretos para garantir que seu documento seja sério, seguro e aceito em qualquer situação oficial.",
     icon: <ShieldCheck size={32} />,
     color: "text-emerald-500"
   },
   {
-    title: "Controle total do",
-    highlight: "seu fluxo",
-    description: "Uma plataforma intuitiva projetada para profissionais do direito. O equilíbrio perfeito entre tecnologia e rigor técnico.",
+    title: "Controle total",
+    highlight: "na sua mão",
+    description: "Uma ferramenta simples e intuitiva feita para todos. Basta digitar o que você quer e deixar que a tecnologia faça a parte difícil. O resultado é um documento perfeito, pronto para ser usado.",
     icon: <BrainCircuit size={32} />,
     color: "text-primary"
   }
@@ -149,7 +149,7 @@ export function GoogleAdsOnboarding() {
               onClick={handleNext}
               className="w-full h-14 rounded-2xl bg-white text-black hover:bg-zinc-200 font-black uppercase tracking-widest text-xs gap-2 group transition-all"
             >
-              {isLastStep ? "Começar" : "Próximo"}
+              {isLastStep ? "Começar Agora" : "Próximo"}
               <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -158,7 +158,7 @@ export function GoogleAdsOnboarding() {
           {isLastStep && (
             <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
               <span className="text-[9px] font-black text-primary uppercase tracking-[0.3em] bg-primary/10 px-3 py-1 rounded-full border border-primary/20 backdrop-blur-md">
-                Libere o Arquiteto
+                Escreva abaixo o que precisa
               </span>
               <ArrowDown size={24} className="text-primary" />
             </div>

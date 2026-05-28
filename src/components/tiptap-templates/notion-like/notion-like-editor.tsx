@@ -1364,38 +1364,38 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         }
       ` }} />
       
-      <header className="fixed top-0 left-0 w-full h-12 sm:h-[clamp(2.5rem,4vh,3.25rem)] border-b border-border bg-background/60 backdrop-blur-2xl sm:backdrop-blur-2xl max-sm:backdrop-blur-none flex items-center justify-between px-3 z-[1000] transition-all duration-500 hover:bg-background/80 group">
-        <div className="flex items-center gap-1.5 max-sm:gap-1">
+      <header className="fixed top-0 left-0 w-full h-14 sm:h-[clamp(2.5rem,4vh,3.25rem)] border-b border-border bg-black flex items-center justify-between px-3 z-[1000] transition-all duration-500 group">
+        <div className="flex items-center gap-1.5 max-sm:gap-2">
           {!readOnly && !isPublic && (
             <div className="flex items-center gap-1">
               <Link href="/dashboard">
-                <Button variant="ghost" size="icon" className="h-8 w-8 max-sm:h-12 max-sm:w-12 hover:bg-primary/10 hover:text-primary rounded-lg max-sm:rounded-xl transition-all duration-300 group/back flex items-center justify-center">
-                  <ChevronLeft className="w-[22px] h-[22px] max-sm:w-[24px] max-sm:h-[24px] group-hover/back:-translate-x-0.5 transition-transform" />
+                <Button variant="ghost" size="icon" className="h-10 w-10 max-sm:h-12 max-sm:w-12 hover:bg-primary/10 hover:text-primary rounded-lg max-sm:rounded-xl transition-all duration-300 group/back flex items-center justify-center">
+                  <ChevronLeft className="w-[24px] h-[24px] max-sm:w-[32px] max-sm:h-[32px] group-hover/back:-translate-x-0.5 transition-transform text-white" />
                 </Button>
               </Link>
             </div>
           )}
 
           {!readOnly && (
-            <div className="flex items-center gap-0.5 sm:hidden h-8">
+            <div className="flex items-center gap-1 sm:hidden h-10">
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setFontSize(prev => Math.max(12, prev - 1))}
-                className="h-8 w-8 hover:bg-primary/10 hover:text-primary rounded-lg flex items-center justify-center p-0"
+                className="h-10 w-10 hover:bg-primary/10 hover:text-primary rounded-lg flex items-center justify-center p-0"
               >
-                <Minus size={14} />
+                <Minus size={22} className="text-white" />
               </Button>
-              <div className="flex items-center px-1 min-w-[1.4rem] justify-center select-none">
-                <span className="text-[12px] font-black text-foreground">{fontSize}</span>
+              <div className="flex items-center px-1 min-w-[1.8rem] justify-center select-none">
+                <span className="text-[15px] font-black text-white">{fontSize}</span>
               </div>
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setFontSize(prev => Math.min(26, prev + 1))}
-                className="h-8 w-8 hover:bg-primary/10 hover:text-primary rounded-lg flex items-center justify-center p-0"
+                className="h-10 w-10 hover:bg-primary/10 hover:text-primary rounded-lg flex items-center justify-center p-0"
               >
-                <Plus size={14} />
+                <Plus size={22} className="text-white" />
               </Button>
             </div>
           )}
@@ -1650,7 +1650,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         </>)}
 
         <div className="flex-1 relative flex flex-col min-w-0 overflow-hidden">
-          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent max-sm:p-0 sm:p-[clamp(1rem,2vw,2rem)] pt-[4.5rem] max-sm:pt-0 sm:pt-[calc(clamp(2.5rem,4vh,3.25rem)+2rem)] relative z-10">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent max-sm:p-0 sm:p-[clamp(1rem,2vw,2rem)] pt-[4.5rem] max-sm:pt-20 sm:pt-[calc(clamp(2.5rem,4vh,3.25rem)+2rem)] relative z-10">
             {/* Subtle occult background glow behind the sheet */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/3 dark:bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse duration-[6000ms] max-sm:hidden" />
 

@@ -25,12 +25,20 @@
     font-weight: 700;
     margin-top: 3em;
     margin-bottom: 2rem;
+
+    @media screen and (max-width: 768px) {
+      font-size: 1.8em;
+    }
   }
 
   h2 {
     font-size: 1.25em;
     font-weight: 700;
     margin-top: 2.5em;
+
+    @media screen and (max-width: 768px) {
+      font-size: 1.5em;
+    }
   }
 
   h3 {
