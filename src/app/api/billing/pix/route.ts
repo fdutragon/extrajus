@@ -77,7 +77,7 @@ export async function POST(request: Request) {
 
     // Notificar o Cadelo via Telegram sobre a intenção de compra
     const formattedAmount = (amountCents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    await sendTelegramNotification(`⚡ <b>PIX GERADO (CRÉDITOS)</b>\n\n💵 Valor: <b>${formattedAmount}</b>\n👤 Cliente: <b>${user.user_metadata?.full_name || user.email}</b>\n🆔 ID: <code>${externalId}</code>\n⏳ Aguardando o dinheiro cair...`);
+    await sendTelegramNotification(`#SISTEMA_ORDEM ⚡ <b>PIX GERADO (CRÉDITOS)</b>\n\n💵 Valor: <b>${formattedAmount}</b>\n👤 Cliente: <b>${user.user_metadata?.full_name || user.email}</b>\n🆔 ID: <code>${externalId}</code>\n⏳ Aguardando o dinheiro cair...`);
 
     return NextResponse.json({ 
       pixCode: data.pixCopyPaste, 

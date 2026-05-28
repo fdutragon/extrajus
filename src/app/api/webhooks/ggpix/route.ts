@@ -97,7 +97,7 @@ export async function POST(request: Request) {
 
       // Notificar o Cadelo via Telegram
       const formattedAmount = (amount / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-      await sendTelegramNotification(`💰 <b>VENDA CONFIRMADA!</b>\n\n💵 Valor: <b>${formattedAmount}</b>\n🆔 ID: <code>${externalId}</code>\n👤 Usuário: <code>${transaction.user_id}</code>\n🚀 O império está crescendo!`);
+      await sendTelegramNotification(`#SISTEMA_ORDEM 💰 <b>VENDA CONFIRMADA!</b>\n\n💵 Valor: <b>${formattedAmount}</b>\n🆔 ID: <code>${externalId}</code>\n👤 Usuário: <code>${transaction.user_id}</code>\n🚀 O império está crescendo!`);
 
       // Intercept paydoc flows
       if (externalId.startsWith("paydoc_")) {

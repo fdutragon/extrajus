@@ -125,7 +125,7 @@ export async function POST(request: Request) {
       console.log(`[Checkout] Recuperando transação pendente existente: ${existingTx.external_id}`);
       
       // Notificar o Cadelo via Telegram sobre a tentativa de re-geração (reentrada)
-      await sendTelegramNotification(`🔄 <b>REENTRADA NO CHECKOUT</b>\n\n📄 Documento: <b>${title || 'Sem título'}</b>\n👤 Cliente: <b>${name}</b>\n🆔 ID: <code>${existingTx.external_id}</code>\nℹ️ O cliente voltou para ver o QR Code existente.`);
+      await sendTelegramNotification(`#SISTEMA_ORDEM 🔄 <b>REENTRADA NO CHECKOUT</b>\n\n📄 Documento: <b>${title || 'Sem título'}</b>\n👤 Cliente: <b>${name}</b>\n🆔 ID: <code>${existingTx.external_id}</code>\nℹ️ O cliente voltou para ver o QR Code existente.`);
 
       // Precisamos do QR Code formatado (data.pixCode da GG Pix)
       // Como não salvamos o raw QR code (SVG/Base64) mas sim o copia e cola, 
@@ -186,7 +186,7 @@ export async function POST(request: Request) {
 
     // Notificar o Cadelo via Telegram sobre o interesse no documento
     const formattedAmount = (amountCents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    await sendTelegramNotification(`⚡ <b>PIX GERADO (DOCUMENTO)</b>\n\n💵 Valor: <b>${formattedAmount}</b>\n📄 Documento: <b>${title || 'Sem título'}</b>\n👤 Cliente: <b>${name}</b> (${email})\n🆔 ID: <code>${externalId}</code>\n⏳ Só falta pagar para o lucro entrar!`);
+    await sendTelegramNotification(`#SISTEMA_ORDEM ⚡ <b>PIX GERADO (DOCUMENTO)</b>\n\n💵 Valor: <b>${formattedAmount}</b>\n📄 Documento: <b>${title || 'Sem título'}</b>\n👤 Cliente: <b>${name}</b> (${email})\n🆔 ID: <code>${externalId}</code>\n⏳ Só falta pagar para o lucro entrar!`);
 
     return NextResponse.json({ 
       pixCode: data.pixCopyPaste, 
