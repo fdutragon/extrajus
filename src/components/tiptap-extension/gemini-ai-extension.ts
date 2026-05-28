@@ -105,7 +105,11 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
     <p><br></p>
     <p data-node-text-align="center" style="text-align: center; margin-top: 24px;">__________________________________________</p>
     <p data-node-text-align="center" style="text-align: center;"><strong>CONTRATADO</strong></p>
-9. Retorne APENAS o HTML sem estilos inline (exceto pelos atributos obrigatórios de alinhamento e espaçamento nos elementos centralizados da regra 2 e regra 8). Sem explicações.`
+9. Retorne APENAS o HTML sem estilos inline (exceto pelos atributos obrigatórios de alinhamento e espaçamento nos elementos centralizados da regra 2 e regra 8). Sem explicações.
+
+REGRAS DE HIGIENE DE CÓDIGO (CRÍTICAS):
+- PROIBIÇÃO ABSOLUTA DE ESPAÇOS DUPLOS OU PARÁGRAFOS VAZIOS REPETIDOS: Você NUNCA deve gerar dois ou mais parágrafos vazios (<p><br></p>) seguidos. O espaçamento deve ser sempre simples. Se precisar de um respiro visual, use exatamente UM parágrafo vazio e nada mais.
+- PROIBIÇÃO ABSOLUTA DE ADICIONAR ESPAÇOS OU RECUOS MANUAIS: O texto deve ser alinhado rigorosamente à margem esquerda. Você NUNCA deve inserir espaços em branco manuais (como &nbsp;, tabulações ou múltiplos espaços repetidos) no início dos parágrafos ou cabeçalhos.`;
 
 export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
   name: "ai",
