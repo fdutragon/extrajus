@@ -210,6 +210,7 @@ import { useSearchParams } from "next/navigation"
 import { CollaborationUsers } from "../../../components/tiptap-templates/notion-like/notion-like-editor-collaboration-users"
 import { SignModal } from "../../../components/tiptap-ui/sign-modal/sign-modal"
 import { OnboardingModal } from "../../../components/tiptap-ui/onboarding-modal/onboarding-modal"
+import { GoogleAdsOnboarding } from "../../../components/tiptap-ui/onboarding-modal/google-ads-onboarding"
 import { cn } from "@/lib/utils"
 import { TurnIntoDropdown } from "../../../components/tiptap-ui/turn-into-dropdown"
 import { MarkButton } from "../../../components/tiptap-ui/mark-button"
@@ -1631,7 +1632,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         <div className="flex-1 relative flex flex-col min-w-0 overflow-hidden">
           <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent max-sm:p-0 sm:p-[clamp(1rem,2vw,2rem)] pt-[4.5rem] max-sm:pt-0 sm:pt-[calc(clamp(2.5rem,4vh,3.25rem)+2rem)] relative z-10">
             {/* Subtle occult background glow behind the sheet */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/3 dark:bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse duration-[6000ms]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/3 dark:bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse duration-[6000ms] max-sm:hidden" />
 
 
             <div className={cn(
@@ -1912,6 +1913,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
       </>
         
         <OnboardingModal isOpen={showOnboarding} onClose={() => setShowOnboarding(false)} onSelectTemplate={handleSelectTemplate} />
+        <GoogleAdsOnboarding />
       </div>
     </div>
   )
