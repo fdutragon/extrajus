@@ -54,10 +54,10 @@ body {
     margin-bottom: 1.75rem;
 
     @media screen and (max-width: 768px) {
-      font-size: 1.1rem;
-      padding-bottom: 0.75rem;
-      margin-bottom: 1.25rem;
-      letter-spacing: 0.06em;
+      font-size: 1.05rem;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+      letter-spacing: 0.04em;
     }
   }
 
@@ -67,12 +67,33 @@ body {
     letter-spacing: 0.05em;
     border-left: 3px solid var(--primary);
     padding-left: 0.75rem;
+
+    @media screen and (max-width: 768px) {
+      font-size: 0.95rem;
+      padding-left: 0.5rem;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
   }
 
   h3 {
     font-size: 1.05rem;
     letter-spacing: 0.02em;
     margin-top: 1.75rem;
+
+    @media screen and (max-width: 768px) {
+      font-size: 0.88rem;
+      margin-top: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  strong, b {
+    font-weight: 700;
+    
+    @media screen and (max-width: 768px) {
+      font-weight: 600;
+    }
   }
 
   blockquote {
@@ -285,7 +306,7 @@ body {
 // Mobile fallback
 @media screen and (max-width: 768px) {
   .notion-like-editor-content .tiptap.ProseMirror.notion-like-editor {
-    padding: 0 1rem 30vh;
+    padding: 0 0.55rem 30vh;
   }
 }
 

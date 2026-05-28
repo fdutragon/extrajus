@@ -672,7 +672,6 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
       if (isMobileOrTablet) {
         setLeftSidebarOpen(false)
         setRightSidebarOpen(false)
-        setAiPromptOpen(false)
       }
     }
   }, [])
@@ -1302,53 +1301,37 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
       ` }} />
       
       <header className="fixed top-0 left-0 w-full h-[clamp(2.5rem,4vh,3.25rem)] border-b border-border bg-background/60 backdrop-blur-2xl flex items-center justify-between px-3 z-[100] transition-all duration-500 hover:bg-background/80 group">
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 max-sm:gap-1">
           {!readOnly && !isPublic && (
             <div className="flex items-center gap-1">
               <Link href="/dashboard">
-                <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-primary/10 hover:text-primary rounded-lg transition-all duration-300 group/back">
+                <Button variant="ghost" size="icon" className="h-6 w-6 max-sm:h-8 max-sm:w-8 hover:bg-primary/10 hover:text-primary rounded-lg max-sm:rounded-xl transition-all duration-300 group/back flex items-center justify-center">
                   <ChevronLeft size={18} className="group-hover/back:-translate-x-0.5 transition-transform" />
                 </Button>
               </Link>
             </div>
           )}
+
           {!readOnly && (
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => {
-                const nextState = !leftSidebarOpen;
-                setLeftSidebarOpen(nextState);
-                if (nextState) setAiPromptOpen(false);
-              }}
-              className={cn(
-                "h-6 w-6 hover:bg-primary/10 hover:text-primary rounded-lg transition-all",
-                leftSidebarOpen && "bg-primary/10 text-primary"
-              )}
-            >
-              <PanelLeft size={14} />
-            </Button>
-          )}
-          {!readOnly && (
-            <div className="flex items-center gap-1 bg-muted/30 border border-border/40 rounded-lg p-0.5 sm:hidden">
+            <div className="flex items-center gap-0.5 sm:hidden h-8">
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setFontSize(prev => Math.max(12, prev - 1))}
-                className="h-5 w-5 hover:bg-primary/10 hover:text-primary rounded-md p-0 flex items-center justify-center"
+                className="h-7 w-7 hover:bg-primary/10 hover:text-primary rounded-lg flex items-center justify-center p-0"
               >
-                <Minus size={10} />
+                <Minus size={9} />
               </Button>
-              <div className="flex items-center px-1.5 min-w-[1.6rem] justify-center select-none">
-                <span className="text-[9px] font-black text-foreground">{fontSize}</span>
+              <div className="flex items-center px-1 min-w-[1.4rem] justify-center select-none">
+                <span className="text-[10px] font-black text-foreground">{fontSize}</span>
               </div>
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setFontSize(prev => Math.min(26, prev + 1))}
-                className="h-5 w-5 hover:bg-primary/10 hover:text-primary rounded-md p-0 flex items-center justify-center"
+                className="h-7 w-7 hover:bg-primary/10 hover:text-primary rounded-lg flex items-center justify-center p-0"
               >
-                <Plus size={10} />
+                <Plus size={9} />
               </Button>
             </div>
           )}
@@ -1421,16 +1404,16 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               size="icon" 
               onClick={() => setAiPromptOpen(prev => !prev)}
               className={cn(
-                "h-7 w-7 text-primary hover:bg-primary/10 rounded-lg transition-all border border-primary/20 bg-primary/5 shadow-sm shadow-primary/5",
-                aiPromptOpen && "bg-primary/20 text-primary border-primary/40 shadow-sm shadow-primary/10"
+                "h-8 w-8 text-primary hover:bg-transparent transition-all flex items-center justify-center relative group/ai-mob",
+                aiPromptOpen ? "text-primary scale-110" : "text-muted-foreground/60"
               )}
             >
-              <BrainCircuit size={15} className={cn(isAuditing && "animate-pulse")} />
+              <BrainCircuit size={16} className={cn("relative z-10", (isAuditing || aiPromptOpen) && "animate-pulse text-primary")} />
             </Button>
           </div>
         )}
 
-        <div className="flex-none flex items-center gap-1.5">
+        <div className="flex-none flex items-center gap-1.5 max-sm:gap-0.5">
           {!readOnly && (
             <Button 
               variant="ghost" 
@@ -1445,35 +1428,6 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             </Button>
           )}
 
-          {!readOnly && (
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => {
-                const nextState = !rightSidebarOpen;
-                setRightSidebarOpen(nextState);
-                if (nextState) setAiPromptOpen(false);
-              }}
-              className={cn(
-                "h-6 w-6 hover:bg-primary/10 hover:text-primary rounded-lg transition-all max-sm:hidden",
-                rightSidebarOpen && "bg-primary/10 text-primary"
-              )}
-            >
-              <PanelRight size={14} />
-            </Button>
-          )}
-
-          {!readOnly && (
-            <>
-              {wordCount > 5 && <ExportButton isPublic={isPublic} docType={docType} title={fileName} content={editor?.getHTML() || ""} />}
-              {!isPublic && (
-                <div className="flex items-center gap-1 pr-1.5 border-r border-border/50 max-sm:hidden">
-                  <SignModal title={fileName} />
-                </div>
-              )}
-            </>
-          )}
-
           {!readOnly && !isPublic && (
             <Button
               variant="ghost"
@@ -1486,7 +1440,18 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             </Button>
           )}
 
-          <div className="flex items-center gap-1.5 pl-2">
+          {!readOnly && (
+            <>
+              <ExportButton isPublic={isPublic} docType={docType} title={fileName} content={editor?.getHTML() || ""} />
+              {!isPublic && (
+                <div className="flex items-center gap-1 pr-1.5 border-r border-border/50 max-sm:hidden">
+                  <SignModal title={fileName} />
+                </div>
+              )}
+            </>
+          )}
+
+          <div className="flex items-center gap-1.5 pl-2 max-sm:pl-0">
             <ThemeToggle />
           </div>
         </div>
@@ -1619,7 +1584,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         </>)}
 
         <div className="flex-1 relative flex flex-col min-w-0 overflow-hidden">
-          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent p-2 sm:p-[clamp(1rem,2vw,2rem)] relative z-10">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent p-2 max-sm:p-2 sm:p-[clamp(1rem,2vw,2rem)] relative z-10">
             {/* Subtle occult background glow behind the sheet */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/3 dark:bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse duration-[6000ms]" />
 
@@ -1628,7 +1593,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               "w-full max-w-full lg:max-w-[clamp(37.5rem,45vw,56.25rem)] mx-auto editor-glow-container transition-all duration-700 shadow-2xl",
               (showEntranceGlow || editorFocused) && "glowing"
             )}>
-              <div className="w-full h-full bg-card/90 dark:bg-card/75 backdrop-blur-xl rounded-[30px] px-4 py-8 sm:px-[clamp(2rem,4.5vw,4.5rem)] sm:py-[clamp(2.5rem,4.5vw,5.5rem)] relative min-h-[50rem] md:min-h-[74.25rem] editor-glow-content">
+              <div className="w-full h-full bg-card/90 dark:bg-card/75 backdrop-blur-xl rounded-[30px] px-4 max-sm:px-2.5 py-8 max-sm:py-4 sm:px-[clamp(2rem,4.5vw,4.5rem)] sm:py-[clamp(2.5rem,4.5vw,5.5rem)] relative min-h-[50rem] md:min-h-[74.25rem] editor-glow-content">
                 {/* Grain overlay for paper feel */}
                 <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-[30px]" />
 
