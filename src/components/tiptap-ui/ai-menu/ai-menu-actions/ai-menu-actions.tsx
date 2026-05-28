@@ -40,7 +40,7 @@ export function AiMenuActions({
   }, [editor, onAccept])
  
   return (
-    <div className="tiptap-ai-menu-actions mt-3.5 p-4 border border-border/80 bg-card/65 backdrop-blur-md rounded-2xl flex items-center justify-between gap-4 shadow-sm animate-in fade-in duration-300">
+    <div className="tiptap-ai-menu-actions mt-3.5 p-4 border border-border/80 bg-card sm:bg-card/65 sm:backdrop-blur-md rounded-2xl flex items-center justify-between gap-4 shadow-sm animate-in fade-in duration-300 max-sm:shadow-none">
       <div className="flex items-center gap-2">
         <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
         <span className="text-[11px] font-medium text-muted-foreground">
