@@ -1656,8 +1656,8 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                     </div>
                   )}
                   <EditorContentArea />
-                  {editor && !editor.isEmpty && docType === "notificacao" && (
-                    <div className="mt-12 flex justify-center pb-8 border-t border-border/40 pt-8 animate-in fade-in slide-in-from-bottom-3 duration-500 max-sm:px-4">
+                  {editor && !editor.isEmpty && docType === "notificacao" && editor.getText().length > 400 && (editor.getText().toLowerCase().includes("notificado") || editor.getText().toLowerCase().includes("assinatura")) && (
+                    <div className="mt-2.5 flex justify-center pb-28 pt-0.5 animate-in fade-in slide-in-from-bottom-3 duration-500 max-sm:px-4 max-sm:pb-36">
                       <ExportButton 
                         isPublic={isPublic} 
                         docType={docType} 

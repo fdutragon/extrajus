@@ -218,14 +218,14 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             if (step === "success" && !open) onClose();
           }}>
           <DialogContent 
-            className="w-full max-w-[92vw] md:max-w-[48rem] lg:max-w-[52rem] bg-background border border-border text-foreground rounded-[28px] max-sm:rounded-[24px] max-sm:!top-[50%] max-sm:!left-[50%] max-sm:!-translate-x-1/2 max-sm:!-translate-y-1/2 max-sm:w-[94vw] max-sm:h-[95vh] max-sm:max-h-[95vh] max-sm:overflow-hidden max-sm:flex max-sm:flex-col shadow-[0_0_50px_rgba(139,92,246,0.15)] p-[1.375rem] max-sm:p-5 max-h-[94vh] overflow-y-auto transition-all duration-500 [&>button:last-child]:hidden"
+            className="w-full max-w-[92vw] md:max-w-[48rem] lg:max-w-[52rem] bg-background border border-border text-foreground rounded-[28px] max-sm:rounded-[24px] max-sm:!top-[50%] max-sm:!left-[50%] max-sm:!-translate-x-1/2 max-sm:!-translate-y-1/2 max-sm:w-[94vw] max-sm:h-auto max-sm:max-h-[90vh] max-sm:overflow-y-auto max-sm:flex max-sm:flex-col shadow-[0_0_50px_rgba(139,92,246,0.15)] p-[1.375rem] max-sm:px-2.5 max-sm:py-5 md:max-h-[90vh] md:overflow-hidden overflow-y-auto transition-all duration-500 [&>button:last-child]:hidden"
           >
           {/* Soft Occult Ambient Highlights (Adaptive to Theme) */}
           <div className="absolute top-0 right-0 w-36 h-36 bg-primary/5 rounded-full blur-[60px] pointer-events-none" />
           <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-primary/5 rounded-full blur-[60px] pointer-events-none" />
           <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary/45 to-transparent" />
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 max-sm:gap-2.5 md:gap-6 relative z-10 max-sm:px-1 max-sm:flex-1 max-sm:flex max-sm:flex-col max-sm:justify-between max-sm:h-full max-sm:overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 max-sm:gap-2.5 md:gap-6 relative z-10 max-sm:px-1 max-sm:flex-1 max-sm:flex max-sm:flex-col max-sm:justify-start max-sm:h-auto max-sm:overflow-visible">
 
           {/* Painel Esquerdo: A Oferta Suprema (6 colunas) */}
           <div className="md:col-span-6 flex flex-col justify-center border-b md:border-b-0 md:border-r border-border/60 pb-3 max-sm:pb-2.5 md:pb-0 md:pr-5 lg:pr-6 space-y-3 max-sm:space-y-1.5 shrink-0">
@@ -263,7 +263,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
               </DialogTitle>
               <DialogDescription className="text-[0.825rem] max-sm:text-[0.78rem] max-sm:leading-[1.35] text-muted-foreground font-medium tracking-wide mt-1 max-sm:mt-0.5 leading-relaxed text-center">
                 {step === "form"
-                  ? "Para continuar, informe seu e-mail principal. Enviaremos uma cópia em PDF e o recibo para ele."
+                  ? "Para continuar, informe seu e-mail principal. Enviaremos o documento editável Word (.DOCX) e o recibo para ele."
                   : step === "pix"
                   ? "Efetue o pagamento via PIX para liberação instantânea do seu documento Word editável."
                   : "Seu pagamento foi confirmado. O download está disponível abaixo."}

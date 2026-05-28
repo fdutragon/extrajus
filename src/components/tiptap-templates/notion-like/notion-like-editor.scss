@@ -299,14 +299,14 @@ body {
 .notion-like-editor-content .tiptap.ProseMirror.notion-like-editor {
   height: auto;
   min-height: 500px;
-  padding: 0 0 30vh;
+  padding: 0 0 2rem;
   outline: none;
 }
 
 // Mobile fallback
 @media screen and (max-width: 768px) {
   .notion-like-editor-content .tiptap.ProseMirror.notion-like-editor {
-    padding: 0 1rem 30vh;
+    padding: 0 1rem 2rem;
   }
 }
 

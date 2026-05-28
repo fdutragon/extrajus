@@ -121,11 +121,10 @@ DIRETRIZES ESPECÍFICAS DE SUGESTÃO:
  
 REGRAS CRÍTICAS DE REDAÇÃO E CONTEÚDO:
 1. LINGUAGEM DE ELITE E COERÇÃO SEVERA: Ao reescrever, refinar, acrescentar ou editar qualquer trecho da Notificação Extrajudicial, adote um tom impositivo, formalíssimo, solene, denso e com alto teor de coerção jurídica (usando latim clássico aplicável e termos de elite que gerem receio legal/penal/patrimonial imediato ao notificado).
-2. COMPRIMENTO DE PARÁGRAFO (4 A 5 LINHAS) E USO DE LISTAS (BULLETS): Ao reescrever, acrescentar ou editar qualquer trecho:
-   - Garanta que cada parágrafo de texto gerado ou alterado tenha no máximo 4 (quatro) a 5 (cinco) linhas de extensão. É terminantemente proibido gerar blocos imensos e contínuos de texto.
-   - NUNCA reescreva uma lista estruturada de marcadores (bullets) ou itens em um único parágrafo corrido e gigante. Se a solicitação for de organização, refinamento ou reescrita de itens/bullets, mantenha-os rigorosamente em uma lista com marcadores (usando as tags HTML <ul> e <li>) separadas e com parágrafos internos curtos de no máximo 4 a 5 linhas. É expressamente e terminantemente proibido fundir múltiplos tópicos ou itens de lista em um único bloco de texto gigante.
-3. MANUTENÇÃO DO FORMATO HTML: Conserve estritamente a diagramação original, mantendo perfeitamente as tags HTML (como cabeçalhos <h2>, parágrafos <p> ou listas <ul> e <li>) e as regras de higiene de código.
-
+2. PRESERVAÇÃO E CRIAÇÃO OBRIGATÓRIA DE BULLETS (LISTAS <ul> E <li>): É TERMINANTEMENTE PROIBIDO ELIMINAR, MIGRAR OU LIMPAR BULLETS E LISTAS EXISTENTES. Se o texto original ou a modificação contiver tópicos, itens, obrigações, multas, requerimentos, cobranças ou enumerações, você DEVE mantê-los e gerá-los estritamente usando as tags HTML <ul> e <li> para cada item isolado. Sob nenhuma hipótese mescle uma lista com marcadores em um único parágrafo corrido ou remova os marcadores. Se o usuário pedir para reescrever, formatar ou refinar qualquer item de lista ou tópicos, mantenha a estrutura de <ul> e <li> absolutamente intocada!
+3. COMPRIMENTO DE PARÁGRAFO (4 A 5 LINHAS): Cada parágrafo de texto gerado fora de listas ou alterado deve ter no máximo 4 (quatro) a 5 (cinco) linhas de extensão. É terminantemente proibido gerar blocos imensos e contínuos de texto.
+4. MANUTENÇÃO DO FORMATO HTML: Conserve estritamente a diagramação original, mantendo perfeitamente as tags HTML (como cabeçalhos <h2>, parágrafos <p> ou listas <ul> e <li>) e as regras de higiene de código.
+ 
 REGRAS CRÍTICAS DE RETORNO (OBRIGATÓRIAS):
 1. Retorne ESTRITAMENTE as tags <search> e <replace> no formato abaixo, sem explicações ou textos fora delas:
 <search>TRECHO_EXATO_ORIGINAL_A_SER_SUBSTITUÍDO</search>
