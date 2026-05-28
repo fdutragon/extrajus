@@ -1404,11 +1404,11 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               size="icon" 
               onClick={() => setAiPromptOpen(prev => !prev)}
               className={cn(
-                "h-8 w-8 text-primary hover:bg-transparent transition-all flex items-center justify-center relative group/ai-mob",
+                "h-10 w-10 text-primary hover:bg-transparent transition-all flex items-center justify-center relative group/ai-mob",
                 aiPromptOpen ? "text-primary scale-110" : "text-muted-foreground/60"
               )}
             >
-              <BrainCircuit size={16} className={cn("relative z-10", (isAuditing || aiPromptOpen) && "animate-pulse text-primary")} />
+              <BrainCircuit className={cn("w-[16px] h-[16px] max-sm:w-[18px] max-sm:h-[18px] relative z-10", (isAuditing || aiPromptOpen) && "animate-pulse text-primary")} />
             </Button>
           </div>
         )}
