@@ -248,7 +248,7 @@ export function AiMenuInputTextarea({
     return () => window.removeEventListener("ai-suggestion-updated", handleSuggestionUpdate)
   }, [])
 
-  const docType = "contrato";
+  const docType = (typeof window !== "undefined" ? localStorage.getItem("extrajus_ai_doc_type") : null) || "notificacao";
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -256,6 +256,8 @@ export function AiMenuInputTextarea({
       const urlTipo = urlParams.get("tipo");
       if (urlTipo && ["contrato", "notificacao", "peticao"].includes(urlTipo)) {
         localStorage.setItem("extrajus_ai_doc_type", urlTipo);
+      } else {
+        localStorage.setItem("extrajus_ai_doc_type", "notificacao");
       }
     }
 
@@ -270,8 +272,8 @@ export function AiMenuInputTextarea({
   const dynamicPlaceholder = !isSynced
     ? "Sincronizando ambiente da inteligência artificial..."
     : isEditing
-    ? "Escreva o que você deseja alterar, complementar ou remover..."
-    : "Descreva o tipo de contrato que você precisa e liste as cláusulas ou obrigações especiais que deseja incluir...";
+    ? "Escreva o que você deseja alterar, complementar ou remover na sua notificação..."
+    : "Descreva o teor da sua notificação extrajudicial (ex: cobrança de débitos, desocupação de imóvel) e os fatos principais...";
 
   return (
     <div

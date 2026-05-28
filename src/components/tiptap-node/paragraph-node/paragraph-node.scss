@@ -41,6 +41,16 @@
     margin-bottom: 12px;
   }
 
+  p.dense-metadata {
+    margin-bottom: 2px !important; // Reduz o espaçamento entrelinhas das qualificações densas para um visual compacto e solene
+  }
+
+  // Reduz o espaço de linhas vazias/br (separadores) para um layout mais compacto
+  p:has(br:only-child) {
+    margin-bottom: 4px !important;
+    line-height: 1 !important;
+  }
+
   // Selection styles
   &:not(.readonly):not(.ProseMirror-hideselection) {
     ::selection {

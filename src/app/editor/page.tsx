@@ -25,7 +25,7 @@ import { Separator } from "@/components/ui/separator"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Link from "next/link"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import { UserPlus, Check } from "lucide-react"
 import { createClient } from "@/utils/supabase/client"
@@ -67,12 +67,22 @@ function InviteButton({ room }: { room: string }) {
 import { Suspense } from "react"
 
 function EditorContent() {
+  const router = useRouter()
   const searchParams = useSearchParams()
-  const room = searchParams.get("room") || "extrajus-draft-001"
+  const room = searchParams.get("room")
   const templateSlug = searchParams.get("template")
   const mode = searchParams.get("mode")
   const readOnly = mode === "preview" || searchParams.get("readOnly") === "true"
   const [isPublic, setIsPublic] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    if (!room) {
+      const newRoom = `extrajus-draft-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+      const params = new URLSearchParams(searchParams.toString())
+      params.set("room", newRoom)
+      router.replace(`${window.location.pathname}?${params.toString()}`)
+    }
+  }, [room, searchParams, router])
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -83,7 +93,7 @@ function EditorContent() {
     checkAuth()
   }, [])
 
-  if (isPublic === null) {
+  if (isPublic === null || !room) {
     return <LoadingSpinner text="Iniciando Motor..." />
   }
 

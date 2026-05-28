@@ -168,8 +168,16 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
           userPrompt
         });
 
-        // Obter tipo de documento (Foco Contrato) e limpar sugestão anterior
-        const localDocType = "contrato";
+        // Obter tipo de documento dinamicamente (padrão Notificação Extrajudicial) e limpar sugestão anterior
+        let localDocType = "notificacao";
+        if (typeof window !== "undefined") {
+          const urlParams = new URLSearchParams(window.location.search);
+          const urlTipo = urlParams.get("tipo");
+          localDocType = urlTipo || localStorage.getItem("extrajus_ai_doc_type") || "notificacao";
+          if (localDocType !== "contrato" && localDocType !== "peticao") {
+            localDocType = "notificacao";
+          }
+        }
         if (typeof window !== "undefined") {
           window.localStorage.removeItem("extrajus_ai_suggestion");
           window.dispatchEvent(new Event("ai-suggestion-updated"));
@@ -179,16 +187,33 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
 
         if (isDocEmpty) {
           // Documento vazio: cria do zero
-          const docTypeName = "um contrato";
-          const docTypeSufix = "o";
-          const exampleSuggest = "Inclua uma cláusula de multa de 10% por rescisão antecipada";
+          let docTypeName = "um contrato";
+          let docTypeSufix = "o";
+          let exampleSuggest = "Inclua uma cláusula de multa de 10% por rescisão antecipada";
 
-          finalPrompt = `O documento está vazio. Crie ${docTypeName} complet${docTypeSufix} com base nesta solicitação:\n\n${userPrompt}\n\nIMPORTANTE: No final absoluto da sua resposta (após todo o HTML d${docTypeSufix} contrato), adicione uma tag <suggestion> contendo UM EXEMPLO DE COMANDO DE EDIÇÃO cirúrgica que o usuário poderia digitar no chat para blindar ou aprimorar este documento. O texto deve ser um comando direto de alteração, e NÃO UMA PERGUNTA. Exemplo: <suggestion>${exampleSuggest}</suggestion>`
+          if (localDocType === "notificacao") {
+            docTypeName = "uma notificação extrajudicial";
+            docTypeSufix = "a";
+            exampleSuggest = "Adicione uma seção com prazo de 5 dias úteis sob pena de medidas judiciais";
+          } else if (localDocType === "peticao") {
+            docTypeName = "uma petição judicial";
+            docTypeSufix = "a";
+            exampleSuggest = "Adicione um pedido de tutela de urgência";
+          }
+
+          finalPrompt = `O documento está vazio. Crie ${docTypeName} complet${docTypeSufix} com base nesta solicitação:\n\n${userPrompt}\n\nIMPORTANTE: No final absoluto da sua resposta (após todo o HTML d${docTypeSufix} ${localDocType === "notificacao" ? "notificação" : localDocType === "peticao" ? "petição" : "contrato"}), adicione uma tag <suggestion> contendo UM EXEMPLO DE COMANDO DE EDIÇÃO cirúrgica que o usuário poderia digitar no chat para blindar ou aprimorar este documento. O texto deve ser um comando direto de alteração, e NÃO UMA PERGUNTA. Exemplo: <suggestion>${exampleSuggest}</suggestion>`
         } else {
           // Documento com conteúdo: edição cirúrgica estruturada
+          let contextInstruction = "";
+          if (localDocType === "notificacao") {
+            contextInstruction = "\nATENÇÃO: Você está editando uma NOTIFICAÇÃO EXTRAJUDICIAL. NUNCA use cláusulas, divisões de cláusulas (como Cláusula Primeira, etc.) ou nós jurídicos (legal-node/notification-node). A redação deve ser contínua em parágrafos normais (<p>) e cabeçalhos Romanos (<h2>).\n";
+          } else if (localDocType === "peticao") {
+            contextInstruction = "\nATENÇÃO: Você está editando uma PETIÇÃO JUDICIAL. NUNCA use cláusulas ou nós jurídicos (legal-node).\n";
+          }
+
           finalPrompt = `DOCUMENTO ATUAL (HTML completo):
 ${currentHtml}
-
+${contextInstruction}
 SOLICITAÇÃO DE ALTERAÇÃO:
 ${userPrompt}
 
@@ -430,7 +455,17 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
 
       aiSummarize: (_options: any) => ({ editor }: any) => {
         const text = editor.state.doc.textContent
-        runGemini(editor, `Crie um resumo executivo deste contrato em HTML:\n\n"${text}"`)
+        let localDocType = "notificacao";
+        if (typeof window !== "undefined") {
+          const urlParams = new URLSearchParams(window.location.search);
+          const urlTipo = urlParams.get("tipo");
+          localDocType = urlTipo || localStorage.getItem("extrajus_ai_doc_type") || "notificacao";
+          if (localDocType !== "contrato" && localDocType !== "peticao") {
+            localDocType = "notificacao";
+          }
+        }
+        const docWord = localDocType === "notificacao" ? "notificação" : localDocType === "peticao" ? "petição" : "contrato";
+        runGemini(editor, `Crie um resumo executivo dest${localDocType === "notificacao" || localDocType === "peticao" ? "a" : "e"} ${docWord} em HTML:\n\n"${text}"`)
         return true
       },
 
@@ -448,7 +483,17 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
 
       aiComplete: (_options: any) => ({ editor }: any) => {
         const currentHtml = editor.getHTML()
-        runGemini(editor, `Continue este contrato a partir do ponto onde parou, mantendo a estrutura:\n\n${currentHtml}`)
+        let localDocType = "notificacao";
+        if (typeof window !== "undefined") {
+          const urlParams = new URLSearchParams(window.location.search);
+          const urlTipo = urlParams.get("tipo");
+          localDocType = urlTipo || localStorage.getItem("extrajus_ai_doc_type") || "notificacao";
+          if (localDocType !== "contrato" && localDocType !== "peticao") {
+            localDocType = "notificacao";
+          }
+        }
+        const docWord = localDocType === "notificacao" ? "notificação" : localDocType === "peticao" ? "petição" : "contrato";
+        runGemini(editor, `Continue dest${localDocType === "notificacao" || localDocType === "peticao" ? "a" : "e"} ${docWord} a partir do ponto onde parou, mantendo a estrutura:\n\n${currentHtml}`)
         return true
       },
 
@@ -479,11 +524,21 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
 
       aiAuditRisk: () => ({ editor }: any) => {
         const text = editor.getText() || editor.state.doc.textContent
+        let localDocType = "notificacao";
+        if (typeof window !== "undefined") {
+          const urlParams = new URLSearchParams(window.location.search);
+          const urlTipo = urlParams.get("tipo");
+          localDocType = urlTipo || localStorage.getItem("extrajus_ai_doc_type") || "notificacao";
+          if (localDocType !== "contrato" && localDocType !== "peticao") {
+            localDocType = "notificacao";
+          }
+        }
+        const docWord = localDocType === "notificacao" ? "a notificação" : localDocType === "peticao" ? "a petição" : "o instrumento do contrato";
 
         if (text.trim().length < 150) {
           this.storage.state = "error"
           this.storage.auditResults = []
-          return Promise.reject(new Error("O instrumento do contrato é muito curto. Insira pelo menos 150 caracteres."))
+          return Promise.reject(new Error(`O documento d${localDocType === "notificacao" || localDocType === "peticao" ? "a" : "o"} ${docWord} é muito curto. Insira pelo menos 150 caracteres.`))
         }
 
         const runAudit = async () => {
@@ -491,6 +546,7 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
           this.storage.auditResults = [];
 
           try {
+
             const response = await fetch("/api/ai/ritual", {
               method: "POST",
               headers: {
@@ -499,7 +555,7 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
               body: JSON.stringify({
                 prompt: text,
                 instructionType: "audit",
-                docType: "contrato"
+                docType: localDocType
               })
             })
 

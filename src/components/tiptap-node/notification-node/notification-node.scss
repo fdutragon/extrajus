@@ -1,0 +1,149 @@
+.notion-like-editor-content {
+  counter-reset: secao-notif;
+}
+
+// Regras globais para os notification-nodes para garantir renderização idêntica no Editor, Previews e Exportações
+.notification-node {
+  display: flex;
+  margin-top: 0;
+  margin-bottom: 0.25rem;
+  position: relative;
+  align-items: flex-start;
+  transition: all 0.5s ease;
+
+  &[data-ai-highlight="true"] {
+    background: rgba(139, 92, 246, 0.08); /* Violeta Lilith suave */
+    border-radius: 6px;
+    padding: 4px 8px;
+    margin-left: -8px;
+    margin-right: -8px;
+    box-shadow: inset 2px 0 0 0 #8b5cf6;
+    animation: ai-pulse-highlight 3s infinite ease-in-out;
+    cursor: pointer;
+  }
+  
+  .notification-node-counter {
+    user-select: none;
+    font-weight: 700;
+    margin-right: 0.75rem;
+    white-space: nowrap;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .notification-node-content {
+    flex: 1;
+    text-align: justify !important;
+    text-justify: inter-word;
+
+    p, div {
+      margin: 0 !important;
+      padding: 0 !important;
+      text-align: justify !important;
+      text-justify: inter-word;
+      line-height: inherit !important;
+    }
+  }
+
+  &.notification-node-level-1 {
+    counter-increment: secao-notif;
+    counter-reset: item-notif;
+    margin-top: 2.2rem;
+    margin-bottom: 0.7rem;
+    font-weight: 700;
+    font-size: 1.0em;
+    
+    .notification-node-counter {
+      margin-right: 0.5rem;
+    }
+    
+    .notification-node-counter::before {
+      content: counter(secao-notif, upper-roman) " -";
+    }
+  }
+
+  &.notification-node-level-2 {
+    counter-increment: item-notif;
+    counter-reset: subitem-notif;
+    margin-left: 2rem;
+    margin-top: 0;
+    margin-bottom: 0.6rem;
+    font-size: 1.0em;
+    
+    .notification-node-counter {
+      font-weight: 600;
+      min-width: 2.2rem;
+    }
+    
+    .notification-node-counter::before {
+      content: counter(item-notif) ".";
+    }
+  }
+
+  &.notification-node-level-3 {
+    counter-increment: subitem-notif;
+    margin-left: 5rem;
+    margin-top: 0;
+    margin-bottom: 0.6rem;
+    font-size: 1.0em;
+    
+    .notification-node-counter {
+      font-weight: 500;
+      min-width: 1.2rem;
+      margin-right: 0.4rem;
+    }
+
+    .notification-node-counter::before {
+      content: counter(subitem-notif, lower-alpha) ")";
+    }
+  }
+
+  &.notification-node-level-4 {
+    counter-increment: detalhe-notif;
+    margin-left: 6.5rem;
+    margin-top: 0;
+    margin-bottom: 0.6rem;
+    font-size: 1.0em;
+    
+    .notification-node-counter {
+      font-weight: 400;
+      min-width: 1.2rem;
+      margin-right: 0.4rem;
+    }
+
+    .notification-node-counter::before {
+      content: counter(detalhe-notif, lower-roman) ".";
+    }
+  }
+  
+  &.notification-node-level-3 + &.notification-node-level-1,
+  &.notification-node-level-4 + &.notification-node-level-1 {
+    margin-top: 1.2rem;
+  }
+
+  @media screen and (max-width: 768px) {
+    &.notification-node-level-1 {
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    &.notification-node-level-2 {
+      margin-left: 0.85rem;
+      margin-bottom: 0.4rem;
+      
+      .notification-node-counter {
+        min-width: 1.6rem;
+      }
+    }
+
+    &.notification-node-level-3 {
+      margin-left: 1.65rem;
+      margin-bottom: 0.4rem;
+    }
+
+    &.notification-node-level-4 {
+      margin-left: 2.45rem;
+      margin-bottom: 0.4rem;
+    }
+  }
+}

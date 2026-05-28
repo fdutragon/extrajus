@@ -29,7 +29,7 @@ export default async function ContractsPage() {
       .from('contracts')
       .insert({
         user_id: user.id,
-        title: `Novo Contrato - ${new Date().toLocaleDateString('pt-BR')}`,
+        title: `Nova Notificação - ${new Date().toLocaleDateString('pt-BR')}`,
         status: 'draft'
       })
       .select()
@@ -51,10 +51,10 @@ export default async function ContractsPage() {
             <span className="text-[9px] text-muted-foreground font-mono tracking-widest uppercase italic">Legal Infrastructure</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground">
-            Contracts <span className="text-muted-foreground/30 font-light">/</span> <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/50 bg-clip-text text-transparent">Vault</span>
+            Notificações <span className="text-muted-foreground/30 font-light">/</span> <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/50 bg-clip-text text-transparent">Vault</span>
           </h1>
           <p className="text-sm text-muted-foreground mt-2 max-w-md">
-            Gestão completa e auditoria de contratos. O histórico completo da sua infraestrutura jurídica sob controle profissional.
+            Gestão completa e auditoria de notificações extrajudiciais. O histórico completo da sua infraestrutura jurídica sob controle profissional.
           </p>
         </div>
         <div className="relative z-10">
@@ -67,7 +67,7 @@ export default async function ContractsPage() {
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
               <div className="relative z-10 flex items-center gap-2">
                 <Plus size={16} className="transition-transform duration-500 group-hover:rotate-90 group-hover:scale-110" />
-                New Contract
+                New Notification
               </div>
             </Button>
           </form>

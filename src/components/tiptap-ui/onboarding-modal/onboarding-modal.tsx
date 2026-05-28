@@ -17,25 +17,25 @@ export interface OnboardingModalProps {
 export function OnboardingModal({ isOpen, onSelectTemplate, onClose }: OnboardingModalProps) {
   const templates = [
     {
-      title: "Prestação de Serviços",
-      icon: <FileText size={20} />,
-      prompt: "Crie um contrato de prestação de serviços completo. O contratado fará serviços de marketing digital para o contratante. Inclua cláusulas de objeto, obrigações, pagamento mensal, sigilo e multa por rescisão antecipada.",
+      title: "Cobrança de Débito",
+      icon: <Building size={20} />,
+      prompt: "Crie uma notificação extrajudicial de cobrança de débito. O Notificante é credor do valor de R$ 10.000,00 referente a serviços prestados e não pagos pelo Notificado. Exija o pagamento em até 5 dias sob pena de medidas judiciais, acréscimos legais e perdas e danos.",
       color: "text-blue-500",
       bg: "bg-blue-500/10",
       border: "border-blue-500/20"
     },
     {
-      title: "Contrato de Locação",
-      icon: <Building size={20} />,
-      prompt: "Elabore um contrato de locação comercial de imóvel. O prazo é de 12 meses. Inclua reajuste por IGPM, garantia por fiador, vistoria inicial e multa rescisória de 3 aluguéis.",
+      title: "Desocupação de Imóvel",
+      icon: <FileText size={20} />,
+      prompt: "Elabore uma notificação extrajudicial para desocupação de imóvel. O Notificante é proprietário e notifica o inquilino (Notificado) para desocupar o imóvel comercial em 30 dias devido ao término do prazo do contrato de locação.",
       color: "text-emerald-500",
       bg: "bg-emerald-500/10",
       border: "border-emerald-500/20"
     },
     {
-      title: "Acordo de Confidencialidade (NDA)",
+      title: "Rescisão por Infração",
       icon: <ShieldAlert size={20} />,
-      prompt: "Redija um Acordo de Confidencialidade (NDA) mútuo rigoroso. As partes vão discutir um projeto de software inovador. Inclua proibição de aliciamento de funcionários, foro na capital e validade de 5 anos para o sigilo.",
+      prompt: "Redija uma notificação extrajudicial de rescisão contratual. O Notificante comunica a rescisão de contrato por descumprimento das obrigações do Notificado, exigindo a entrega de relatórios finais e devolução de bens em 48 horas.",
       color: "text-purple-500",
       bg: "bg-purple-500/10",
       border: "border-purple-500/20"
@@ -56,10 +56,10 @@ export function OnboardingModal({ isOpen, onSelectTemplate, onClose }: Onboardin
                 <Sparkles size={32} />
               </div>
               <DialogTitle className="text-3xl font-black tracking-tight text-zinc-100">
-                O que você precisa <span className="text-primary">blindar</span> hoje?
+                Qual <span className="text-primary">Notificação Extrajudicial</span> você precisa criar?
               </DialogTitle>
               <p className="text-xs text-muted-foreground font-medium uppercase tracking-[0.2em] max-w-lg mx-auto">
-                A Inteligência Artificial da ExtraJus está pronta. Selecione um modelo rápido abaixo ou digite seu próprio comando no editor.
+                A Inteligência Artificial da ExtraJus está pronta. Selecione um modelo rápido de notificação abaixo ou digite seu próprio comando no editor.
               </p>
             </DialogHeader>
 

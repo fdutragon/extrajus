@@ -270,7 +270,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
               </div>
 
               <h3 className="text-[1.65rem] max-sm:text-[2.1rem] font-black text-foreground leading-[1.1] tracking-tight whitespace-nowrap max-sm:mt-4">
-                Libere seu <span className="bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">Contrato</span>
+                Libere {docType === "notificacao" ? "sua" : "seu"} <span className="bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">{docType === "notificacao" ? "Notificação" : "Contrato"}</span>
               </h3>
 
               <p className="text-[0.825rem] max-sm:text-[1.1rem] max-sm:leading-[1.6] text-muted-foreground leading-relaxed font-medium">
@@ -375,9 +375,9 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                       className="w-full h-12 max-sm:h-14 max-sm:text-[1rem] bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black tracking-[0.12em] uppercase rounded-xl transition-all shadow-[0_3px_15px_rgba(16,185,129,0.2)] hover:shadow-[0_3px_25px_rgba(16,185,129,0.35)] flex items-center justify-center gap-2 duration-300 transform hover:-translate-y-0.5 border border-emerald-500/20"
                     >
                       <Download className="w-4 h-4 max-sm:w-[20px] max-sm:h-[20px]" />
-                      Baixar Contrato (.DOCX)
+                      Baixar {docType === "notificacao" ? "Notificação" : "Contrato"} (.DOCX)
                     </Button>
-
+ 
                     <Button 
                       onClick={async () => {
                         const docId = pixData?.externalId.replace("paydoc_", "");
@@ -390,16 +390,16 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                               body: JSON.stringify({ docId })
                             });
                             if (res.ok) {
-                              toast.success("Contrato excluído! Preparando editor limpo...");
+                              toast.success(docType === "notificacao" ? "Notificação excluída! Preparando editor limpo..." : "Contrato excluído! Preparando editor limpo...");
                               setTimeout(() => {
                                 const newRoomId = `doc_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
                                 window.location.href = `/editor?room=${newRoomId}`;
                               }, 1000);
                             } else {
-                              throw new Error("Erro ao excluir contrato");
+                              throw new Error("Erro ao excluir documento");
                             }
                           } catch (err: any) {
-                            toast.error(err.message || "Erro ao iniciar novo contrato");
+                            toast.error(err.message || (docType === "notificacao" ? "Erro ao iniciar nova notificação" : "Erro ao iniciar novo contrato"));
                           } finally {
                             setLoading(false);
                           }
@@ -412,7 +412,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                       variant="outline"
                       className="w-full h-11 max-sm:h-14 max-sm:text-[1rem] border-border hover:border-red-500/40 bg-background text-muted-foreground hover:text-red-500 hover:bg-red-500/5 font-bold uppercase tracking-[0.1em] rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
                     >
-                      Criar Novo Contrato
+                      Criar {docType === "notificacao" ? "Nova Notificação" : "Novo Contrato"}
                     </Button>
                   </div>
                 </div>

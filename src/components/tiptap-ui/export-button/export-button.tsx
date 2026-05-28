@@ -130,6 +130,12 @@ export function ExportButton({
               margin-bottom: 12.0pt;
               line-height: 1.6;
             }
+            p:not([data-node-text-align="center"]):not([data-node-text-align="right"]):not(.align-center):not(.align-right):not(.no-indent) {
+              text-indent: 3.5em;
+            }
+            p.dense-metadata {
+              margin-bottom: 2.0pt;
+            }
             /* Suporte completo à estrutura de Legal Nodes do ExtraJus */
             .legal-node {
               margin-bottom: 12.0pt;

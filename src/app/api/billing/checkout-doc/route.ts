@@ -85,7 +85,7 @@ export async function POST(request: Request) {
         user_id: userId,
         title: title || "Novo Documento",
         content: content,
-        doc_type: doc_type || "contrato",
+        doc_type: doc_type || "notificacao",
         is_paid: false
       })
       .select("id")

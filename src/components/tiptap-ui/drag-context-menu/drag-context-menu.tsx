@@ -401,16 +401,14 @@ export const DragContextMenu: React.FC<DragContextMenuProps> = ({
       middleware: [
         offset((props) => {
           const { rects } = props
-          const nodeHeight = rects.reference.height
           const dragHandleHeight = rects.floating.height
 
-          // True visual center of the node, shifted up to account for
-          // the paragraph's margin-bottom (12px) that inflates the bounding rect
-          const crossAxis = nodeHeight / 2 - dragHandleHeight / 2
-
+          // Ajuste fino para subir o manipulador: -8px em relação ao topo do nó
+          // Isso compensa o tamanho do botão e o alinhamento visual com a primeira linha de texto.
+          
           return {
             mainAxis: mainAxisOffset,
-            crossAxis: nodeHeight > 40 ? -4 : crossAxis - 1,
+            crossAxis: -8,
           }
         }),
       ],
@@ -469,72 +467,20 @@ export const DragContextMenu: React.FC<DragContextMenuProps> = ({
             ...(isDragging ? { opacity: 0 } : {}),
           }}
         >
-          {withSlashCommandTrigger && (
-            <SlashCommandTriggerButton
-              node={node}
-              nodePos={nodePos}
-              data-weight="small"
-            />
-          )}
-
-          <Menu
-            open={open}
-            onOpenChange={setOpen}
-            placement="left"
-            trigger={
-              <MenuButton
-                render={
-                  <Button
-                    variant="ghost"
-                    tabIndex={-1}
-                    tooltip={
-                      <>
-                        <div>Click for options</div>
-                        <div>Hold for drag</div>
-                      </>
-                    }
-                    data-weight="small"
-                    style={{
-                      cursor: "grab",
-                      ...(open ? { pointerEvents: "none" } : {}),
-                    }}
-                    onMouseDown={() =>
-                      selectNodeAndHideFloating(editor, nodePos)
-                    }
-                  >
-                    <GripVerticalIcon className="tiptap-button-icon" />
-                  </Button>
-                }
-              />
+          <Button
+            variant="ghost"
+            tabIndex={-1}
+            tooltip="Hold to drag"
+            data-weight="small"
+            style={{
+              cursor: "grab",
+            }}
+            onMouseDown={() =>
+              selectNodeAndHideFloating(editor, nodePos)
             }
           >
-            <MenuContent
-              onClose={handleOnMenuClose}
-              autoFocusOnHide={false}
-              preventBodyScroll={true}
-              portal
-            >
-              <Combobox style={SR_ONLY} />
-              <ComboboxList style={{ minWidth: "15rem" }}>
-                <MenuGroupLabel>{nodeName}</MenuGroupLabel>
-
-                <MenuGroup>
-                  <TocShowTitle />
-                  <ColorMenu />
-                  <TableAlignMenu />
-                  <TableFitToWidth />
-                  <TransformActionGroup />
-                  <ImageActionGroup />
-                </MenuGroup>
-
-                <CoreActionGroup />
-
-                <AIActionGroup />
-
-                <DeleteActionGroup />
-              </ComboboxList>
-            </MenuContent>
-          </Menu>
+            <GripVerticalIcon className="tiptap-button-icon" />
+          </Button>
         </div>
       </DragHandle>
     </div>

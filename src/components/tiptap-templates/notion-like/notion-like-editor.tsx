@@ -44,7 +44,7 @@ const AiHighlightManager = Extension.create({
   addGlobalAttributes() {
     return [
       {
-        types: ['paragraph', 'heading', 'blockquote', 'legalNode'],
+        types: ['paragraph', 'heading', 'blockquote', 'legalNode', 'notificationNode'],
         attributes: {
           aiHighlight: {
             default: false,
@@ -122,6 +122,7 @@ import { NodeBackground } from "../../../components/tiptap-extension/node-backgr
 import { NodeAlignment } from "../../../components/tiptap-extension/node-alignment-extension"
 import { TocNode } from "../../../components/tiptap-node/toc-node/extensions/toc-node-extension"
 import { LegalNode } from "../../../components/tiptap-node/legal-node/legal-node-extension"
+import { NotificationNode } from "../../../components/tiptap-node/notification-node/notification-node-extension"
 import { VariableNode } from "../../../components/tiptap-node/variable-node/variable-extension"
 
 // --- Tiptap Node ---
@@ -145,6 +146,7 @@ import "../../../components/tiptap-node/image-node/image-node.scss"
 import "../../../components/tiptap-node/heading-node/heading-node.scss"
 import "../../../components/tiptap-node/paragraph-node/paragraph-node.scss"
 import "../../../components/tiptap-node/legal-node/legal-node.scss"
+import "../../../components/tiptap-node/notification-node/notification-node.scss"
 import "../../../components/tiptap-node/variable-node/variable-node.scss"
 
 // --- Tiptap UI ---
@@ -654,7 +656,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
 
   const searchParams = useSearchParams()
   const readOnly = searchParams?.get("mode") === "preview" || searchParams?.get("readOnly") === "true" || !editor || !editor.isEditable
-  const docType = searchParams?.get("tipo") || "contrato"
+  const docType = searchParams?.get("tipo") || "notificacao"
 
   const [signerEmail, setSignerEmail] = useState("")
   const [sealingCode, setSealingCode] = useState("")
@@ -805,26 +807,32 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
   const getClauses = () => {
     if (!editor) return []
     const clauses: { id: string; title: string; pos: number }[] = []
-    let foundObject = false
+    const isNotification = docType === "notificacao"
+    let foundObject = isNotification ? true : false
     
     editor.state.doc.descendants((node: any, pos: number) => {
-      if (
-        (node.type.name === "heading" && (node.attrs.level === 1 || node.attrs.level === 2)) ||
-        (node.type.name === "legalNode" && node.attrs.level === 1)
-      ) {
+      const isTargetNode = isNotification
+        ? ((node.type.name === "heading" && (node.attrs.level === 1 || node.attrs.level === 2)) ||
+           (node.type.name === "notificationNode" && node.attrs.level === 1))
+        : ((node.type.name === "heading" && (node.attrs.level === 1 || node.attrs.level === 2)) ||
+           (node.type.name === "legalNode" && node.attrs.level === 1))
+
+      if (isTargetNode) {
         const title = node.textContent.trim().toUpperCase()
         
-        // Critério de início: Ignora tudo antes da primeira menção a "OBJETO" ou se for puramente nomes de partes
-        if (!foundObject && (title.includes("OBJETO") || title.includes("DO OBJETO"))) {
-          foundObject = true
+        if (!isNotification) {
+          // Critério de início: Ignora tudo antes da primeira menção a "OBJETO" ou se for puramente nomes de partes
+          if (!foundObject && (title.includes("OBJETO") || title.includes("DO OBJETO"))) {
+            foundObject = true
+          }
+
+          // Critério de parada: Para de adicionar se chegar no "FORO"
+          if (title.includes("FORO") || title.includes("DO FORO")) {
+            return false
+          }
         }
 
-        // Critério de parada: Para de adicionar se chegar no "FORO"
-        if (title.includes("FORO") || title.includes("DO FORO")) {
-          return false
-        }
-
-        // Só adiciona se já tiver passado pelas qualificações (encontrou Objeto)
+        // Só adiciona se já tiver passado pelas qualificações
         if (foundObject) {
           clauses.push({
             id: `clause-${pos}`,
@@ -843,11 +851,16 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
     const subItems: { id: string; text: string; pos: number }[] = []
     const start = clausePos
     const end = nextClausePos ?? editor.state.doc.content.size
+    const isNotification = docType === "notificacao"
 
     editor.state.doc.nodesBetween(start, end, (node: any, pos: number) => {
       if (pos === clausePos) return true
 
-      if (node.type.name === "paragraph" || node.type.name === "legalNode") {
+      const isSubNode = isNotification
+        ? (node.type.name === "paragraph" || node.type.name === "notificationNode")
+        : (node.type.name === "paragraph" || node.type.name === "legalNode")
+
+      if (isSubNode) {
         const textContent = node.textContent.trim()
         // Ignora títulos e textos extremamente curtos
         if (textContent.length > 5 && node.attrs?.level !== 1) {
@@ -930,6 +943,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
     if (!editor) return
     const start = clausePos
     let end = nextClausePos ?? editor.state.doc.content.size
+    const isNotification = docType === "notificacao"
 
     // Prevenção Crítica: Se não houver próxima cláusula (última seção), 
     // precisamos garantir que o 'end' não ultrapasse o início do FORO ou Assinaturas.
@@ -942,6 +956,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
         const isLikelyEndSection = 
           (node.type.name === "heading") || 
           (node.type.name === "legalNode" && node.attrs.level === 1) ||
+          (node.type.name === "notificationNode" && node.attrs.level === 1) ||
           (node.type.name === "paragraph" && text.length < 50 && (text.startsWith("FORO") || text.startsWith("DO FORO") || text.startsWith("ELEIÇÃO")))
 
         if (isLikelyEndSection && (text.includes("FORO") || text.includes("DO FORO") || text.includes("ASSINATURAS") || text.includes("DATA E ASSINATURA"))) {
@@ -959,15 +974,19 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
     editor.chain().focus().setTextSelection({ from: start, to: end }).run()
     
     // Prompt automático que REESCREVE a cláusula atual com as melhorias sugeridas
-    const addPrompt = `Reescreva a cláusula selecionada para aprimorar sua segurança jurídica e abrangência técnica, incorporando a seguinte otimização: "${suggestionReason || 'aperfeiçoamento de redação técnica'}".
+    const nodeType = isNotification ? "NotificationNodes" : "LegalNodes"
+    const nodeTag = isNotification ? "notification-node" : "legal-node"
+    const sectionLabel = isNotification ? "seção da notificação" : "cláusula"
+
+    const addPrompt = `Reescreva a ${sectionLabel} selecionada para aprimorar sua segurança jurídica e abrangência técnica, incorporando a seguinte otimização: "${suggestionReason || 'aperfeiçoamento de redação técnica'}".
 
 DIRETRIZES DE REDAÇÃO JURÍDICA:
-1. REESCREVA integralmente o conteúdo atual para assegurar coesão, sem criar novas cláusulas adjacentes.
-2. Utilize exclusivamente a estrutura de LegalNodes:
-   - Epígrafe/Título: <div data-type="legal-node" data-level="1">TÍTULO</div>
-   - Caput: <div data-type="legal-node" data-level="2">Texto...</div>
-   - Incisos/Parágrafos: <div data-type="legal-node" data-level="3">Texto do item...</div>
-3. CONCISÃO OBRIGATÓRIA: Evite parágrafos extensos. Se a matéria exigir detalhamento, fracione-a OBRIGATORIAMENTE em INCISOS (nível 3).
+1. REESCREVA integralmente o conteúdo atual para assegurar coesão, sem criar novas seções adjacentes.
+2. Utilize exclusivamente a estrutura de ${nodeType}:
+   - Epígrafe/Título: <div data-type="${nodeTag}" data-level="1">TÍTULO</div>
+   - Caput/Conteúdo: <div data-type="${nodeTag}" data-level="2">Texto...</div>
+   - Incisos/Parágrafos/Subitens: <div data-type="${nodeTag}" data-level="3">Texto do item...</div>
+3. CONCISÃO OBRIGATÓRIA: Evite parágrafos extensos. Se a matéria exigir detalhamento, fracione-a OBRIGATORIAMENTE em subitens (nível 3).
 4. É terminantemente PROIBIDO o uso de <p>, ul, ol ou numeração manual (o sistema gerencia a indexação).
 5. Empregue linguagem solene, técnica e erudita, priorizando a mitigação de riscos e a máxima preservação dos direitos da parte representada.`
 
@@ -1707,7 +1726,9 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               <div className="flex items-center justify-between border-b border-border/40 pb-2">
                 <div className="flex items-center gap-2">
                   <BrainCircuit size={12} className={cn("text-primary", isAuditing && "animate-pulse")} />
-                  <h3 className="font-heading font-medium text-[11px] tracking-[0.2em] text-foreground">Sugestões de Cláusulas</h3>
+                  <h3 className="font-heading font-medium text-[11px] tracking-[0.2em] text-foreground">
+                    {docType === "notificacao" ? "Sugestões de Seções" : "Sugestões de Cláusulas"}
+                  </h3>
                 </div>
               </div>
               {/* Seção 1: Score ou Iniciar Auditoria (Fixado no topo) */}
@@ -1716,14 +1737,16 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                   <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/10 space-y-3 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
                     <p className="font-heading font-medium text-xs text-muted-foreground leading-relaxed">
-                      Rode a análise inteligente para escanear o documento e sugerir cláusulas protetoras complementares sob demanda.
+                      {docType === "notificacao"
+                        ? "Rode a análise inteligente para escanear o documento e sugerir seções e termos complementares sob demanda."
+                        : "Rode a análise inteligente para escanear o documento e sugerir cláusulas protetoras complementares sob demanda."}
                     </p>
                     <Button 
                       onClick={runAudit} 
                       disabled={isAuditing} 
                       className="font-heading font-medium w-full bg-transparent border border-primary/50 text-primary hover:bg-primary hover:border-primary hover:text-primary-foreground text-[10px] font-bold uppercase tracking-[0.2em] h-8 rounded-xl transition-all shadow-[0_0_10px_rgba(var(--primary),0.05)] hover:shadow-[0_0_20px_rgba(var(--primary),0.2)]"
                     >
-                      Analisar Cláusulas
+                      {docType === "notificacao" ? "Analisar Notificação" : "Analisar Cláusulas"}
                     </Button>
                   </div>
                 ) : (
@@ -1744,13 +1767,17 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               {/* Seção 2: Árvore Interativa de Cláusulas (Mapa do Instrumento) */}
               <div className="flex flex-col flex-1 min-h-0 space-y-4">
                 <div className="flex items-center gap-2 border-b border-border/40 pb-2 shrink-0">
-                  <span className="font-heading font-medium text-xs text-muted-foreground tracking-widest">Estrutura do Contrato</span>
+                  <span className="font-heading font-medium text-xs text-muted-foreground tracking-widest">
+                    {docType === "notificacao" ? "Estrutura da Notificação" : "Estrutura do Contrato"}
+                  </span>
                 </div>
                 
                 <ScrollArea className="flex-1 pr-3 scrollbar-minimalist min-h-0">
                   {getClauses().length === 0 ? (
                     <div className="text-center py-6">
-                      <span className="text-xs text-muted-foreground font-semibold">Nenhuma cláusula identificada ainda.</span>
+                      <span className="text-xs text-muted-foreground font-semibold">
+                        {docType === "notificacao" ? "Nenhuma seção identificada ainda." : "Nenhuma cláusula identificada ainda."}
+                      </span>
                     </div>
                   ) : (
                     <div className="relative pl-[30px] pr-3 py-1 space-y-3.5 before:absolute before:left-[12.25px] before:top-2 before:bottom-2 before:w-[1.5px] before:bg-border/60">
@@ -1829,14 +1856,14 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                                         <div key={risk.id} className="p-3 rounded-xl border bg-emerald-50/50 dark:bg-emerald-950/10 border-emerald-200/50 dark:border-emerald-500/20 space-y-2">
                                           <span className="font-heading font-medium text-[11px] text-emerald-600 dark:text-emerald-500 uppercase tracking-widest flex items-center gap-1.5 opacity-80">
                                             <ShieldCheck size={12} className="text-emerald-600 dark:text-emerald-500" />
-                                            Cláusula Adicionada
+                                            {docType === "notificacao" ? "Seção Adicionada" : "Cláusula Adicionada"}
                                           </span>
                                           <Button 
                                             size="sm" 
                                             disabled
                                             className="font-heading font-medium w-full text-[10.5px] font-bold uppercase tracking-widest h-7 rounded-lg transition-all bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-500/30 opacity-70"
                                           >
-                                            Cláusula Inserida
+                                            {docType === "notificacao" ? "Seção Inserida" : "Cláusula Inserida"}
                                           </Button>
                                         </div>
                                       )
@@ -1864,7 +1891,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                                             !!pendingOptimization && !isPending && "opacity-50 cursor-not-allowed grayscale"
                                           )}
                                         >
-                                          {isPending ? "Adicionando..." : "Adicionar Cláusula"}
+                                          {isPending ? "Adicionando..." : (docType === "notificacao" ? "Adicionar Seção" : "Adicionar Cláusula")}
                                         </Button>
                                       </div>
                                     )
@@ -1915,12 +1942,12 @@ export function EditorProvider(props: EditorProviderProps) {
     extensions: [
       StarterKit.configure({ horizontalRule: false, dropcursor: { width: 2 } }),
       HorizontalRule,
-      TextAlign.configure({ types: ["heading", "paragraph", "legalNode"] }),
+      TextAlign.configure({ types: ["heading", "paragraph", "legalNode", "notificationNode"] }),
       Collaboration.configure({ document: ydoc }),
       CollaborationCaret.configure({ provider, user: { id: user.id, name: user.name, color: user.color } }),
       Placeholder.configure({ placeholder, emptyNodeClass: "is-empty with-slash" }),
       TableKit.configure({ table: { resizable: true, cellMinWidth: 120 } }),
-      NodeBackground.configure({ types: ["paragraph", "heading", "blockquote", "tableCell", "tableHeader", "tocNode", "legalNode"] }),
+      NodeBackground.configure({ types: ["paragraph", "heading", "blockquote", "tableCell", "tableHeader", "tocNode", "legalNode", "notificationNode"] }),
       NodeAlignment, Superscript, Subscript, Indent, TextStyle, Color, Highlight.configure({ multicolor: true }), Selection, Image,
       TableOfContents.configure({
         getIndex: getHierarchicalIndexes,
@@ -1934,9 +1961,9 @@ export function EditorProvider(props: EditorProviderProps) {
           })
         },
       }),
-      TableHandleExtension, ListNormalizationExtension, LegalNode, VariableNode,
+      TableHandleExtension, ListNormalizationExtension, LegalNode, NotificationNode, VariableNode,
       ImageUploadNode.configure({ accept: "image/*", maxSize: MAX_FILE_SIZE, limit: 3, upload: handleImageUpload, onError: (error) => console.error("Upload failed:", error) }),
-      UniqueID.configure({ types: ["table", "paragraph", "bulletList", "orderedList", "heading", "blockquote", "codeBlock", "tocNode", "legalNode"], filterTransaction: (transaction) => !isChangeOrigin(transaction) }),
+      UniqueID.configure({ types: ["table", "paragraph", "bulletList", "orderedList", "heading", "blockquote", "codeBlock", "tocNode", "legalNode", "notificationNode"], filterTransaction: (transaction) => !isChangeOrigin(transaction) }),
       Typography, UiState, TocNode.configure({ topOffset: 48 }), Gemini.configure({ apiKey: geminiKey || "" }), BubbleMenuExtension, AiHighlightManager,
     ],
   })
