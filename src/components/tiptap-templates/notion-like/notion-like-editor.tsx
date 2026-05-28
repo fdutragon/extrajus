@@ -6,6 +6,7 @@ import type { Doc as YDoc } from "yjs"
 import { createPortal } from "react-dom"
 import { SupabaseYjsProvider } from "../../../lib/supabase-yjs-provider"
 import { Gemini } from "../../../components/tiptap-extension/gemini-ai-extension"
+import { Spacer } from "../../../components/tiptap-extension/spacer-extension"
 import { createClient } from "@/utils/supabase/client"
 import { Logo } from "@/components/ui/logo"
 
@@ -328,21 +329,10 @@ export function LoadingSpinner({ text = "Estabelecendo Conexão..." }: { text?: 
           </div>
         </div>
 
-        {/* Loading Text and IA Status */}
+        {/* Loading Text */}
         <div className="flex flex-col items-center gap-2 max-w-xs text-center px-4 relative z-10">
-          <div className="flex items-center gap-1.5 justify-center">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
-            <span className="text-[9px] uppercase tracking-[0.25em] font-black text-primary/95">
-              Conexão Segura • IA Ativa
-            </span>
-          </div>
-
-          <h3 className="text-[13px] font-bold text-zinc-100 tracking-wide font-sans animate-pulse">
-            {text}
-          </h3>
-
-          <p className="text-[9.5px] text-zinc-500 font-mono tracking-wider uppercase italic select-none">
-            Iniciando Editor Supremo
+          <p className="text-[10px] text-zinc-500 font-mono tracking-[0.3em] uppercase italic animate-pulse select-none">
+            Iniciando Motor
           </p>
         </div>
       </div>
@@ -373,6 +363,17 @@ export function EditorContentArea() {
     ) {
       ;(editor.chain() as any).focus().aiAccept().run()
       ;(editor.commands as any).resetUiState()
+
+      // Fix para Mobile: Após aceitar a geração, faz scroll para o topo do documento
+      // para garantir que o título (H1) fique visível e não cortado pelo scroll automático do navegador
+      if (typeof window !== "undefined" && window.innerWidth < 768) {
+        requestAnimationFrame(() => {
+          const scrollContainer = document.querySelector('main') as HTMLElement | null
+          if (scrollContainer) {
+            scrollContainer.scrollTo({ top: 0, behavior: 'smooth' })
+          }
+        })
+      }
     }
   }, [
     aiGenerationHasMessage,
@@ -462,6 +463,23 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
 
   const { state, updateState } = useAiMenuState()
   const { editor } = useContext(EditorContext)!
+
+  // Handle AI Onboarding Start Event
+  useEffect(() => {
+    const handleStartAi = () => {
+      setAiPromptOpen(true)
+      setTimeout(() => {
+        const input = document.querySelector('.ai-menu-input textarea') as HTMLTextAreaElement | null
+        if (input) {
+          input.focus()
+          // Garante que o cursor vá para o final do texto se houver algum
+          input.setSelectionRange(input.value.length, input.value.length)
+        }
+      }, 300)
+    }
+    window.addEventListener('start-ai-onboarding', handleStartAi)
+    return () => window.removeEventListener('start-ai-onboarding', handleStartAi)
+  }, [])
 
   useEffect(() => {
     const handleAiFinished = (e: any) => {
@@ -1346,13 +1364,13 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         }
       ` }} />
       
-      <header className="fixed top-0 left-0 w-full h-12 sm:h-[clamp(2.5rem,4vh,3.25rem)] border-b border-border bg-background/60 backdrop-blur-2xl sm:backdrop-blur-2xl max-sm:backdrop-blur-none flex items-center justify-between px-3 z-[100] transition-all duration-500 hover:bg-background/80 group">
+      <header className="fixed top-0 left-0 w-full h-12 sm:h-[clamp(2.5rem,4vh,3.25rem)] border-b border-border bg-background/60 backdrop-blur-2xl sm:backdrop-blur-2xl max-sm:backdrop-blur-none flex items-center justify-between px-3 z-[1000] transition-all duration-500 hover:bg-background/80 group">
         <div className="flex items-center gap-1.5 max-sm:gap-1">
           {!readOnly && !isPublic && (
             <div className="flex items-center gap-1">
               <Link href="/dashboard">
-                <Button variant="ghost" size="icon" className="h-8 w-8 max-sm:h-10 max-sm:w-10 hover:bg-primary/10 hover:text-primary rounded-lg max-sm:rounded-xl transition-all duration-300 group/back flex items-center justify-center">
-                  <ChevronLeft className="w-[22px] h-[22px] max-sm:w-[18px] max-sm:h-[18px] group-hover/back:-translate-x-0.5 transition-transform" />
+                <Button variant="ghost" size="icon" className="h-8 w-8 max-sm:h-12 max-sm:w-12 hover:bg-primary/10 hover:text-primary rounded-lg max-sm:rounded-xl transition-all duration-300 group/back flex items-center justify-center">
+                  <ChevronLeft className="w-[22px] h-[22px] max-sm:w-[24px] max-sm:h-[24px] group-hover/back:-translate-x-0.5 transition-transform" />
                 </Button>
               </Link>
             </div>
@@ -1364,20 +1382,20 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setFontSize(prev => Math.max(12, prev - 1))}
-                className="h-7 w-7 hover:bg-primary/10 hover:text-primary rounded-lg flex items-center justify-center p-0"
+                className="h-8 w-8 hover:bg-primary/10 hover:text-primary rounded-lg flex items-center justify-center p-0"
               >
-                <Minus size={9} />
+                <Minus size={14} />
               </Button>
               <div className="flex items-center px-1 min-w-[1.4rem] justify-center select-none">
-                <span className="text-[10px] font-black text-foreground">{fontSize}</span>
+                <span className="text-[12px] font-black text-foreground">{fontSize}</span>
               </div>
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setFontSize(prev => Math.min(26, prev + 1))}
-                className="h-7 w-7 hover:bg-primary/10 hover:text-primary rounded-lg flex items-center justify-center p-0"
+                className="h-8 w-8 hover:bg-primary/10 hover:text-primary rounded-lg flex items-center justify-center p-0"
               >
-                <Plus size={9} />
+                <Plus size={14} />
               </Button>
             </div>
           )}
@@ -1450,11 +1468,11 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               size="icon" 
               onClick={() => setAiPromptOpen(prev => !prev)}
               className={cn(
-                "h-10 w-10 text-primary hover:bg-transparent transition-all flex items-center justify-center relative group/ai-mob",
+                "h-12 w-12 text-primary hover:bg-transparent transition-all flex items-center justify-center relative group/ai-mob",
                 aiPromptOpen ? "text-primary scale-110" : "text-muted-foreground/60"
               )}
             >
-              <BrainCircuit className={cn("w-[16px] h-[16px] max-sm:w-[18px] max-sm:h-[18px] relative z-10", (isAuditing || aiPromptOpen) && "animate-pulse text-primary")} />
+              <BrainCircuit className={cn("w-[16px] h-[16px] max-sm:w-[24px] max-sm:h-[24px] relative z-10", (isAuditing || aiPromptOpen) && "animate-pulse text-primary")} />
             </Button>
           </div>
         )}
@@ -1481,7 +1499,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               onClick={handleOpenPlans}
               className="h-6 gap-1 px-2 rounded-md text-primary hover:bg-primary/10 transition-all font-bold text-[8px] uppercase tracking-widest flex items-center border border-primary/20 bg-primary/5 hover:border-primary/45 shadow-sm shadow-primary/5 group max-sm:hidden"
             >
-              <Brain className="w-3 h-3 max-sm:w-[18px] max-sm:h-[18px] text-primary animate-pulse shrink-0 group-hover:scale-110 transition-transform" />
+              <Brain className="w-3 h-3 max-sm:w-[22px] max-sm:h-[22px] text-primary animate-pulse shrink-0 group-hover:scale-110 transition-transform" />
               <span>{credits !== null ? `${credits} Sinapses` : "..."}</span>
             </Button>
           )}
@@ -1506,7 +1524,9 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
 
 
       <div className={cn("flex-1 flex relative overflow-hidden h-full transition-all duration-700")}>
-        {!readOnly && (
+        {/* Sidebars removidas do Desktop mas mantidas no código para uso futuro */}
+        {/* @ts-ignore */}
+        {false && !readOnly && (
           <>
             {leftSidebarOpen && (
               <div 
@@ -1662,256 +1682,259 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
           )}
         </div>
 
-        <>
-          {rightSidebarOpen && (
-            <div 
-              onClick={() => setRightSidebarOpen(false)} 
-              className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden pt-[clamp(2.5rem,4vh,3.25rem)]"
-            />
-          )}
-          <aside className={cn(
-            "sidebar-right h-full border-l border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30 max-lg:fixed max-lg:top-[clamp(2.5rem,4vh,3.25rem)] max-lg:bottom-0 max-lg:right-0 max-lg:z-50 max-lg:bg-background/95 max-lg:backdrop-blur-3xl max-lg:border-l max-lg:border-border max-lg:shadow-2xl",
-            rightSidebarOpen ? "w-[22vw] min-w-[17rem] max-w-[26rem] max-lg:w-[75vw] max-lg:max-w-[20rem]" : "w-0 opacity-0 pointer-events-none overflow-hidden max-lg:hidden"
-          )}>
-          {readOnly ? (
-            <div className="px-6 pb-6 pt-[calc(clamp(2.5rem,4vh,3.25rem)+1.5rem)] max-lg:pt-6 flex flex-col h-full justify-between">
-              {contractStatus === 'signed' ? (
-                <div className="space-y-6 flex flex-col h-full justify-center items-center text-center">
-                  <div className="p-4 bg-emerald-500/10 rounded-full border border-emerald-500/30 animate-pulse mb-2">
-                    <ShieldCheck size={48} className="text-emerald-400" />
-                  </div>
-                  <h3 className="font-heading font-medium text-xs uppercase tracking-[0.2em] text-emerald-400">Contrato Selado</h3>
-                  <div className="space-y-4 max-w-xs">
-                    <p className="font-heading font-medium text-[10px] leading-relaxed text-muted-foreground">
-                      Este instrumento jurídico foi totalmente assinado e selado digitalmente.
-                    </p>
-                    <div className="p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
-                      <span className="font-heading font-medium text-[8px] text-emerald-400 uppercase tracking-widest block mb-1">Status da Assinatura</span>
-                      <span className="font-heading font-medium text-[11px] text-white">IMUTÁVEL & REGISTRADO</span>
+        {/* Barra lateral direita removida do Desktop mas mantida no código para uso futuro */}
+        {/* @ts-ignore */}
+        {false && (
+          <>
+            {rightSidebarOpen && (
+              <div 
+                onClick={() => setRightSidebarOpen(false)} 
+                className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden pt-[clamp(2.5rem,4vh,3.25rem)]"
+              />
+            )}
+            <aside className={cn(
+              "sidebar-right h-full border-l border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30 max-lg:fixed max-lg:top-[clamp(2.5rem,4vh,3.25rem)] max-lg:bottom-0 max-lg:right-0 max-lg:z-50 max-lg:bg-background/95 max-lg:backdrop-blur-3xl max-lg:border-l max-lg:border-border max-lg:shadow-2xl",
+              rightSidebarOpen ? "w-[22vw] min-w-[17rem] max-w-[26rem] max-lg:w-[75vw] max-lg:max-w-[20rem]" : "w-0 opacity-0 pointer-events-none overflow-hidden max-lg:hidden"
+            )}>
+            {readOnly ? (
+              <div className="px-6 pb-6 pt-[calc(clamp(2.5rem,4vh,3.25rem)+1.5rem)] max-lg:pt-6 flex flex-col h-full justify-between">
+                {contractStatus === 'signed' ? (
+                  <div className="space-y-6 flex flex-col h-full justify-center items-center text-center">
+                    <div className="p-4 bg-emerald-500/10 rounded-full border border-emerald-500/30 animate-pulse mb-2">
+                      <ShieldCheck size={48} className="text-emerald-400" />
                     </div>
-                    <p className="font-heading font-medium text-[10px] text-muted-foreground/60 italic leading-normal">
-                      Qualquer tentativa de edição foi bloqueada para preservar a integridade jurídica das assinaturas.
-                    </p>
-                  </div>
-                  <div className="h-10" />
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4">
-                    <ShieldCheck size={24} className="text-primary animate-pulse" />
-                    <h3 className="font-heading font-medium text-[11px] uppercase tracking-[0.2em]">Assinatura Digital</h3>
-                  </div>
-                  <div className="space-y-4">
-                    <p className="font-heading font-medium text-[10px] leading-relaxed text-muted-foreground">Revise o documento e preencha as credenciais para assinar.</p>
-                    <div className="space-y-3">
-                      <label className="font-heading font-medium text-[9px] text-muted-foreground uppercase">E-mail</label>
-                      <input type="email" value={signerEmail} onChange={(e) => setSignerEmail(e.target.value)} placeholder="Seu e-mail..." className="font-heading font-medium w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-[11px] font-semibold" />
+                    <h3 className="font-heading font-medium text-xs uppercase tracking-[0.2em] text-emerald-400">Contrato Selado</h3>
+                    <div className="space-y-4 max-w-xs">
+                      <p className="font-heading font-medium text-[10px] leading-relaxed text-muted-foreground">
+                        Este instrumento jurídico foi totalmente assinado e selado digitalmente.
+                      </p>
+                      <div className="p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
+                        <span className="font-heading font-medium text-[8px] text-emerald-400 uppercase tracking-widest block mb-1">Status da Assinatura</span>
+                        <span className="font-heading font-medium text-[11px] text-white">IMUTÁVEL & REGISTRADO</span>
+                      </div>
+                      <p className="font-heading font-medium text-[10px] text-muted-foreground/60 italic leading-normal">
+                        Qualquer tentativa de edição foi bloqueada para preservar a integridade jurídica das assinaturas.
+                      </p>
                     </div>
-                    <div className="space-y-3">
-                      <label className="font-heading font-medium text-[9px] text-muted-foreground uppercase">Código (6 dígitos)</label>
-                      <input type="text" maxLength={6} value={sealingCode} onChange={(e) => setSealingCode(e.target.value.replace(/\D/g, ''))} placeholder="123456" className="font-heading font-medium w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-center text-lg font-bold tracking-[0.5em]" />
-                    </div>
-                    <div className="flex items-start gap-3 mt-4">
-                      <input type="checkbox" id="consent" checked={consentCheck} onChange={(e) => setConsentCheck(e.target.checked)} className="mt-0.5 rounded text-primary focus:ring-0" />
-                      <label htmlFor="consent" className="font-heading font-medium text-[10px] text-muted-foreground leading-normal cursor-pointer">Declaro que li e concordo com os termos.</label>
-                    </div>
-                  </div>
-                </div>
-              )}
-              {contractStatus !== 'signed' && (
-                <Button onClick={handleConfirmSignature} disabled={isSealing || !consentCheck} className="font-heading font-medium w-full bg-primary py-5 rounded-2xl font-bold text-[11px] uppercase">Assinar Instrumento</Button>
-              )}
-            </div>
-          ) : (
-            <div className="px-4 pb-6 pt-[calc(clamp(2.5rem,4vh,3.25rem)+1.5rem)] max-lg:pt-6 flex flex-col h-full overflow-hidden min-h-0 space-y-4">
-              <div className="flex items-center justify-between border-b border-border/40 pb-2">
-                <div className="flex items-center gap-2">
-                  <BrainCircuit size={12} className={cn("text-primary", isAuditing && "animate-pulse")} />
-                  <h3 className="font-heading font-medium text-[11px] tracking-[0.2em] text-foreground">
-                    {docType === "notificacao" ? "Sugestões de Seções" : "Sugestões de Cláusulas"}
-                  </h3>
-                </div>
-              </div>
-              {/* Seção 1: Score ou Iniciar Auditoria (Fixado no topo) */}
-              <div className="shrink-0">
-                {!hasAudited ? (
-                  <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/10 space-y-3 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
-                    <p className="font-heading font-medium text-xs text-muted-foreground leading-relaxed">
-                      {docType === "notificacao"
-                        ? "Rode a análise inteligente para escanear o documento e sugerir seções e termos complementares sob demanda."
-                        : "Rode a análise inteligente para escanear o documento e sugerir cláusulas protetoras complementares sob demanda."}
-                    </p>
-                    <Button 
-                      onClick={runAudit} 
-                      disabled={isAuditing} 
-                      className="font-heading font-medium w-full bg-transparent border border-primary/50 text-primary hover:bg-primary hover:border-primary hover:text-primary-foreground text-[10px] font-bold uppercase tracking-[0.2em] h-8 rounded-xl transition-all shadow-[0_0_10px_rgba(var(--primary),0.05)] hover:shadow-[0_0_20px_rgba(var(--primary),0.2)]"
-                    >
-                      {docType === "notificacao" ? "Analisar Notificação" : "Analisar Cláusulas"}
-                    </Button>
+                    <div className="h-10" />
                   </div>
                 ) : (
-                  <div className="p-3.5 rounded-xl bg-muted/30 border space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-heading font-medium text-[11px] text-muted-foreground uppercase tracking-wider">Proteção Estimada</span>
-                      <span className={cn("font-heading font-medium text-[9.5px] uppercase px-2 py-0.5 rounded-full", auditStatus.color)}>{auditStatus.label}</span>
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-4">
+                      <ShieldCheck size={24} className="text-primary animate-pulse" />
+                      <h3 className="font-heading font-medium text-[11px] uppercase tracking-[0.2em]">Assinatura Digital</h3>
                     </div>
-                    <div className="flex items-baseline gap-1">
-                      <span className="font-heading font-medium text-2xl">{auditScore}</span>
-                      <span className="font-heading font-medium text-[11px] text-primary">%</span>
+                    <div className="space-y-4">
+                      <p className="font-heading font-medium text-[10px] leading-relaxed text-muted-foreground">Revise o documento e preencha as credenciais para assinar.</p>
+                      <div className="space-y-3">
+                        <label className="font-heading font-medium text-[9px] text-muted-foreground uppercase">E-mail</label>
+                        <input type="email" value={signerEmail} onChange={(e) => setSignerEmail(e.target.value)} placeholder="Seu e-mail..." className="font-heading font-medium w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-[11px] font-semibold" />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="font-heading font-medium text-[9px] text-muted-foreground uppercase">Código (6 dígitos)</label>
+                        <input type="text" maxLength={6} value={sealingCode} onChange={(e) => setSealingCode(e.target.value.replace(/\D/g, ''))} placeholder="123456" className="font-heading font-medium w-full bg-muted/40 border border-border rounded-xl px-4 py-2.5 text-center text-lg font-bold tracking-[0.5em]" />
+                      </div>
+                      <div className="flex items-start gap-3 mt-4">
+                        <input type="checkbox" id="consent" checked={consentCheck} onChange={(e) => setConsentCheck(e.target.checked)} className="mt-0.5 rounded text-primary focus:ring-0" />
+                        <label htmlFor="consent" className="font-heading font-medium text-[10px] text-muted-foreground leading-normal cursor-pointer">Declaro que li e concordo com os termos.</label>
+                      </div>
                     </div>
-                    <p className="font-heading font-medium text-xs text-muted-foreground leading-relaxed italic">{auditStatus.desc}</p>
                   </div>
                 )}
+                {contractStatus !== 'signed' && (
+                  <Button onClick={handleConfirmSignature} disabled={isSealing || !consentCheck} className="font-heading font-medium w-full bg-primary py-5 rounded-2xl font-bold text-[11px] uppercase">Assinar Instrumento</Button>
+                )}
               </div>
-
-              {/* Seção 2: Árvore Interativa de Cláusulas (Mapa do Instrumento) */}
-              <div className="flex flex-col flex-1 min-h-0 space-y-4">
-                <div className="flex items-center gap-2 border-b border-border/40 pb-2 shrink-0">
-                  <span className="font-heading font-medium text-xs text-muted-foreground tracking-widest">
-                    {docType === "notificacao" ? "Estrutura da Notificação" : "Estrutura do Contrato"}
-                  </span>
+            ) : (
+              <div className="px-4 pb-6 pt-[calc(clamp(2.5rem,4vh,3.25rem)+1.5rem)] max-lg:pt-6 flex flex-col h-full overflow-hidden min-h-0 space-y-4">
+                <div className="flex items-center justify-between border-b border-border/40 pb-2">
+                  <div className="flex items-center gap-2">
+                    <BrainCircuit size={12} className={cn("text-primary", isAuditing && "animate-pulse")} />
+                    <h3 className="font-heading font-medium text-[11px] tracking-[0.2em] text-foreground">
+                      {docType === "notificacao" ? "Sugestões de Seções" : "Sugestões de Cláusulas"}
+                    </h3>
+                  </div>
                 </div>
-                
-                <ScrollArea className="flex-1 pr-3 scrollbar-minimalist min-h-0">
-                  {getClauses().length === 0 ? (
-                    <div className="text-center py-6">
-                      <span className="text-xs text-muted-foreground font-semibold">
-                        {docType === "notificacao" ? "Nenhuma seção identificada ainda." : "Nenhuma cláusula identificada ainda."}
-                      </span>
+                {/* Seção 1: Score ou Iniciar Auditoria (Fixado no topo) */}
+                <div className="shrink-0">
+                  {!hasAudited ? (
+                    <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/10 space-y-3 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
+                      <p className="font-heading font-medium text-xs text-muted-foreground leading-relaxed">
+                        {docType === "notificacao"
+                          ? "Rode a análise inteligente para escanear o documento e sugerir seções e termos complementares sob demanda."
+                          : "Rode a análise inteligente para escanear o documento e sugerir cláusulas protetoras complementares sob demanda."}
+                      </p>
+                      <Button 
+                        onClick={runAudit} 
+                        disabled={isAuditing} 
+                        className="font-heading font-medium w-full bg-transparent border border-primary/50 text-primary hover:bg-primary hover:border-primary hover:text-primary-foreground text-[10px] font-bold uppercase tracking-[0.2em] h-8 rounded-xl transition-all shadow-[0_0_10px_rgba(var(--primary),0.05)] hover:shadow-[0_0_20px_rgba(var(--primary),0.2)]"
+                      >
+                        {docType === "notificacao" ? "Analisar Notificação" : "Analisar Cláusulas"}
+                      </Button>
                     </div>
                   ) : (
-                    <div className="relative pl-[30px] pr-3 py-1 space-y-3.5 before:absolute before:left-[12.25px] before:top-2 before:bottom-2 before:w-[1.5px] before:bg-border/60">
-                      {getClauses().map((clause, idx, array) => {
-                        const nextClause = array[idx + 1]
-                        const clauseRisks = getClauseRisks(clause.pos, nextClause?.pos)
-                        const hasUnoptimizedRisk = clauseRisks.some(risk => !optimizedRisks.includes(risk.id))
-                        const hasRisk = clauseRisks.length > 0 && hasUnoptimizedRisk
-                        const subItems = getClauseSubItems(clause.pos, nextClause?.pos)
-                        const visibleSubItems = subItems.slice(0, 4)
-                        const hasMore = subItems.length > 4
- 
-                        return (
-                          <div key={clause.id} className="relative group/clause">
-                            {/* Indicador de Status na Árvore */}
-                            <div className={cn(
-                              "absolute -left-[24px] top-0.5 h-3.5 w-3.5 rounded-full border-2 bg-background flex items-center justify-center transition-all duration-300 z-10",
-                              !hasAudited 
-                                ? "border-muted-foreground/30" 
-                                : hasRisk 
-                                  ? "border-amber-500 bg-amber-950/20" 
-                                  : "border-emerald-500 bg-emerald-950/20"
-                            )}>
-                              {hasAudited && (
-                                hasRisk 
-                                  ? <div className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                                  : <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                              )}
-                            </div>
- 
-                            <div className="space-y-2">
-                              <button
-                                onClick={() => editor.chain().focus().setTextSelection(clause.pos).run()}
-                                className="flex items-center justify-between w-full text-left group-hover/clause:text-primary transition-all"
-                              >
-                                <span className="font-heading font-medium text-xs uppercase tracking-wider truncate max-w-[220px] text-foreground/80 group-hover/clause:text-primary">
-                                  {clause.title}
-                                </span>
+                    <div className="p-3.5 rounded-xl bg-muted/30 border space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="font-heading font-medium text-[11px] text-muted-foreground uppercase tracking-wider">Proteção Estimada</span>
+                        <span className={cn("font-heading font-medium text-[9.5px] uppercase px-2 py-0.5 rounded-full", auditStatus.color)}>{auditStatus.label}</span>
+                      </div>
+                      <div className="flex items-baseline gap-1">
+                        <span className="font-heading font-medium text-2xl">{auditScore}</span>
+                        <span className="font-heading font-medium text-[11px] text-primary">%</span>
+                      </div>
+                      <p className="font-heading font-medium text-xs text-muted-foreground leading-relaxed italic">{auditStatus.desc}</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Seção 2: Árvore Interativa de Cláusulas (Mapa do Instrumento) */}
+                <div className="flex flex-col flex-1 min-h-0 space-y-4">
+                  <div className="flex items-center gap-2 border-b border-border/40 pb-2 shrink-0">
+                    <span className="font-heading font-medium text-xs text-muted-foreground tracking-widest">
+                      {docType === "notificacao" ? "Estrutura da Notificação" : "Estrutura do Contrato"}
+                    </span>
+                  </div>
+                  
+                  <ScrollArea className="flex-1 pr-3 scrollbar-minimalist min-h-0">
+                    {getClauses().length === 0 ? (
+                      <div className="text-center py-6">
+                        <span className="text-xs text-muted-foreground font-semibold">
+                          {docType === "notificacao" ? "Nenhuma seção identificada ainda." : "Nenhuma cláusula identificada ainda."}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="relative pl-[30px] pr-3 py-1 space-y-3.5 before:absolute before:left-[12.25px] before:top-2 before:bottom-2 before:w-[1.5px] before:bg-border/60">
+                        {getClauses().map((clause, idx, array) => {
+                          const nextClause = array[idx + 1]
+                          const clauseRisks = getClauseRisks(clause.pos, nextClause?.pos)
+                          const hasUnoptimizedRisk = clauseRisks.some(risk => !optimizedRisks.includes(risk.id))
+                          const hasRisk = clauseRisks.length > 0 && hasUnoptimizedRisk
+                          const subItems = getClauseSubItems(clause.pos, nextClause?.pos)
+                          const visibleSubItems = subItems.slice(0, 4)
+                          const hasMore = subItems.length > 4
+   
+                          return (
+                            <div key={clause.id} className="relative group/clause">
+                              {/* Indicador de Status na Árvore */}
+                              <div className={cn(
+                                "absolute -left-[24px] top-0.5 h-3.5 w-3.5 rounded-full border-2 bg-background flex items-center justify-center transition-all duration-300 z-10",
+                                !hasAudited 
+                                  ? "border-muted-foreground/30" 
+                                  : hasRisk 
+                                    ? "border-amber-500 bg-amber-950/20" 
+                                    : "border-emerald-500 bg-emerald-950/20"
+                              )}>
                                 {hasAudited && (
                                   hasRisk 
-                                    ? <Badge variant="outline" className="font-heading font-medium text-[10px] h-4 px-1.5 uppercase bg-amber-500/10 text-amber-600 border-amber-500/20 hover:bg-amber-500/10">Sugestão</Badge>
-                                    : <Badge variant="outline" className="font-heading font-medium text-[10px] h-4 px-1.5 uppercase bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/10">OK</Badge>
+                                    ? <div className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                                    : <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                                 )}
-                              </button>
- 
-                              {/* Sub-itens (Parágrafos da Cláusula) */}
-                              {visibleSubItems.length > 0 && (
-                                <div className="pl-2.5 space-y-1 py-0.5 border-l border-border/20 ml-1">
-                                  {visibleSubItems.map((sub) => (
-                                    <button
-                                      key={sub.id}
-                                      onClick={() => editor.chain().focus().setTextSelection(sub.pos).run()}
-                                      className="flex items-center gap-1.5 text-left text-[11px] text-muted-foreground/60 hover:text-primary transition-all w-full min-w-0 group/sub"
-                                    >
-                                      <div className="h-0.5 w-1 bg-muted-foreground/20 group-hover/sub:bg-primary shrink-0 transition-colors" />
-                                      <span className="font-heading font-medium truncate flex-1 min-w-0 italic">
-                                        {sub.text}
-                                      </span>
-                                    </button>
-                                  ))}
-                                  {hasMore && (
-                                    <span className="font-heading font-medium text-xs text-muted-foreground/40 pl-2.5 tracking-widest block leading-none">...</span>
+                              </div>
+   
+                              <div className="space-y-2">
+                                <button
+                                  onClick={() => editor.chain().focus().setTextSelection(clause.pos).run()}
+                                  className="flex items-center justify-between w-full text-left group-hover/clause:text-primary transition-all"
+                                >
+                                  <span className="font-heading font-medium text-xs uppercase tracking-wider truncate max-w-[220px] text-foreground/80 group-hover/clause:text-primary">
+                                    {clause.title}
+                                  </span>
+                                  {hasAudited && (
+                                    hasRisk 
+                                      ? <Badge variant="outline" className="font-heading font-medium text-[10px] h-4 px-1.5 uppercase bg-amber-500/10 text-amber-600 border-amber-500/20 hover:bg-amber-500/10">Sugestão</Badge>
+                                      : <Badge variant="outline" className="font-heading font-medium text-[10px] h-4 px-1.5 uppercase bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/10">OK</Badge>
                                   )}
-                                </div>
-                              )}
+                                </button>
+   
+                                {/* Sub-itens (Parágrafos da Cláusula) */}
+                                {visibleSubItems.length > 0 && (
+                                  <div className="pl-2.5 space-y-1 py-0.5 border-l border-border/20 ml-1">
+                                    {visibleSubItems.map((sub) => (
+                                      <button
+                                        key={sub.id}
+                                        onClick={() => editor.chain().focus().setTextSelection(sub.pos).run()}
+                                        className="flex items-center gap-1.5 text-left text-[11px] text-muted-foreground/60 hover:text-primary transition-all w-full min-w-0 group/sub"
+                                      >
+                                        <div className="h-0.5 w-1 bg-muted-foreground/20 group-hover/sub:bg-primary shrink-0 transition-colors" />
+                                        <span className="font-heading font-medium truncate flex-1 min-w-0 italic">
+                                          {sub.text}
+                                        </span>
+                                      </button>
+                                    ))}
+                                    {hasMore && (
+                                      <span className="font-heading font-medium text-xs text-muted-foreground/40 pl-2.5 tracking-widest block leading-none">...</span>
+                                    )}
+                                  </div>
+                                )}
 
-                              {/* Se de fato houver risco correspondente a esta cláusula, renderiza abaixo dela de forma integrada */}
-                              {hasAudited && hasRisk && (
-                                <div className="pl-3 space-y-2.5 border-l border-amber-500/40 mt-1.5">
-                                  {clauseRisks.map((risk) => {
-                                    const isOptimized = optimizedRisks.includes(risk.id)
-                                    const isPending = pendingOptimization === risk.id
-                                    
-                                    if (isOptimized) {
+                                {/* Se de fato houver risco correspondente a esta cláusula, renderiza abaixo dela de forma integrada */}
+                                {hasAudited && hasRisk && (
+                                  <div className="pl-3 space-y-2.5 border-l border-amber-500/40 mt-1.5">
+                                    {clauseRisks.map((risk) => {
+                                      const isOptimized = optimizedRisks.includes(risk.id)
+                                      const isPending = pendingOptimization === risk.id
+                                      
+                                      if (isOptimized) {
+                                        return (
+                                          <div key={risk.id} className="p-3 rounded-xl border bg-emerald-50/50 dark:bg-emerald-950/10 border-emerald-200/50 dark:border-emerald-500/20 space-y-2">
+                                            <span className="font-heading font-medium text-[11px] text-emerald-600 dark:text-emerald-500 uppercase tracking-widest flex items-center gap-1.5 opacity-80">
+                                              <ShieldCheck size={12} className="text-emerald-600 dark:text-emerald-500" />
+                                              {docType === "notificacao" ? "Seção Adicionada" : "Cláusula Adicionada"}
+                                            </span>
+                                            <Button 
+                                              size="sm" 
+                                              disabled
+                                              className="font-heading font-medium w-full text-[10.5px] font-bold uppercase tracking-widest h-7 rounded-lg transition-all bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-500/30 opacity-70"
+                                            >
+                                              {docType === "notificacao" ? "Seção Inserida" : "Cláusula Inserida"}
+                                            </Button>
+                                          </div>
+                                        )
+                                      }
+                                      
                                       return (
-                                        <div key={risk.id} className="p-3 rounded-xl border bg-emerald-50/50 dark:bg-emerald-950/10 border-emerald-200/50 dark:border-emerald-500/20 space-y-2">
-                                          <span className="font-heading font-medium text-[11px] text-emerald-600 dark:text-emerald-500 uppercase tracking-widest flex items-center gap-1.5 opacity-80">
-                                            <ShieldCheck size={12} className="text-emerald-600 dark:text-emerald-500" />
-                                            {docType === "notificacao" ? "Seção Adicionada" : "Cláusula Adicionada"}
-                                          </span>
+                                        <div key={risk.id} className="p-3.5 rounded-xl border bg-amber-500/5 dark:bg-amber-500/5 border-amber-500/20 space-y-2 shadow-md shadow-amber-950/5">
+                                          {risk.tipo && (
+                                            <span className="font-heading font-medium text-[9px] text-amber-600/70 dark:text-amber-400/60 uppercase tracking-widest block mb-0.5">
+                                              {risk.tipo}
+                                            </span>
+                                          )}
+                                          <p className="font-heading font-medium text-[11px] leading-relaxed text-foreground/85 text-left">
+                                            {renderBoldText(risk.reason)}
+                                          </p>
                                           <Button 
                                             size="sm" 
-                                            disabled
-                                            className="font-heading font-medium w-full text-[10.5px] font-bold uppercase tracking-widest h-7 rounded-lg transition-all bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-500/30 opacity-70"
+                                            disabled={!!pendingOptimization}
+                                            onClick={() => handleOptimizeClause(clause.pos, nextClause?.pos, risk.id, risk.reason)}
+                                            className={cn(
+                                              "font-heading font-medium w-full text-[10.5px] font-bold uppercase tracking-widest h-8 rounded-xl transition-all",
+                                              isPending
+                                                ? "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900 dark:text-amber-400"
+                                                : "bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400",
+                                              !!pendingOptimization && !isPending && "opacity-50 cursor-not-allowed grayscale"
+                                            )}
                                           >
-                                            {docType === "notificacao" ? "Seção Inserida" : "Cláusula Inserida"}
+                                            {isPending ? "Adicionando..." : (docType === "notificacao" ? "Adicionar Seção" : "Adicionar Cláusula")}
                                           </Button>
                                         </div>
                                       )
-                                    }
-                                    
-                                    return (
-                                      <div key={risk.id} className="p-3.5 rounded-xl border bg-amber-500/5 dark:bg-amber-500/5 border-amber-500/20 space-y-2 shadow-md shadow-amber-950/5">
-                                        {risk.tipo && (
-                                          <span className="font-heading font-medium text-[9px] text-amber-600/70 dark:text-amber-400/60 uppercase tracking-widest block mb-0.5">
-                                            {risk.tipo}
-                                          </span>
-                                        )}
-                                        <p className="font-heading font-medium text-[11px] leading-relaxed text-foreground/85 text-left">
-                                          {renderBoldText(risk.reason)}
-                                        </p>
-                                        <Button 
-                                          size="sm" 
-                                          disabled={!!pendingOptimization}
-                                          onClick={() => handleOptimizeClause(clause.pos, nextClause?.pos, risk.id, risk.reason)}
-                                          className={cn(
-                                            "font-heading font-medium w-full text-[10.5px] font-bold uppercase tracking-widest h-8 rounded-xl transition-all",
-                                            isPending
-                                              ? "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900 dark:text-amber-400"
-                                              : "bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400",
-                                            !!pendingOptimization && !isPending && "opacity-50 cursor-not-allowed grayscale"
-                                          )}
-                                        >
-                                          {isPending ? "Adicionando..." : (docType === "notificacao" ? "Adicionar Seção" : "Adicionar Cláusula")}
-                                        </Button>
-                                      </div>
-                                    )
-                                  })}
-                                </div>
-                              )}
+                                    })}
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  )}
-                </ScrollArea>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </ScrollArea>
+                </div>
               </div>
-            </div>
-          )}
-        </aside>
-      </>
-        
+            )}
+          </aside>
+        </>)}
+
         <OnboardingModal isOpen={showOnboarding} onClose={() => setShowOnboarding(false)} onSelectTemplate={handleSelectTemplate} />
         <GoogleAdsOnboarding />
       </div>
@@ -1966,7 +1989,7 @@ export function EditorProvider(props: EditorProviderProps) {
       TableHandleExtension, ListNormalizationExtension, LegalNode, NotificationNode, VariableNode,
       ImageUploadNode.configure({ accept: "image/*", maxSize: MAX_FILE_SIZE, limit: 3, upload: handleImageUpload, onError: (error) => console.error("Upload failed:", error) }),
       UniqueID.configure({ types: ["table", "paragraph", "bulletList", "orderedList", "heading", "blockquote", "codeBlock", "tocNode", "legalNode", "notificationNode"], filterTransaction: (transaction) => !isChangeOrigin(transaction) }),
-      Typography, UiState, TocNode.configure({ topOffset: 48 }), Gemini.configure({ apiKey: geminiKey || "" }), BubbleMenuExtension, AiHighlightManager,
+      Typography, UiState, TocNode.configure({ topOffset: 48 }), Gemini.configure({ apiKey: geminiKey || "" }), Spacer, BubbleMenuExtension, AiHighlightManager,
     ],
   })
 

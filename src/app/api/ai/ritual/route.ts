@@ -254,11 +254,11 @@ REGRAS DE FORMATAÇÃO E DIAGRAMAÇÃO DE LAYOUT INCRÍVEL (ESTRITAS):
      <p class="dense-metadata no-indent"><strong>[Nome Completo do Notificado / Razão Social]</strong></p>
      <p class="dense-metadata no-indent">Inscrito(a) no CPF/CNPJ sob o nº [Número].</p>
      <p class="dense-metadata no-indent">[Endereço Completo do Notificado].</p>
-     <p><br></p>
+     <div data-type="spacer"></div>
    - ETAPA 2 (QUALIFICAÇÃO E PREÂMBULO DO NOTIFICANTE EM PARÁGRAFO ÚNICO):
      <p><strong>[Nome Completo do Notificante / Razão Social]</strong>, inscrito(a) no CPF/CNPJ sob o nº [Número], com endereço em [Endereço Completo do Notificante], na qualidade de <strong>NOTIFICANTE</strong>, vem, por meio desta, <strong>NOTIFICAR VOSSA SENHORIA</strong>, doravante denominado <strong>NOTIFICADO</strong>, em razão dos fatos e fundamentos de direito a seguir expostos:</p>
    - NUNCA invente dados fictícios como nomes, CPFs ou endereços. Use SEMPRE placeholders entre colchetes como [Nome Completo], [Número de CPF/CNPJ] e [Endereço Completo].
-   - NUNCA use tabelas (<table>) no preâmbulo. Não insira parágrafos vazios ou linhas em branco intermediárias fora da separação das etapas.
+   - NUNCA use tabelas (<table>) no preâmbulo. É TERMINANTEMENTE PROIBIDO inserir parágrafos vazios (<p><br></p>) ou linhas em branco entre o direcionamento ao Notificado (ETAPA 1) e o preâmbulo do Notificante (ETAPA 2). Em vez disso, utilize a tag <div data-type="spacer"></div> entre as duas etapas para criar um respiro visual técnico e preciso de exatamente uma linha.
 7. Destaque de Prazos e Valores: Utilize tags <strong> no corpo do texto para destacar valores em reais (ex: <strong>R$ 10.000,00</strong>) e prazos cruciais (ex: <strong>5 (cinco) dias</strong>).
 8. Seção de Fechamento e Assinatura Compacta: No final do documento, insira um único parágrafo de quebra (<p><br></p>) e centralize a data e os campos de assinatura (usando data-node-text-align="center" e style="text-align: center;"). A assinatura deve vir compactada:
     <p><br></p>

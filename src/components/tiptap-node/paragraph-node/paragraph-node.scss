@@ -45,6 +45,21 @@
     margin-bottom: 2px !important; // Reduz o espaçamento entrelinhas das qualificações densas para um visual compacto e solene
   }
 
+  p.spacer-before {
+    margin-top: 6px !important;
+  }
+
+  p.spacer-after {
+    margin-bottom: 8px !important;
+  }
+
+  .doc-spacer {
+    height: 18px;
+    width: 100%;
+    pointer-events: none;
+    user-select: none;
+  }
+
   // Reduz o espaço de linhas vazias/br (separadores) para um layout mais compacto
   p:has(br:only-child) {
     margin-bottom: 4px !important;

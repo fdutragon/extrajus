@@ -26,23 +26,23 @@ interface Step {
 
 const STEPS: Step[] = [
   {
-    title: "Documentos prontos em",
-    highlight: "segundos",
-    description: "Esqueça horas de redação. Digite o que precisa e a Lilith entrega a estrutura jurídica completa instantaneamente.",
+    title: "Poder de redação",
+    highlight: "instantâneo",
+    description: "Esqueça a fadiga mental. Digite seu comando e veja a Lilith materializar estruturas jurídicas complexas em segundos.",
     icon: <Zap size={32} />,
     color: "text-amber-500"
   },
   {
     title: "Blindagem jurídica",
-    highlight: "absoluta",
-    description: "Nossa IA foi treinada na legislação brasileira para garantir que cada parágrafo seja uma fortaleza de direitos.",
+    highlight: "inquebrável",
+    description: "Cada parágrafo é uma fortaleza. Nossa inteligência é treinada na elite da legislação brasileira para proteger cada letra.",
     icon: <ShieldCheck size={32} />,
     color: "text-emerald-500"
   },
   {
-    title: "Dominação através da",
-    highlight: "inteligência",
-    description: "Você no comando, Lilith na execução. O editor jurídico mais avançado do mercado ao seu dispor.",
+    title: "Domine o seu",
+    highlight: "destino",
+    description: "Você dita o ritmo, a Lilith executa a perfeição. O editor jurídico mais letal e sofisticado do mercado ao seu dispor.",
     icon: <BrainCircuit size={32} />,
     color: "text-primary"
   }
@@ -90,6 +90,8 @@ export function GoogleAdsOnboarding() {
       setProgress(0)
     } else {
       setIsOpen(false)
+      // Custom event to trigger AI Prompt in the editor
+      window.dispatchEvent(new CustomEvent('start-ai-onboarding'))
     }
   }
 
@@ -98,7 +100,7 @@ export function GoogleAdsOnboarding() {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="max-w-md bg-zinc-950/95 border-none p-0 overflow-hidden rounded-[2.5rem] shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+      <DialogContent className="max-w-md bg-zinc-950/95 border-none p-0 overflow-hidden rounded-[2.5rem] shadow-[0_0_50px_rgba(var(--primary-rgb),0.3)]">
         <div className="relative p-10 flex flex-col items-center text-center gap-8 min-h-[450px] justify-center overflow-hidden">
           {/* Background FX */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(var(--primary-rgb),0.15),transparent_70%)]" />
@@ -147,7 +149,7 @@ export function GoogleAdsOnboarding() {
               onClick={handleNext}
               className="w-full h-14 rounded-2xl bg-white text-black hover:bg-zinc-200 font-black uppercase tracking-widest text-xs gap-2 group transition-all"
             >
-              {isLastStep ? "Dominar Agora" : "Próximo"}
+              {isLastStep ? "Começar" : "Próximo"}
               <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -156,7 +158,7 @@ export function GoogleAdsOnboarding() {
           {isLastStep && (
             <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
               <span className="text-[9px] font-black text-primary uppercase tracking-[0.3em] bg-primary/10 px-3 py-1 rounded-full border border-primary/20 backdrop-blur-md">
-                Comece por aqui
+                Libere o Arquiteto
               </span>
               <ArrowDown size={24} className="text-primary" />
             </div>
