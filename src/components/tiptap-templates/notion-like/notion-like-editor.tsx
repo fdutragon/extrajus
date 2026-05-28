@@ -2009,5 +2009,3 @@ export function NotionEditorContent({ placeholder, templateSlug, readOnly: propR
 
   return <EditorProvider provider={provider} ydoc={ydoc} placeholder={placeholder} geminiKey={geminiKey} templateSlug={templateSlug} readOnly={readOnly} isPublic={isPublic} />
 }
-der} geminiKey={geminiKey} templateSlug={templateSlug} readOnly={readOnly} isPublic={isPublic} />
-}
