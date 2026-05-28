@@ -149,7 +149,7 @@ export function GoogleAdsOnboarding() {
                 {step.highlight}
               </span>
             </h2>
-            <p className="text-[15.5px] text-zinc-300 font-medium leading-relaxed px-2">
+            <p className="text-[14px] text-zinc-400 font-medium leading-relaxed px-4">
               {step.description}
             </p>
           </div>
@@ -164,13 +164,11 @@ export function GoogleAdsOnboarding() {
               <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
-
-          {/* Pointer to AI Prompt (only on last step) */}
-          {isLastStep && (
-            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
-              <ArrowDown size={24} className="text-primary" />
-            </div>
-          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
         </div>
       </DialogContent>
     </Dialog>
