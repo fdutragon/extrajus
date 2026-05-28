@@ -275,7 +275,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             {step === "form" && (
               <form onSubmit={handleCheckout} className="flex flex-col space-y-5 max-sm:space-y-5.5 py-2 w-full max-sm:px-2">
                 <div className="flex flex-col">
-                  <label htmlFor="email" className="block text-xs font-black uppercase tracking-widest text-muted-foreground ml-1 mb-2.5 max-sm:mb-3">Seu melhor e-mail</label>
+                  <label htmlFor="email" className="block text-xs font-black uppercase tracking-widest text-muted-foreground mb-2.5 max-sm:mb-3 text-center">Seu melhor e-mail</label>
                   <input 
                     id="email"
                     type="email" 
@@ -285,7 +285,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                     required
                     className="flex h-11 max-sm:h-12 w-full rounded-xl border border-input bg-background/50 px-4 py-2 text-sm max-sm:text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)]"
                   />
-                  <p className="text-[10px] text-muted-foreground font-medium mt-2 text-center">Enviaremos o documento para este e-mail</p>
+                  <p className="text-[10px] md:text-xs text-muted-foreground font-medium mt-2 text-center">Enviaremos o documento para este e-mail</p>
                 </div>
                 <Button 
                   type="submit" 
