@@ -1,6 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
-import { v4 as uuidv4 } from "uuid";import { getSecret } from "@/utils/secrets";
+import { v4 as uuidv4 } from "uuid";
+import { getSecret } from "@/utils/secrets";
+import { sendTelegramNotification } from "@/lib/notifications";
 
 const GGPIX_API_URL = "https://ggpixapi.com/api/v1/pix/in";
 
@@ -72,6 +74,10 @@ export async function POST(request: Request) {
       .from("transactions")
       .update({ pix_code: data.pixCopyPaste })
       .eq("external_id", externalId);
+
+    // Notificar o Cadelo via Telegram sobre a intenção de compra
+    const formattedAmount = (amountCents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    await sendTelegramNotification(`⚡ <b>PIX GERADO (CRÉDITOS)</b>\n\n💵 Valor: <b>${formattedAmount}</b>\n👤 Cliente: <b>${user.user_metadata?.full_name || user.email}</b>\n🆔 ID: <code>${externalId}</code>\n⏳ Aguardando o dinheiro cair...`);
 
     return NextResponse.json({ 
       pixCode: data.pixCopyPaste, 

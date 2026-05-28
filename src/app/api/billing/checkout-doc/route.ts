@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { v4 as uuidv4 } from "uuid";
 import { getSecret } from "@/utils/secrets";
+import { sendTelegramNotification } from "@/lib/notifications";
 
 const GGPIX_API_URL = "https://ggpixapi.com/api/v1/pix/in";
 
@@ -154,6 +155,10 @@ export async function POST(request: Request) {
       .from("transactions")
       .update({ pix_code: data.pixCopyPaste })
       .eq("external_id", externalId);
+
+    // Notificar o Cadelo via Telegram sobre o interesse no documento
+    const formattedAmount = (amountCents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    await sendTelegramNotification(`⚡ <b>PIX GERADO (DOCUMENTO)</b>\n\n💵 Valor: <b>${formattedAmount}</b>\n📄 Documento: <b>${title || 'Sem título'}</b>\n👤 Cliente: <b>${name}</b> (${email})\n🆔 ID: <code>${externalId}</code>\n⏳ Só falta pagar para o lucro entrar!`);
 
     return NextResponse.json({ 
       pixCode: data.pixCopyPaste, 

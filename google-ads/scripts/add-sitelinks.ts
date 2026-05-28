@@ -45,8 +45,8 @@ async function main() {
     ];
 
     const sitelinkAssets = sitelinksData.map(sl => ({
-      create: { // Operação de criação
-        type: 'SITELINK',
+      create: {
+        type: client.enums.AssetType.SITELINK, // Usando o enum da API
         sitelink_asset: {
           link_text: sl.linkText,
           description1: sl.description1,
