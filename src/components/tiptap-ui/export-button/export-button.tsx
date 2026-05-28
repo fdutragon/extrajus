@@ -10,12 +10,14 @@ export function ExportButton({
   isPublic = false,
   docType = "contrato",
   title = "Documento",
-  content = ""
+  content = "",
+  variant = "toolbar"
 }: { 
   isPublic?: boolean
   docType?: string
   title?: string
   content?: string
+  variant?: "toolbar" | "premium"
 }) {
   const [isExporting, setIsExporting] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -227,24 +229,41 @@ export function ExportButton({
     }
   }
 
+  const isPremium = variant === "premium"
+
   return (
     <>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-8 gap-2 max-sm:gap-0 px-4 max-sm:px-0 max-sm:w-10 max-sm:h-10 text-muted-foreground hover:text-foreground dark:hover:bg-primary/5 rounded-full transition-all group border border-transparent hover:border-border/40 flex items-center justify-center shrink-0"
-        onClick={handleExportClick}
-        disabled={isExporting}
-      >
-        {isExporting ? (
-          <Loader2 className="w-3 h-3 max-sm:w-[18px] max-sm:h-[18px] animate-spin text-primary" />
-        ) : (
-          <Download className="w-3 h-3 max-sm:w-[18px] max-sm:h-[18px] transition-transform" />
-        )}
-        <span className="text-[9px] font-black uppercase tracking-[0.2em] leading-none max-sm:hidden">
-          {isExporting ? "Exportando" : "Baixar"}
-        </span>
-      </Button>
+      {isPremium ? (
+        <Button
+          onClick={handleExportClick}
+          disabled={isExporting}
+          className="w-full max-w-[28rem] h-14 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black tracking-[0.15em] uppercase rounded-2xl transition-all shadow-[0_4px_20px_rgba(16,185,129,0.25)] hover:shadow-[0_4px_30px_rgba(16,185,129,0.45)] flex items-center justify-center gap-2 duration-300 transform hover:-translate-y-0.5 border border-emerald-500/20 text-xs active:scale-98"
+        >
+          {isExporting ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <Download className="w-5 h-5 animate-bounce" />
+          )}
+          <span>{isExporting ? "Preparando Notificação..." : "Baixar Notificação (.DOCX)"}</span>
+        </Button>
+      ) : (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 gap-2 max-sm:gap-0 px-4 max-sm:px-0 max-sm:w-10 max-sm:h-10 text-muted-foreground hover:text-foreground dark:hover:bg-primary/5 rounded-full transition-all group border border-transparent hover:border-border/40 flex items-center justify-center shrink-0"
+          onClick={handleExportClick}
+          disabled={isExporting}
+        >
+          {isExporting ? (
+            <Loader2 className="w-3 h-3 max-sm:w-[18px] max-sm:h-[18px] animate-spin text-primary" />
+          ) : (
+            <Download className="w-3 h-3 max-sm:w-[18px] max-sm:h-[18px] transition-transform" />
+          )}
+          <span className="text-[9px] font-black uppercase tracking-[0.2em] leading-none max-sm:hidden">
+            {isExporting ? "Exportando" : "Baixar"}
+          </span>
+        </Button>
+      )}
 
       {/* Checkout Paywall para Visitantes */}
       {isPublic && (

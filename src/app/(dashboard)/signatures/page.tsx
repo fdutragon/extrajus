@@ -683,12 +683,6 @@ export default function SignaturesPage() {
                                    </Button>
                                  )}
 
-                                 <Button 
-                                    onClick={() => handleDownloadContract(selectedDoc)}
-                                    className="w-full h-12 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 hover:bg-emerald-500/10 transition-all active:scale-95 flex items-center justify-center gap-2"
-                                 >
-                                    <Download size={12} /> Baixar Contrato (.DOCX)
-                                 </Button>
                               </div>
                            </div>
                         </div>

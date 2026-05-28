@@ -218,50 +218,50 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             if (step === "success" && !open) onClose();
           }}>
           <DialogContent 
-            className="w-full max-w-[92vw] md:max-w-[48rem] lg:max-w-[52rem] bg-background border border-border text-foreground rounded-[28px] max-sm:rounded-[24px] max-sm:!top-[50%] max-sm:!left-[50%] max-sm:!-translate-x-1/2 max-sm:!-translate-y-1/2 max-sm:w-[94vw] max-sm:max-h-[90vh] max-sm:h-auto max-sm:flex max-sm:flex-col shadow-[0_0_50px_rgba(139,92,246,0.15)] p-[1.375rem] max-sm:p-5 max-h-[94vh] overflow-y-auto transition-all duration-500 [&>button:last-child]:hidden"
+            className="w-full max-w-[92vw] md:max-w-[48rem] lg:max-w-[52rem] bg-background border border-border text-foreground rounded-[28px] max-sm:rounded-[24px] max-sm:!top-[50%] max-sm:!left-[50%] max-sm:!-translate-x-1/2 max-sm:!-translate-y-1/2 max-sm:w-[94vw] max-sm:h-[95vh] max-sm:max-h-[95vh] max-sm:overflow-hidden max-sm:flex max-sm:flex-col shadow-[0_0_50px_rgba(139,92,246,0.15)] p-[1.375rem] max-sm:p-5 max-h-[94vh] overflow-y-auto transition-all duration-500 [&>button:last-child]:hidden"
           >
           {/* Soft Occult Ambient Highlights (Adaptive to Theme) */}
           <div className="absolute top-0 right-0 w-36 h-36 bg-primary/5 rounded-full blur-[60px] pointer-events-none" />
           <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-primary/5 rounded-full blur-[60px] pointer-events-none" />
           <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary/45 to-transparent" />
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 max-sm:gap-4 md:gap-6 relative z-10 max-sm:px-1">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 max-sm:gap-2.5 md:gap-6 relative z-10 max-sm:px-1 max-sm:flex-1 max-sm:flex max-sm:flex-col max-sm:justify-between max-sm:h-full max-sm:overflow-hidden">
 
           {/* Painel Esquerdo: A Oferta Suprema (6 colunas) */}
-          <div className="md:col-span-6 flex flex-col justify-center border-b md:border-b-0 md:border-r border-border/60 pb-3 max-sm:pb-4 md:pb-0 md:pr-5 lg:pr-6 space-y-3 max-sm:space-y-3">
-            <div className="space-y-3 max-sm:space-y-2 max-sm:pt-1 max-sm:flex max-sm:flex-col max-sm:items-center max-sm:text-center">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 max-sm:py-1 max-sm:px-3 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
-                <CheckCircle2 size={14} className="text-emerald-500 animate-pulse max-sm:w-[14px] max-sm:h-[14px]" />
-                <span className="text-[10px] max-sm:text-[11px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Acesso Vitalício Liberado</span>
+          <div className="md:col-span-6 flex flex-col justify-center border-b md:border-b-0 md:border-r border-border/60 pb-3 max-sm:pb-2.5 md:pb-0 md:pr-5 lg:pr-6 space-y-3 max-sm:space-y-1.5 shrink-0">
+            <div className="space-y-3 max-sm:space-y-1 max-sm:pt-0 max-sm:flex max-sm:flex-col max-sm:items-center max-sm:text-center">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 max-sm:py-0.5 max-sm:px-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                <CheckCircle2 size={14} className="text-emerald-500 animate-pulse max-sm:w-[12px] max-sm:h-[12px]" />
+                <span className="text-[10px] max-sm:text-[9.5px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Acesso Vitalício Liberado</span>
               </div>
 
-              <h3 className="text-[1.65rem] max-sm:text-[1.4rem] font-black text-foreground leading-[1.1] tracking-tight whitespace-nowrap max-sm:mt-2">
+              <h3 className="text-[1.65rem] max-sm:text-[1.2rem] font-black text-foreground leading-[1.1] tracking-tight whitespace-nowrap max-sm:mt-1">
                 Libere {docType === "notificacao" ? "sua" : "seu"} <span className="bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">{docType === "notificacao" ? "Notificação" : "Contrato"}</span>
               </h3>
 
-              <p className="text-[0.825rem] max-sm:text-[0.925rem] max-sm:leading-[1.5] text-muted-foreground leading-relaxed font-medium">
+              <p className="text-[0.825rem] max-sm:text-[0.78rem] max-sm:leading-[1.4] text-muted-foreground leading-relaxed font-medium">
                 Finalize agora para baixar o arquivo editável em <strong className="text-foreground font-bold">Word (.DOCX)</strong>. O documento é seu: use, replique e adapte quantas vezes desejar, sem restrições.
               </p>
             </div>
 
             {/* Box de Preço Único */}
-            <div className="pt-1 max-sm:pt-3 max-sm:flex max-sm:flex-col max-sm:items-center">
-              <div className="text-[0.625rem] max-sm:text-[0.75rem] font-black text-muted-foreground/60 uppercase tracking-widest mb-1 max-sm:mb-1">Investimento Único</div>
+            <div className="pt-1 max-sm:pt-1 max-sm:flex max-sm:flex-col max-sm:items-center">
+              <div className="text-[0.625rem] max-sm:text-[0.7rem] font-black text-muted-foreground/60 uppercase tracking-widest mb-1 max-sm:mb-0.5">Investimento Único</div>
               <div className="flex items-baseline gap-1.5 max-sm:gap-1.5">
-                <span className="text-[1.75rem] max-sm:text-[1.8rem] font-black text-foreground">R$ 29,00</span>
-                <span className="text-[0.625rem] max-sm:text-[0.8rem] font-bold text-muted-foreground uppercase">/ download</span>
+                <span className="text-[1.75rem] max-sm:text-[1.6rem] font-black text-foreground">R$ 29,00</span>
+                <span className="text-[0.625rem] max-sm:text-[0.75rem] font-bold text-muted-foreground uppercase">/ download</span>
               </div>
             </div>
           </div>
 
           {/* Painel Direito: Formulário, PIX ou Sucesso (6 colunas) */}
-          <div className="md:col-span-6 flex flex-col justify-center min-h-[260px] max-sm:min-h-0 max-sm:pt-2">
-            <DialogHeader className="mb-2 max-sm:mb-3 text-center flex flex-col items-center">
-              <DialogTitle className="flex items-center justify-center gap-2 text-[1rem] max-sm:text-[1.1rem] font-black tracking-[0.12em] bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">
-                <Lock size={18} className="text-primary animate-pulse filter drop-shadow-[0_0_6px_rgba(139,92,246,0.4)] max-sm:w-[16px] max-sm:h-[16px]" />
+          <div className="md:col-span-6 flex flex-col justify-center min-h-[260px] max-sm:min-h-0 max-sm:pt-1.5 max-sm:flex-1 max-sm:justify-start">
+            <DialogHeader className="mb-2 max-sm:mb-1.5 text-center flex flex-col items-center">
+              <DialogTitle className="flex items-center justify-center gap-2 text-[1rem] max-sm:text-[0.95rem] font-black tracking-[0.12em] bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">
+                <Lock size={18} className="text-primary animate-pulse filter drop-shadow-[0_0_6px_rgba(139,92,246,0.4)] max-sm:w-[14px] max-sm:h-[14px]" />
                 {step === "form" ? "Acesso ao Documento" : step === "pix" ? "Finalizar Pagamento" : "Sucesso!"}
               </DialogTitle>
-              <DialogDescription className="text-[0.825rem] max-sm:text-[0.875rem] max-sm:leading-[1.4] text-muted-foreground font-medium tracking-wide mt-1 max-sm:mt-1 leading-relaxed text-center">
+              <DialogDescription className="text-[0.825rem] max-sm:text-[0.78rem] max-sm:leading-[1.35] text-muted-foreground font-medium tracking-wide mt-1 max-sm:mt-0.5 leading-relaxed text-center">
                 {step === "form"
                   ? "Para continuar, informe seu e-mail principal. Enviaremos uma cópia em PDF e o recibo para ele."
                   : step === "pix"

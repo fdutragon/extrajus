@@ -1656,6 +1656,17 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                     </div>
                   )}
                   <EditorContentArea />
+                  {editor && !editor.isEmpty && docType === "notificacao" && (
+                    <div className="mt-12 flex justify-center pb-8 border-t border-border/40 pt-8 animate-in fade-in slide-in-from-bottom-3 duration-500 max-sm:px-4">
+                      <ExportButton 
+                        isPublic={isPublic} 
+                        docType={docType} 
+                        title={fileName} 
+                        content={editor?.getHTML() || ""} 
+                        variant="premium" 
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
