@@ -218,50 +218,50 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             if (step === "success" && !open) onClose();
           }}>
           <DialogContent 
-            className="w-full max-w-[92vw] md:max-w-[48rem] lg:max-w-[52rem] bg-background border border-border text-foreground rounded-[28px] max-sm:rounded-none max-sm:!top-0 max-sm:!left-0 max-sm:!translate-x-0 max-sm:!translate-y-0 max-sm:!w-full max-sm:!max-w-full max-sm:h-dvh max-sm:!max-h-none max-sm:flex max-sm:flex-col max-sm:justify-center shadow-[0_0_50px_rgba(139,92,246,0.15)] p-[1.375rem] max-sm:px-8 max-sm:py-8 max-h-[94vh] overflow-hidden transition-all duration-500 [&>button:last-child]:hidden"
+            className="w-full max-w-[92vw] md:max-w-[48rem] lg:max-w-[52rem] bg-background border border-border text-foreground rounded-[28px] max-sm:rounded-[24px] max-sm:!top-[50%] max-sm:!left-[50%] max-sm:!-translate-x-1/2 max-sm:!-translate-y-1/2 max-sm:w-[94vw] max-sm:max-h-[90vh] max-sm:h-auto max-sm:flex max-sm:flex-col shadow-[0_0_50px_rgba(139,92,246,0.15)] p-[1.375rem] max-sm:p-5 max-h-[94vh] overflow-y-auto transition-all duration-500 [&>button:last-child]:hidden"
           >
           {/* Soft Occult Ambient Highlights (Adaptive to Theme) */}
           <div className="absolute top-0 right-0 w-36 h-36 bg-primary/5 rounded-full blur-[60px] pointer-events-none" />
           <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-primary/5 rounded-full blur-[60px] pointer-events-none" />
           <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary/45 to-transparent" />
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 max-sm:gap-10 md:gap-6 relative z-10 max-sm:px-2">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 max-sm:gap-4 md:gap-6 relative z-10 max-sm:px-1">
 
           {/* Painel Esquerdo: A Oferta Suprema (6 colunas) */}
-          <div className="md:col-span-6 flex flex-col justify-center border-b md:border-b-0 md:border-r border-border/60 pb-4 max-sm:pb-8 md:pb-0 md:pr-5 lg:pr-6 space-y-3 max-sm:space-y-6">
-            <div className="space-y-3 max-sm:space-y-4 max-sm:pt-2 max-sm:flex max-sm:flex-col max-sm:items-center max-sm:text-center">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 max-sm:py-1.5 max-sm:px-4 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
-                <CheckCircle2 size={14} className="text-emerald-500 animate-pulse max-sm:w-[16px] max-sm:h-[16px]" />
-                <span className="text-[10px] max-sm:text-[13px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Acesso Vitalício Liberado</span>
+          <div className="md:col-span-6 flex flex-col justify-center border-b md:border-b-0 md:border-r border-border/60 pb-3 max-sm:pb-4 md:pb-0 md:pr-5 lg:pr-6 space-y-3 max-sm:space-y-3">
+            <div className="space-y-3 max-sm:space-y-2 max-sm:pt-1 max-sm:flex max-sm:flex-col max-sm:items-center max-sm:text-center">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 max-sm:py-1 max-sm:px-3 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                <CheckCircle2 size={14} className="text-emerald-500 animate-pulse max-sm:w-[14px] max-sm:h-[14px]" />
+                <span className="text-[10px] max-sm:text-[11px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Acesso Vitalício Liberado</span>
               </div>
 
-              <h3 className="text-[1.65rem] max-sm:text-[2.1rem] font-black text-foreground leading-[1.1] tracking-tight whitespace-nowrap max-sm:mt-4">
+              <h3 className="text-[1.65rem] max-sm:text-[1.4rem] font-black text-foreground leading-[1.1] tracking-tight whitespace-nowrap max-sm:mt-2">
                 Libere {docType === "notificacao" ? "sua" : "seu"} <span className="bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">{docType === "notificacao" ? "Notificação" : "Contrato"}</span>
               </h3>
 
-              <p className="text-[0.825rem] max-sm:text-[1.1rem] max-sm:leading-[1.6] text-muted-foreground leading-relaxed font-medium">
+              <p className="text-[0.825rem] max-sm:text-[0.925rem] max-sm:leading-[1.5] text-muted-foreground leading-relaxed font-medium">
                 Finalize agora para baixar o arquivo editável em <strong className="text-foreground font-bold">Word (.DOCX)</strong>. O documento é seu: use, replique e adapte quantas vezes desejar, sem restrições.
               </p>
             </div>
 
             {/* Box de Preço Único */}
-            <div className="pt-1 max-sm:pt-6 max-sm:flex max-sm:flex-col max-sm:items-center">
-              <div className="text-[0.625rem] max-sm:text-[0.85rem] font-black text-muted-foreground/60 uppercase tracking-widest mb-1 max-sm:mb-2">Investimento Único</div>
-              <div className="flex items-baseline gap-1.5 max-sm:gap-2">
-                <span className="text-[1.75rem] max-sm:text-[2.75rem] font-black text-foreground">R$ 29,00</span>
-                <span className="text-[0.625rem] max-sm:text-[0.9rem] font-bold text-muted-foreground uppercase">/ download</span>
+            <div className="pt-1 max-sm:pt-3 max-sm:flex max-sm:flex-col max-sm:items-center">
+              <div className="text-[0.625rem] max-sm:text-[0.75rem] font-black text-muted-foreground/60 uppercase tracking-widest mb-1 max-sm:mb-1">Investimento Único</div>
+              <div className="flex items-baseline gap-1.5 max-sm:gap-1.5">
+                <span className="text-[1.75rem] max-sm:text-[1.8rem] font-black text-foreground">R$ 29,00</span>
+                <span className="text-[0.625rem] max-sm:text-[0.8rem] font-bold text-muted-foreground uppercase">/ download</span>
               </div>
             </div>
           </div>
 
           {/* Painel Direito: Formulário, PIX ou Sucesso (6 colunas) */}
-          <div className="md:col-span-6 flex flex-col justify-center min-h-[280px] max-sm:min-h-0 max-sm:pt-4">
-            <DialogHeader className="mb-3 max-sm:mb-8 text-center flex flex-col items-center">
-              <DialogTitle className="flex items-center justify-center gap-2.5 text-[1rem] max-sm:text-[1.35rem] font-black tracking-[0.12em] bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">
-                <Lock size={18} className="text-primary animate-pulse filter drop-shadow-[0_0_6px_rgba(139,92,246,0.4)] max-sm:w-[22px] max-sm:h-[22px]" />
+          <div className="md:col-span-6 flex flex-col justify-center min-h-[260px] max-sm:min-h-0 max-sm:pt-2">
+            <DialogHeader className="mb-2 max-sm:mb-3 text-center flex flex-col items-center">
+              <DialogTitle className="flex items-center justify-center gap-2 text-[1rem] max-sm:text-[1.1rem] font-black tracking-[0.12em] bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">
+                <Lock size={18} className="text-primary animate-pulse filter drop-shadow-[0_0_6px_rgba(139,92,246,0.4)] max-sm:w-[16px] max-sm:h-[16px]" />
                 {step === "form" ? "Acesso ao Documento" : step === "pix" ? "Finalizar Pagamento" : "Sucesso!"}
               </DialogTitle>
-              <DialogDescription className="text-[0.825rem] max-sm:text-[1.05rem] max-sm:leading-[1.5] text-muted-foreground font-medium tracking-wide mt-1 max-sm:mt-3 leading-relaxed text-center">
+              <DialogDescription className="text-[0.825rem] max-sm:text-[0.875rem] max-sm:leading-[1.4] text-muted-foreground font-medium tracking-wide mt-1 max-sm:mt-1 leading-relaxed text-center">
                 {step === "form"
                   ? "Para continuar, informe seu e-mail principal. Enviaremos uma cópia em PDF e o recibo para ele."
                   : step === "pix"
@@ -270,9 +270,9 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
               </DialogDescription>
             </DialogHeader>
             {step === "form" && (
-              <form onSubmit={handleCheckout} className="flex flex-col space-y-4 py-4 w-full">
+              <form onSubmit={handleCheckout} className="flex flex-col space-y-3 py-2 w-full">
                 <div className="flex flex-col">
-                  <label htmlFor="email" className="block text-xs font-black uppercase tracking-widest text-muted-foreground ml-1 mb-3">Seu melhor e-mail</label>
+                  <label htmlFor="email" className="block text-xs font-black uppercase tracking-widest text-muted-foreground ml-1 mb-2">Seu melhor e-mail</label>
                   <input 
                     id="email"
                     type="email" 
@@ -280,14 +280,14 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="exemplo@email.com" 
                     required
-                    className="flex h-12 max-sm:h-14 w-full rounded-xl border border-input bg-background/50 px-4 py-2 text-sm max-sm:text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)]"
+                    className="flex h-11 max-sm:h-12 w-full rounded-xl border border-input bg-background/50 px-4 py-2 text-sm max-sm:text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)]"
                   />
-                  <p className="text-[10px] text-muted-foreground font-medium ml-1 mt-2">Nós enviaremos uma cópia do documento para este e-mail após o pagamento.</p>
+                  <p className="text-[10px] text-muted-foreground font-medium ml-1 mt-1.5">Nós enviaremos uma cópia do documento para este e-mail após o pagamento.</p>
                 </div>
                 <Button 
                   type="submit" 
                   disabled={loading}
-                  className="w-full h-12 max-sm:h-14 mt-4 bg-primary text-primary-foreground hover:bg-primary/90 font-black uppercase tracking-[0.1em] rounded-xl transition-all shadow-[0_4px_15px_rgba(var(--primary-rgb),0.3)] hover:shadow-[0_4px_25px_rgba(var(--primary-rgb),0.5)] flex items-center justify-center gap-2"
+                  className="w-full h-11 max-sm:h-12 mt-2 bg-primary text-primary-foreground hover:bg-primary/90 font-black uppercase tracking-[0.1em] rounded-xl transition-all shadow-[0_4px_15px_rgba(var(--primary-rgb),0.3)] hover:shadow-[0_4px_25px_rgba(var(--primary-rgb),0.5)] flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <>
@@ -305,7 +305,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                 <button 
                   type="button" 
                   onClick={onClose}
-                  className="mx-auto mt-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+                  className="mx-auto mt-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 hover:text-muted-foreground transition-colors"
                 >
                   Voltar para o editor
                 </button>
@@ -313,41 +313,41 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             )}
 
             {step === "pix" && pixData && (
-              <div className="flex flex-col items-center justify-center space-y-4 mt-2 max-sm:text-center">
+              <div className="flex flex-col items-center justify-center space-y-3 mt-1 max-sm:text-center">
                 {/* Premium QR Code Container */}
-                <div className="bg-muted/40 p-4 max-sm:p-3 rounded-xl border border-border shadow-[0_0_20px_rgba(0,0,0,0.05)] relative overflow-hidden group hover:border-primary/20 transition-all duration-300">
+                <div className="bg-muted/40 p-3 max-sm:p-2 rounded-xl border border-border shadow-[0_0_20px_rgba(0,0,0,0.05)] relative overflow-hidden group hover:border-primary/20 transition-all duration-300">
                   <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="p-2.5 max-sm:p-2 bg-white rounded-lg shadow-xl relative z-10">
-                    <QRCodeSVG value={pixData.qrCode} size={140} className="w-[8.75rem] h-[8.75rem] max-sm:w-[7rem] max-sm:h-[7rem] max-sm:!w-[7rem] max-sm:!h-[7rem]" style={{ display: "block" }} />
+                  <div className="p-2 max-sm:p-1.5 bg-white rounded-lg shadow-xl relative z-10">
+                    <QRCodeSVG value={pixData.qrCode} size={120} className="w-[7.5rem] h-[7.5rem] max-sm:w-[6.5rem] max-sm:h-[6.5rem] max-sm:!w-[6.5rem] max-sm:!h-[6.5rem]" style={{ display: "block" }} />
                   </div>
                 </div>
                 
                 {/* Copy & Dev Simulator Action Controls */}
-                <div className="w-full space-y-3 max-sm:space-y-4 flex flex-col items-center">
+                <div className="w-full space-y-2 max-sm:space-y-2.5 flex flex-col items-center">
                   <Button 
                     onClick={copyPix} 
                     variant="outline" 
-                    className="w-full h-11 max-sm:h-14 max-sm:text-[1.05rem] border-border hover:border-primary/40 bg-background text-foreground hover:bg-muted/50 font-bold uppercase tracking-[0.1em] rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
+                    className="w-full h-11 max-sm:h-12 max-sm:text-sm border-border hover:border-primary/40 bg-background text-foreground hover:bg-muted/50 font-bold uppercase tracking-[0.1em] rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
                   >
-                    {copied ? <CheckCircle2 size={18} className="text-emerald-500 max-sm:w-[20px] max-sm:h-[20px]" /> : <Copy size={18} className="max-sm:w-[20px] max-sm:h-[20px]" />}
+                    {copied ? <CheckCircle2 size={18} className="text-emerald-500 max-sm:w-[16px] max-sm:h-[16px]" /> : <Copy size={18} className="max-sm:w-[16px] max-sm:h-[16px]" />}
                     {copied ? "Chave Copiada!" : "Copiar Código Pix"}
                   </Button>
 
-                  {(process.env.NODE_ENV === "development" || email.toLowerCase().trim() === "felipedutra@outlook.com") && (
+                  {(email.toLowerCase().trim() === "felipedutra@outlook.com" || email.toLowerCase().trim() === "contato@extrajus.pro") && (
                     <Button 
                       onClick={handleDevSimulatePaymentOnly} 
                       disabled={loading}
-                      className="w-full h-9 max-sm:h-12 max-sm:text-[0.8rem] bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400 font-black tracking-wider uppercase rounded-xl transition-all text-[9.5px] flex items-center justify-center gap-2 duration-300 shadow-[0_0_10px_rgba(245,158,11,0.03)]"
+                      className="w-full h-9 max-sm:h-10 max-sm:text-[0.75rem] bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400 font-black tracking-wider uppercase rounded-xl transition-all text-[9.5px] flex items-center justify-center gap-2 duration-300 shadow-[0_0_10px_rgba(245,158,11,0.03)]"
                     >
-                      <Zap size={14} className="text-amber-500 dark:text-amber-400 animate-pulse max-sm:w-[16px] max-sm:h-[16px]" />
+                      <Zap size={14} className="text-amber-500 dark:text-amber-400 animate-pulse max-sm:w-[14px] max-sm:h-[14px]" />
                       Simular Pagamento (Dev)
                     </Button>
                   )}
                 </div>
 
                 {/* Waiting indicator */}
-                <div className="flex items-center justify-center gap-2 text-[10px] max-sm:text-[0.8rem] font-black uppercase tracking-[0.15em] text-primary/80 animate-pulse pt-2 w-full">
-                  <BrainCircuit size={15} className="text-primary max-sm:w-[18px] max-sm:h-[18px]" />
+                <div className="flex items-center justify-center gap-2 text-[10px] max-sm:text-[0.75rem] font-black uppercase tracking-[0.15em] text-primary/80 animate-pulse pt-1 w-full">
+                  <BrainCircuit size={15} className="text-primary max-sm:w-[15px] max-sm:h-[15px]" />
                   <span>Aguardando pagamento...</span>
                 </div>
               </div>
@@ -360,21 +360,21 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                     display: none !important;
                   }
                 ` }} />
-                <div className="flex flex-col items-center justify-center space-y-6 max-sm:space-y-8 py-6 max-sm:py-8 relative z-10">
-                  <div className="w-16 h-16 max-sm:w-20 max-sm:h-20 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shadow-[0_0_25px_rgba(16,185,129,0.1)] animate-bounce">
-                    <CheckCircle2 size={32} className="text-emerald-500 animate-pulse max-sm:w-[40px] max-sm:h-[40px]" />
+                <div className="flex flex-col items-center justify-center space-y-4 max-sm:space-y-4 py-3 max-sm:py-3 relative z-10">
+                  <div className="w-14 h-14 max-sm:w-16 max-sm:h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shadow-[0_0_25px_rgba(16,185,129,0.1)] animate-bounce">
+                    <CheckCircle2 size={28} className="text-emerald-500 animate-pulse max-sm:w-[32px] max-sm:h-[32px]" />
                   </div>
-                  <div className="space-y-1 max-sm:space-y-2 text-center">
-                    <h3 className="text-[1rem] max-sm:text-[1.5rem] font-black bg-gradient-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent uppercase tracking-[0.08em]">Pagamento Aprovado</h3>
-                    <p className="text-[0.72rem] max-sm:text-[1rem] text-muted-foreground font-medium">Sua minuta oficial foi totalmente liberada.</p>
+                  <div className="space-y-0.5 max-sm:space-y-1 text-center">
+                    <h3 className="text-[0.95rem] max-sm:text-[1.1rem] font-black bg-gradient-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent uppercase tracking-[0.08em]">Pagamento Aprovado</h3>
+                    <p className="text-[0.72rem] max-sm:text-[0.85rem] text-muted-foreground font-medium">Sua minuta oficial foi totalmente liberada.</p>
                   </div>
 
-                  <div className="w-full space-y-3 max-sm:space-y-4 pt-2 max-sm:pt-4">
+                  <div className="w-full space-y-2 max-sm:space-y-2.5 pt-1 max-sm:pt-2">
                     <Button 
                       onClick={onSuccess} 
-                      className="w-full h-12 max-sm:h-14 max-sm:text-[1rem] bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black tracking-[0.12em] uppercase rounded-xl transition-all shadow-[0_3px_15px_rgba(16,185,129,0.2)] hover:shadow-[0_3px_25px_rgba(16,185,129,0.35)] flex items-center justify-center gap-2 duration-300 transform hover:-translate-y-0.5 border border-emerald-500/20"
+                      className="w-full h-11 max-sm:h-12 max-sm:text-sm bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black tracking-[0.12em] uppercase rounded-xl transition-all shadow-[0_3px_15px_rgba(16,185,129,0.2)] hover:shadow-[0_3px_25px_rgba(16,185,129,0.35)] flex items-center justify-center gap-2 duration-300 transform hover:-translate-y-0.5 border border-emerald-500/20"
                     >
-                      <Download className="w-4 h-4 max-sm:w-[20px] max-sm:h-[20px]" />
+                      <Download className="w-4 h-4 max-sm:w-[16px] max-sm:h-[16px]" />
                       Baixar {docType === "notificacao" ? "Notificação" : "Contrato"} (.DOCX)
                     </Button>
  
@@ -410,7 +410,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                       }}
                       disabled={loading}
                       variant="outline"
-                      className="w-full h-11 max-sm:h-14 max-sm:text-[1rem] border-border hover:border-red-500/40 bg-background text-muted-foreground hover:text-red-500 hover:bg-red-500/5 font-bold uppercase tracking-[0.1em] rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
+                      className="w-full h-11 max-sm:h-12 max-sm:text-sm border-border hover:border-red-500/40 bg-background text-muted-foreground hover:text-red-500 hover:bg-red-500/5 font-bold uppercase tracking-[0.1em] rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
                     >
                       Criar {docType === "notificacao" ? "Nova Notificação" : "Novo Contrato"}
                     </Button>

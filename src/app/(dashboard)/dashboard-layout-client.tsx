@@ -710,30 +710,30 @@ export default function DashboardLayoutClient({
       {/* Main Content Island */}
       <div className="flex-1 flex flex-col min-w-0 bg-background border border-border rounded-r-xl rounded-l-none lg:rounded-l-none shadow-sm overflow-hidden relative transition-all duration-500">
         {/* Top Navigation Bar Integrated into Content Island */}
-        <header className="h-12 md:h-12 border-b border-border/50 flex items-center justify-between px-4 shrink-0 bg-background/80 backdrop-blur-xl z-30">
+        <header className="h-14 md:h-12 border-b border-border/50 flex items-center justify-between px-3 md:px-4 shrink-0 bg-background/80 backdrop-blur-xl z-30">
           <div className="flex items-center gap-2.5 flex-1">
             <button 
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="p-1.5 hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground transition-colors"
+              className="p-2 md:p-1.5 hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground transition-colors"
             >
-              {isCollapsed ? <PanelLeftOpen size={15} /> : <PanelLeftClose size={15} />}
+              {isCollapsed ? <PanelLeftOpen className="w-[18px] h-[18px] md:w-[15px] md:h-[15px]" /> : <PanelLeftClose className="w-[18px] h-[18px] md:w-[15px] md:h-[15px]" />}
             </button>
             
             <div className="h-4 w-px bg-border/60 mx-0.5" />
-
+ 
             {/* Shortcuts button */}
             <button 
               onClick={() => setIsShortcutsOpen(true)}
-              className="relative group flex items-center gap-1.5 bg-muted/40 hover:bg-muted border border-border/40 hover:border-primary/20 rounded-lg pl-6 pr-3 py-1.5 text-muted-foreground hover:text-foreground transition-all outline-none cursor-pointer whitespace-nowrap"
+              className="relative group flex items-center gap-1.5 bg-muted/40 hover:bg-muted border border-border/40 hover:border-primary/20 rounded-lg pl-6 pr-2 md:pr-3 py-1 md:py-1.5 text-muted-foreground hover:text-foreground transition-all outline-none cursor-pointer whitespace-nowrap h-8 md:h-auto"
             >
-              <Zap className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground/50 group-hover:text-primary transition-colors shrink-0" size={10} />
+              <Zap className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground/50 group-hover:text-primary transition-colors shrink-0 w-[12px] h-[12px] md:w-[10px] md:h-[10px]" />
               <span className="font-medium text-[11px] hidden sm:block">Atalhos</span>
               <kbd className="flex items-center gap-0.5 text-[8px] bg-background/80 border border-border/60 px-1.5 py-0.5 rounded font-mono font-bold group-hover:text-primary transition-colors shrink-0">
                 Alt+K
               </kbd>
             </button>
           </div>
-
+ 
           <div className="flex items-center gap-2">
             {/* User */}
             <div className="flex items-center gap-2.5 cursor-pointer group">
@@ -746,21 +746,21 @@ export default function DashboardLayoutClient({
                   })()}!
                 </span>
               </div>
-              <Avatar className="h-7 w-7 rounded-full border border-border ring-0 group-hover:ring-2 ring-primary/20 transition-all">
+              <Avatar className="h-8 w-8 md:h-7 md:w-7 rounded-full border border-border ring-0 group-hover:ring-2 ring-primary/20 transition-all">
                 <AvatarImage src={profile?.avatar_url || "https://github.com/shadcn.png"} />
                 <AvatarFallback className="text-xs">{profile?.full_name?.slice(0,2).toUpperCase() || "US"}</AvatarFallback>
               </Avatar>
             </div>
-
+ 
             <div className="h-3 w-px bg-border/50 mx-0.5" />
-
+ 
             {/* Notifications bell */}
             <div className="relative" ref={dropdownRef}>
               <button 
                 onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                className="p-1.5 hover:bg-muted rounded-md text-muted-foreground hover:text-foreground transition-colors relative"
+                className="p-2 md:p-1.5 hover:bg-muted rounded-md text-muted-foreground hover:text-foreground transition-colors relative"
               >
-                <Bell size={16} />
+                <Bell className="w-[18px] h-[18px] md:w-[16px] md:h-[16px]" />
                 {unreadCount > 0 && (
                   <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500 ring-2 ring-background animate-pulse" />
                 )}
