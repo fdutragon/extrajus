@@ -1435,7 +1435,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               onClick={handleOpenPlans}
               className="h-6 gap-1 px-2 rounded-md text-primary hover:bg-primary/10 transition-all font-bold text-[8px] uppercase tracking-widest flex items-center border border-primary/20 bg-primary/5 hover:border-primary/45 shadow-sm shadow-primary/5 group max-sm:hidden"
             >
-              <Brain size={12} className="text-primary animate-pulse shrink-0 group-hover:scale-110 transition-transform" />
+              <Brain className="w-3 h-3 max-sm:w-[18px] max-sm:h-[18px] text-primary animate-pulse shrink-0 group-hover:scale-110 transition-transform" />
               <span>{credits !== null ? `${credits} Sinapses` : "..."}</span>
             </Button>
           )}
@@ -1444,7 +1444,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             <>
               <ExportButton isPublic={isPublic} docType={docType} title={fileName} content={editor?.getHTML() || ""} />
               {!isPublic && (
-                <div className="flex items-center gap-1 pr-1.5 border-r border-border/50 max-sm:hidden">
+                <div className="flex items-center gap-1 pr-1.5 border-r border-border/50">
                   <SignModal title={fileName} />
                 </div>
               )}
@@ -2008,4 +2008,6 @@ export function NotionEditorContent({ placeholder, templateSlug, readOnly: propR
   if (!provider || !geminiKey) return <LoadingSpinner />
 
   return <EditorProvider provider={provider} ydoc={ydoc} placeholder={placeholder} geminiKey={geminiKey} templateSlug={templateSlug} readOnly={readOnly} isPublic={isPublic} />
+}
+der} geminiKey={geminiKey} templateSlug={templateSlug} readOnly={readOnly} isPublic={isPublic} />
 }

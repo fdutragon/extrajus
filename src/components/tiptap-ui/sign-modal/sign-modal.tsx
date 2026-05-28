@@ -92,7 +92,7 @@ export function SignModal({ title = "Documento Digital" }: { title?: string }) {
       <DialogTrigger
         render={
           <button className="h-7 max-sm:h-10 rounded-lg border border-primary/20 hover:bg-primary/10 text-primary font-bold text-[9px] uppercase tracking-widest px-3 max-sm:px-4 transition-all active:scale-95 flex items-center gap-2 cursor-pointer">
-            <Fingerprint size={12} className="max-sm:scale-[1.5]" />
+            <Fingerprint className="w-3 h-3 max-sm:w-[18px] max-sm:h-[18px]" />
             <span className="max-sm:hidden">Assinar</span>
             <span className="hidden max-sm:inline ml-1">Assinar</span>
           </button>
