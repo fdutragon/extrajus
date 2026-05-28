@@ -79,7 +79,6 @@ const DISALLOWED_TAGS = [
   "input", "button", "select", "textarea", "nav", "footer",
   "header", "aside", "figure", "figcaption", "template", "svg",
   "table", "thead", "tbody", "tr", "td", "th",   // tables via TableKit instead
-  "ul", "ol", "li",  // AI should NOT generate bullets for legal contracts
 ]
 
 function removeDisallowedTags(html: string): string {

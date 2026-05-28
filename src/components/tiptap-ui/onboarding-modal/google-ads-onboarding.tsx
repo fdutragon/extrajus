@@ -143,7 +143,7 @@ export function GoogleAdsOnboarding() {
           {/* Text Content */}
           <div className="space-y-3 relative z-10">
             <h2 className="text-2xl font-black text-white leading-[1.3] uppercase tracking-tight">
-              {step.title} <br />
+              {step.title}{" "}
               <span className={cn("text-primary drop-shadow-[0_0_15px_rgba(var(--primary-rgb),0.5)]", step.color)}>
                 {step.highlight}
               </span>
