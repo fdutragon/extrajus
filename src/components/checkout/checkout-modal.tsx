@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { QRCodeSVG } from "qrcode.react"
 import { toast } from "sonner"
-import { BrainCircuit, Copy, CheckCircle2, Lock, ArrowRight, Download } from "lucide-react"
+import { BrainCircuit, Copy, CheckCircle2, Lock, ArrowRight, Download, Zap } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/utils/supabase/client"

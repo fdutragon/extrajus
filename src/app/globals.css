@@ -205,8 +205,14 @@
   html {
     @apply font-sans scroll-smooth;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-    font-size: 102%; /* Escala a fonte do site inteiro proporcionalmente para excelente leitura */
+    font-size: 15px;
     scroll-padding-top: 100px;
+  }
+
+  @media (min-width: 768px) {
+    html {
+      font-size: 102%;
+    }
   }
 
   /* Custom Scrollbar */
