@@ -50,8 +50,10 @@
     counter-reset: item-notif;
     margin-top: 2.2rem;
     margin-bottom: 0.7rem;
-    font-weight: 700;
-    font-size: 1.2em;
+    font-weight: 900;
+    font-size: 1.3em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     
     .notification-node-counter {
       margin-right: 0.5rem;
@@ -123,13 +125,13 @@
 
   @media screen and (max-width: 768px) {
     &.notification-node-level-1 {
-      margin-top: 1.5rem;
-      margin-bottom: 0.5rem;
-      font-size: 1.4em !important;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      font-size: 1.55em !important;
+      letter-spacing: 0.02em;
 
       .notification-node-content {
-        font-size: 1.15em !important;
-        font-weight: 800 !important;
+        font-weight: 900 !important;
       }
     }
 
