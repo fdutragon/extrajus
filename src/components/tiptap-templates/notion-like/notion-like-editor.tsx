@@ -678,7 +678,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
     }
   }, [])
   const [isSaving, setIsSaving] = useState(false)
-  const [fontSize, setFontSize] = useState<number>(13)
+  const [fontSize, setFontSize] = useState<number>(16)
   const [fontFamily, setFontFamily] = useState<string>("Cambria")
   const [isFontDropdownOpen, setIsFontDropdownOpen] = useState(false)
 
@@ -1167,7 +1167,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         }
         @media (min-width: 768px) {
           .tiptap.ProseMirror {
-            font-size: clamp(${(fontSize - 5) / 16}rem, calc(${(fontSize - 4.5) / 16}rem + 0.35vw), ${(fontSize + 4) / 16}rem) !important;
+            font-size: clamp(${(fontSize - 2) / 16}rem, calc(${(fontSize) / 16}rem + 0.1vw), ${(fontSize + 2) / 16}rem) !important;
           }
         }
         @media (max-width: 767px) {
