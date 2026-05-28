@@ -395,7 +395,7 @@ export function EditorContentArea() {
     >
       <DragContextMenu />
       <SlashDropdownMenu />
-      {createPortal(<MobileToolbar />, document.body)}
+      {/* MobileToolbar removida conforme solicitado para simplificação total no mobile */}
     </EditorContent>
   )
 }
@@ -1598,7 +1598,11 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                 <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-[30px]" />
 
                 <div className="relative z-10">
-                  {!readOnly && <BubbleMenu editor={editor} />}
+                  {!readOnly && (
+                    <div className="max-sm:hidden">
+                      <BubbleMenu editor={editor} />
+                    </div>
+                  )}
                   <EditorContentArea />
                 </div>
               </div>
@@ -1606,7 +1610,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
           </main>
           
           {!readOnly && aiPromptOpen && (
-            <div className="absolute bottom-12 max-sm:bottom-20 left-1/2 -translate-x-1/2 w-full max-w-[30rem] z-[100] px-4 transition-all duration-500 animate-in fade-in slide-in-from-bottom-5 ai-prompt-wrapper">
+            <div className="absolute sm:bottom-12 fixed max-sm:bottom-4 left-1/2 -translate-x-1/2 w-full max-w-[30rem] z-[100] px-4 transition-all duration-500 animate-in fade-in slide-in-from-bottom-5 ai-prompt-wrapper">
                <AiMenu plain={true} />
             </div>
           )}
