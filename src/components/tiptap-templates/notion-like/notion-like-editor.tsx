@@ -1207,6 +1207,18 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
           transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
           animation: pulse-shadow 4.5s ease-in-out infinite; /* Sempre ativo */
         }
+        @media screen and (max-width: 768px) {
+          div.editor-glow-container {
+            padding: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            animation: none !important;
+          }
+          div.editor-glow-container::before {
+            display: none !important;
+          }
+        }
         .editor-glow-container::before {
           content: '';
           position: absolute;
@@ -1239,6 +1251,11 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
           width: 100%;
           height: 100%;
           border-radius: 30px;
+        }
+        @media screen and (max-width: 768px) {
+          .editor-glow-content {
+             border-radius: 0 !important;
+          }
         }
         @keyframes placeholder-text-shimmer {
           0% {
@@ -1593,16 +1610,16 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         </>)}
 
         <div className="flex-1 relative flex flex-col min-w-0 overflow-hidden">
-          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent p-2 max-sm:p-2 sm:p-[clamp(1rem,2vw,2rem)] pt-[4.5rem] max-sm:pt-20 sm:pt-[calc(clamp(2.5rem,4vh,3.25rem)+2rem)] relative z-10">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent max-sm:p-0 sm:p-[clamp(1rem,2vw,2rem)] pt-[4.5rem] max-sm:pt-0 sm:pt-[calc(clamp(2.5rem,4vh,3.25rem)+2rem)] relative z-10">
             {/* Subtle occult background glow behind the sheet */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/3 dark:bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse duration-[6000ms]" />
 
 
             <div className={cn(
-              "w-full max-w-full lg:max-w-[clamp(37.5rem,45vw,56.25rem)] mx-auto editor-glow-container transition-all duration-700 shadow-2xl",
+              "w-full max-w-full lg:max-w-[clamp(37.5rem,45vw,56.25rem)] mx-auto editor-glow-container max-sm:!p-0 max-sm:!rounded-none transition-all duration-700 shadow-2xl",
               (showEntranceGlow || editorFocused) && "glowing"
             )}>
-              <div className="w-full h-full bg-card/90 dark:bg-card/75 backdrop-blur-xl rounded-[30px] px-4 max-sm:px-2.5 py-8 max-sm:py-4 sm:px-[clamp(2rem,4.5vw,4.5rem)] sm:py-[clamp(2.5rem,4.5vw,5.5rem)] relative min-h-[50rem] md:min-h-[74.25rem] editor-glow-content">
+              <div className="w-full h-full bg-card/90 dark:bg-card/75 backdrop-blur-xl sm:rounded-[30px] max-sm:rounded-none px-4 max-sm:px-4 py-8 max-sm:pt-20 max-sm:pb-24 sm:px-[clamp(2rem,4.5vw,4.5rem)] sm:py-[clamp(2.5rem,4.5vw,5.5rem)] relative min-h-[50rem] md:min-h-[74.25rem] editor-glow-content">
                 {/* Grain overlay for paper feel */}
                 <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-[30px]" />
 
