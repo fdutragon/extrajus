@@ -97,7 +97,7 @@ export default function Home() {
                 <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
               </a>
               <a href="#modelos" className="relative py-1 text-muted-foreground hover:text-foreground transition-colors group">
-                Modelos de Contrato
+                Tipos de Notificações
                 <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
               </a>
               <a href="#assinaturas" className="relative py-1 text-muted-foreground hover:text-foreground transition-colors group">
@@ -124,13 +124,13 @@ export default function Home() {
           </div>
           {/* Headline Reduzida & Consistente */}
           <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.1] text-foreground animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
-            O Modelo de Contrato Perfeito. <br />
+            A Notificação Extrajudicial Definitiva. <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/90 to-purple-400">
-              Gerado, Analisado e Assinado por IA.
+              Gerada, Blindada e Enviada por IA.
             </span>
           </h1>          {/* Subheadline Reduzida & Focada em Google Ads "Modelo de Contrato" */}
           <p className="text-[13px] md:text-base text-muted-foreground/90 max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
-            Pare de copiar PDFs genéricos e perigosos da internet que colocam sua empresa em risco. Use nossa inteligência cirúrgica para <span className="text-foreground font-bold">criar, analisar e assinar</span> contratos profissionais sob medida em segundos.
+            Resolva calotes e exija seus direitos sem precisar de advogados caros. Use nossa inteligência cirúrgica para <span className="text-foreground font-bold">criar e enviar</span> notificações letais e profissionais sob medida em segundos.
           </p>
 
           {/* Botões do Hero Melhores & Premium */}
@@ -138,7 +138,7 @@ export default function Home() {
             <Link href="#modelos">
               <Button size="lg" className="h-14 px-8 rounded-xl bg-primary text-primary-foreground font-black text-[11px] uppercase tracking-widest shadow-[0_0_25px_rgba(var(--primary),0.25)] hover:shadow-[0_0_35px_rgba(var(--primary),0.4)] hover:bg-primary/90 transition-all duration-300 group overflow-hidden border border-primary/30 active:scale-98">
                 <span className="relative z-10 flex items-center gap-2">
-                  Gerar Contrato Personalizado <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                  Gerar Notificação Agora <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </span>
               </Button>
             </Link>
@@ -164,7 +164,7 @@ export default function Home() {
                   <div className="space-y-2">
                     <div className="h-2 w-1/3 bg-foreground/20 rounded" />
                     <div className="h-8 w-full bg-primary/10 border border-primary/20 rounded-xl flex items-center justify-between px-3 text-[9px] font-black text-primary uppercase tracking-wider">
-                      <span>Contrato Ativo</span>
+                      <span>Notificação Ativa</span>
                       <Zap size={10} className="animate-pulse" />
                     </div>
                     <div className="h-8 w-full bg-transparent border border-foreground/5 rounded-xl" />
@@ -196,7 +196,7 @@ export default function Home() {
                 {/* Right Sidebar Mockup (Mapa do Instrumento & Auditoria) */}
                 <div className="w-48 border-l border-border bg-card/45 p-4 text-left space-y-4 hidden lg:block">
                   <div className="flex items-center justify-between border-b border-border/40 pb-2">
-                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Conformidade do Contrato</span>
+                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Poder de Coerção</span>
                     <span className="text-[8px] font-black text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">98%</span>
                   </div>
                   <div className="space-y-3">
@@ -303,8 +303,8 @@ export default function Home() {
             <BentoCard
               className="md:col-span-4 h-[350px]"
               title="Navegação Inteligente"
-              subtitle="Resumo estruturado do contrato"
-              description="Visualize a anatomia jurídica do seu documento por meio de um sumário interativo. Acesse e edite qualquer bloco de cláusula em um piscar de olhos."
+              subtitle="Resumo estruturado da notificação"
+              description="Visualize a anatomia jurídica do seu documento por meio de um sumário interativo. Acesse e edite qualquer parágrafo em um piscar de olhos."
             >
               <div className="mt-6 pl-4 space-y-3 border-l-2 border-primary/20">
                 <div className="text-[9.5px] font-black uppercase tracking-wider text-foreground flex items-center justify-between">
@@ -374,44 +374,44 @@ export default function Home() {
 
           <div className="text-center space-y-3">
             <h2 className="text-2xl md:text-4xl font-black text-foreground tracking-tight leading-tight">
-              Modelos de Contrato Mais Procurados
+              Tipos de Notificações Mais Frequentes
             </h2>
             <p className="text-[13px] md:text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed font-medium">
-              Acesse o catálogo de estruturas revisadas por juristas renomados e personalize-as cirurgicamente com a nossa inteligência artificial.
+              Encontre o modelo exato para a sua situação. A nossa IA formata o documento completo exigindo os seus direitos de forma impecável.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
-                title: "Prestação de Serviços",
+                title: "Cobrança de Dívida",
                 icon: <Users size={20} />,
-                desc: "Para freelancers, agências e consultorias. Defina escopo, obrigações de entrega e multas por atraso sem brechas legais."
+                desc: "Notifique clientes inadimplentes exigindo o pagamento imediato sob pena de protesto e ação judicial."
               },
               {
-                title: "Contrato de Locação",
+                title: "Desocupação de Imóvel",
                 icon: <Layers size={20} />,
-                desc: "Residencial ou comercial. Regule prazos, vistorias, multas rescisórias e reajustes de aluguel (IGP-M/IPCA) blindados."
+                desc: "Exija a devolução do seu imóvel (residencial ou comercial) de forma legal, estabelecendo prazos claros e inquestionáveis."
               },
               {
-                title: "NDA (Confidencialidade)",
+                title: "Quebra de Contrato",
                 icon: <ShieldCheck size={20} />,
-                desc: "Proteja segredos comerciais, propriedade intelectual e ideias estratégicas antes de reuniões com terceiros ou sócios."
+                desc: "Notifique o parceiro ou fornecedor sobre o descumprimento contratual, ativando multas e exigindo a correção imediata."
               },
               {
-                title: "Contrato de Parceria",
+                title: "Direito do Consumidor",
                 icon: <Network size={20} />,
-                desc: "Alinhamento societário ou comercial. Esclareça divisão de lucros, deveres mútuos e regras claras de rescisão."
+                desc: "Exija a troca de produto defeituoso, estorno de valores ou cumprimento de oferta contra empresas problemáticas."
               },
               {
-                title: "Termos de Uso & Privac.",
+                title: "Problemas em Obra",
                 icon: <FileText size={20} />,
-                desc: "Adequação completa à LGPD. Essencial para plataformas SaaS, e-commerces, websites e aplicativos móveis."
+                desc: "Notifique empreiteiros e construtoras por atrasos, má qualidade ou abandono da obra, preservando suas provas."
               },
               {
-                title: "Compra e Venda",
+                title: "Uso Indevido de Imagem",
                 icon: <Gavel size={20} />,
-                desc: "Segurança total para transações de bens móveis, imóveis ou equipamentos comerciais, regulando sinal e parcelas."
+                desc: "Ordene a remoção imediata de fotos, vídeos ou marca da internet sob pena de responsabilização civil e criminal."
               }
             ].map((model, i) => (
               <div key={i} className="group p-8 bg-card border border-border rounded-3xl hover:border-primary/50 hover:shadow-[0_0_30px_rgba(var(--primary),0.03)] transition-all duration-300 flex flex-col justify-between h-full text-left">

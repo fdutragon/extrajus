@@ -5,6 +5,123 @@ import { Resend } from "resend";
 import { getSecret } from "@/utils/secrets";
 import { sendTelegramNotification } from "@/lib/notifications";
 
+// Função para compilar o conteúdo em formato HTML compatível com o Word (.docx)
+function compileWordHtml(title: string, content: string): string {
+  return `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+    <head>
+      <meta charset="utf-8">
+      <title>${title || 'Documento ExtraJus'}</title>
+      <!--[if gte mso 9]>
+      <xml>
+        <w:WordDocument>
+          <w:View>Print</w:View>
+          <w:Zoom>100</w:Zoom>
+          <w:DoNotOptimizeForBrowser/>
+        </w:WordDocument>
+      </xml>
+      <![endif]-->
+      <style>
+        @page Section1 {
+          size: 595.3pt 841.9pt; /* A4 */
+          margin: 72.0pt 72.0pt 72.0pt 72.0pt; /* Margens de 2.54cm (padrão) */
+          mso-header-margin: 36.0pt;
+          mso-footer-margin: 36.0pt;
+          mso-paper-source: 0;
+        }
+        div.Section1 {
+          page: Section1;
+        }
+        body {
+          font-family: 'Cambria', 'Georgia', 'Times New Roman', serif;
+          font-size: 12.0pt;
+          line-height: 1.6;
+          color: #000000;
+        }
+        h1 {
+          font-size: 16.0pt;
+          font-weight: bold;
+          text-align: center;
+          text-transform: uppercase;
+          margin-top: 12.0pt;
+          margin-bottom: 24.0pt;
+          color: #000000;
+        }
+        h2 {
+          font-size: 13.0pt;
+          font-weight: bold;
+          margin-top: 18.0pt;
+          margin-bottom: 6.0pt;
+          color: #000000;
+        }
+        p {
+          text-align: justify;
+          margin-bottom: 12.0pt;
+          line-height: 1.6;
+        }
+        p:not([data-node-text-align="center"]):not([data-node-text-align="right"]):not(.align-center):not(.align-right):not(.no-indent) {
+          text-indent: 3.5em;
+        }
+        p.dense-metadata {
+          margin-bottom: 2.0pt;
+        }
+        /* Suporte completo à estrutura de Legal Nodes do ExtraJus */
+        .legal-node {
+          margin-bottom: 12.0pt;
+          text-align: justify;
+        }
+        .legal-node-level-1 {
+          font-weight: bold;
+          font-size: 13.0pt;
+          margin-top: 18.0pt;
+          color: #000000;
+        }
+        .legal-node-level-2 {
+          margin-left: 24.0pt;
+        }
+        .legal-node-level-3 {
+          margin-left: 48.0pt;
+        }
+        .legal-node-level-4 {
+          margin-left: 72.0pt;
+        }
+        .legal-node-counter {
+          font-weight: bold;
+          margin-right: 8.0pt;
+          display: inline-block;
+        }
+        .legal-node-content {
+          display: inline;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 12.0pt;
+          margin-bottom: 12.0pt;
+        }
+        td, th {
+          border: 1.0pt solid #000000;
+          padding: 8.0pt 10.0pt;
+          text-align: left;
+          vertical-align: top;
+        }
+        strong, b {
+          font-weight: bold;
+        }
+        em, i {
+          font-style: italic;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="Section1">
+        ${content}
+      </div>
+    </body>
+    </html>
+  `;
+}
+
 export async function POST(request: Request) {
   try {
     const bodyClone = request.clone();
@@ -219,12 +336,11 @@ export async function POST(request: Request) {
                   </div>
                   <div class="greeting">Olá, ${userData.user.user_metadata?.full_name || 'Cliente'}!</div>
                   <div class="message">
-                    Seu pagamento foi confirmado com sucesso. Como parte do seu desbloqueio de documento, aqui está a minuta oficial do seu <strong>${docData.title || 'Documento ExtraJus'}</strong> em formato digital.
+                    Seu pagamento foi confirmado com sucesso! 🎉
                     <br><br>
-                    Você pode visualizar o texto completo abaixo ou copiá-lo diretamente para uso. Caso precise realizar alterações futuras no editor ou fazer novas exportações em formato DOCX, você poderá fazê-las na plataforma ExtraJus.
-                  </div>
-                  <div class="document-box">
-                    ${docData.content}
+                    A minuta oficial do seu documento <strong>${docData.title || 'Documento ExtraJus'}</strong> foi gerada com sucesso e já está **anexada a este e-mail no formato editável Word (.DOCX)**.
+                    <br><br>
+                    Caso precise realizar alterações, fazer novas exportações ou baixar novamente, você poderá acessar o documento a qualquer momento diretamente pela plataforma ExtraJus.
                   </div>
                   <div class="footer">
                     Este é um e-mail automático enviado pela ExtraJus. Por favor, não responda a esta mensagem.
@@ -236,11 +352,21 @@ export async function POST(request: Request) {
               </html>
             `;
 
+            const wordHtml = compileWordHtml(docData.title, docData.content);
+            const docxBase64 = Buffer.from('\ufeff' + wordHtml, 'utf-8').toString('base64');
+            const filename = `${(docData.title || 'documento').replace(/[^a-zA-Z0-9\-_]/g, '_')}.docx`;
+
             let sendResult = await resendInstance.emails.send({
-              from: "ExtraJus AI <documentos@extrajus.pro>",
+              from: "ExtraJus AI <contato@extrajus.pro>",
               to: userData.user.email,
               subject: `⚔️ Seu documento oficial foi liberado: ${docData.title || 'Contrato'}`,
-              html: emailHtml
+              html: emailHtml,
+              attachments: [
+                {
+                  filename,
+                  content: docxBase64,
+                }
+              ]
             });
 
             if (sendResult.error) {
@@ -249,7 +375,13 @@ export async function POST(request: Request) {
                 from: "ExtraJus AI <onboarding@resend.dev>",
                 to: userData.user.email,
                 subject: `⚔️ [Sandbox] Seu documento oficial foi liberado: ${docData.title || 'Contrato'}`,
-                html: emailHtml
+                html: emailHtml,
+                attachments: [
+                  {
+                    filename,
+                    content: docxBase64,
+                  }
+                ]
               });
               
               if (sendResult.error) {

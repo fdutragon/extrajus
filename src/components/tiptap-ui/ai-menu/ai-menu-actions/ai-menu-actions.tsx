@@ -40,32 +40,32 @@ export function AiMenuActions({
   }, [editor, onAccept])
  
   return (
-    <div className="tiptap-ai-menu-actions mt-3.5 p-4 border border-border/80 bg-card sm:bg-card/65 sm:backdrop-blur-md rounded-2xl flex items-center justify-between gap-4 shadow-sm animate-in fade-in duration-300 max-sm:shadow-none">
-      <div className="flex items-center gap-2">
-        <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-        <span className="text-[11px] font-medium text-muted-foreground">
+    <div className="tiptap-ai-menu-actions mt-3.5 px-6 py-3 border border-border/80 bg-card sm:bg-card/65 sm:backdrop-blur-md rounded-2xl flex items-center justify-between gap-4 shadow-sm animate-in fade-in duration-300 max-sm:shadow-none">
+      <div className="flex items-center gap-1.5">
+        <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+        <span className="text-[10.5px] font-medium text-muted-foreground">
           {aiGenerationIsLoading ? "Gerando..." : "Sugestão pronta"}
         </span>
       </div>
  
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <Button
           variant="ghost"
-          className="h-9 px-5 rounded-xl border border-red-500/20 bg-red-500/5 text-red-400 text-[13px] font-medium flex items-center gap-2 group/discard"
+          className="h-7.5 px-3.5 rounded-xl border border-red-500/10 bg-red-500/5 text-red-400 text-[11px] font-medium flex items-center gap-1.5 group/discard"
           onClick={handleDiscard}
         >
-          <Trash2 size={15} className="shrink-0" />
+          <Trash2 size={12} className="shrink-0" />
           <span>Descartar</span>
         </Button>
  
         <Button
           variant="ghost"
-          className="h-9 px-6 rounded-xl bg-primary/25 border border-primary text-primary text-[13px] font-medium shadow-[0_0_20px_rgba(var(--primary),0.25)] transition-all duration-300 active:scale-[0.97] flex items-center gap-2.5 relative group/apply"
+          className="h-7.5 px-5 rounded-xl bg-primary/10 border border-primary/30 text-primary text-[11px] font-semibold shadow-[0_0_10px_rgba(var(--primary-rgb),0.05)] transition-all duration-300 active:scale-[0.97] flex items-center gap-1.5 relative group/apply"
           onClick={handleApply}
           disabled={aiGenerationIsLoading}
         >
-          <Sparkles size={15} className="relative z-10 transition-transform group-hover/apply:scale-110 shrink-0" />
-          <span className="relative z-10">Aplicar sugestão</span>
+          <Sparkles size={12} className="relative z-10 transition-transform group-hover/apply:scale-110 shrink-0" />
+          <span className="relative z-10">Aplicar edição</span>
         </Button>
       </div>
     </div>

@@ -25,23 +25,23 @@ interface Step {
 
 const STEPS: Step[] = [
   {
-    title: "Documentos prontos",
-    highlight: "em segundos",
-    description: "Crie contratos, termos e notificações oficiais sem complicação. Nossa inteligência artificial entende o que você precisa e redige o texto completo de forma instantânea, economizando horas de trabalho manual.",
+    title: "A Notificação",
+    highlight: "Definitiva",
+    description: "Resolva calotes e exija seus direitos sem precisar pagar advogados caros. Use nossa inteligência para criar notificações letais e profissionais sob medida em segundos.",
     icon: <Zap size={32} />,
     color: "text-amber-500"
   },
   {
-    title: "Linguagem clara e",
-    highlight: "profissional",
-    description: "Não precisa entender de leis para escrever como um especialista. O sistema utiliza os termos corretos para garantir que seu documento seja sério, seguro e aceito em qualquer situação oficial.",
+    title: "Poder de Coerção",
+    highlight: "Imediato",
+    description: "A IA utiliza terminologia jurídica formal que intimida e fundamenta seu direito, obrigando a parte contrária a agir antes de enfrentar processos e protestos.",
     icon: <ShieldCheck size={32} />,
     color: "text-emerald-500"
   },
   {
-    title: "Controle total",
-    highlight: "na sua mão",
-    description: "Uma ferramenta simples e intuitiva feita para todos. Basta digitar o que você quer e deixar que a tecnologia faça a parte difícil. O resultado é um documento perfeito, pronto para ser usado.",
+    title: "Pronto para",
+    highlight: "Enviar",
+    description: "Basta descrever o que aconteceu. O motor cirúrgico formata a carta solene automaticamente com as leis aplicáveis. O resultado é um documento impecável e blindado.",
     icon: <BrainCircuit size={32} />,
     color: "text-primary"
   }
@@ -111,7 +111,7 @@ export function GoogleAdsOnboarding() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="max-w-md bg-zinc-950/95 border-none p-0 overflow-hidden rounded-[2.5rem] shadow-[0_0_50px_rgba(var(--primary-rgb),0.3)]">
-        <div className="relative p-10 flex flex-col items-center text-center gap-6 min-h-[450px] justify-center overflow-hidden">
+        <div className="relative px-6 py-10 flex flex-col items-center text-center gap-6 min-h-[450px] justify-center overflow-hidden">
           {/* Background FX */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(var(--primary-rgb),0.15),transparent_70%)]" />
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] mix-blend-overlay" />
@@ -154,10 +154,10 @@ export function GoogleAdsOnboarding() {
           </div>
 
           {/* Action Button */}
-          <div className="relative z-10 w-full">
+          <div className="relative z-10 w-full px-2">
             <Button 
               onClick={handleNext}
-              className="w-full h-14 rounded-2xl bg-white text-black hover:bg-zinc-200 font-black uppercase tracking-widest text-xs gap-2 group transition-all"
+              className="w-full h-11 rounded-xl bg-white text-black hover:bg-zinc-200 font-black uppercase tracking-widest text-xs gap-2 group transition-all"
             >
               {isLastStep ? "Começar Agora" : "Próximo"}
               <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />

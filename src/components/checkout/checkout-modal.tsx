@@ -26,62 +26,16 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
   const [copied, setCopied] = useState(false)
   const hasAutoChecked = useRef(false)
 
-  // Reset state and handle auto-generation when opened
+  // Reset state when opened
   useEffect(() => {
     if (isOpen) {
-      if (!hasAutoChecked.current) {
-        setStep("form")
-        setPixData(null)
-        setLoading(false)
-        
-        const randomId = Math.random().toString(36).substring(2, 8);
-        const generatedName = `Guest ${randomId.toUpperCase()}`
-        const generatedEmail = `guest_${randomId}@extrajus.com`
-        
-        setName(generatedName)
-        setEmail(generatedEmail)
-
-        const autoCheckout = async () => {
-          setLoading(true)
-          try {
-            const res = await fetch("/api/billing/checkout-doc", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                name: generatedName,
-                email: generatedEmail,
-                content: documentContent,
-                doc_type: docType,
-                title
-              })
-            })
-
-            const data = await res.json()
-            if (!res.ok) throw new Error(data.error || "Falha ao gerar cobrança")
-
-            setPixData({
-              qrCode: data.pixQrCode,
-              code: data.pixCode,
-              externalId: data.externalId
-            })
-            setStep("pix")
-          } catch (err: any) {
-            toast.error(err.message)
-            // Se falhar, permitimos tentar novamente manualmente
-            hasAutoChecked.current = false
-          } finally {
-            setLoading(false)
-          }
-        }
-
-        hasAutoChecked.current = true
-        autoCheckout()
-      }
-    } else {
-      // Reset ref when modal completely closes
-      hasAutoChecked.current = false
+      setStep("form")
+      setPixData(null)
+      setLoading(false)
+      setEmail("")
+      setName("Cliente")
     }
-  }, [isOpen, documentContent, docType, title])
+  }, [isOpen])
 
   // Polling for payment status
   useEffect(() => {
@@ -98,7 +52,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             if (typeof window !== "undefined" && (window as any).gtag) {
               (window as any).gtag('event', 'conversion', {
                 'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
-                'value': 37.00, // Valor real do download do documento
+                'value': 29.00, // Valor real do download do documento
                 'currency': 'BRL',
                 'transaction_id': pixData.externalId
               });
@@ -127,7 +81,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name,
+          name: "Cliente",
           email,
           content: documentContent,
           doc_type: docType,
@@ -199,7 +153,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
       if (typeof window !== "undefined" && (window as any).gtag) {
         (window as any).gtag('event', 'conversion', {
           'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
-          'value': 37.00,
+          'value': 29.00,
           'currency': 'BRL',
           'transaction_id': data.externalId
           });
@@ -233,7 +187,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
           if (typeof window !== "undefined" && (window as any).gtag) {
           (window as any).gtag('event', 'conversion', {
           'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
-          'value': 37.00,
+          'value': 29.00,
           'currency': 'BRL',
           'transaction_id': pixData.externalId
           });
@@ -260,10 +214,12 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
 
           return (
           <Dialog open={isOpen} onOpenChange={(open) => {
-          if (step === "success") return;
-          if (!open) onClose();
+            // Bloqueia qualquer saída além do botão programático (se houver)
+            if (step === "success" && !open) onClose();
           }}>
-          <DialogContent className="w-full max-w-[92vw] md:max-w-[48rem] lg:max-w-[52rem] bg-background border border-border text-foreground rounded-[28px] max-sm:rounded-none max-sm:!top-0 max-sm:!left-0 max-sm:!translate-x-0 max-sm:!translate-y-0 max-sm:!w-full max-sm:!max-w-full max-sm:h-dvh max-sm:!max-h-none max-sm:flex max-sm:flex-col max-sm:justify-center shadow-[0_0_50px_rgba(139,92,246,0.15)] p-[1.375rem] max-sm:px-8 max-sm:py-8 max-h-[94vh] overflow-hidden transition-all duration-500">
+          <DialogContent 
+            className="w-full max-w-[92vw] md:max-w-[48rem] lg:max-w-[52rem] bg-background border border-border text-foreground rounded-[28px] max-sm:rounded-none max-sm:!top-0 max-sm:!left-0 max-sm:!translate-x-0 max-sm:!translate-y-0 max-sm:!w-full max-sm:!max-w-full max-sm:h-dvh max-sm:!max-h-none max-sm:flex max-sm:flex-col max-sm:justify-center shadow-[0_0_50px_rgba(139,92,246,0.15)] p-[1.375rem] max-sm:px-8 max-sm:py-8 max-h-[94vh] overflow-hidden transition-all duration-500 [&>button:last-child]:hidden"
+          >
           {/* Soft Occult Ambient Highlights (Adaptive to Theme) */}
           <div className="absolute top-0 right-0 w-36 h-36 bg-primary/5 rounded-full blur-[60px] pointer-events-none" />
           <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-primary/5 rounded-full blur-[60px] pointer-events-none" />
@@ -292,7 +248,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             <div className="pt-1 max-sm:pt-6 max-sm:flex max-sm:flex-col max-sm:items-center">
               <div className="text-[0.625rem] max-sm:text-[0.85rem] font-black text-muted-foreground/60 uppercase tracking-widest mb-1 max-sm:mb-2">Investimento Único</div>
               <div className="flex items-baseline gap-1.5 max-sm:gap-2">
-                <span className="text-[1.75rem] max-sm:text-[2.75rem] font-black text-foreground">R$ 37,00</span>
+                <span className="text-[1.75rem] max-sm:text-[2.75rem] font-black text-foreground">R$ 29,00</span>
                 <span className="text-[0.625rem] max-sm:text-[0.9rem] font-bold text-muted-foreground uppercase">/ download</span>
               </div>
             </div>
@@ -303,23 +259,57 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             <DialogHeader className="mb-3 max-sm:mb-8 text-center flex flex-col items-center">
               <DialogTitle className="flex items-center justify-center gap-2.5 text-[1rem] max-sm:text-[1.35rem] font-black tracking-[0.12em] bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">
                 <Lock size={18} className="text-primary animate-pulse filter drop-shadow-[0_0_6px_rgba(139,92,246,0.4)] max-sm:w-[22px] max-sm:h-[22px]" />
-                {step === "form" ? "Gerando Código PIX" : step === "pix" ? "Finalizar Pagamento" : "Sucesso!"}
+                {step === "form" ? "Acesso ao Documento" : step === "pix" ? "Finalizar Pagamento" : "Sucesso!"}
               </DialogTitle>
               <DialogDescription className="text-[0.825rem] max-sm:text-[1.05rem] max-sm:leading-[1.5] text-muted-foreground font-medium tracking-wide mt-1 max-sm:mt-3 leading-relaxed text-center">
                 {step === "form"
-                  ? "Aguarde um instante, o sistema está preparando seu código de pagamento seguro..."
+                  ? "Para continuar, informe seu e-mail principal. Enviaremos uma cópia em PDF e o recibo para ele."
                   : step === "pix"
                   ? "Efetue o pagamento via PIX para liberação instantânea do seu documento Word editável."
                   : "Seu pagamento foi confirmado. O download está disponível abaixo."}
               </DialogDescription>
             </DialogHeader>
             {step === "form" && (
-              <div className="flex flex-col items-center justify-center space-y-4 py-8">
-                <BrainCircuit size={40} className="animate-spin text-primary" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/80 dark:text-primary/70 animate-pulse">
-                  Conectando gateway de pagamento...
-                </span>
-              </div>
+              <form onSubmit={handleCheckout} className="flex flex-col space-y-4 py-4 w-full">
+                <div className="flex flex-col">
+                  <label htmlFor="email" className="block text-xs font-black uppercase tracking-widest text-muted-foreground ml-1 mb-3">Seu melhor e-mail</label>
+                  <input 
+                    id="email"
+                    type="email" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="exemplo@email.com" 
+                    required
+                    className="flex h-12 max-sm:h-14 w-full rounded-xl border border-input bg-background/50 px-4 py-2 text-sm max-sm:text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)]"
+                  />
+                  <p className="text-[10px] text-muted-foreground font-medium ml-1 mt-2">Nós enviaremos uma cópia do documento para este e-mail após o pagamento.</p>
+                </div>
+                <Button 
+                  type="submit" 
+                  disabled={loading}
+                  className="w-full h-12 max-sm:h-14 mt-4 bg-primary text-primary-foreground hover:bg-primary/90 font-black uppercase tracking-[0.1em] rounded-xl transition-all shadow-[0_4px_15px_rgba(var(--primary-rgb),0.3)] hover:shadow-[0_4px_25px_rgba(var(--primary-rgb),0.5)] flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <BrainCircuit size={18} className="animate-spin" />
+                      Processando...
+                    </>
+                  ) : (
+                    <>
+                      <Zap size={18} />
+                      Gerar PIX de R$ 29,00
+                    </>
+                  )}
+                </Button>
+                
+                <button 
+                  type="button" 
+                  onClick={onClose}
+                  className="mx-auto mt-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+                >
+                  Voltar para o editor
+                </button>
+              </form>
             )}
 
             {step === "pix" && pixData && (

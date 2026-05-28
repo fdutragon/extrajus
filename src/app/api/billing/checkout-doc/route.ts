@@ -28,34 +28,39 @@ export async function POST(request: Request) {
   try {
     const { name, email, content, doc_type, title } = await request.json();
 
-    if (!name || !email || !content) {
+    if (!email || !content) {
       return NextResponse.json({ error: "Dados incompletos" }, { status: 400 });
     }
+
+    const randomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const finalName = `Cliente ${randomId}`;
 
     const supabaseAdmin = createSupabaseClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
 
-    // 1. Check or create user
+    // 1. Check or create user using the profiles table to avoid GoTrueAdminApi pagination/compatibility issues
     let userId: string;
-    const { data: existingUsers, error: userFetchError } = await supabaseAdmin.auth.admin.listUsers();
-    
-    if (userFetchError) {
-      console.error("Error fetching users:", userFetchError);
-      throw new Error("Erro ao buscar usuários");
-    }
-
-    const existingUser = existingUsers.users.find(u => u.email === email);
     const tempPassword = uuidv4();
     
-    if (existingUser) {
-      userId = existingUser.id;
+    const { data: profileData } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .eq("email", email)
+      .maybeSingle();
+
+    if (profileData?.id) {
+      userId = profileData.id;
+      // Recuperar metadados do usuário para preservar
+      const { data: userData } = await supabaseAdmin.auth.admin.getUserById(userId);
+      const userMetadata = userData?.user?.user_metadata || {};
+      
       // Atualizar a senha e metadados para login automático e imediato após pagamento
       const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(userId, {
         password: tempPassword,
         email_confirm: true,
-        user_metadata: { ...existingUser.user_metadata, temp_pass: tempPassword }
+        user_metadata: { ...userMetadata, temp_pass: tempPassword }
       });
       if (updateError) console.error("Erro ao atualizar senha temporária do usuário existente:", updateError);
     } else {
@@ -63,7 +68,7 @@ export async function POST(request: Request) {
         email,
         password: tempPassword,
         email_confirm: true,
-        user_metadata: { full_name: name, temp_pass: tempPassword }
+        user_metadata: { full_name: finalName, temp_pass: tempPassword }
       });
       if (createError) throw createError;
       if (!newUser.user) throw new Error("Falha ao criar usuário");
@@ -125,7 +130,7 @@ export async function POST(request: Request) {
       console.log(`[Checkout] Recuperando transação pendente existente: ${existingTx.external_id}`);
       
       // Notificar o Cadelo via Telegram sobre a tentativa de re-geração (reentrada)
-      await sendTelegramNotification(`#SISTEMA_ORDEM 🔄 <b>REENTRADA NO CHECKOUT</b>\n\n📄 Documento: <b>${title || 'Sem título'}</b>\n👤 Cliente: <b>${name}</b>\n🆔 ID: <code>${existingTx.external_id}</code>\nℹ️ O cliente voltou para ver o QR Code existente.`);
+      await sendTelegramNotification(`#SISTEMA_ORDEM 🔄 <b>REENTRADA NO CHECKOUT</b>\n\n📄 Documento: <b>${title || 'Sem título'}</b>\n👤 Cliente: <b>${finalName}</b>\n🆔 ID: <code>${existingTx.external_id}</code>\nℹ️ O cliente voltou para ver o QR Code existente.`);
 
       // Precisamos do QR Code formatado (data.pixCode da GG Pix)
       // Como não salvamos o raw QR code (SVG/Base64) mas sim o copia e cola, 
@@ -137,7 +142,7 @@ export async function POST(request: Request) {
     }
 
     const externalId = `paydoc_${doc.id}`;
-    const amountCents = 3700; // R$ 37,00
+    const amountCents = 2900; // R$ 29,00
 
     // 3. Register transaction
     const { error: dbError } = await supabaseAdmin
@@ -164,7 +169,7 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         amountCents,
         description: "Desbloqueio de Documento ExtraJus",
-        payerName: name,
+        payerName: finalName,
         payerDocument,
         externalId,
         webhookUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/ggpix`,
@@ -186,7 +191,7 @@ export async function POST(request: Request) {
 
     // Notificar o Cadelo via Telegram sobre o interesse no documento
     const formattedAmount = (amountCents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    await sendTelegramNotification(`#SISTEMA_ORDEM ⚡ <b>PIX GERADO (DOCUMENTO)</b>\n\n💵 Valor: <b>${formattedAmount}</b>\n📄 Documento: <b>${title || 'Sem título'}</b>\n👤 Cliente: <b>${name}</b> (${email})\n🆔 ID: <code>${externalId}</code>\n⏳ Só falta pagar para o lucro entrar!`);
+    await sendTelegramNotification(`#SISTEMA_ORDEM ⚡ <b>PIX GERADO (DOCUMENTO)</b>\n\n💵 Valor: <b>${formattedAmount}</b>\n📄 Documento: <b>${title || 'Sem título'}</b>\n👤 Cliente: <b>${finalName}</b> (${email})\n🆔 ID: <code>${externalId}</code>\n⏳ Só falta pagar para o lucro entrar!`);
 
     return NextResponse.json({ 
       pixCode: data.pixCopyPaste, 
