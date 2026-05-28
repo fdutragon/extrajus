@@ -69,16 +69,9 @@ export async function POST(request: Request) {
 
       if (contractError) {
         console.error("[Webhook Assinafy] Error updating contract:", contractError)
-      }
-    }
-
-    return NextResponse.json({ success: true })
-  } catch (error: any) {
-    console.error("[Webhook Assinafy] Critical failure:", error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
-  }
-}
-topo.`);
+      } else if (mappedStatus === 'signed') {
+        // Notificar o Cadelo via Telegram sobre a assinatura
+        await sendTelegramNotification(`🖋️ <b>CONTRATO ASSINADO!</b>\n\n📄 Documento: <code>${documentId}</code>\n✅ Status: <b>ASSINADO</b>\n🔥 Menos um problema, mais um passo para o topo.`);
       }
     }
 

@@ -6,12 +6,10 @@ async function main() {
   const activeCid = config.customerId.replace(/-/g, '').trim();
   const campaignId = '23891691352'; // Campanha "Notificação Extrajudicial" (ATIVA)
 
-  console.log('
-================================================================');
+  console.log('\n================================================================');
   console.log(`🔗 ADS SITELINK CREATOR - CAMPANHA ${campaignId} 🔗`);
-  console.log(`Conta de Operação : \x1b[35m${activeCid}\x1b[0m`);
-  console.log('================================================================
-');
+  console.log(`Conta de Operação : \\x1b[35m${activeCid}\\x1b[0m`);
+  console.log('================================================================\n');
 
   try {
     const client = getGoogleAdsClient();
@@ -47,11 +45,14 @@ async function main() {
     ];
 
     const sitelinkAssets = sitelinksData.map(sl => ({
-      sitelink_asset: {
-        link_text: sl.linkText,
-        description1: sl.description1,
-        description2: sl.description2,
-        final_urls: [sl.finalUrl],
+      asset: {
+        type: 'SITELINK',
+        sitelink_asset: { // Esta é a propriedade correta dentro do 'asset'
+          link_text: sl.linkText,
+          description1: sl.description1,
+          description2: sl.description2,
+          final_urls: [sl.finalUrl],
+        },
       },
     }));
 
@@ -76,12 +77,10 @@ async function main() {
     await customer.campaignAssets.create(campaignAssetOperations as any);
 
     console.log(`\x1b[32m[OK] Sitelinks associados com sucesso à campanha ${campaignId}!\x1b[0m`);
-    console.log('================================================================
-');
+    console.log('================================================================\n');
 
   } catch (error: any) {
-    console.error('
-\x1b[31m[Erro] Falha ao criar/associar Sitelinks:\x1b[0m');
+    console.error('\n\x1b[31m[Erro] Falha ao criar/associar Sitelinks:\x1b[0m');
     console.error(error.message || error);
     if (error.errors || error.failure) {
       console.error(JSON.stringify(error.errors || error.failure, null, 2));
