@@ -25,15 +25,53 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
   const [pixData, setPixData] = useState<{ qrCode: string, code: string, externalId: string } | null>(null)
   const [copied, setCopied] = useState(false)
 
-  // Reset state when opened
+  // Reset state and auto-generate PIX when opened
   useEffect(() => {
     if (isOpen) {
-      setStep("form")
+      setStep("form") // Usado como loading inicial
       setPixData(null)
-      setName("")
-      setEmail("")
+      
+      const randomId = Math.random().toString(36).substring(2, 8);
+      const generatedName = `Guest ${randomId.toUpperCase()}`
+      const generatedEmail = `guest_${randomId}@extrajus.com`
+      
+      setName(generatedName)
+      setEmail(generatedEmail)
+
+      const autoCheckout = async () => {
+        setLoading(true)
+        try {
+          const res = await fetch("/api/billing/checkout-doc", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: generatedName,
+              email: generatedEmail,
+              content: documentContent,
+              doc_type: docType,
+              title
+            })
+          })
+
+          const data = await res.json()
+          if (!res.ok) throw new Error(data.error || "Falha ao gerar cobrança")
+
+          setPixData({
+            qrCode: data.pixQrCode,
+            code: data.pixCode,
+            externalId: data.externalId
+          })
+          setStep("pix")
+        } catch (err: any) {
+          toast.error(err.message)
+        } finally {
+          setLoading(false)
+        }
+      }
+
+      autoCheckout()
     }
-  }, [isOpen])
+  }, [isOpen, documentContent, docType, title])
 
   // Polling for payment status
   useEffect(() => {
@@ -252,75 +290,26 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
 
           {/* Painel Direito: Formulário, PIX ou Sucesso (6 colunas) */}
           <div className="md:col-span-6 flex flex-col justify-center min-h-[280px] max-sm:min-h-0 max-sm:pt-3">
-            <DialogHeader className={`mb-3 max-sm:mb-4 ${step === "form" ? "max-sm:hidden" : ""}`}>
+            <DialogHeader className={`mb-3 max-sm:mb-4`}>
               <DialogTitle className="flex items-center gap-2.5 text-[1rem] font-black tracking-[0.12em] bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">
                 <Lock size={16} className="text-primary animate-pulse filter drop-shadow-[0_0_6px_rgba(139,92,246,0.4)]" />
-                {step === "form" ? "Finalizar Pedido" : step === "pix" ? "Finalizar Pagamento" : "Sucesso!"}
+                {step === "form" ? "Gerando Código PIX" : step === "pix" ? "Finalizar Pagamento" : "Sucesso!"}
               </DialogTitle>
               <DialogDescription className="text-[0.825rem] text-muted-foreground font-medium tracking-wide mt-1 leading-relaxed">
                 {step === "form"
-                  ? "Gere o código PIX e receba o contrato oficial diretamente em seu e-mail após a confirmação."
+                  ? "Aguarde um instante, o sistema está preparando seu código de pagamento seguro..."
                   : step === "pix"
                   ? "Efetue o pagamento via PIX para liberação instantânea do seu documento Word editável."
                   : "Seu pagamento foi confirmado. O download está disponível abaixo."}
               </DialogDescription>
             </DialogHeader>
             {step === "form" && (
-              <form onSubmit={handleCheckout} className="space-y-4 max-sm:space-y-3.5 mt-2 max-sm:mt-0">
-                {/* Nome Completo Input Group */}
-                <div className="flex flex-col gap-2 max-sm:gap-1.5">
-                  <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-primary/80 dark:text-primary/70">
-                    Nome Completo
-                  </label>
-                  <input 
-                    required
-                    type="text" 
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                    className="w-full h-11 max-sm:h-10 px-3.5 max-sm:px-3 rounded-xl max-sm:rounded-lg border border-border bg-background/50 text-foreground text-sm max-sm:text-xs placeholder:text-muted-foreground/45 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all font-semibold shadow-xs duration-300"
-                    placeholder="Ex: Seu Nome Completo"
-                  />
-                </div>
-                
-                {/* E-mail Input Group */}
-                <div className="flex flex-col gap-2 max-sm:gap-1.5">
-                  <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-primary/80 dark:text-primary/70">
-                    E-mail de Acesso
-                  </label>
-                  <input 
-                    required
-                    type="email" 
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    className="w-full h-11 max-sm:h-10 px-3.5 max-sm:px-3 rounded-xl max-sm:rounded-lg border border-border bg-background/50 text-foreground text-sm max-sm:text-xs placeholder:text-muted-foreground/45 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all font-semibold shadow-xs duration-300"
-                    placeholder="Ex: seu@email.com"
-                  />
-                </div>
-                
-                {/* Action Buttons */}
-                <div className="pt-2 max-sm:pt-1.5">
-                  <Button 
-                    type="submit" 
-                    disabled={loading} 
-                    className="w-full h-12 max-sm:h-11 bg-foreground hover:bg-foreground/90 text-background font-bold tracking-[0.05em] uppercase rounded-xl max-sm:rounded-lg transition-all flex items-center justify-center gap-3 px-5 max-sm:px-4 duration-200 border border-transparent group text-sm max-sm:text-xs"
-                  >
-                    {loading ? (
-                      <>
-                        <span className="flex items-center gap-2">
-                          <BrainCircuit className="animate-spin" size={15} />
-                          Processando...
-                        </span>
-                        <span />
-                      </>
-                    ) : (
-                      <>
-                        <span>Gerar Código PIX</span>
-                        <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5" />
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </form>
+              <div className="flex flex-col items-center justify-center space-y-4 py-8">
+                <BrainCircuit size={40} className="animate-spin text-primary" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/80 dark:text-primary/70 animate-pulse">
+                  Conectando gateway de pagamento...
+                </span>
+              </div>
             )}
 
             {step === "pix" && pixData && (
