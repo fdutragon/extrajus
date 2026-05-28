@@ -1468,11 +1468,12 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               size="icon" 
               onClick={() => setAiPromptOpen(prev => !prev)}
               className={cn(
-                "h-14 w-14 text-primary hover:bg-transparent transition-all flex items-center justify-center relative group/ai-mob",
-                aiPromptOpen ? "text-primary scale-110" : "text-muted-foreground/60"
+                "h-16 w-16 text-primary hover:bg-transparent transition-all flex items-center justify-center relative group/ai-mob",
+                aiPromptOpen ? "text-primary scale-110" : "text-primary"
               )}
             >
-              <BrainCircuit className={cn("w-[32px] h-[32px] relative z-10", (isAuditing || aiPromptOpen) && "animate-pulse text-primary")} />
+              <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
+              <BrainCircuit className={cn("w-[42px] h-[42px] relative z-10 drop-shadow-[0_0_10px_rgba(var(--primary-rgb),0.8)]", (isAuditing || aiPromptOpen) && "animate-pulse")} />
             </Button>
           </div>
         )}

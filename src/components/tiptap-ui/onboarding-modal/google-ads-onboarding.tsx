@@ -54,13 +54,24 @@ export function GoogleAdsOnboarding() {
   const [progress, setProgress] = useState(0)
 
   useEffect(() => {
-    // Detect Google Ads traffic (UTM or GCLID)
+    // Evita múltiplos gatilhos na mesma sessão
+    const hasSeenOnboarding = sessionStorage.getItem('ads-onboarding-seen')
+    if (hasSeenOnboarding) return
+
+    // Detect Google Ads traffic (UTM or GCLID or REF)
     const params = new URLSearchParams(window.location.search)
-    const isFromAds = params.get('utm_source') === 'google' || params.has('gclid') || params.get('ref') === 'ads'
+    const isFromAds = params.get('utm_source') === 'google' || 
+                      params.has('gclid') || 
+                      params.get('ref') === 'ads' ||
+                      params.get('utm_campaign') === 'ads'
     
     if (isFromAds) {
+      console.log("[AdsOnboarding] Trânsito de Ads detectado. Preparando modal...")
       // Pequeno delay para o editor carregar antes do "Wow"
-      const timer = setTimeout(() => setIsOpen(true), 1500)
+      const timer = setTimeout(() => {
+        setIsOpen(true)
+        sessionStorage.setItem('ads-onboarding-seen', 'true')
+      }, 1500)
       return () => clearTimeout(timer)
     }
   }, [])
