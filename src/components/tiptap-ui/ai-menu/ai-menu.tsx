@@ -83,6 +83,36 @@ export function AiMenuContent({
     useUiEditorState(editor)
   const tiptapAiPromptInputRef = useRef<HTMLDivElement | null>(null)
 
+  // Implementação Robusta de Auto-Focus via Evento Global
+  useEffect(() => {
+    const handleStartAiFocus = () => {
+      // Pequeno delay para garantir que o modal de onboarding fechou e o menu está visível
+      let attempts = 0
+      const maxAttempts = 5
+      
+      const tryFocus = () => {
+        const textarea = tiptapAiPromptInputRef.current?.querySelector('textarea') as HTMLTextAreaElement | null
+        if (textarea) {
+          textarea.focus()
+          // Garante que o cursor vá para o final do texto se houver algum
+          textarea.setSelectionRange(textarea.value.length, textarea.value.length)
+          return true
+        }
+        return false
+      }
+
+      const interval = setInterval(() => {
+        if (tryFocus() || attempts >= maxAttempts) {
+          clearInterval(interval)
+        }
+        attempts++
+      }, 150)
+    }
+
+    window.addEventListener('start-ai-onboarding', handleStartAiFocus)
+    return () => window.removeEventListener('start-ai-onboarding', handleStartAiFocus)
+  }, [])
+
   const closeAiMenu = useCallback(() => {
     if (!editor) return
     reset()

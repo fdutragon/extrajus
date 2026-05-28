@@ -46,12 +46,13 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="pt-BR"
       suppressHydrationWarning
       data-scroll-behavior="smooth"
       className={`${sansFont.variable} ${headingFont.variable} h-full antialiased`}
     >
       <head>
+        <meta name="google" content="notranslate" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
