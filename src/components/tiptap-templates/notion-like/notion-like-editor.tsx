@@ -1145,22 +1145,22 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         }
         .tiptap.ProseMirror {
           font-family: ${fontFamily === "Cambria" ? '"Cambria", "Georgia", serif' : fontFamily === "Inter" ? '"Inter", sans-serif' : fontFamily === "Times New Roman" ? '"Times New Roman", serif' : '"JetBrains Mono", monospace'} !important;
-          font-size: clamp(${(fontSize - 5) / 16}rem, calc(${(fontSize - 4.5) / 16}rem + 0.35vw), ${(fontSize + 4) / 16}rem) !important;
+          font-size: clamp(${(fontSize) / 16}rem, calc(${(fontSize - 1) / 16}rem + 0.35vw), ${(fontSize + 6) / 16}rem) !important;
         }
         :is(aside, header, .ai-prompt-wrapper) .text-\\[14\\.5px\\] {
-          font-size: clamp(0.656rem, calc(0.46875rem + 0.4vw), 1rem) !important;
+          font-size: clamp(0.85rem, calc(0.7rem + 0.4vw), 1rem) !important;
         }
         :is(aside, header, .ai-prompt-wrapper) .text-xs, :is(aside, header, .ai-prompt-wrapper) .text-\\[12px\\], :is(aside, header, .ai-prompt-wrapper) .text-\\[13px\\] {
-          font-size: clamp(0.625rem, calc(0.5rem + 0.35vw), 0.8125rem) !important;
+          font-size: clamp(0.8125rem, calc(0.65rem + 0.35vw), 0.9rem) !important;
         }
         :is(aside, header, .ai-prompt-wrapper) .text-\\[11px\\] {
-          font-size: clamp(0.59375rem, calc(0.46875rem + 0.35vw), 0.75rem) !important;
+          font-size: clamp(0.75rem, calc(0.6rem + 0.35vw), 0.8rem) !important;
         }
         :is(aside, header, .ai-prompt-wrapper) .text-\\[10px\\] {
-          font-size: clamp(0.53125rem, calc(0.40625rem + 0.3vw), 0.6875rem) !important;
+          font-size: clamp(0.7rem, calc(0.55rem + 0.3vw), 0.75rem) !important;
         }
         :is(aside, header, .ai-prompt-wrapper) .text-\\[9\\.5px\\], :is(aside, header, .ai-prompt-wrapper) .text-\\[9px\\] {
-          font-size: clamp(0.5rem, calc(0.375rem + 0.3vw), 0.625rem) !important;
+          font-size: clamp(0.65rem, calc(0.5rem + 0.3vw), 0.7rem) !important;
         }
         .scrollbar-minimalist::-webkit-scrollbar {
           width: 3px !important;
