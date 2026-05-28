@@ -290,12 +290,12 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
 
           {/* Painel Direito: Formulário, PIX ou Sucesso (6 colunas) */}
           <div className="md:col-span-6 flex flex-col justify-center min-h-[280px] max-sm:min-h-0 max-sm:pt-4">
-            <DialogHeader className={`mb-3 max-sm:mb-8 max-sm:text-center max-sm:flex max-sm:flex-col max-sm:items-center`}>
+            <DialogHeader className="mb-3 max-sm:mb-8 text-center flex flex-col items-center">
               <DialogTitle className="flex items-center justify-center gap-2.5 text-[1rem] max-sm:text-[1.35rem] font-black tracking-[0.12em] bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">
                 <Lock size={18} className="text-primary animate-pulse filter drop-shadow-[0_0_6px_rgba(139,92,246,0.4)] max-sm:w-[22px] max-sm:h-[22px]" />
                 {step === "form" ? "Gerando Código PIX" : step === "pix" ? "Finalizar Pagamento" : "Sucesso!"}
               </DialogTitle>
-              <DialogDescription className="text-[0.825rem] max-sm:text-[1.05rem] max-sm:leading-[1.5] text-muted-foreground font-medium tracking-wide mt-1 max-sm:mt-3 leading-relaxed max-sm:text-center">
+              <DialogDescription className="text-[0.825rem] max-sm:text-[1.05rem] max-sm:leading-[1.5] text-muted-foreground font-medium tracking-wide mt-1 max-sm:mt-3 leading-relaxed text-center">
                 {step === "form"
                   ? "Aguarde um instante, o sistema está preparando seu código de pagamento seguro..."
                   : step === "pix"
@@ -313,7 +313,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             )}
 
             {step === "pix" && pixData && (
-              <div className="flex flex-col items-center justify-center space-y-4 mt-2">
+              <div className="flex flex-col items-center justify-center space-y-4 mt-2 max-sm:text-center">
                 {/* Premium QR Code Container */}
                 <div className="bg-muted/40 p-4 max-sm:p-3 rounded-xl border border-border shadow-[0_0_20px_rgba(0,0,0,0.05)] relative overflow-hidden group hover:border-primary/20 transition-all duration-300">
                   <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -323,7 +323,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                 </div>
                 
                 {/* Copy & Dev Simulator Action Controls */}
-                <div className="w-full space-y-3 max-sm:space-y-4">
+                <div className="w-full space-y-3 max-sm:space-y-4 flex flex-col items-center">
                   <Button 
                     onClick={copyPix} 
                     variant="outline" 
@@ -346,7 +346,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                 </div>
 
                 {/* Waiting indicator */}
-                <div className="flex items-center gap-2 text-[10px] max-sm:text-[0.8rem] font-black uppercase tracking-[0.15em] text-primary/80 animate-pulse pt-2">
+                <div className="flex items-center justify-center gap-2 text-[10px] max-sm:text-[0.8rem] font-black uppercase tracking-[0.15em] text-primary/80 animate-pulse pt-2 w-full">
                   <BrainCircuit size={15} className="text-primary max-sm:w-[18px] max-sm:h-[18px]" />
                   <span>Aguardando pagamento...</span>
                 </div>

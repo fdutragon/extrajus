@@ -1383,7 +1383,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                 <Minus size={18} />
               </Button>
               <div className="flex items-center px-1 min-w-[1.6rem] justify-center select-none">
-                <span className="text-[14px] font-black text-foreground">{fontSize}</span>
+                <span className="text-[11px] font-black text-foreground">{fontSize}</span>
               </div>
               <Button 
                 variant="ghost" 
@@ -1428,23 +1428,19 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               <UndoRedoButton action="undo" />
               <UndoRedoButton action="redo" />
             </div>
-            <Button
-              variant="ghost"
+            <div
               className={cn(
-                "relative flex items-center justify-center px-2.5 h-full rounded-none border-x border-primary/10 gap-1.5 overflow-hidden hover:bg-primary/5 transition-all select-none group/ai-toggle",
-                aiPromptOpen && "bg-primary/[0.04]"
+                "relative flex items-center justify-center px-2.5 h-full rounded-none border-x border-violet-500/10 gap-1.5 overflow-hidden select-none"
               )}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/5 group-hover/ai-toggle:from-primary/5 group-hover/ai-toggle:to-primary/10 transition-all" />
               <BrainCircuit 
                 size={14} 
                 className={cn(
-                  "text-primary/60 relative z-10 transition-transform group-hover/ai-toggle:scale-110", 
-                  (isAuditing || aiPromptOpen) && "animate-pulse text-primary"
+                  "text-violet-500 relative z-10"
                 )} 
               />
-              <span className={cn("text-[9px] font-black uppercase tracking-[0.2em] relative z-10 transition-colors", aiPromptOpen ? "text-primary" : "text-muted-foreground/60 group-hover/ai-toggle:text-primary/80")}>IA</span>
-            </Button>
+              <span className={cn("text-[9px] font-black uppercase tracking-[0.2em] relative z-10 text-violet-500")}>IA</span>
+            </div>
             <div className="flex items-center gap-0.5 opacity-60 hover:opacity-100 transition-opacity duration-500">
               <TextAlignButton align="left" />
               <TextAlignButton align="center" />
@@ -1458,32 +1454,26 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         {/* Centralized AI Icon only for mobile screen */}
         {!readOnly && (
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:hidden z-[110]">
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <div 
               className={cn(
-                "h-16 w-16 text-primary hover:bg-transparent transition-all flex items-center justify-center relative group/ai-mob",
-                aiPromptOpen ? "text-primary scale-110" : "text-primary"
+                "h-16 w-16 text-violet-500 flex items-center justify-center relative"
               )}
             >
-              <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
-              <BrainCircuit className={cn("w-[42px] h-[42px] relative z-10 drop-shadow-[0_0_10px_rgba(var(--primary-rgb),0.8)]", (isAuditing || aiPromptOpen) && "animate-pulse")} />
-            </Button>
+              <div className="absolute inset-0 bg-violet-500/20 rounded-full blur-xl" />
+              <BrainCircuit className={cn("w-[42px] h-[42px] relative z-10 drop-shadow-[0_0_10px_rgba(139,92,246,0.8)]")} />
+            </div>
           </div>
         )}
 
         <div className="flex-none flex items-center gap-1.5 max-sm:gap-1">
           {!readOnly && (
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <div 
               className={cn(
-                "h-6 w-6 hover:bg-primary/10 hover:text-primary rounded-lg transition-all lg:hidden max-sm:hidden",
-                aiPromptOpen && "bg-primary/10 text-primary"
+                "h-6 w-6 text-violet-500 flex items-center justify-center lg:hidden max-sm:hidden"
               )}
             >
-              <BrainCircuit size={14} className={cn(isAuditing && "animate-pulse")} />
-            </Button>
+              <BrainCircuit size={14} />
+            </div>
           )}
 
           {!readOnly && !isPublic && (
