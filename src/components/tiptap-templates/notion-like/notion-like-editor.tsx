@@ -1305,8 +1305,8 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
           {!readOnly && !isPublic && (
             <div className="flex items-center gap-1">
               <Link href="/dashboard">
-                <Button variant="ghost" size="icon" className="h-6 w-6 max-sm:h-8 max-sm:w-8 hover:bg-primary/10 hover:text-primary rounded-lg max-sm:rounded-xl transition-all duration-300 group/back flex items-center justify-center">
-                  <ChevronLeft size={18} className="group-hover/back:-translate-x-0.5 transition-transform" />
+                <Button variant="ghost" size="icon" className="h-8 w-8 max-sm:h-10 max-sm:w-10 hover:bg-primary/10 hover:text-primary rounded-lg max-sm:rounded-xl transition-all duration-300 group/back flex items-center justify-center">
+                  <ChevronLeft size={22} className="group-hover/back:-translate-x-0.5 transition-transform" />
                 </Button>
               </Link>
             </div>
@@ -1459,7 +1459,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
 
 
 
-      <div className={cn("flex-1 flex pt-16 sm:pt-[clamp(2.5rem,4vh,3.25rem)] relative overflow-hidden h-full transition-all duration-700")}>
+      <div className={cn("flex-1 flex pt-20 sm:pt-[clamp(2.5rem,4vh,3.25rem)] relative overflow-hidden h-full transition-all duration-700")}>
         {!readOnly && (
           <>
             {leftSidebarOpen && (
