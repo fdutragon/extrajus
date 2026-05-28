@@ -111,7 +111,7 @@ export function GoogleAdsOnboarding() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="max-w-md bg-zinc-950/95 border-none p-0 overflow-hidden rounded-[2.5rem] shadow-[0_0_50px_rgba(var(--primary-rgb),0.3)]">
-        <div className="relative p-10 flex flex-col items-center text-center gap-8 min-h-[450px] justify-center overflow-hidden">
+        <div className="relative p-10 flex flex-col items-center text-center gap-6 min-h-[450px] justify-center overflow-hidden">
           {/* Background FX */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(var(--primary-rgb),0.15),transparent_70%)]" />
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] mix-blend-overlay" />
@@ -148,13 +148,13 @@ export function GoogleAdsOnboarding() {
                 {step.highlight}
               </span>
             </h2>
-            <p className="text-[14px] text-zinc-400 font-medium leading-relaxed px-4">
+            <p className="text-[13px] text-zinc-400 font-medium leading-relaxed px-4">
               {step.description}
             </p>
           </div>
 
           {/* Action Button */}
-          <div className="relative z-10 w-full pt-2">
+          <div className="relative z-10 w-full">
             <Button 
               onClick={handleNext}
               className="w-full h-14 rounded-2xl bg-white text-black hover:bg-zinc-200 font-black uppercase tracking-widest text-xs gap-2 group transition-all"
