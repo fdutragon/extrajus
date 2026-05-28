@@ -1145,7 +1145,16 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         }
         .tiptap.ProseMirror {
           font-family: ${fontFamily === "Cambria" ? '"Cambria", "Georgia", serif' : fontFamily === "Inter" ? '"Inter", sans-serif' : fontFamily === "Times New Roman" ? '"Times New Roman", serif' : '"JetBrains Mono", monospace'} !important;
-          font-size: clamp(${(fontSize) / 16}rem, calc(${(fontSize - 1) / 16}rem + 0.35vw), ${(fontSize + 6) / 16}rem) !important;
+        }
+        @media (min-width: 768px) {
+          .tiptap.ProseMirror {
+            font-size: clamp(${(fontSize - 5) / 16}rem, calc(${(fontSize - 4.5) / 16}rem + 0.35vw), ${(fontSize + 4) / 16}rem) !important;
+          }
+        }
+        @media (max-width: 767px) {
+          .tiptap.ProseMirror {
+            font-size: ${fontSize}px !important;
+          }
         }
         :is(aside, header, .ai-prompt-wrapper) .text-\\[14\\.5px\\] {
           font-size: clamp(0.85rem, calc(0.7rem + 0.4vw), 1rem) !important;
