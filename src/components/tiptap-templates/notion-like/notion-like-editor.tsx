@@ -1606,7 +1606,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
           </main>
           
           {!readOnly && aiPromptOpen && (
-            <div className="absolute bottom-12 max-sm:bottom-3 left-1/2 -translate-x-1/2 w-full max-w-[30rem] z-[100] px-4 transition-all duration-500 animate-in fade-in slide-in-from-bottom-5 ai-prompt-wrapper">
+            <div className="absolute bottom-12 max-sm:bottom-20 left-1/2 -translate-x-1/2 w-full max-w-[30rem] z-[100] px-4 transition-all duration-500 animate-in fade-in slide-in-from-bottom-5 ai-prompt-wrapper">
                <AiMenu plain={true} />
             </div>
           )}
