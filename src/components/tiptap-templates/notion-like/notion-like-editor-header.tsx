@@ -100,12 +100,12 @@ export function NotionEditorHeader() {
   }
 
   return (
-    <header className="notion-like-editor-header fixed top-0 left-0 w-full h-12 md:h-11 border-b border-border bg-background/40 dark:bg-black/40 backdrop-blur-md flex items-center justify-between px-4 z-[100] transition-all hover:bg-background/60 dark:hover:bg-black/60">
+    <header className="notion-like-editor-header fixed top-0 left-0 w-full h-10 md:h-11 border-b border-border bg-background/40 dark:bg-black/40 backdrop-blur-md flex items-center justify-between px-4 z-[100] transition-all hover:bg-background/60 dark:hover:bg-black/60">
       {/* Left: Navigation & Branding */}
       <div className="flex items-center gap-3">
         <Link href="/dashboard">
-          <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-primary/10 hover:text-primary rounded-lg transition-all">
-            <ChevronLeft size={16} />
+          <Button variant="ghost" size="icon" className="h-7 w-7 max-sm:h-10 max-sm:w-10 hover:bg-primary/10 hover:text-primary rounded-lg max-sm:rounded-xl transition-all">
+            <ChevronLeft className="w-4 h-4 max-sm:w-[18px] max-sm:h-[18px]" />
           </Button>
         </Link>
         <div className="flex items-baseline gap-2 group cursor-default">

@@ -1300,13 +1300,13 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         }
       ` }} />
       
-      <header className="fixed top-0 left-0 w-full h-20 sm:h-[clamp(2.5rem,4vh,3.25rem)] border-b border-border bg-background/60 backdrop-blur-2xl flex items-center justify-between px-3 z-[100] transition-all duration-500 hover:bg-background/80 group">
+      <header className="fixed top-0 left-0 w-full h-10 sm:h-[clamp(2.5rem,4vh,3.25rem)] border-b border-border bg-background/60 backdrop-blur-2xl flex items-center justify-between px-3 z-[100] transition-all duration-500 hover:bg-background/80 group">
         <div className="flex items-center gap-1.5 max-sm:gap-1">
           {!readOnly && !isPublic && (
             <div className="flex items-center gap-1">
               <Link href="/dashboard">
                 <Button variant="ghost" size="icon" className="h-8 w-8 max-sm:h-10 max-sm:w-10 hover:bg-primary/10 hover:text-primary rounded-lg max-sm:rounded-xl transition-all duration-300 group/back flex items-center justify-center">
-                  <ChevronLeft size={22} className="group-hover/back:-translate-x-0.5 transition-transform" />
+                  <ChevronLeft className="w-[22px] h-[22px] max-sm:w-[18px] max-sm:h-[18px] group-hover/back:-translate-x-0.5 transition-transform" />
                 </Button>
               </Link>
             </div>
