@@ -26,23 +26,23 @@ interface Step {
 
 const STEPS: Step[] = [
   {
-    title: "Poder de redação",
-    highlight: "instantâneo",
-    description: "Esqueça a fadiga mental. Digite seu comando e veja a Lilith materializar estruturas jurídicas complexas em segundos.",
+    title: "Excelência em",
+    highlight: "redação jurídica",
+    description: "Aumente sua produtividade com inteligência especializada. Gere estruturas complexas e petições fundamentadas em segundos.",
     icon: <Zap size={32} />,
     color: "text-amber-500"
   },
   {
-    title: "Blindagem jurídica",
-    highlight: "inquebrável",
-    description: "Cada parágrafo é uma fortaleza. Nossa inteligência é treinada na elite da legislação brasileira para proteger cada letra.",
+    title: "Segurança e",
+    highlight: "conformidade",
+    description: "Documentos revisados com base na jurisprudência brasileira. Garanta precisão técnica e proteção jurídica em cada cláusula.",
     icon: <ShieldCheck size={32} />,
     color: "text-emerald-500"
   },
   {
-    title: "Domine o seu",
-    highlight: "destino",
-    description: "Você dita o ritmo, a Lilith executa a perfeição. O editor jurídico mais letal e sofisticado do mercado ao seu dispor.",
+    title: "Controle total do",
+    highlight: "seu fluxo",
+    description: "Uma plataforma intuitiva projetada para profissionais do direito. O equilíbrio perfeito entre tecnologia e rigor técnico.",
     icon: <BrainCircuit size={32} />,
     color: "text-primary"
   }

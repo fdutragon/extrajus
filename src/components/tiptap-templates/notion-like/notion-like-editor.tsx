@@ -1834,7 +1834,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
    
                               <div className="space-y-2">
                                 <button
-                                  onClick={() => editor.chain().focus().setTextSelection(clause.pos).run()}
+                                  onClick={() => editor?.chain().focus().setTextSelection(clause.pos).run()}
                                   className="flex items-center justify-between w-full text-left group-hover/clause:text-primary transition-all"
                                 >
                                   <span className="font-heading font-medium text-xs uppercase tracking-wider truncate max-w-[220px] text-foreground/80 group-hover/clause:text-primary">
@@ -1853,7 +1853,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                                     {visibleSubItems.map((sub) => (
                                       <button
                                         key={sub.id}
-                                        onClick={() => editor.chain().focus().setTextSelection(sub.pos).run()}
+                                        onClick={() => editor?.chain().focus().setTextSelection(sub.pos).run()}
                                         className="flex items-center gap-1.5 text-left text-[11px] text-muted-foreground/60 hover:text-primary transition-all w-full min-w-0 group/sub"
                                       >
                                         <div className="h-0.5 w-1 bg-muted-foreground/20 group-hover/sub:bg-primary shrink-0 transition-colors" />
