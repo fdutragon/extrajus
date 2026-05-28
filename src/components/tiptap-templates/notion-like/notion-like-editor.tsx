@@ -1364,38 +1364,38 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         }
       ` }} />
       
-      <header className="fixed top-0 left-0 w-full h-14 sm:h-[clamp(2.5rem,4vh,3.25rem)] border-b border-border bg-black flex items-center justify-between px-3 z-[1000] transition-all duration-500 group">
+      <header className="fixed top-0 left-0 w-full h-12 sm:h-[clamp(2.5rem,4vh,3.25rem)] border-b border-border bg-background/60 backdrop-blur-2xl flex items-center justify-between px-3 z-[1000] transition-all duration-500 group">
         <div className="flex items-center gap-1.5 max-sm:gap-2">
           {!readOnly && !isPublic && (
             <div className="flex items-center gap-1">
               <Link href="/dashboard">
-                <Button variant="ghost" size="icon" className="h-10 w-10 max-sm:h-12 max-sm:w-12 hover:bg-primary/10 hover:text-primary rounded-lg max-sm:rounded-xl transition-all duration-300 group/back flex items-center justify-center">
-                  <ChevronLeft className="w-[24px] h-[24px] max-sm:w-[32px] max-sm:h-[32px] group-hover/back:-translate-x-0.5 transition-transform text-white" />
+                <Button variant="ghost" size="icon" className="h-8 w-8 max-sm:h-11 max-sm:w-11 hover:bg-primary/10 hover:text-primary rounded-lg max-sm:rounded-xl transition-all duration-300 group/back flex items-center justify-center">
+                  <ChevronLeft className="w-[22px] h-[22px] max-sm:w-[26px] max-sm:h-[26px] group-hover/back:-translate-x-0.5 transition-transform" />
                 </Button>
               </Link>
             </div>
           )}
 
           {!readOnly && (
-            <div className="flex items-center gap-1 sm:hidden h-10">
+            <div className="flex items-center gap-0.5 sm:hidden h-9">
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setFontSize(prev => Math.max(12, prev - 1))}
-                className="h-10 w-10 hover:bg-primary/10 hover:text-primary rounded-lg flex items-center justify-center p-0"
+                className="h-9 w-9 hover:bg-primary/10 hover:text-primary rounded-lg flex items-center justify-center p-0"
               >
-                <Minus size={22} className="text-white" />
+                <Minus size={18} />
               </Button>
-              <div className="flex items-center px-1 min-w-[1.8rem] justify-center select-none">
-                <span className="text-[15px] font-black text-white">{fontSize}</span>
+              <div className="flex items-center px-1 min-w-[1.6rem] justify-center select-none">
+                <span className="text-[14px] font-black text-foreground">{fontSize}</span>
               </div>
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setFontSize(prev => Math.min(26, prev + 1))}
-                className="h-10 w-10 hover:bg-primary/10 hover:text-primary rounded-lg flex items-center justify-center p-0"
+                className="h-9 w-9 hover:bg-primary/10 hover:text-primary rounded-lg flex items-center justify-center p-0"
               >
-                <Plus size={22} className="text-white" />
+                <Plus size={18} />
               </Button>
             </div>
           )}
@@ -1468,16 +1468,16 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               size="icon" 
               onClick={() => setAiPromptOpen(prev => !prev)}
               className={cn(
-                "h-12 w-12 text-primary hover:bg-transparent transition-all flex items-center justify-center relative group/ai-mob",
+                "h-14 w-14 text-primary hover:bg-transparent transition-all flex items-center justify-center relative group/ai-mob",
                 aiPromptOpen ? "text-primary scale-110" : "text-muted-foreground/60"
               )}
             >
-              <BrainCircuit className={cn("w-[16px] h-[16px] max-sm:w-[24px] max-sm:h-[24px] relative z-10", (isAuditing || aiPromptOpen) && "animate-pulse text-primary")} />
+              <BrainCircuit className={cn("w-[28px] h-[28px] relative z-10", (isAuditing || aiPromptOpen) && "animate-pulse text-primary")} />
             </Button>
           </div>
         )}
 
-        <div className="flex-none flex items-center gap-1.5 max-sm:gap-0.5">
+        <div className="flex-none flex items-center gap-1.5 max-sm:gap-2">
           {!readOnly && (
             <Button 
               variant="ghost" 
@@ -1499,23 +1499,25 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               onClick={handleOpenPlans}
               className="h-6 gap-1 px-2 rounded-md text-primary hover:bg-primary/10 transition-all font-bold text-[8px] uppercase tracking-widest flex items-center border border-primary/20 bg-primary/5 hover:border-primary/45 shadow-sm shadow-primary/5 group max-sm:hidden"
             >
-              <Brain className="w-3 h-3 max-sm:w-[22px] max-sm:h-[22px] text-primary animate-pulse shrink-0 group-hover:scale-110 transition-transform" />
+              <Brain className="w-3 h-3 text-primary animate-pulse shrink-0 group-hover:scale-110 transition-transform" />
               <span>{credits !== null ? `${credits} Sinapses` : "..."}</span>
             </Button>
           )}
 
           {!readOnly && (
             <>
-              <ExportButton isPublic={isPublic} docType={docType} title={fileName} content={editor?.getHTML() || ""} />
+              <div className="max-sm:scale-125 max-sm:mr-1">
+                <ExportButton isPublic={isPublic} docType={docType} title={fileName} content={editor?.getHTML() || ""} />
+              </div>
               {!isPublic && (
-                <div className="flex items-center gap-1 pr-1.5 border-r border-border/50">
+                <div className="flex items-center gap-1 pr-1.5 border-r border-border/50 max-sm:hidden">
                   <SignModal title={fileName} />
                 </div>
               )}
             </>
           )}
 
-          <div className="flex items-center gap-1.5 pl-2 max-sm:pl-0">
+          <div className="flex items-center gap-1.5 pl-2 max-sm:pl-1 max-sm:scale-125">
             <ThemeToggle />
           </div>
         </div>
