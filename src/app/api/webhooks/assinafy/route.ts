@@ -1,6 +1,7 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { NextResponse } from 'next/server'
 import crypto from "crypto";
+import { sendTelegramNotification } from "@/lib/notifications";
 
 export async function POST(request: Request) {
   // Criar o cliente Admin usando a Service Role Key para contornar RLS no webhook
@@ -68,6 +69,16 @@ export async function POST(request: Request) {
 
       if (contractError) {
         console.error("[Webhook Assinafy] Error updating contract:", contractError)
+      }
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (error: any) {
+    console.error("[Webhook Assinafy] Critical failure:", error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+}
+topo.`);
       }
     }
 
