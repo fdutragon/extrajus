@@ -290,12 +290,12 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
 
           {/* Painel Direito: Formulário, PIX ou Sucesso (6 colunas) */}
           <div className="md:col-span-6 flex flex-col justify-center min-h-[280px] max-sm:min-h-0 max-sm:pt-3">
-            <DialogHeader className={`mb-3 max-sm:mb-4`}>
-              <DialogTitle className="flex items-center gap-2.5 text-[1rem] font-black tracking-[0.12em] bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">
+            <DialogHeader className={`mb-3 max-sm:mb-4 max-sm:text-center max-sm:flex max-sm:flex-col max-sm:items-center`}>
+              <DialogTitle className="flex items-center justify-center gap-2.5 text-[1rem] font-black tracking-[0.12em] bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">
                 <Lock size={16} className="text-primary animate-pulse filter drop-shadow-[0_0_6px_rgba(139,92,246,0.4)]" />
                 {step === "form" ? "Gerando Código PIX" : step === "pix" ? "Finalizar Pagamento" : "Sucesso!"}
               </DialogTitle>
-              <DialogDescription className="text-[0.825rem] text-muted-foreground font-medium tracking-wide mt-1 leading-relaxed">
+              <DialogDescription className="text-[0.825rem] text-muted-foreground font-medium tracking-wide mt-1 leading-relaxed max-sm:text-center">
                 {step === "form"
                   ? "Aguarde um instante, o sistema está preparando seu código de pagamento seguro..."
                   : step === "pix"
