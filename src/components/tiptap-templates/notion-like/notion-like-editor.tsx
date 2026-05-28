@@ -1459,7 +1459,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
 
 
 
-      <div className={cn("flex-1 flex pt-[clamp(2.5rem,4vh,3.25rem)] relative overflow-hidden h-full transition-all duration-700")}>
+      <div className={cn("flex-1 flex pt-16 sm:pt-[clamp(2.5rem,4vh,3.25rem)] relative overflow-hidden h-full transition-all duration-700")}>
         {!readOnly && (
           <>
             {leftSidebarOpen && (
@@ -1610,7 +1610,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
           </main>
           
           {!readOnly && aiPromptOpen && (
-            <div className="absolute sm:bottom-12 fixed max-sm:bottom-4 left-1/2 -translate-x-1/2 w-full max-w-[30rem] z-[100] px-4 transition-all duration-500 animate-in fade-in slide-in-from-bottom-5 ai-prompt-wrapper">
+            <div className="absolute sm:bottom-12 fixed max-sm:bottom-8 left-1/2 -translate-x-1/2 w-full max-w-[30rem] z-[100] px-4 transition-all duration-500 animate-in fade-in slide-in-from-bottom-5 ai-prompt-wrapper">
                <AiMenu plain={true} />
             </div>
           )}

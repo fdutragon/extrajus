@@ -100,7 +100,7 @@ export function NotionEditorHeader() {
   }
 
   return (
-    <header className="notion-like-editor-header fixed top-0 left-0 w-full h-20 md:h-11 border-b border-border bg-background/40 dark:bg-black/40 backdrop-blur-md flex items-center justify-between px-4 z-[100] transition-all hover:bg-background/60 dark:hover:bg-black/60">
+    <header className="notion-like-editor-header fixed top-0 left-0 w-full h-16 md:h-11 border-b border-border bg-background/40 dark:bg-black/40 backdrop-blur-md flex items-center justify-between px-4 z-[100] transition-all hover:bg-background/60 dark:hover:bg-black/60">
       {/* Left: Navigation & Branding */}
       <div className="flex items-center gap-3">
         <Link href="/dashboard">
