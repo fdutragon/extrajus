@@ -1456,11 +1456,11 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:hidden z-[110]">
             <div 
               className={cn(
-                "h-16 w-16 text-violet-500 flex items-center justify-center relative"
+                "h-10 w-10 text-violet-500 flex items-center justify-center relative"
               )}
             >
-              <div className="absolute inset-0 bg-violet-500/20 rounded-full blur-xl" />
-              <BrainCircuit className={cn("w-[42px] h-[42px] relative z-10 drop-shadow-[0_0_10px_rgba(139,92,246,0.8)]")} />
+              <div className="absolute inset-0 bg-violet-500/20 rounded-full blur-lg" />
+              <BrainCircuit className={cn("w-6 h-6 relative z-10 drop-shadow-[0_0_8px_rgba(139,92,246,0.6)]")} />
             </div>
           </div>
         )}
