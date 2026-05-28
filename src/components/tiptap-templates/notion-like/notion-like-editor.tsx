@@ -1468,7 +1468,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
 
 
 
-      <div className={cn("flex-1 flex pt-20 sm:pt-[clamp(2.5rem,4vh,3.25rem)] relative overflow-hidden h-full transition-all duration-700")}>
+      <div className={cn("flex-1 flex relative overflow-hidden h-full transition-all duration-700")}>
         {!readOnly && (
           <>
             {leftSidebarOpen && (
@@ -1481,7 +1481,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               "h-full border-r border-border bg-card/20 backdrop-blur-xl flex flex-col shrink-0 transition-all duration-300 relative z-30 max-lg:fixed max-lg:top-[clamp(2.5rem,4vh,3.25rem)] max-lg:bottom-0 max-lg:left-0 max-lg:z-50 max-lg:bg-background/95 max-lg:backdrop-blur-3xl max-lg:border-r max-lg:border-border max-lg:shadow-2xl",
               leftSidebarOpen ? "w-[21vw] min-w-[16rem] max-w-[24.5rem] max-lg:w-[75vw] max-lg:max-w-[20rem]" : "w-0 opacity-0 pointer-events-none overflow-hidden max-lg:hidden"
             )}>
-            <div className="px-4 py-6 flex flex-col h-full overflow-hidden w-full">
+            <div className="px-4 pb-6 pt-[calc(clamp(2.5rem,4vh,3.25rem)+1.5rem)] max-lg:pt-6 flex flex-col h-full overflow-hidden w-full">
               <div className="space-y-5 mb-8 shrink-0">
                 <div className="flex items-center justify-between border-b border-border/40 pb-2.5">
                    <div className="flex items-center gap-2">
@@ -1593,7 +1593,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         </>)}
 
         <div className="flex-1 relative flex flex-col min-w-0 overflow-hidden">
-          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent p-2 max-sm:p-2 sm:p-[clamp(1rem,2vw,2rem)] relative z-10">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent p-2 max-sm:p-2 sm:p-[clamp(1rem,2vw,2rem)] pt-[4.5rem] max-sm:pt-20 sm:pt-[calc(clamp(2.5rem,4vh,3.25rem)+2rem)] relative z-10">
             {/* Subtle occult background glow behind the sheet */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/3 dark:bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse duration-[6000ms]" />
 
@@ -1637,7 +1637,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             rightSidebarOpen ? "w-[22vw] min-w-[17rem] max-w-[26rem] max-lg:w-[75vw] max-lg:max-w-[20rem]" : "w-0 opacity-0 pointer-events-none overflow-hidden max-lg:hidden"
           )}>
           {readOnly ? (
-            <div className="p-6 flex flex-col h-full justify-between">
+            <div className="px-6 pb-6 pt-[calc(clamp(2.5rem,4vh,3.25rem)+1.5rem)] max-lg:pt-6 flex flex-col h-full justify-between">
               {contractStatus === 'signed' ? (
                 <div className="space-y-6 flex flex-col h-full justify-center items-center text-center">
                   <div className="p-4 bg-emerald-500/10 rounded-full border border-emerald-500/30 animate-pulse mb-2">
@@ -1686,7 +1686,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               )}
             </div>
           ) : (
-            <div className="px-4 py-6 flex flex-col h-full overflow-hidden min-h-0 space-y-4">
+            <div className="px-4 pb-6 pt-[calc(clamp(2.5rem,4vh,3.25rem)+1.5rem)] max-lg:pt-6 flex flex-col h-full overflow-hidden min-h-0 space-y-4">
               <div className="flex items-center justify-between border-b border-border/40 pb-2">
                 <div className="flex items-center gap-2">
                   <BrainCircuit size={12} className={cn("text-primary", isAuditing && "animate-pulse")} />
