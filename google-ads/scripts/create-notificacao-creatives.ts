@@ -61,33 +61,33 @@ async function main() {
     const adGroupId = adGroupResourceName.split('/').pop() || '';
     
     console.log(`\x1b[32m[Sucesso] Grupo de Anúncios criado:\x1b[0m ${adGroupId}`);
+let finalUrl = 'https://extrajus.pro/';
 
-    console.log('2. Criando os criativos (RSA)...');
+const campIdx = args.indexOf('--campaignId');
+...
+  // Headlines para Notificação Extrajudicial (Máx 30 caracteres)
+  const headlines = [
+    { text: 'Notificação Extrajudicial' }, 
+    { text: 'Crie Sua Notificação Agora' },    
+    { text: 'Documento Jurídico Pronto' },   
+    { text: 'Resolva Conflitos Agora' },      
+    { text: 'Notificação Oficial Pronta' },   
+    { text: 'IA Especialista Jurídica' },     
+    { text: 'Sem Burocracia Judicial' },      
+    { text: 'Documento Seguro e Válido' },    
+    { text: 'Notificação Pronta em 1 Min' },  
+    { text: 'Solução Jurídica Imediata' },    
+    { text: 'ExtraJus: IA Jurídica' },        
+    { text: 'Recupere Seus Direitos' },       
+  ];
 
-    // Headlines Suavizadas (Máx 30 caracteres) - Evitando termos 'jurídicos' sensíveis
-    const headlines = [
-      { text: 'Notificação Extrajudicial' }, // 24
-      { text: 'Crie Sua Notificação' },      // 20
-      { text: 'Documento Formal' },          // 16
-      { text: 'Comunicação Eficiente' },      // 22
-      { text: 'Notificação Pronta' },        // 18
-      { text: 'Redação Inteligente' },       // 19
-      { text: 'Sem Burocracia' },            // 14
-      { text: 'Documento Oficial' },         // 17
-      { text: 'Redigido em 1 Minuto' },      // 21
-      { text: 'Solução Ágil' },              // 12
-      { text: 'ExtraJus: Agilidade' },       // 18
-      { text: 'Formalize Agora' },           // 15
-    ];
-
-    // Descrições Suavizadas (Máx 90 caracteres)
-    const descriptions = [
-      { text: 'Crie notificações extrajudiciais e comunicações formais em segundos de forma simples.' }, // 83
-      { text: 'Evite demora. Resolva pendências com documentos oficiais redigidos com inteligência.' },  // 82
-      { text: 'O jeito mais rápido e inteligente de formalizar avisos e notificações importantes.' },   // 80
-      { text: 'Sua comunicação formal pronta. Redija, revise e baixe sua notificação agora mesmo.' },   // 81
-    ];
-
+  // Descrições para Notificação Extrajudicial (Máx 90 caracteres)
+  const descriptions = [
+    { text: 'Crie notificações extrajudiciais profissionais e seguras em segundos com nossa inteligência.' },
+    { text: 'Evite processos lentos. Resolva pendências com notificações oficiais redigidas por IA.' },
+    { text: 'O jeito mais rápido e inteligente de formalizar cobranças, termos e notificações legais.' },
+    { text: 'Segurança jurídica total para seus documentos. Redija, revise e baixe sua notificação agora.' },
+  ];
     const adGroupAdResponse = await customer.adGroupAds.create([
       {
         ad_group: adGroupResourceName,
