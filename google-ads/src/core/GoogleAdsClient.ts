@@ -85,6 +85,9 @@ export class GoogleAdsClient {
 
     return this.customer;
   }
+  public getApi(): GoogleAdsApi {
+    return this.api;
+  }
 }
 
 // Singleton conveniente para exportar

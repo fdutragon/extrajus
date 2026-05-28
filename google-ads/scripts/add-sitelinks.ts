@@ -1,3 +1,5 @@
+import { AssetTypeEnum_AssetType } from 'google-ads-api/build/protos/enums/AssetTypeEnum/AssetType';
+import { AssetFieldTypeEnum_AssetFieldType } from 'google-ads-api/build/protos/enums/AssetFieldTypeEnum/AssetFieldType';
 import { getGoogleAdsClient } from '../src/core/GoogleAdsClient';
 import { loadConfig } from '../src/config/loader';
 
@@ -12,8 +14,8 @@ async function main() {
   console.log('================================================================\n');
 
   try {
-    const client = getGoogleAdsClient();
-    const customer = client.getCustomer(activeCid);
+    const clientWrapper = getGoogleAdsClient();
+    const customer = clientWrapper.getCustomer(activeCid);
 
     // 1. Definir os Sitelinks (Assets)
     // Cada Sitelink deve ter um linkText e uma finalUrl. As descrições são opcionais, mas recomendadas.
@@ -46,7 +48,7 @@ async function main() {
 
     const sitelinkAssets = sitelinksData.map(sl => ({
       create: {
-        type: client.enums.AssetType.SITELINK, // Usando o enum da API
+        type: AssetTypeEnum_AssetType.SITELINK, // Usando o enum importado
         sitelink_asset: {
           link_text: sl.linkText,
           description1: sl.description1,
@@ -70,7 +72,7 @@ async function main() {
       campaign_asset: {
         campaign: `customers/${activeCid}/campaigns/${campaignId}`,
         asset: resourceName,
-        field_type: 'SITELINK',
+        field_type: AssetFieldTypeEnum_AssetFieldType.SITELINK, // Usando o enum importado
       },
     }));
     

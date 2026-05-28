@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { QRCodeSVG } from "qrcode.react"
 import { toast } from "sonner"
 import { BrainCircuit, Copy, CheckCircle2, Lock, ArrowRight, Download, Zap } from "lucide-react"
@@ -24,52 +24,62 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
   const [loading, setLoading] = useState(false)
   const [pixData, setPixData] = useState<{ qrCode: string, code: string, externalId: string } | null>(null)
   const [copied, setCopied] = useState(false)
+  const hasAutoChecked = useRef(false)
 
-  // Reset state and auto-generate PIX when opened
+  // Reset state and handle auto-generation when opened
   useEffect(() => {
     if (isOpen) {
-      setStep("form") // Usado como loading inicial
-      setPixData(null)
-      
-      const randomId = Math.random().toString(36).substring(2, 8);
-      const generatedName = `Guest ${randomId.toUpperCase()}`
-      const generatedEmail = `guest_${randomId}@extrajus.com`
-      
-      setName(generatedName)
-      setEmail(generatedEmail)
+      if (!hasAutoChecked.current) {
+        setStep("form")
+        setPixData(null)
+        setLoading(false)
+        
+        const randomId = Math.random().toString(36).substring(2, 8);
+        const generatedName = `Guest ${randomId.toUpperCase()}`
+        const generatedEmail = `guest_${randomId}@extrajus.com`
+        
+        setName(generatedName)
+        setEmail(generatedEmail)
 
-      const autoCheckout = async () => {
-        setLoading(true)
-        try {
-          const res = await fetch("/api/billing/checkout-doc", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              name: generatedName,
-              email: generatedEmail,
-              content: documentContent,
-              doc_type: docType,
-              title
+        const autoCheckout = async () => {
+          setLoading(true)
+          try {
+            const res = await fetch("/api/billing/checkout-doc", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                name: generatedName,
+                email: generatedEmail,
+                content: documentContent,
+                doc_type: docType,
+                title
+              })
             })
-          })
 
-          const data = await res.json()
-          if (!res.ok) throw new Error(data.error || "Falha ao gerar cobrança")
+            const data = await res.json()
+            if (!res.ok) throw new Error(data.error || "Falha ao gerar cobrança")
 
-          setPixData({
-            qrCode: data.pixQrCode,
-            code: data.pixCode,
-            externalId: data.externalId
-          })
-          setStep("pix")
-        } catch (err: any) {
-          toast.error(err.message)
-        } finally {
-          setLoading(false)
+            setPixData({
+              qrCode: data.pixQrCode,
+              code: data.pixCode,
+              externalId: data.externalId
+            })
+            setStep("pix")
+          } catch (err: any) {
+            toast.error(err.message)
+            // Se falhar, permitimos tentar novamente manualmente
+            hasAutoChecked.current = false
+          } finally {
+            setLoading(false)
+          }
         }
-      }
 
-      autoCheckout()
+        hasAutoChecked.current = true
+        autoCheckout()
+      }
+    } else {
+      // Reset ref when modal completely closes
+      hasAutoChecked.current = false
     }
   }, [isOpen, documentContent, docType, title])
 
