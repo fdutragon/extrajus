@@ -87,7 +87,7 @@ export function GoogleAdsOnboarding() {
           }
           return 100
         }
-        return prev + 2 // Velocidade do progresso
+        return prev + 1 // Velocidade reduzida para dar mais tempo de leitura ao usuário
       })
     }, 50)
 
