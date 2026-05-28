@@ -218,8 +218,11 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             if (step === "success" && !open) onClose();
           }}>
           <DialogContent 
-            className="w-full max-w-[92vw] md:max-w-[48rem] lg:max-w-[52rem] bg-background border border-border text-foreground rounded-[28px] max-sm:rounded-[24px] max-sm:!top-[50%] max-sm:!left-[50%] max-sm:!-translate-x-1/2 max-sm:!-translate-y-1/2 max-sm:w-[92vw] max-sm:h-auto max-sm:max-h-[92vh] max-sm:overflow-y-auto max-sm:flex max-sm:flex-col shadow-[0_0_50px_rgba(139,92,246,0.18)] p-6 max-sm:px-6 max-sm:py-6 md:max-h-[90vh] md:overflow-hidden overflow-y-auto transition-all duration-500 [&>button:last-child]:hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+            className="w-full max-w-[92vw] md:max-w-[48rem] lg:max-w-[52rem] bg-background border border-border text-foreground rounded-[28px] max-sm:rounded-[24px] max-sm:!top-[50%] max-sm:!left-[50%] max-sm:!-translate-x-1/2 max-sm:!-translate-y-1/2 max-sm:w-[92vw] max-sm:h-auto max-sm:max-h-[96vh] max-sm:overflow-y-auto max-sm:flex max-sm:flex-col shadow-[0_0_50px_rgba(139,92,246,0.18)] p-6 max-sm:px-6 max-sm:py-6 md:max-h-[90vh] md:overflow-hidden overflow-y-auto transition-all duration-500 [&>button:last-child]:hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
           >
+            {/* Invisible Focus Target to prevent auto opening keyboard on mobile */}
+            <button className="sr-only opacity-0 absolute w-0 h-0" tabIndex={0} aria-hidden="true" />
+
           {/* Soft Occult Ambient Highlights (Adaptive to Theme) */}
           <div className="absolute top-0 right-0 w-36 h-36 bg-primary/5 rounded-full blur-[60px] pointer-events-none" />
           <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-primary/5 rounded-full blur-[60px] pointer-events-none" />
@@ -270,7 +273,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
               </DialogDescription>
             </DialogHeader>
             {step === "form" && (
-              <form onSubmit={handleCheckout} className="flex flex-col space-y-5 max-sm:space-y-5.5 py-2 w-full">
+              <form onSubmit={handleCheckout} className="flex flex-col space-y-5 max-sm:space-y-5.5 py-2 w-full max-sm:px-2">
                 <div className="flex flex-col">
                   <label htmlFor="email" className="block text-xs font-black uppercase tracking-widest text-muted-foreground ml-1 mb-2.5 max-sm:mb-3">Seu melhor e-mail</label>
                   <input 
@@ -282,7 +285,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                     required
                     className="flex h-11 max-sm:h-12 w-full rounded-xl border border-input bg-background/50 px-4 py-2 text-sm max-sm:text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)]"
                   />
-                  <p className="text-[10px] text-muted-foreground font-medium ml-1 mt-2">Nós enviaremos uma cópia do documento para este e-mail após o pagamento.</p>
+                  <p className="text-[10px] text-muted-foreground font-medium mt-2 text-center">Enviaremos o documento para este e-mail</p>
                 </div>
                 <Button 
                   type="submit" 
