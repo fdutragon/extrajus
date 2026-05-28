@@ -10,8 +10,7 @@ import {
   ShieldCheck, 
   BrainCircuit, 
   ArrowDown, 
-  Sparkles,
-  ChevronRight
+  ChevronRight 
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -164,11 +163,6 @@ export function GoogleAdsOnboarding() {
               <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  )
-}
         </div>
       </DialogContent>
     </Dialog>

@@ -467,7 +467,6 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
   // Handle AI Onboarding Start Event
   useEffect(() => {
     const handleStartAi = () => {
-      setAiPromptOpen(true)
       setTimeout(() => {
         const input = document.querySelector('.ai-menu-input textarea') as HTMLTextAreaElement | null
         if (input) {
@@ -685,7 +684,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
 
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
-  const [aiPromptOpen, setAiPromptOpen] = useState(true)
+  const aiPromptOpen = true // Sempre visível
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -1016,9 +1015,6 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
       stream: true,
       format: "rich-text",
     }).run()
-    
-    // Abre o menu da IA para exibir os controles de carregamento e aceite
-    setAiPromptOpen(true)
     
     if (riskId) {
       setPendingOptimization(riskId)
@@ -1434,7 +1430,6 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             </div>
             <Button
               variant="ghost"
-              onClick={() => setAiPromptOpen(prev => !prev)}
               className={cn(
                 "relative flex items-center justify-center px-2.5 h-full rounded-none border-x border-primary/10 gap-1.5 overflow-hidden hover:bg-primary/5 transition-all select-none group/ai-toggle",
                 aiPromptOpen && "bg-primary/[0.04]"
@@ -1466,7 +1461,6 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             <Button 
               variant="ghost" 
               size="icon" 
-              onClick={() => setAiPromptOpen(prev => !prev)}
               className={cn(
                 "h-16 w-16 text-primary hover:bg-transparent transition-all flex items-center justify-center relative group/ai-mob",
                 aiPromptOpen ? "text-primary scale-110" : "text-primary"
@@ -1478,12 +1472,11 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
           </div>
         )}
 
-        <div className="flex-none flex items-center gap-1.5 max-sm:gap-2">
+        <div className="flex-none flex items-center gap-1.5 max-sm:gap-1">
           {!readOnly && (
             <Button 
               variant="ghost" 
               size="icon" 
-              onClick={() => setAiPromptOpen(prev => !prev)}
               className={cn(
                 "h-6 w-6 hover:bg-primary/10 hover:text-primary rounded-lg transition-all lg:hidden max-sm:hidden",
                 aiPromptOpen && "bg-primary/10 text-primary"
@@ -1505,9 +1498,9 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             </Button>
           )}
 
-          {!readOnly && (
+          {!readOnly && editor && !editor.isEmpty && (
             <>
-              <div className="max-sm:scale-[1.35] max-sm:mr-2">
+              <div className="max-sm:scale-[1.35]">
                 <ExportButton isPublic={isPublic} docType={docType} title={fileName} content={editor?.getHTML() || ""} />
               </div>
               {!isPublic && (
@@ -1518,7 +1511,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             </>
           )}
 
-          <div className="flex items-center gap-1.5 pl-2 max-sm:pl-1 max-sm:scale-125">
+          <div className="flex items-center gap-1.5 pl-2 max-sm:pl-0.5 max-sm:scale-125">
             <ThemeToggle />
           </div>
         </div>
