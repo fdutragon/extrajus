@@ -11,7 +11,7 @@ import type { Tone } from "../../../../components/tiptap-extension/gemini-ai-ext
 // Icons
 import { MicAiIcon } from "../../../../components/tiptap-icons/mic-ai-icon"
 import { AiSparklesIcon } from "../../../../components/tiptap-icons/ai-sparkles-icon"
-import { BrainCircuit, StopCircle as StopCircle2Icon, ArrowUp as ArrowUpIcon } from "lucide-react"
+import { BrainCircuit, StopCircle as StopCircle2Icon, ArrowUp as ArrowUpIcon, Mic, MicOff } from "lucide-react"
 
 // UI Components
 import { SUPPORTED_TONES } from "../../../../components/tiptap-ui/ai-menu"
@@ -115,11 +115,17 @@ export function AiPromptInputToolbar({
   onInputSubmit,
   onToneChange,
   isEmpty = false,
+  isRecording = false,
+  toggleRecording,
+  hasMicSupport = false,
 }: {
   showPlaceholder?: boolean
   onInputSubmit: (prompt: string) => void
   onToneChange?: (tone: string) => void
   isEmpty?: boolean
+  isRecording?: boolean
+  toggleRecording?: () => void
+  hasMicSupport?: boolean
 }) {
   const [tone, setTone] = useState<Tone | null>(null)
   const [promptValue] = useComboboxValueState()
@@ -152,10 +158,27 @@ export function AiPromptInputToolbar({
 
       <Spacer />
 
-      <ToolbarGroup>
+      <ToolbarGroup className="gap-1.5 flex items-center">
+        {hasMicSupport && (
+          <Button
+            type="button"
+            onClick={toggleRecording}
+            variant="ghost"
+            className={cn(
+              "h-7 w-7 rounded-lg p-0 flex items-center justify-center shrink-0 transition-all duration-300 border border-transparent",
+              isRecording 
+                ? "bg-red-500/10 text-red-500 hover:bg-red-500/20 border-red-500/20 animate-pulse" 
+                : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
+            )}
+            aria-label="Gravar áudio"
+          >
+            {isRecording ? <MicOff className="w-3.5 h-3.5 text-red-500" /> : <Mic className="w-3.5 h-3.5" />}
+          </Button>
+        )}
+
         <Button
           onClick={handleSubmit}
-          disabled={isEmpty}
+          disabled={isEmpty || isRecording}
           data-style="primary"
           aria-label="Submit prompt"
           className="h-7 w-7 rounded-lg p-0 flex items-center justify-center shrink-0"
@@ -185,6 +208,79 @@ export function AiMenuInputTextarea({
 }: AiMenuInputTextareaProps) {
   const [promptValue, setPromptValue] = useComboboxValueState()
   const [isFocused, setIsFocused] = useState(false)
+  const [isRecording, setIsRecording] = useState(false)
+  const [recognition, setRecognition] = useState<any>(null)
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+
+    // Configura o Web Speech API para transcrição nativa em tempo real
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (SpeechRecognition) {
+      const rec = new SpeechRecognition()
+      rec.continuous = true
+      rec.interimResults = true
+      rec.lang = "pt-BR"
+
+      rec.onresult = (event: any) => {
+        let interimTranscript = ""
+        let finalTranscript = ""
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript
+          } else {
+            interimTranscript += event.results[i][0].transcript
+          }
+        }
+
+        if (finalTranscript) {
+          setPromptValue(prev => {
+            const trimmed = prev ? prev.trim() : ""
+            return trimmed ? `${trimmed} ${finalTranscript.trim()}` : finalTranscript.trim()
+          })
+        }
+      }
+
+      rec.onerror = (event: any) => {
+        console.error("Erro no reconhecimento de voz:", event.error)
+        setIsRecording(false)
+        if (event.error === "not-allowed") {
+          toast.error("Permissão de microfone negada. Ative nas configurações do navegador.")
+        } else {
+          toast.error("Erro ao transcrever áudio. Tente novamente.")
+        }
+      }
+
+      rec.onend = () => {
+        setIsRecording(false)
+      }
+
+      setRecognition(rec)
+    }
+  }, [setPromptValue])
+
+  const toggleRecording = useCallback(() => {
+    if (!recognition) {
+      toast.error("Gravação de áudio não é suportada neste navegador.")
+      return
+    }
+
+    if (isRecording) {
+      recognition.stop()
+      setIsRecording(false)
+      toast.success("Gravação de voz finalizada.")
+    } else {
+      try {
+        recognition.start()
+        setIsRecording(true)
+        toast.info("Gravando áudio... Fale agora.", { duration: 2500 })
+      } catch (err) {
+        console.error(err)
+        setIsRecording(false)
+      }
+    }
+  }, [recognition, isRecording])
 
   const handleSubmit = useCallback(() => {
     const cleanedPrompt = promptValue?.trim()
@@ -271,6 +367,8 @@ export function AiMenuInputTextarea({
 
   const dynamicPlaceholder = !isSynced
     ? "Sincronizando ambiente da inteligência artificial..."
+    : isRecording
+    ? "Gravando áudio... Fale o que aconteceu e a IA transcreverá em tempo real."
     : isEditing
     ? "Escreva o que você deseja alterar, complementar ou remover na sua notificação..."
     : "Descreva o teor da sua notificação extrajudicial (ex: cobrança de débitos, desocupação de imóvel) e os fatos principais...";
@@ -332,6 +430,9 @@ export function AiMenuInputTextarea({
               onInputSubmit={handleSubmit}
               onToneChange={onToneChange}
               isEmpty={!promptValue?.trim()}
+              isRecording={isRecording}
+              toggleRecording={toggleRecording}
+              hasMicSupport={!!recognition}
             />
           </>
         )}
