@@ -1274,16 +1274,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         }
         .tiptap.ProseMirror {
           font-family: ${fontFamily === "Cambria" ? '"Cambria", "Georgia", serif' : fontFamily === "Inter" ? '"Inter", sans-serif' : fontFamily === "Times New Roman" ? '"Times New Roman", serif' : '"JetBrains Mono", monospace'} !important;
-        }
-        @media (min-width: 768px) {
-          .tiptap.ProseMirror {
-            font-size: clamp(${(fontSize - 4.5) / 16}rem, calc(${(fontSize - 4) / 16}rem + 0.35vw), ${(fontSize + 4) / 16}rem) !important;
-          }
-        }
-        @media (max-width: 767px) {
-          .tiptap.ProseMirror {
-            font-size: ${fontSize}px !important;
-          }
+          font-size: clamp(${(fontSize - 3) / 16}rem, calc(${(fontSize - 4.5) / 16}rem + 0.6vw), ${(fontSize + 1) / 16}rem) !important;
         }
         :is(aside, header, .ai-prompt-wrapper) .text-\\[14\\.5px\\] {
           font-size: clamp(0.85rem, calc(0.7rem + 0.4vw), 1rem) !important;
@@ -1460,8 +1451,8 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
           {!readOnly && !isPublic && (
             <div className="flex items-center gap-1">
               <Link href="/dashboard">
-                <Button variant="ghost" size="icon" className="h-8 w-8 max-sm:h-11 max-sm:w-11 hover:bg-primary/10 hover:text-primary rounded-lg max-sm:rounded-xl transition-all duration-300 group/back flex items-center justify-center">
-                  <ChevronLeft className="w-[22px] h-[22px] max-sm:w-[26px] max-sm:h-[26px] group-hover/back:-translate-x-0.5 transition-transform" />
+                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/10 hover:text-primary rounded-lg transition-all duration-300 group/back flex items-center justify-center">
+                  <ChevronLeft className="w-5 h-5 group-hover/back:-translate-x-0.5 transition-transform" />
                 </Button>
               </Link>
             </div>
@@ -1470,25 +1461,25 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
 
 
           {!readOnly && (
-            <div className="flex items-center gap-0.5 sm:hidden h-9">
+            <div className="flex items-center gap-0.5 sm:hidden h-7">
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setFontSize(prev => Math.max(12, prev - 1))}
-                className="h-9 w-9 hover:bg-primary/10 hover:text-primary rounded-lg flex items-center justify-center p-0"
+                className="h-7 w-7 hover:bg-primary/10 hover:text-primary rounded-lg flex items-center justify-center p-0"
               >
-                <Minus size={18} />
+                <Minus size={13} />
               </Button>
-              <div className="flex items-center px-1 min-w-[1.6rem] justify-center select-none">
-                <span className="text-[11px] font-black text-foreground">{fontSize}</span>
+              <div className="flex items-center px-1 min-w-[1.2rem] justify-center select-none">
+                <span className="text-[10px] font-black text-foreground">{fontSize}</span>
               </div>
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setFontSize(prev => Math.min(26, prev + 1))}
-                className="h-9 w-9 hover:bg-primary/10 hover:text-primary rounded-lg flex items-center justify-center p-0"
+                className="h-7 w-7 hover:bg-primary/10 hover:text-primary rounded-lg flex items-center justify-center p-0"
               >
-                <Plus size={18} />
+                <Plus size={13} />
               </Button>
             </div>
           )}
@@ -1498,7 +1489,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         </div>
 
         {!readOnly && (
-          <div className="absolute left-1/2 top-0 -translate-x-1/2 flex items-center h-full gap-2 z-[110] max-lg:hidden">
+          <div className="absolute left-1/2 top-0 -translate-x-1/2 flex items-center h-full gap-2 z-[110] max-sm:hidden">
             <div className="flex items-center gap-0.5 opacity-60 hover:opacity-100 transition-opacity duration-500">
               <MarkButton type="bold" />
               <MarkButton type="italic" />
@@ -1509,7 +1500,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             </div>
             <div
               className={cn(
-                "relative flex items-center justify-center px-3 h-full rounded-none border-x border-zinc-500/10 gap-1.5 overflow-hidden select-none"
+                "relative flex items-center justify-center px-3 h-full rounded-none border-x border-zinc-500/10 gap-1.5 overflow-hidden select-none whitespace-nowrap shrink-0"
               )}
             >
               {/* Custom Elegant ExtraJus IA Icon */}
@@ -1524,12 +1515,12 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               </svg>
               <span 
                 style={{ fontFamily: "'Cinzel', 'Cambria', 'Georgia', serif" }}
-                className={cn("text-[9.5px] font-bold uppercase tracking-[0.22em] relative z-10 bg-gradient-to-r from-zinc-700 via-zinc-500 to-zinc-700 dark:from-zinc-300 dark:via-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(255,255,255,0.2)]")}
+                className={cn("text-[9.5px] font-bold uppercase tracking-[0.22em] relative z-10 bg-gradient-to-r from-zinc-700 via-zinc-500 to-zinc-700 dark:from-zinc-300 dark:via-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(255,255,255,0.2)] whitespace-nowrap")}
               >
                 ExtraJus IA
               </span>
             </div>
-            <div className="flex items-center gap-0.5 opacity-60 hover:opacity-100 transition-opacity duration-500">
+            <div className="flex items-center gap-0.5 opacity-60 hover:opacity-100 transition-opacity duration-500 max-md:hidden">
               <TextAlignButton align="left" />
               <TextAlignButton align="center" />
               <TextAlignButton align="right" />
@@ -1562,15 +1553,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         )}
 
         <div className="flex-none flex items-center gap-1.5 max-sm:gap-1">
-          {!readOnly && (
-            <div 
-              className={cn(
-                "h-6 w-6 text-violet-500 flex items-center justify-center lg:hidden max-sm:hidden"
-              )}
-            >
-              <BrainCircuit size={14} />
-            </div>
-          )}
+
 
           {!readOnly && !isPublic && (
             <Button
@@ -1586,7 +1569,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
 
           {!readOnly && editor && !editor.isEmpty && !aiGenerationIsLoading && (
             <>
-              <div className="max-sm:scale-[1.35]">
+              <div>
                 <ExportButton isPublic={isPublic} docType={docType} title={fileName} content={editor?.getHTML() || ""} />
               </div>
               {!isPublic && (
@@ -1597,7 +1580,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             </>
           )}
 
-          <div className="flex items-center gap-1.5 pl-2 max-sm:pl-0.5 max-sm:scale-125">
+          <div className="flex items-center gap-1.5 pl-2 max-sm:pl-0.5">
             <ThemeToggle />
           </div>
         </div>

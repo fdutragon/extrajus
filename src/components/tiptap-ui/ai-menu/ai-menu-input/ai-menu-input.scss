@@ -241,29 +241,29 @@
 
 @media screen and (max-width: 640px) {
   .tiptap-ai-prompt-input-inner {
-    padding: 0.6rem 0.75rem !important;
+    padding: 0.45rem 0.6rem !important;
     border-radius: 1rem !important;
-    gap: 0.5rem !important;
+    gap: 0.25rem !important;
     backdrop-filter: none !important;
   }
   .tiptap-ai-prompt-input {
     border-radius: 1rem !important;
   }
   .tiptap-ai-prompt-input-content {
-    min-height: 5rem !important;
-    padding: 0.8rem 0.9rem !important;
-    font-size: 1rem !important;
+    min-height: 3rem !important;
+    padding: 0.45rem 0.6rem !important;
+    font-size: 0.8125rem !important;
   }
   .tiptap-ai-prompt-input-placeholder-text {
-    font-size: 1rem !important;
-    line-height: 1.5 !important;
+    font-size: 0.8125rem !important;
+    line-height: 1.4 !important;
   }
   .tiptap-ai-prompt-input-placeholder-content {
-    padding: 0.8rem 0.9rem !important;
-    gap: 12px !important;
+    padding: 0.45rem 0.6rem !important;
+    gap: 6px !important;
   }
   .tiptap-ai-prompt-input-toolbar {
-    padding-top: 0.5rem !important;
-    padding-bottom: 0.25rem !important;
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.1rem !important;
   }
 }

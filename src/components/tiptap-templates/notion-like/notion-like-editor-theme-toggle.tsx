@@ -38,11 +38,13 @@ export function ThemeToggle() {
       onClick={toggleDarkMode}
       aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
       variant="ghost"
+      size="small"
+      className="h-7 w-7 p-0 rounded-lg flex items-center justify-center shrink-0"
     >
       {isDarkMode ? (
-        <MoonStarIcon className="tiptap-button-icon" />
+        <MoonStarIcon className="tiptap-button-icon w-3.5 h-3.5" />
       ) : (
-        <SunIcon className="tiptap-button-icon" />
+        <SunIcon className="tiptap-button-icon w-3.5 h-3.5" />
       )}
     </Button>
   )
