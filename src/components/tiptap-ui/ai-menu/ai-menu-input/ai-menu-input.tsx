@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useState, useEffect } from "react"
+import { useCallback, useState, useEffect, useRef } from "react"
 import { createClient } from "@/utils/supabase/client"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -210,6 +210,12 @@ export function AiMenuInputTextarea({
   const [isFocused, setIsFocused] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
   const [recognition, setRecognition] = useState<any>(null)
+  
+  const promptRef = useRef(promptValue)
+  
+  useEffect(() => {
+    promptRef.current = promptValue
+  }, [promptValue])
 
   useEffect(() => {
     if (typeof window === "undefined") return
@@ -235,10 +241,10 @@ export function AiMenuInputTextarea({
         }
 
         if (finalTranscript) {
-          setPromptValue(prev => {
-            const trimmed = prev ? prev.trim() : ""
-            return trimmed ? `${trimmed} ${finalTranscript.trim()}` : finalTranscript.trim()
-          })
+          const currentVal = promptRef.current || ""
+          const trimmed = currentVal.trim()
+          const newVal = trimmed ? `${trimmed} ${finalTranscript.trim()}` : finalTranscript.trim()
+          setPromptValue(newVal)
         }
       }
 
