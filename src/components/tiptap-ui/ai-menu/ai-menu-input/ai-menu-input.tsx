@@ -158,7 +158,7 @@ export function AiPromptInputToolbar({
 
       <Spacer />
 
-      <ToolbarGroup className="!gap-6 flex items-center">
+      <ToolbarGroup className="!gap-3 flex items-center">
         {hasMicSupport && (
           <Button
             type="button"
@@ -181,9 +181,9 @@ export function AiPromptInputToolbar({
           disabled={isEmpty || isRecording}
           data-style="primary"
           aria-label="Submit prompt"
-          className="h-7 w-7 rounded-lg p-0 flex items-center justify-center shrink-0"
+          className="h-9 w-12 rounded-full p-0 flex items-center justify-center shrink-0 transition-all duration-300 hover:scale-105 active:scale-95 disabled:hover:scale-100 disabled:opacity-40 shadow-md hover:shadow-lg"
         >
-          <ArrowUpIcon className="tiptap-button-icon w-3.5 h-3.5" />
+          <ArrowUpIcon className="tiptap-button-icon w-4.5 h-4.5 stroke-[2.5]" />
         </Button>
       </ToolbarGroup>
     </Toolbar>
