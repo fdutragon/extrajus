@@ -393,6 +393,13 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
         }
 
         this.storage.state = "idle"
+        
+        // Disparar evento de conversão do Google Ads para Visualização de Página (Geração do Documento/Contrato)
+        if (typeof window !== "undefined" && (window as any).gtag) {
+          (window as any).gtag('event', 'conversion', {
+            'send_to': 'AW-18191879169/c5HRCNe1ubUcEIGYyOJD'
+          });
+        }
       } catch (error: any) {
         console.error("Gemini generation failed:", error)
         this.storage.state = "error"

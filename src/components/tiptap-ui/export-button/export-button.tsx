@@ -26,6 +26,13 @@ export function ExportButton({
     e.preventDefault()
     e.stopPropagation()
     
+    // Disparar evento de conversão do Google Ads para Iniciar finalização de compra
+    if (typeof window !== "undefined" && (window as any).gtag) {
+      (window as any).gtag('event', 'conversion', {
+        'send_to': 'AW-18191879169/KGlTCMW5uLUcEIGYyOJD'
+      });
+    }
+    
     if (isPublic) {
       setIsModalOpen(true)
     } else {
