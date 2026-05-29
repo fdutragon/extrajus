@@ -123,7 +123,7 @@ export function GoogleAdsOnboarding({ onComplete }: GoogleAdsOnboardingProps) {
                 {step.highlight}
               </span>
             </h2>
-            <p className="text-[13px] sm:text-[14.5px] text-zinc-400 font-medium leading-relaxed px-4 sm:px-2">
+            <p className="text-[13px] sm:text-[14.5px] text-zinc-400 font-medium leading-relaxed px-4 sm:px-2 pb-2">
               {step.description}
             </p>
           </div>
