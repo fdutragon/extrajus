@@ -505,7 +505,7 @@ export default function DashboardLayoutClient({
             "flex items-center gap-2 animate-in fade-in slide-in-from-left-2 duration-500",
             isCollapsed && "justify-center w-full"
           )}>
-            <Logo showText={!isCollapsed} iconSize={22} />
+            <Logo showText={!isCollapsed} iconSize={22} variant="chrome" />
           </div>
         </div>
 

@@ -5,10 +5,10 @@
   --tiptap-ai-prompt-input-border-color: color-mix(in srgb, var(--border), var(--foreground) 45%);
   --tiptap-ai-prompt-input-placeholder-gradient: linear-gradient(
     90deg,
-    #4b5563 5%,
-    #6d28d9 25%,
-    #b45309 50%,
-    #be185d 75%,
+    #4b5563 5%,       /* Cinza Grafite */
+    #6d28d9 25%,      /* Violeta IA */
+    #4f46e5 50%,      /* Indigo Místico */
+    #2563eb 75%,      /* Azul Safira */
     #4b5563 95%
   );
 
@@ -104,6 +104,25 @@
 
   &[data-focused="true"] {
     animation: pulse-shadow-prompt 3.5s ease-in-out infinite;
+  }
+
+  // Modo de Sobrecarga - IA pensando ativamente (Acelerador de Partículas)
+  &[data-loading="true"]::before {
+    opacity: 0.85;
+    background: conic-gradient(
+      transparent 0%,
+      #3b82f6 20%,       // azul neon ativo
+      var(--primary) 40%, // roxo primário
+      #8b5cf6 60%,
+      #d946ef 80%,       // fuchsia ativo
+      transparent 100%
+    );
+    animation: border-spin-prompt 1.2s linear infinite !important;
+  }
+
+  &[data-loading="true"] {
+    animation: pulse-shadow-prompt 1.5s ease-in-out infinite !important;
+    background: transparent !important;
   }
 
   .dark & {

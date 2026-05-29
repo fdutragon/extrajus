@@ -158,7 +158,7 @@ export function AiPromptInputToolbar({
 
       <Spacer />
 
-      <ToolbarGroup className="!gap-3 flex items-center">
+      <ToolbarGroup className="!gap-2 flex items-center">
         {hasMicSupport && (
           <Button
             type="button"
@@ -179,11 +179,19 @@ export function AiPromptInputToolbar({
         <Button
           onClick={handleSubmit}
           disabled={isEmpty || isRecording}
-          data-style="primary"
+          data-style={isEmpty || isRecording ? "disabled" : "primary"}
           aria-label="Submit prompt"
-          className="h-9 w-12 rounded-full p-0 flex items-center justify-center shrink-0 transition-all duration-300 hover:scale-105 active:scale-95 disabled:hover:scale-100 disabled:opacity-40 shadow-md hover:shadow-lg"
+          className={cn(
+            "h-9 rounded-full p-0 flex items-center justify-center shrink-0 transition-all duration-500 shadow-md",
+            isEmpty || isRecording
+              ? "w-9 opacity-35 scale-90 bg-muted text-muted-foreground pointer-events-none"
+              : "w-12 bg-primary text-primary-foreground hover:scale-105 active:scale-95 hover:shadow-lg"
+          )}
         >
-          <ArrowUpIcon className="tiptap-button-icon w-4.5 h-4.5 stroke-[2.5]" />
+          <ArrowUpIcon className={cn(
+            "tiptap-button-icon transition-all duration-500",
+            isEmpty || isRecording ? "w-3.5 h-3.5 stroke-[2]" : "w-4.5 h-4.5 stroke-[2.5]"
+          )} />
         </Button>
       </ToolbarGroup>
     </Toolbar>
@@ -447,6 +455,7 @@ export function AiMenuInputTextarea({
         recordingFlash && "ring-2 ring-amber-500/80 shadow-[0_0_30px_rgba(245,158,11,0.45)] border-amber-500/50 scale-[1.015] bg-amber-500/5"
       )}
       data-focused={isFocused}
+      data-loading={isLoading}
       data-active-state={showPlaceholder || isLoading ? "off" : "on"}
       {...props}
     >

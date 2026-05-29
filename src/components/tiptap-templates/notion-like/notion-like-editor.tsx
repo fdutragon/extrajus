@@ -1509,11 +1509,11 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             </div>
             <div
               className={cn(
-                "relative flex items-center justify-center px-3 h-full rounded-none border-x border-violet-500/10 gap-1.5 overflow-hidden select-none"
+                "relative flex items-center justify-center px-3 h-full rounded-none border-x border-zinc-500/10 gap-1.5 overflow-hidden select-none"
               )}
             >
               {/* Custom Elegant ExtraJus IA Icon */}
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-violet-800 dark:text-violet-400 relative z-10 filter drop-shadow-[0_0_8px_rgba(139,92,246,0.4)] animate-pulse shrink-0">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-300 relative z-10 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.35)] animate-pulse shrink-0">
                 <line x1="12" y1="3" x2="12" y2="21" />
                 <path d="M5 8h14" />
                 <path d="M5 8v2c0 2 2 3 5 3" />
@@ -1524,7 +1524,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               </svg>
               <span 
                 style={{ fontFamily: "'Cinzel', 'Cambria', 'Georgia', serif" }}
-                className={cn("text-[9.5px] font-bold uppercase tracking-[0.22em] relative z-10 bg-gradient-to-r from-violet-800 to-violet-700 dark:from-violet-400 dark:to-violet-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(139,92,246,0.25)]")}
+                className={cn("text-[9.5px] font-bold uppercase tracking-[0.22em] relative z-10 bg-gradient-to-r from-zinc-700 via-zinc-500 to-zinc-700 dark:from-zinc-300 dark:via-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(255,255,255,0.2)]")}
               >
                 ExtraJus IA
               </span>
@@ -1543,7 +1543,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         {!readOnly && (
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:hidden z-[110] flex items-center gap-1.5 select-none whitespace-nowrap">
             {/* Custom Elegant ExtraJus IA Icon for mobile */}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-[15px] h-[15px] text-violet-800 dark:text-violet-400 relative z-10 filter drop-shadow-[0_0_8px_rgba(139,92,246,0.4)] animate-pulse shrink-0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-[15px] h-[15px] text-zinc-500 dark:text-zinc-300 relative z-10 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.35)] animate-pulse shrink-0">
               <line x1="12" y1="3" x2="12" y2="21" />
               <path d="M5 8h14" />
               <path d="M5 8v2c0 2 2 3 5 3" />
@@ -1554,7 +1554,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             </svg>
             <span 
               style={{ fontFamily: "'Cinzel', 'Cambria', 'Georgia', serif" }}
-              className="text-[11.5px] font-bold tracking-[0.2em] uppercase bg-gradient-to-r from-violet-900 via-violet-700 to-violet-900 dark:from-primary dark:via-violet-400 dark:to-primary bg-clip-text text-transparent filter drop-shadow-[0_0_8px_rgba(139,92,246,0.35)]"
+              className="text-[11.5px] font-bold tracking-[0.2em] uppercase bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-800 dark:from-zinc-400 dark:via-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent filter drop-shadow-[0_0_8px_rgba(255,255,255,0.25)]"
             >
               ExtraJus IA
             </span>

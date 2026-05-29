@@ -12,7 +12,7 @@ export default function AuthLayout({
         <div className="absolute inset-0 bg-primary/5 dark:bg-primary/10 blur-[100px] rounded-full -translate-x-1/2 -translate-y-1/2" />
 
         <Link href="/" className="flex items-center relative z-10 group">
-          <Logo iconSize={48} showText={true} />
+          <Logo iconSize={48} showText={true} variant="quartz" />
         </Link>
 
         <div className="relative z-10">
