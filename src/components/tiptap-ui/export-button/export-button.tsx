@@ -247,10 +247,10 @@ export function ExportButton({
             </svg>
           </div>
           <div className="space-y-2.5">
-            <h4 className="text-sm sm:text-lg font-black tracking-[0.18em] uppercase bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500 bg-clip-text text-transparent">
+            <h4 className="text-base sm:text-lg font-black tracking-[0.18em] uppercase bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500 bg-clip-text text-transparent">
               {docType === "notificacao" ? "Notificação Pronta e Revisada" : "Contrato Pronto e Revisado"}
             </h4>
-            <p className="text-xs sm:text-[15px] text-muted-foreground font-medium max-w-[30rem] leading-relaxed">
+            <p className="text-sm sm:text-[15px] text-muted-foreground font-medium max-w-[30rem] leading-relaxed">
               Sua minuta oficial foi compilada com inteligência jurídica avançada e está pronta no formato editável Word (.DOCX) profissional.
             </p>
           </div>
@@ -297,13 +297,7 @@ export function ExportButton({
           </Button>
 
           {/* Micro-segurança de transação */}
-          <div className="text-[9px] font-black uppercase tracking-[0.12em] text-muted-foreground/40 flex items-center gap-1.5 justify-center pt-0.5">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3 h-3 text-emerald-500/60 shrink-0">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-            <span>Download Criptografado • Liberação Instantânea por PIX</span>
-          </div>
+          
         </div>
       ) : (
         <Button
