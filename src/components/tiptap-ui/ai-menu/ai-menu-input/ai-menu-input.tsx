@@ -190,6 +190,55 @@ export function AiPromptInputToolbar({
   )
 }
 
+// Algoritmo de deduplicação e fusão de frases em tempo real.
+// Evita repetições causadas pelo Chrome do Android que re-emite ou concatena frases inteiras nos índices de resultados subsequentes.
+// Ele faz um merge inteligente de sobreposição de prefixo/sufixo tanto para Desktop quanto para Mobile.
+function mergeTranscripts(parts: string[]): string {
+  if (parts.length === 0) return ""
+  let merged = parts[0].trim()
+
+  for (let i = 1; i < parts.length; i++) {
+    const next = parts[i].trim()
+    if (!next) continue
+
+    // Se o próximo bloco já começa com o acumulado, ele é o próprio acumulado atualizado (comum no Android)
+    if (next.toLowerCase().startsWith(merged.toLowerCase())) {
+      merged = next
+      continue
+    }
+
+    // Se o acumulado já contém o próximo bloco por inteiro, ignora a duplicidade
+    if (merged.toLowerCase().includes(next.toLowerCase())) {
+      continue
+    }
+
+    // Busca sobreposições de palavras na junção (ex: "como vai tudo bem" + "tudo bem tudo ótimo")
+    const mergedWords = merged.split(/\s+/)
+    const nextWords = next.split(/\s+/)
+    let overlapCount = 0
+
+    const maxOverlap = Math.min(mergedWords.length, nextWords.length)
+    for (let o = 1; o <= maxOverlap; o++) {
+      const suffix = mergedWords.slice(-o).join(" ").toLowerCase()
+      const prefix = nextWords.slice(0, o).join(" ").toLowerCase()
+      if (suffix === prefix) {
+        overlapCount = o
+      }
+    }
+
+    if (overlapCount > 0) {
+      // Remove a sobreposição do início do próximo bloco e concatena
+      const nonOverlapping = nextWords.slice(overlapCount).join(" ")
+      merged = `${merged} ${nonOverlapping}`.trim()
+    } else {
+      // Sem sobreposição, simplesmente concatena com espaço
+      merged = `${merged} ${next}`.trim()
+    }
+  }
+
+  return merged
+}
+
 export function AiMenuInputTextarea({
   onInputSubmit,
   onToneChange,
@@ -230,20 +279,18 @@ export function AiMenuInputTextarea({
       rec.lang = "pt-BR"
 
       rec.onresult = (event: any) => {
-        let interimTranscript = ""
-        let finalTranscript = ""
+        const parts: string[] = []
 
-        // Itera por todos os resultados acumulados na sessão para reconstruir a transcrição inteira
-        // Isso evita que palavras parciais ou finais repetidas sejam duplicadas no input
+        // Coleta todos os fragmentos brutos produzidos pelo motor de voz na sessão ativa
         for (let i = 0; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript
-          } else {
-            interimTranscript += event.results[i][0].transcript
+          const transcript = event.results[i][0].transcript
+          if (transcript && transcript.trim()) {
+            parts.push(transcript.trim())
           }
         }
 
-        const totalTranscript = (finalTranscript + interimTranscript).trim()
+        // Consolida os fragmentos aplicando o algoritmo de fusão inteligente livre de duplicações
+        const totalTranscript = mergeTranscripts(parts)
         const baseText = recordingStartTextRef.current || ""
         const newVal = baseText ? `${baseText.trim()} ${totalTranscript}` : totalTranscript
         setPromptValue(newVal)
