@@ -246,36 +246,36 @@ export function ExportButton({
               <polyline points="22 4 12 14.01 9 11.01" />
             </svg>
           </div>
-          <div className="space-y-2">
-            <h4 className="text-xs sm:text-sm font-black tracking-[0.2em] uppercase bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500 bg-clip-text text-transparent">
+          <div className="space-y-2.5">
+            <h4 className="text-sm sm:text-lg font-black tracking-[0.18em] uppercase bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500 bg-clip-text text-transparent">
               {docType === "notificacao" ? "Notificação Pronta e Revisada" : "Contrato Pronto e Revisado"}
             </h4>
-            <p className="text-xs sm:text-[13px] text-muted-foreground font-medium max-w-[28rem] leading-relaxed">
+            <p className="text-xs sm:text-[15px] text-muted-foreground font-medium max-w-[30rem] leading-relaxed">
               Sua minuta oficial foi compilada com inteligência jurídica avançada e está pronta no formato editável Word (.DOCX) profissional.
             </p>
           </div>
 
           {/* Diferenciais Jurídicos de Alta Conversão */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 w-full max-w-[28rem] py-3.5 border-t border-b border-border/30 my-1 text-left px-2 sm:px-4">
-            <div className="flex items-center gap-2 text-[10.5px] sm:text-[11.5px] font-bold text-muted-foreground">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 w-full max-w-[30rem] py-4 border-t border-b border-border/30 my-2 text-left px-2 sm:px-4">
+            <div className="flex items-center gap-2 text-[11px] sm:text-[13px] font-bold text-muted-foreground">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="w-3.5 h-3.5 text-emerald-500 shrink-0">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
               <span>Minuta 100% Editável (.docx)</span>
             </div>
-            <div className="flex items-center gap-2 text-[10.5px] sm:text-[11.5px] font-bold text-muted-foreground">
+            <div className="flex items-center gap-2 text-[11px] sm:text-[13px] font-bold text-muted-foreground">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="w-3.5 h-3.5 text-emerald-500 shrink-0">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
               <span>Validade Jurídica Nacional</span>
             </div>
-            <div className="flex items-center gap-2 text-[10.5px] sm:text-[11.5px] font-bold text-muted-foreground">
+            <div className="flex items-center gap-2 text-[11px] sm:text-[13px] font-bold text-muted-foreground">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="w-3.5 h-3.5 text-emerald-500 shrink-0">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
               <span>Formatação Técnica ABNT</span>
             </div>
-            <div className="flex items-center gap-2 text-[10.5px] sm:text-[11.5px] font-bold text-muted-foreground">
+            <div className="flex items-center gap-2 text-[11px] sm:text-[13px] font-bold text-muted-foreground">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="w-3.5 h-3.5 text-emerald-500 shrink-0">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
