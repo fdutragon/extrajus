@@ -256,7 +256,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
               ))}
             </div>
             <p className="text-[0.75rem] max-sm:text-[0.85rem] leading-relaxed italic text-muted-foreground font-medium">
-              "Minha notificação de cobrança ficou impecável. Paguei no PIX e o Word editável abriu na hora. Economizei semanas de trabalho e honorários."
+              "Minha notificação de cobrança ficou impecável. Paguei no PIX e o Word editável abriu na hora. Economizei semanas de trabalho."
             </p>
             <div className="text-[9px] font-black uppercase tracking-widest text-foreground/70">
               — Dr. Marcos R., Advogado Civilista
@@ -410,7 +410,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
               </div>
 
               {/* Waiting indicator */}
-              <div className="flex items-center justify-center gap-2 text-[10px] max-sm:text-[0.75rem] font-black uppercase tracking-[0.15em] text-primary/80 animate-pulse pt-1 w-full">
+              <div className="flex items-center justify-center gap-2 text-[10px] max-sm:text-[0.75rem] font-black uppercase tracking-[0.15em] text-primary/80 animate-pulse pt-1 pb-3 w-full">
                 <BrainCircuit size={15} className="text-primary max-sm:w-[15px] max-sm:h-[15px]" />
                 <span>Aguardando pagamento...</span>
               </div>

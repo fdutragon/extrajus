@@ -57,8 +57,8 @@ body {
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    padding-bottom: 1.25rem;
-    margin-bottom: 1.75rem;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
     position: relative;
 
     &::after {
@@ -83,8 +83,8 @@ body {
 
     @media screen and (max-width: 768px) {
       font-size: 1.4em;
-      padding-bottom: 0.75rem;
-      margin-bottom: 1.25rem;
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.75rem;
       letter-spacing: 0.04em;
 
       &::after {
@@ -95,12 +95,22 @@ body {
 
     @media screen and (min-width: 769px) {
       &:has(+ p:has(br:only-child) + p.dense-metadata) {
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.35rem;
       }
       &:has(+ p.dense-metadata) {
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.35rem;
       }
     }
+  }
+
+  // Oculta automaticamente qualquer linha/parágrafo em branco logo após o título principal para evitar buraco visual
+  h1 + p:has(br:only-child) {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+    height: 0 !important;
+    line-height: 0 !important;
+    display: none !important;
   }
 
   @media screen and (min-width: 769px) {
@@ -112,15 +122,39 @@ body {
   h2 {
     font-size: 1.25rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-left: 3px solid var(--primary);
-    padding-left: 0.75rem;
+    letter-spacing: 0.08em;
+    position: relative;
+    padding-left: 1.25rem;
+    margin-top: 2.25rem;
+    margin-bottom: 1.25rem;
+    color: var(--foreground);
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 12.5%;
+      height: 75%;
+      width: 4.5px;
+      border-radius: 99px;
+      background: linear-gradient(180deg, var(--primary) 0%, #a855f7 100%);
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.35);
+    }
 
     @media screen and (max-width: 768px) {
-      font-size: 1.45rem;
-      padding-left: 0.5rem;
-      margin-top: 1.5rem;
-      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+      padding-left: 1rem;
+      margin-top: 1.75rem;
+      margin-bottom: 1rem;
+
+      &::before {
+        width: 3.5px;
+        height: 70%;
+        top: 15%;
+      }
     }
   }
 
