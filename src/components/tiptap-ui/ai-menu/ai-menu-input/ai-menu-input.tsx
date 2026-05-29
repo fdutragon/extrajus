@@ -212,6 +212,7 @@ export function AiMenuInputTextarea({
   const [recognition, setRecognition] = useState<any>(null)
   
   const promptRef = useRef(promptValue)
+  const recordingStartTextRef = useRef("")
   
   useEffect(() => {
     promptRef.current = promptValue
@@ -232,7 +233,9 @@ export function AiMenuInputTextarea({
         let interimTranscript = ""
         let finalTranscript = ""
 
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
+        // Itera por todos os resultados acumulados na sessão para reconstruir a transcrição inteira
+        // Isso evita que palavras parciais ou finais repetidas sejam duplicadas no input
+        for (let i = 0; i < event.results.length; ++i) {
           if (event.results[i].isFinal) {
             finalTranscript += event.results[i][0].transcript
           } else {
@@ -240,12 +243,10 @@ export function AiMenuInputTextarea({
           }
         }
 
-        if (finalTranscript) {
-          const currentVal = promptRef.current || ""
-          const trimmed = currentVal.trim()
-          const newVal = trimmed ? `${trimmed} ${finalTranscript.trim()}` : finalTranscript.trim()
-          setPromptValue(newVal)
-        }
+        const totalTranscript = (finalTranscript + interimTranscript).trim()
+        const baseText = recordingStartTextRef.current || ""
+        const newVal = baseText ? `${baseText.trim()} ${totalTranscript}` : totalTranscript
+        setPromptValue(newVal)
       }
 
       rec.onerror = (event: any) => {
@@ -278,6 +279,8 @@ export function AiMenuInputTextarea({
       toast.success("Gravação de voz finalizada.")
     } else {
       try {
+        // Captura o valor exato que já estava no prompt antes de começar a falar
+        recordingStartTextRef.current = promptRef.current || ""
         recognition.start()
         setIsRecording(true)
         toast.info("Gravando áudio... Fale agora.", { duration: 2500 })
