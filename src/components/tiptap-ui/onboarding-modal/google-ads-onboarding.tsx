@@ -54,7 +54,6 @@ interface GoogleAdsOnboardingProps {
 export function GoogleAdsOnboarding({ onComplete }: GoogleAdsOnboardingProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
-  const [progress, setProgress] = useState(0)
 
   useEffect(() => {
     // Evita múltiplos gatilhos na mesma sessão
@@ -70,47 +69,9 @@ export function GoogleAdsOnboarding({ onComplete }: GoogleAdsOnboardingProps) {
     return () => clearTimeout(timer)
   }, [])
 
-  // Efeito 1: Controla o progresso automático de cada slide de forma isolada
-  useEffect(() => {
-    if (!isOpen) return
-
-    // Se for o último slide, congela o progresso em 100% e não ativa o timer automático para não fechar sozinho
-    if (currentStep === STEPS.length - 1) {
-      setProgress(100)
-      return
-    }
-
-    setProgress(0)
-
-    const timer = setInterval(() => {
-      setProgress((prev) => {
-        if (prev < 100) {
-          return prev + 1.5 // Avança o progresso de forma constante e fluida
-        }
-        return 100
-      })
-    }, 40)
-
-    return () => clearInterval(timer)
-  }, [isOpen, currentStep])
-
-  // Efeito 2: Faz a transição de slide segura fora do ciclo de atualização do progresso
-  useEffect(() => {
-    if (!isOpen) return
-
-    if (progress >= 100 && currentStep < STEPS.length - 1) {
-      const nextTimer = setTimeout(() => {
-        setCurrentStep((s) => s + 1)
-        setProgress(0)
-      }, 100) // Pequeno delay de transição para uma UX mais natural
-      return () => clearTimeout(nextTimer)
-    }
-  }, [progress, isOpen, currentStep])
-
   const handleNext = () => {
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(s => s + 1)
-      setProgress(0)
     } else {
       setIsOpen(false)
       // Custom event to trigger AI Prompt in the editor
@@ -137,10 +98,9 @@ export function GoogleAdsOnboarding({ onComplete }: GoogleAdsOnboardingProps) {
               <div key={i} className="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
                 <div 
                   className={cn(
-                    "h-full bg-primary transition-all duration-100 ease-linear",
-                    i < currentStep ? "w-full" : i === currentStep ? "w-0" : "w-0"
+                    "h-full bg-primary transition-all duration-300 ease-out",
+                    i <= currentStep ? "w-full" : "w-0"
                   )}
-                  style={i === currentStep ? { width: `${progress}%` } : {}}
                 />
               </div>
             ))}
@@ -163,7 +123,7 @@ export function GoogleAdsOnboarding({ onComplete }: GoogleAdsOnboardingProps) {
                 {step.highlight}
               </span>
             </h2>
-            <p className="text-xs sm:text-[13.5px] text-zinc-400 font-medium leading-relaxed px-4 sm:px-2">
+            <p className="text-[13px] sm:text-[14.5px] text-zinc-400 font-medium leading-relaxed px-4 sm:px-2">
               {step.description}
             </p>
           </div>
@@ -174,7 +134,7 @@ export function GoogleAdsOnboarding({ onComplete }: GoogleAdsOnboardingProps) {
               onClick={handleNext}
               className="w-full h-11 rounded-xl bg-white text-black hover:bg-zinc-200 font-black uppercase tracking-widest text-xs gap-2 group transition-all"
             >
-              {isLastStep ? "Começar Agora" : "Próximo"}
+              {isLastStep ? "Começar" : "Próximo"}
               <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>

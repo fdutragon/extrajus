@@ -479,43 +479,115 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
 
   // Fix robusto para manter o header 100% visível no mobile mesmo com o teclado virtual aberto
   useEffect(() => {
-    if (typeof window === "undefined" || !window.visualViewport) return
+    if (typeof window === "undefined") return
+
+    // Trava definitiva do html e body no mobile para evitar qualquer tipo de tranco/scroll no layout viewport
+    const html = document.documentElement
+    const body = document.body
+    let isLocked = false
+    let origHtmlOverflow = ""
+    let origHtmlHeight = ""
+    let origBodyOverflow = ""
+    let origBodyHeight = ""
+    let origBodyPosition = ""
+    let origBodyWidth = ""
+
+    const lockBodyScroll = () => {
+      if (window.innerWidth < 768 && !isLocked) {
+        origHtmlOverflow = html.style.overflow || ""
+        origHtmlHeight = html.style.height || ""
+        origBodyOverflow = body.style.overflow || ""
+        origBodyHeight = body.style.height || ""
+        origBodyPosition = body.style.position || ""
+        origBodyWidth = body.style.width || ""
+
+        html.style.overflow = "hidden"
+        html.style.height = "100dvh"
+        body.style.overflow = "hidden"
+        body.style.height = "100dvh"
+        body.style.position = "fixed"
+        body.style.width = "100%"
+        isLocked = true
+      }
+    }
+
+    const unlockBodyScroll = () => {
+      if (isLocked) {
+        html.style.overflow = origHtmlOverflow
+        html.style.height = origHtmlHeight
+        body.style.overflow = origBodyOverflow
+        body.style.height = origBodyHeight
+        body.style.position = origBodyPosition
+        body.style.width = origBodyWidth
+        isLocked = false
+      }
+    }
+
+    lockBodyScroll()
 
     const handleViewportChange = () => {
-      const header = document.querySelector('header') as HTMLElement | null
+      const header = document.querySelector("header") as HTMLElement | null
       if (!header) return
       
       const offsetTop = window.visualViewport?.offsetTop || 0
       if (window.innerWidth < 768) {
         if (offsetTop > 0) {
-          header.style.transition = 'none'
+          header.style.transition = "none"
         } else {
-          header.style.transition = ''
+          header.style.transition = ""
         }
         header.style.top = `${offsetTop}px`
       } else {
-        header.style.top = '0px'
-        header.style.transition = ''
+        header.style.top = "0px"
+        header.style.transition = ""
+      }
+    }
+
+    // Trava o scroll da página externa para evitar o tranco/efeito de subir
+    const preventPageScroll = () => {
+      if (window.scrollY > 0) {
+        window.scrollTo(0, 0)
       }
     }
 
     const visualViewport = window.visualViewport
-    visualViewport.addEventListener("resize", handleViewportChange)
-    visualViewport.addEventListener("scroll", handleViewportChange)
+    if (visualViewport) {
+      visualViewport.addEventListener("resize", handleViewportChange)
+      visualViewport.addEventListener("scroll", handleViewportChange)
+    }
+    window.addEventListener("scroll", preventPageScroll, { passive: true })
 
-    // Ouve focusin e focusout globais para garantir atualização instantânea ao interagir com inputs
-    const handleFocusBlur = () => {
-      setTimeout(handleViewportChange, 100)
+    // Ouve focusin e focusout globais de forma instantânea para matar qualquer delay de renderização
+    const handleFocusBlur = (e: FocusEvent) => {
+      handleViewportChange()
+      if (e.type === "focusin") {
+        window.scrollTo(0, 0)
+      }
     }
 
     document.addEventListener("focusin", handleFocusBlur)
     document.addEventListener("focusout", handleFocusBlur)
 
+    // Lida com resize de janela para ajustar a trava dinamicamente se necessário
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        lockBodyScroll()
+      } else {
+        unlockBodyScroll()
+      }
+    }
+    window.addEventListener("resize", handleResize)
+
     return () => {
-      visualViewport.removeEventListener("resize", handleViewportChange)
-      visualViewport.removeEventListener("scroll", handleViewportChange)
+      if (visualViewport) {
+        visualViewport.removeEventListener("resize", handleViewportChange)
+        visualViewport.removeEventListener("scroll", handleViewportChange)
+      }
+      window.removeEventListener("scroll", preventPageScroll)
       document.removeEventListener("focusin", handleFocusBlur)
       document.removeEventListener("focusout", handleFocusBlur)
+      window.removeEventListener("resize", handleResize)
+      unlockBodyScroll()
     }
   }, [])
 
