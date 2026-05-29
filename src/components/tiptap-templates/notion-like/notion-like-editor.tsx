@@ -477,6 +477,48 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
     return () => window.removeEventListener("ai-generation-finished", handleAiFinished)
   }, [pendingOptimization, editor])
 
+  // Fix robusto para manter o header 100% visível no mobile mesmo com o teclado virtual aberto
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.visualViewport) return
+
+    const handleViewportChange = () => {
+      const header = document.querySelector('header') as HTMLElement | null
+      if (!header) return
+      
+      const offsetTop = window.visualViewport?.offsetTop || 0
+      if (window.innerWidth < 768) {
+        if (offsetTop > 0) {
+          header.style.transition = 'none'
+        } else {
+          header.style.transition = ''
+        }
+        header.style.top = `${offsetTop}px`
+      } else {
+        header.style.top = '0px'
+        header.style.transition = ''
+      }
+    }
+
+    const visualViewport = window.visualViewport
+    visualViewport.addEventListener("resize", handleViewportChange)
+    visualViewport.addEventListener("scroll", handleViewportChange)
+
+    // Ouve focusin e focusout globais para garantir atualização instantânea ao interagir com inputs
+    const handleFocusBlur = () => {
+      setTimeout(handleViewportChange, 100)
+    }
+
+    document.addEventListener("focusin", handleFocusBlur)
+    document.addEventListener("focusout", handleFocusBlur)
+
+    return () => {
+      visualViewport.removeEventListener("resize", handleViewportChange)
+      visualViewport.removeEventListener("scroll", handleViewportChange)
+      document.removeEventListener("focusin", handleFocusBlur)
+      document.removeEventListener("focusout", handleFocusBlur)
+    }
+  }, [])
+
   useEffect(() => {
     if (!editor) return
     const handleFocus = () => setEditorFocused(true)
