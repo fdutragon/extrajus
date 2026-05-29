@@ -1398,6 +1398,8 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             </div>
           )}
 
+
+
           {!readOnly && (
             <div className="flex items-center gap-0.5 sm:hidden h-9">
               <Button 
@@ -1424,24 +1426,6 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
           {readOnly && (
             <Badge variant="outline" className="bg-red-500/10 text-red-400 border-red-500/20 text-[9px] font-black uppercase">Somente Leitura</Badge>
           )}
-          <div className="flex items-center gap-2 max-sm:hidden">
-            {!readOnly ? (
-              <div className="flex items-center group/title relative">
-                <input
-                  type="text"
-                  value={fileName}
-                  onChange={(e) => setFileName(e.target.value)}
-                  placeholder="Nome..."
-                  style={{ width: `${Math.min(28, Math.max(8, fileName.length + 1))}ch` }}
-                  className="bg-transparent border-0 border-b border-transparent hover:border-border/60 focus:border-primary text-[8.5px] font-black uppercase tracking-widest text-foreground outline-none px-0.5 py-0.5 transition-all max-w-[220px] max-lg:max-w-[120px] max-sm:max-w-[80px] truncate"
-                />
-                <span className="text-[8.5px] font-black uppercase tracking-widest text-muted-foreground/40 pointer-events-none select-none -ml-1">.docx</span>
-              </div>
-            ) : (
-              <span className="text-[8.5px] font-black uppercase tracking-widest text-muted-foreground truncate max-w-[220px] max-lg:max-w-[120px] max-sm:max-w-[80px]">{fileName}.docx</span>
-            )}
-            {/* Version, word count and reading time removed for clean workspace layout */}
-          </div>
         </div>
 
         {!readOnly && (
@@ -1456,16 +1440,25 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             </div>
             <div
               className={cn(
-                "relative flex items-center justify-center px-2.5 h-full rounded-none border-x border-violet-500/10 gap-1.5 overflow-hidden select-none"
+                "relative flex items-center justify-center px-3 h-full rounded-none border-x border-violet-500/10 gap-1.5 overflow-hidden select-none"
               )}
             >
-              <BrainCircuit 
-                size={14} 
-                className={cn(
-                  "text-violet-500 relative z-10"
-                )} 
-              />
-              <span className={cn("text-[9px] font-black uppercase tracking-[0.2em] relative z-10 text-violet-500")}>IA</span>
+              {/* Custom Elegant ExtraJus IA Icon */}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-violet-500 relative z-10 filter drop-shadow-[0_0_8px_rgba(139,92,246,0.4)] animate-pulse shrink-0">
+                <line x1="12" y1="3" x2="12" y2="21" />
+                <path d="M5 8h14" />
+                <path d="M5 8v2c0 2 2 3 5 3" />
+                <circle cx="5" cy="15" r="2" />
+                <path d="M19 8v2c0 2-2 3-5 3" />
+                <circle cx="19" cy="15" r="2" />
+                <path d="M12 9l1.5 1.5L12 12l-1.5-1.5z" fill="currentColor" />
+              </svg>
+              <span 
+                style={{ fontFamily: "'Cinzel', 'Cambria', 'Georgia', serif" }}
+                className={cn("text-[9.5px] font-bold uppercase tracking-[0.22em] relative z-10 bg-gradient-to-r from-violet-500 to-violet-400 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(139,92,246,0.25)]")}
+              >
+                ExtraJus IA
+              </span>
             </div>
             <div className="flex items-center gap-0.5 opacity-60 hover:opacity-100 transition-opacity duration-500">
               <TextAlignButton align="left" />
@@ -1477,17 +1470,25 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
           </div>
         )}
 
-        {/* Centralized AI Icon only for mobile screen */}
+        {/* Centralized AI Brand Name only for mobile screen */}
         {!readOnly && (
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:hidden z-[110]">
-            <div 
-              className={cn(
-                "h-10 w-10 text-violet-500 flex items-center justify-center relative"
-              )}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:hidden z-[110] flex items-center gap-1.5 select-none whitespace-nowrap">
+            {/* Custom Elegant ExtraJus IA Icon for mobile */}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-[15px] h-[15px] text-violet-500 relative z-10 filter drop-shadow-[0_0_8px_rgba(139,92,246,0.4)] animate-pulse shrink-0">
+              <line x1="12" y1="3" x2="12" y2="21" />
+              <path d="M5 8h14" />
+              <path d="M5 8v2c0 2 2 3 5 3" />
+              <circle cx="5" cy="15" r="2" />
+              <path d="M19 8v2c0 2-2 3-5 3" />
+              <circle cx="19" cy="15" r="2" />
+              <path d="M12 9l1.5 1.5L12 12l-1.5-1.5z" fill="currentColor" />
+            </svg>
+            <span 
+              style={{ fontFamily: "'Cinzel', 'Cambria', 'Georgia', serif" }}
+              className="text-[11.5px] font-bold tracking-[0.2em] uppercase bg-gradient-to-r from-primary via-violet-400 to-primary bg-clip-text text-transparent filter drop-shadow-[0_0_8px_rgba(139,92,246,0.35)]"
             >
-              <div className="absolute inset-0 bg-violet-500/20 rounded-full blur-lg" />
-              <BrainCircuit className={cn("w-6 h-6 relative z-10 drop-shadow-[0_0_8px_rgba(139,92,246,0.6)]")} />
-            </div>
+              ExtraJus IA
+            </span>
           </div>
         )}
 
