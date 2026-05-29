@@ -226,7 +226,11 @@
 }
 
 .tiptap-ai-prompt-input-placeholder-text {
-  display: inline-block;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: clamp(0.656rem, calc(0.5625rem + 0.3vw), 0.75rem);
   font-weight: 500;
   line-height: 1.4;
