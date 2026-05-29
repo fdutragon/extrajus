@@ -263,7 +263,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             </div>
           </div>
 
-          {/* Box de Preço Único & Painel de Confiança Cega */}
+          {/* Box de Preço Único */}
           <div className="space-y-4 pt-1 max-sm:pt-3 max-sm:flex max-sm:flex-col max-sm:items-center">
             <div className="flex items-center justify-between w-full max-sm:justify-center max-sm:gap-3 border-t border-border/40 pt-3">
               <div>
@@ -272,18 +272,6 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                   <span className="text-[1.75rem] max-sm:text-[1.8rem] font-black text-foreground">R$ 37,00</span>
                   <span className="text-[0.625rem] max-sm:text-[0.75rem] font-bold text-muted-foreground uppercase">/ download</span>
                 </div>
-              </div>
-            </div>
-
-            {/* Crachás de Confiança Cega (Estilo Apple / Minimalista) */}
-            <div className="grid grid-cols-1 gap-2 w-full pt-1.5 border-t border-border/30">
-              <div className="flex items-center gap-2 text-[10px] max-sm:text-[11px] font-medium text-muted-foreground">
-                <ShieldCheck size={13} className="text-emerald-500 shrink-0" />
-                <span>PIX Seguro homologado pelo Banco Central</span>
-              </div>
-              <div className="flex items-center gap-2 text-[10px] max-sm:text-[11px] font-medium text-muted-foreground">
-                <Zap size={13} className="text-emerald-500 shrink-0" />
-                <span>Liberação e nota fiscal geradas na hora</span>
               </div>
             </div>
           </div>
