@@ -155,7 +155,7 @@ export function GoogleAdsOnboarding() {
           </div>
 
           {/* Action Button */}
-          <div className="relative z-10 w-full px-2 flex flex-col gap-2">
+          <div className="relative z-10 w-full px-2">
             <Button 
               onClick={handleNext}
               className="w-full h-11 rounded-xl bg-white text-black hover:bg-zinc-200 font-black uppercase tracking-widest text-xs gap-2 group transition-all"
@@ -163,17 +163,6 @@ export function GoogleAdsOnboarding() {
               {isLastStep ? "Começar Agora" : "Próximo"}
               <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </Button>
-            {isLastStep && (
-              <button
-                onClick={() => {
-                  setCurrentStep(0)
-                  setProgress(0)
-                }}
-                className="text-[11px] text-zinc-500 hover:text-zinc-300 font-bold uppercase tracking-widest transition-colors py-1 cursor-pointer"
-              >
-                Voltar ao Início (Ler Novamente)
-              </button>
-            )}
           </div>
         </div>
       </DialogContent>
