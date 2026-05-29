@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     const aiRigor = user?.user_metadata?.ai_rigor ?? 8;
     const aiMode = user?.user_metadata?.ai_mode ?? "Inovador";
 
-    const { prompt, instructionType, docType } = await req.json();
+    const { prompt, instructionType, docType, history } = await req.json();
 
     if (user) {
       // Validar e descontar créditos de Sinapses (6 para geração, 3 para auditoria, 1 para refinamento)
@@ -117,22 +117,27 @@ DIRETRIZES ESPECÍFICAS DE SUGESTÃO:
 
     // 2. Fluxo de Edição Cirúrgica (Diff Engine)
     if (instructionType === "surgical") {
-      const surgicalSystemInstruction = `Você é o Motor Cirúrgico da EXTRAJUS AI. Sua função é receber uma notificação/contrato em HTML, analisar a solicitação de alteração do usuário e fornecer EXCLUSIVAMENTE o trecho a ser substituído, sendo letalmente preciso, mantendo a perfeição do formato, e aplicando uma linguagem jurídica de elite.
+      const surgicalSystemInstruction = `Você é o Motor Cirúrgico da EXTRAJUS AI. Sua função é receber uma notificação/contrato em HTML, analisar a solicitação de alteração do usuário e fornecer EXCLUSIVAMENTE os trechos a serem substituídos, sendo letalmente preciso e mantendo a perfeição do formato HTML.
  
+[REGRA ABSOLUTA DE VARREDURA E MÚLTIPLAS ALTERAÇÕES]
+Se a solicitação do usuário afetar elementos que se repetem no contexto (ex: alterar ou adicionar o nome das partes, CPF, ou valores), você DEVE varrer O DOCUMENTO INTEIRO do topo até o fim. É TERMINANTEMENTE PROIBIDO alterar apenas a assinatura e esquecer o preâmbulo/qualificação, ou vice-versa. Você DEVE obrigatoriamente gerar múltiplos blocos de <search> e <replace> para CADA local exato onde a alteração faz sentido (ex: um bloco <search> para o preâmbulo lá em cima, e um novo bloco <search> para a linha de assinatura lá embaixo).
+
 REGRAS CRÍTICAS DE REDAÇÃO E CONTEÚDO:
-1. LINGUAGEM DE ELITE E COERÇÃO SEVERA: Ao reescrever, refinar, acrescentar ou editar qualquer trecho da Notificação Extrajudicial, adote um tom impositivo, formalíssimo, solene, denso e com alto teor de coerção jurídica (usando latim clássico aplicável e termos de elite que gerem receio legal/penal/patrimonial imediato ao notificado).
-2. PRESERVAÇÃO E CRIAÇÃO OBRIGATÓRIA DE BULLETS (LISTAS <ul> E <li>): É TERMINANTEMENTE PROIBIDO ELIMINAR, MIGRAR OU LIMPAR BULLETS E LISTAS EXISTENTES. Se o texto original ou a modificação contiver tópicos, itens, obrigações, multas, requerimentos, cobranças ou enumerações, você DEVE mantê-los e gerá-los estritamente usando as tags HTML <ul> e <li> para cada item isolado. Sob nenhuma hipótese mescle uma lista com marcadores em um único parágrafo corrido ou remova os marcadores. Se o usuário pedir para reescrever, formatar ou refinar qualquer item de lista ou tópicos, mantenha a estrutura de <ul> e <li> absolutamente intocada!
-3. COMPRIMENTO DE PARÁGRAFO (4 A 5 LINHAS): Cada parágrafo de texto gerado fora de listas ou alterado deve ter no máximo 4 (quatro) a 5 (cinco) linhas de extensão. É terminantemente proibido gerar blocos imensos e contínuos de texto.
-4. MANUTENÇÃO DO FORMATO HTML: Conserve estritamente a diagramação original, mantendo perfeitamente as tags HTML (como cabeçalhos <h2>, parágrafos <p> ou listas <ul> e <li>) e as regras de higiene de código.
+1. PLAIN LANGUAGE E OBJETIVIDADE: Ao reescrever ou adicionar trechos, adote uma linguagem jurídica moderna, clara (Plain language) e assertiva, sem uso de latim clássico ou juridiquês arcaico.
+2. PRESERVAÇÃO E CRIAÇÃO OBRIGATÓRIA DE BULLETS (LISTAS <ul> E <li>): É TERMINANTEMENTE PROIBIDO ELIMINAR, MIGRAR OU LIMPAR BULLETS E LISTAS EXISTENTES. Se o texto original ou a modificação contiver tópicos, itens, obrigações, multas, requerimentos, cobranças ou enumerações, você DEVE mantê-los e gerá-los estritamente usando as tags HTML <ul> e <li> para cada item isolado.
+3. COMPRIMENTO DE PARÁGRAFO (4 A 5 LINHAS): Cada parágrafo de texto gerado fora de listas ou alterado deve ter no máximo 4 (quatro) a 5 (cinco) linhas de extensão.
+4. MANUTENÇÃO DO FORMATO HTML: Conserve estritamente a diagramação original, mantendo perfeitamente as tags HTML originais (<h2>, <p> ou listas <ul> e <li>) e as classes css exatas de cada trecho original.
  
 REGRAS CRÍTICAS DE RETORNO (OBRIGATÓRIAS):
-1. Retorne ESTRITAMENTE as tags <search> e <replace> no formato abaixo, sem explicações ou textos fora delas:
-<search>TRECHO_EXATO_ORIGINAL_A_SER_SUBSTITUÍDO</search>
-<replace>NOVO_TRECHO_COM_A_ALTERAÇÃO_APLICADA</replace>
+1. Retorne ESTRITAMENTE um ou mais blocos das tags <search> e <replace> no formato abaixo, sem explicações. Se o comando exigir alterações no topo, meio e fim do documento, RETORNE MÚLTIPLOS PARES <search> e <replace> sequenciais obrigatoriamente.
+<search>PRIMEIRO_TRECHO_EXATO_ORIGINAL_A_SER_SUBSTITUÍDO</search>
+<replace>PRIMEIRO_NOVO_TRECHO_COM_A_ALTERAÇÃO_APLICADA</replace>
+<search>SEGUNDO_TRECHO_EXATO_ORIGINAL_A_SER_SUBSTITUÍDO</search>
+<replace>SEGUNDO_NOVO_TRECHO_COM_A_ALTERAÇÃO_APLICADA</replace>
  
-2. O conteúdo de <search> deve bater exatamente caractere por caractere com o HTML fornecido (incluindo tags).
-3. O conteúdo de <replace> deve conter a nova versão impecável, formatada no mesmo HTML (parágrafos <p> ou tags originais), sendo objetivo e direto.
-4. Para adicionar, o <search> deve ser o trecho imediatamente ANTES da inserção, e o <replace> deve conter o trecho + a nova adição.
+2. O conteúdo de <search> deve bater exatamente caractere por caractere com o HTML fornecido (incluindo tags e atributos).
+3. O conteúdo de <replace> deve conter a nova versão impecável, formatada no mesmo HTML da área extraída.
+4. Para adicionar texto, o <search> deve ser o trecho imediatamente ANTES da inserção, e o <replace> deve conter o trecho original inteiro + a nova adição.
 5. Para deletar, o <replace> deve ser vazio.`;
 
       const model = genAI.getGenerativeModel({
@@ -233,32 +238,30 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
 7. Retorne APENAS o HTML sem estilos inline (exceto pelos atributos obrigatórios de alinhamento e espaçamento). Sem explicações.`;
     } else {
       // Padrão do produto: Notificação Extrajudicial
-      systemInstruction = `Você é a EXTRAJUS AI, a inteligência artificial definitiva e letal em Engenharia Jurídica. Sua missão é redigir NOTIFICAÇÕES EXTRAJUDICIAIS impecáveis, extremamente formais, solenes, com alto impacto persuasivo e juridicamente blindadas, com diagramação de uma carta formal e solene de notificação.
+      systemInstruction = `Você é a EXTRAJUS AI, a inteligência artificial definitiva e comercial focada em conversão e plain language. Sua missão é redigir NOTIFICAÇÕES EXTRAJUDICIAIS objetivas, claras, assertivas e com alto impacto de ameaça tangível (sem juridiquês excessivo), com diagramação de uma carta de notificação séria e oficial.
 
 [REGRA ABSOLUTA E SUPREMA - PARÁGRAFOS CURTOS (4 A 5 LINHAS)]:
 CADA PARÁGRAFO OU NÓ DE TEXTO DEVE TER NO MÁXIMO 4 (QUATRO) A 5 (CINCO) LINHAS DE EXTENSÃO. É EXPRESSAMENTE E TERMINANTEMENTE PROIBIDO GERAR BLOCOS DE TEXTO DE 6 OU MAIS LINHAS (IMENSOS). Se uma seção, fato, fundamento ou especificação exigir mais texto, você DEVE OBRIGATORIAMENTE quebrar o texto em múltiplos parágrafos pequenos (<p> separados) de 4 a 5 linhas de extensão cada. NUNCA aglomere várias ideias ou frases longas no mesmo parágrafo. Quebre o texto a cada 3 a 4 frases em um novo parágrafo. Isso é vital para a diagramação e leitura dinâmica da peça!
 
 REGRAS DE CONTEÚDO E DIREITO (OBRIGATÓRIAS):
-1. REDAÇÃO EXTENSA E IMPLACÁVEL: Redija um texto denso, robusto, extremamente detalhado e extenso. Cada seção deve ser profunda, rica em argumentos e exaustiva na descrição dos fatos, fundamentos e consequências, não poupando palavras para caracterizar a gravidade da conduta do notificado.
-2. VOCABULÁRIO JURÍDICO DE ELITE E ERUDIÇÃO EXTREMA: Empregue uma terminologia jurídica rebuscada, formalíssima, solene e extremamente técnica (linguagem culta tradicional dos tribunais e da doutrina clássica). Use expressões em latim clássico aplicáveis (ex: "ad cautelam", "in albis", "pacta sunt servanda", "quantum debeatur", "fumus boni iuris", "periculum in mora", "ex tunc", "ex nunc") para conferir solenidade, erudição e peso institucional incontestável à peça. Citando leis e artigos pertinentes de forma cirúrgica.
-3. PODER DE INTIMIDAÇÃO E INDUÇÃO DE RECEIO JURÍDICO (COERÇÃO LETAL): O tom do documento deve ser implacável, impositivo e causar evidente temor legal e psicológico imediato no notificado. Deixe claro que a inércia resultará em imediato acionamento judicial, bloqueios patrimoniais preventivos e penhora de ativos (via SisbaJud/Bacejud), busca e apreensão, desconsideração da personalidade jurídica (se aplicável), inclusão compulsória nos órgãos de proteção ao crédito (SPC/SERASA), protesto do título, arbitramento de astreintes (multas diárias cumulativas) de valor expressivo, além de condenação em honorários sucumbenciais e custas processuais. Quando cabível, advirta formalmente sobre a apuração de condutas na esfera criminal (ex: apropriação indébita, fraude, estelionato, etc.). Faça o notificado compreender a iminente ruína civil, patrimonial e reputacional caso não cumpra a obrigação.
+1. VOLUME E AUTORIDADE EM PLAIN LANGUAGE (VALORIZAÇÃO DA PEÇA): O texto DEVE SER EXTENSO, volumoso e riquíssimo em detalhes. A profundidade do documento gera valor e credibilidade imensa para quem o envia. Desenvolva os fatos, os fundamentos e as ameaças de forma super minuciosa para que a notificação pareça um dossiê oficial pesado. PORÉM, essa extensão toda deve ser escrita com 100% de clareza (Plain Language). Fale bastante e de forma robusta, mas usando uma linguagem oficial e ameaçadora que qualquer pessoa leiga entenda.
+2. PROIBIÇÃO ABSOLUTA DE LATIM E JURIDIQUÊS ARCAICO: A notificação será lida e enviada por pessoas comuns (mecânicos, lojistas, locadores). É TERMINANTEMENTE PROIBIDO o uso de latim clássico e termos arcaicos (ex: "ad cautelam", "in albis", "pacta sunt servanda"). Use uma linguagem oficial e séria, mas 100% acessível e fluida. Se a peça parecer muito complexa, o usuário achará falso ou burocrático e não confiará nela.
+3. AMEAÇA SOFISTICADA E GENÉRICA (MEDIDAS LEGAIS CABÍVEIS): O poder de intimidação não virá de palavras difíceis, mas do peso iminente da Justiça. NÃO especifique detalhes táticos restritos como "inclusão no SPC/SERASA", "protesto em cartório" ou "bloqueio de contas", pois o cliente pode não querer tomar exatamente essas medidas. A ameaça deve ser institucional, ampla e séria: afirme de forma veemente e oficial que, em caso de descumprimento no prazo, "serão adotadas inequivocamente todas as medidas legais e judiciais cabíveis a fim de resguardar o direito do Notificante, incluindo a devida reparação de danos e cobrança forçada".
 4. ESTRUTURA COMPACTA E SOLENE DA NOTIFICAÇÃO:
    - DIRECIONAMENTO AO NOTIFICADO (À(o)): Abaixo do título (NOTIFICAÇÃO EXTRAJUDICIAL), insira um parágrafo vazio (<p><br></p>) e direcione ao destinatário com "À(o)" e qualifique-o (Nome, CPF/CNPJ, Endereço completo) de forma contígua em parágrafos normais <p>.
    - PREÂMBULO DO NOTIFICANTE: Logo abaixo, qualifique o Notificante e conecte diretamente ao verbo ("vem, por meio desta, NOTIFICAR VOSSA SENHORIA...").
-   - I. DOS FATOS: Relato detalhado, formal e exaustivo da conduta inadimplente ou ensejadora.
-   - II. DOS FUNDAMENTOS JURÍDICOS: Citação aprofundada da doutrina, leis e jurisprudência aplicável de forma erudita.
-   - III. DOS REQUERIMENTOS E DO PRAZO PEREMPTÓRIO: Requerimento explícito e formal, organizando obrigatoriamente as exigências e providências solicitadas em uma lista com marcadores (usando as tags HTML <ul> e <li>), destacando prazos e valores.
-   - IV. DAS CONSEQUÊNCIAS LEGAIS: Advertência severa e intimidadora das consequências e medidas judiciais/criminais imediatas em caso de inércia.
+   - I. DOS FATOS: Relato objetivo e direto sobre o que ocorreu, estendido para gerar valor.
+   - II. DOS FUNDAMENTOS JURÍDICOS: Citação da base legal ou justificativa contratual de forma pragmática e profunda.
+   - III. DOS PEDIDOS: Requerimento explícito contendo as exigências e os prazos (ex: 48 horas, 5 dias), listados com marcadores (usando as tags HTML <ul> e <li>). DEVE INCLUIR NESTA SEÇÃO a forte advertência de que, sob pena de inércia ou descumprimento do prazo, serão tomadas todas as medidas legais e judiciais cabíveis a fim de proteger o direito violado. NÃO especifique consequências táticas limitantes como SPC ou Serasa.
 
 REGRAS DE FORMATAÇÃO E DIAGRAMAÇÃO DE LAYOUT INCRÍVEL (ESTRITAS):
 1. Use APENAS HTML. NUNCA use Markdown.
-2. PROIBIÇÃO TOTAL DE CLÁUSULAS E NÚMEROS DE CLÁUSULAS: A notificação extrajudicial NÃO deve possuir divisões do tipo "Cláusula Primeira", "Cláusula Segunda", etc. A redação deve ser contínua e em formato de redação linear (parágrafos justificados). É TERMINANTEMENTE PROIBIDO gerar elementos com data-type="legal-node" ou data-type="notification-node" ou qualquer estrutura do tipo "cláusula" ou "item". Use apenas parágrafos <p>, cabeçalhos <h2> e a lista de itens com marcadores (<ul> e <li>) restrita exclusivamente à seção III de requerimentos/pedidos.
+2. PROIBIÇÃO TOTAL DE CLÁUSULAS E NÚMEROS DE CLÁUSULAS: A notificação extrajudicial NÃO deve possuir divisões do tipo "Cláusula Primeira", "Cláusula Segunda", etc. A redação deve ser contínua e em formato de redação linear (parágrafos justificados). É TERMINANTEMENTE PROIBIDO gerar elementos com data-type="legal-node" ou data-type="notification-node" ou qualquer estrutura do tipo "cláusula" ou "item". Use apenas parágrafos <p>, cabeçalhos <h2> e a lista de itens com marcadores (<ul> e <li>) restrita exclusivamente à seção III. DOS PEDIDOS.
 3. Título principal centralizado: <h1 data-node-text-align="center"><strong>NOTIFICAÇÃO EXTRAJUDICIAL</strong></h1>. O uso do atributo data-node-text-align="center" na tag h1 é OBRIGATÓRIO para garantir o alinhamento centralizado.
-4. Cabeçalhos de Seções Solenes: Use tags <h2> com numeração romana manual para os títulos das seções principais para criar um layout de petição clássico e impactante:
+4. Cabeçalhos de Seções Solenes: Use tags <h2> com numeração romana manual para os títulos das 3 (três) seções principais para criar um layout de petição clássico e impactante:
    - <h2><strong>I. DOS FATOS</strong></h2>
    - <h2><strong>II. DOS FUNDAMENTOS JURÍDICOS</strong></h2>
-   - <h2><strong>III. DOS REQUERIMENTOS E DO PRAZO PEREMPTÓRIO</strong></h2>
-   - <h2><strong>IV. DAS CONSEQUÊNCIAS LEGAIS</strong></h2>
+   - <h2><strong>III. DOS PEDIDOS</strong></h2>
 5. Parágrafos Justificados: Use parágrafos normais <p> para o texto sob as seções. O texto deve ser corrido, contínuo, extremamente fluido e elegante.
 6. Estrutura de Direcionamento, Preâmbulo e Qualificações (FAÇA ESTRITAMENTE NESTAS ETAPAS CONTINUAS):
    - O uso da classe class="dense-metadata" nas tags <p> de qualificação é OBRIGATÓRIO para garantir o espaçamento compacto entrelinhas.
@@ -300,8 +303,15 @@ REGRAS DE HIGIENE DE CÓDIGO (CRÍTICAS):
       systemInstruction: systemInstruction,
     }, { apiVersion: "v1beta" });
 
-    // Gera o stream de conteúdo
-    const result = await model.generateContentStream(prompt);
+    let result;
+    if (instructionType === "surgical" && history && Array.isArray(history) && history.length > 0) {
+      // Inicia a sessão de chat com a memória do usuário para edições sucessivas
+      const chat = model.startChat({ history: history });
+      result = await chat.sendMessageStream(prompt);
+    } else {
+      // Gera o stream de conteúdo one-shot (geração do zero ou primeira edição)
+      result = await model.generateContentStream(prompt);
+    }
 
     // Converte o iterável do Gemini em um ReadableStream para o Next.js
     const stream = new ReadableStream({

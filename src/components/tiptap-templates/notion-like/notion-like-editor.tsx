@@ -1461,7 +1461,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
 
 
           {!readOnly && (
-            <div className="flex items-center gap-0 sm:hidden h-8">
+            <div className="flex items-center gap-0 h-8">
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -1515,7 +1515,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               </svg>
               <span 
                 style={{ fontFamily: "'Cinzel', 'Cambria', 'Georgia', serif" }}
-                className={cn("text-[11.5px] font-bold uppercase tracking-[0.2em] relative z-10 bg-gradient-to-r from-zinc-700 via-zinc-500 to-zinc-700 dark:from-zinc-300 dark:via-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(255,255,255,0.2)] whitespace-nowrap")}
+                className={cn("text-[13px] font-bold uppercase tracking-[0.2em] relative z-10 bg-gradient-to-r from-zinc-700 via-zinc-500 to-zinc-700 dark:from-zinc-300 dark:via-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(255,255,255,0.2)] whitespace-nowrap")}
               >
                 ExtraJus IA
               </span>

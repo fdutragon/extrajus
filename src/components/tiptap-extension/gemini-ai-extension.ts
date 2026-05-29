@@ -44,6 +44,7 @@ export interface GeminiStorage {
   response: string
   state: "idle" | "loading" | "error"
   auditResults: AuditResult[]
+  chatHistory: any[]
 }
 
 declare module "@tiptap/core" {
@@ -111,6 +112,45 @@ REGRAS DE HIGIENE DE CÓDIGO (CRÍTICAS):
 - PROIBIÇÃO ABSOLUTA DE ESPAÇOS DUPLOS OU PARÁGRAFOS VAZIOS REPETIDOS: Você NUNCA deve gerar dois ou mais parágrafos vazios (<p><br></p>) seguidos. O espaçamento deve ser sempre simples. Se precisar de um respiro visual, use exatamente UM parágrafo vazio e nada mais.
 - PROIBIÇÃO ABSOLUTA DE ADICIONAR ESPAÇOS OU RECUOS MANUAIS: O texto deve ser alinhado rigorosamente à margem esquerda. Você NUNCA deve inserir espaços em branco manuais (como &nbsp;, tabulações ou múltiplos espaços repetidos) no início dos parágrafos ou cabeçalhos.`;
 
+// Função auxiliar cirúrgica para injetar data-ai-highlight="true" na tag de bloco pai que contém a alteração
+function injectHighlightToParentBlock(html: string, searchText: string, replaceText: string): { success: boolean; result: string } {
+  const index = html.indexOf(searchText)
+  if (index === -1) {
+    return { success: false, result: html }
+  }
+
+  // Executa a substituição da primeira ocorrência do searchText
+  let updatedHtml = html.substring(0, index) + replaceText + html.substring(index + searchText.length)
+
+  // Olha para trás na string HTML a partir do índice da ocorrência para achar a tag de bloco de abertura correspondente
+  const leftChunk = html.substring(0, index)
+  const blockTagRegex = /<(p|div|h1|h2|h3|blockquote)\b[^>]*>/gi
+  let match: RegExpExecArray | null
+  let lastBlockTagIndex = -1
+  let lastBlockTag = ""
+
+  while ((match = blockTagRegex.exec(leftChunk)) !== null) {
+    lastBlockTagIndex = match.index
+    lastBlockTag = match[0]
+  }
+
+  if (lastBlockTagIndex !== -1 && lastBlockTag) {
+    // Garante que o bloco pai receba o atributo data-ai-highlight para renderizar o fundo roxo no editor
+    if (!lastBlockTag.includes("data-ai-highlight")) {
+      const spaceIdx = lastBlockTag.indexOf(" ")
+      let newTag = ""
+      if (spaceIdx === -1) {
+        newTag = lastBlockTag.replace(">", ' data-ai-highlight="true">')
+      } else {
+        newTag = lastBlockTag.substring(0, spaceIdx) + ' data-ai-highlight="true"' + lastBlockTag.substring(spaceIdx)
+      }
+      updatedHtml = updatedHtml.substring(0, lastBlockTagIndex) + newTag + updatedHtml.substring(lastBlockTagIndex + lastBlockTag.length)
+    }
+  }
+
+  return { success: true, result: updatedHtml }
+}
+
 export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
   name: "ai",
 
@@ -128,6 +168,7 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
       response: "",
       state: "idle",
       auditResults: [],
+      chatHistory: [],
     }
   },
 
@@ -237,7 +278,8 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
           body: JSON.stringify({
             prompt: finalPrompt,
             instructionType: isDocEmpty ? "generation" : "surgical",
-            docType: localDocType
+            docType: localDocType,
+            history: this.storage.chatHistory
           })
         })
 
@@ -302,59 +344,112 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
         let finalContent = ""
 
         if (!isDocEmpty) {
-          // Edição cirúrgica estruturada!
-          const searchMatch = accumulatedText.match(/<search>([\s\S]*?)<\/search>/)
-          const replaceMatch = accumulatedText.match(/<replace>([\s\S]*?)<\/replace>/)
+          // Edição cirúrgica estruturada com múltiplos pares!
+          const pairs: { search: string; replace: string }[] = []
+          const searchRegex = /<search>([\s\S]*?)<\/search>/g
+          const replaceRegex = /<replace>([\s\S]*?)<\/replace>/g
 
-          if (searchMatch && replaceMatch) {
-            const searchText = searchMatch[1].trim()
-            let replaceText = replaceMatch[1].trim()
+          let searchM: RegExpExecArray | null
+          let replaceM: RegExpExecArray | null
+          const searches: string[] = []
+          const replaces: string[] = []
 
-            // Injeta o atributo de highlight da IA para que o usuário veja o que mudou
-            // Aplica tanto em divs de legal-node quanto em parágrafos
-            replaceText = replaceText
-              .replace(/<div([^>]*data-type="legal-node"[^>]*)>/gi, '<div$1 data-ai-highlight="true">')
-              .replace(/<p([^>]*)>/gi, '<p$1 data-ai-highlight="true">')
+          while ((searchM = searchRegex.exec(accumulatedText)) !== null) {
+            searches.push(searchM[1])
+          }
+          while ((replaceM = replaceRegex.exec(accumulatedText)) !== null) {
+            replaces.push(replaceM[1])
+          }
 
-            // Injeta o atributo de highlight da IA para que o usuário veja o que mudou
-            // Aplica tanto em divs de legal-node quanto em parágrafos
-            replaceText = replaceText
-              .replace(/<div([^>]*data-type="legal-node"[^>]*)>/gi, '<div$1 data-ai-highlight="true">')
-              .replace(/<p([^>]*)>/gi, '<p$1 data-ai-highlight="true">')
+          const minLen = Math.min(searches.length, replaces.length)
+          for (let i = 0; i < minLen; i++) {
+            pairs.push({
+              search: searches[i].trim(),
+              replace: replaces[i].trim()
+            })
+          }
 
-            const html = editor.getHTML()
-            if (html.includes(searchText)) {
-              finalContent = html.split(searchText).join(replaceText)
-              console.log("Surgical HTML replacement applied successfully!")
-            } else {
-              // Nível 2: Busca por texto puro removendo tags HTML do trecho de busca
-              const cleanSearch = searchText.replace(/<[^>]*>/g, "").trim()
-              const cleanReplace = replaceText
+          if (pairs.length > 0) {
+            let workingHtml = editor.getHTML()
+            let atLeastOneApplied = false
 
-              if (html.includes(cleanSearch)) {
-                finalContent = html.split(cleanSearch).join(cleanReplace)
-                console.log("Surgical plain text replacement applied successfully!")
+            for (const pair of pairs) {
+              const searchText = pair.search
+              let replaceText = pair.replace
+
+              // Injeta o atributo de highlight da IA para que o usuário veja o que mudou
+              // caso o próprio replaceText contiver tags
+              replaceText = replaceText
+                .replace(/<div([^>]*data-type="legal-node"[^>]*)>/gi, '<div$1 data-ai-highlight="true">')
+                .replace(/<p([^>]*)>/gi, '<p$1 data-ai-highlight="true">')
+
+              let applied = false
+
+              // Nível 1: Substituição cirúrgica exata com marcação automática do bloco pai
+              let currentHtmlSearchIndex = workingHtml.indexOf(searchText)
+              while (currentHtmlSearchIndex !== -1) {
+                const injectionResult = injectHighlightToParentBlock(workingHtml, searchText, replaceText)
+                if (injectionResult.success) {
+                  workingHtml = injectionResult.result
+                  applied = true
+                } else {
+                  break
+                }
+                // Avança na busca para evitar loops infinitos
+                currentHtmlSearchIndex = workingHtml.indexOf(searchText, currentHtmlSearchIndex + replaceText.length)
+              }
+
+              if (applied) {
+                atLeastOneApplied = true
+                console.log("Surgical HTML replacement with parent highlight applied successfully!")
               } else {
-                // Nível 3: Busca resiliente tolerante a quebras de linha e múltiplos espaços
-                const spaceCleanSearch = cleanSearch.replace(/\s+/g, " ")
-                const escapedSearch = spaceCleanSearch.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
-                const regexPattern = escapedSearch.split(' ').join('\\s+')
-                try {
-                  const regex = new RegExp(regexPattern, 'g')
-                  if (regex.test(html)) {
-                    finalContent = html.replace(regex, cleanReplace)
-                    console.log("Surgical space-resilient regex replacement applied successfully!")
+                // Nível 2: Busca por texto puro removendo tags HTML do trecho de busca
+                const cleanSearch = searchText.replace(/<[^>]*>/g, "").trim()
+                const cleanReplace = replaceText
+
+                let cleanSearchIndex = workingHtml.indexOf(cleanSearch)
+                while (cleanSearchIndex !== -1) {
+                  const injectionResult = injectHighlightToParentBlock(workingHtml, cleanSearch, cleanReplace)
+                  if (injectionResult.success) {
+                    workingHtml = injectionResult.result
+                    applied = true
+                  } else {
+                    break
                   }
-                } catch (e) {
-                  console.error("Surgical regex replace failed:", e)
+                  cleanSearchIndex = workingHtml.indexOf(cleanSearch, cleanSearchIndex + cleanReplace.length)
+                }
+
+                if (applied) {
+                  atLeastOneApplied = true
+                  console.log("Surgical plain text replacement with parent highlight applied successfully!")
+                } else {
+                  // Nível 3: Busca resiliente tolerante a quebras de linha e múltiplos espaços
+                  const spaceCleanSearch = cleanSearch.replace(/\s+/g, " ")
+                  const escapedSearch = spaceCleanSearch.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+                  const regexPattern = escapedSearch.split(' ').join('\\s+')
+                  try {
+                    const regex = new RegExp(regexPattern, 'g')
+                    if (regex.test(workingHtml)) {
+                      workingHtml = workingHtml.replace(regex, cleanReplace)
+                      atLeastOneApplied = true
+                      console.log("Surgical space-resilient regex replacement applied successfully!")
+                    }
+                  } catch (e) {
+                    console.error("Surgical regex replace failed:", e)
+                  }
                 }
               }
             }
 
-            // Se nenhuma das substituições cirúrgicas encontrou o padrão no HTML do editor
-            if (!finalContent) {
-              console.warn("Target search pattern not found. Inserting at current cursor/selection as fallback.")
-              editor.commands.insertContent(replaceText)
+            if (atLeastOneApplied) {
+              finalContent = workingHtml
+            } else {
+              console.warn("Target search patterns not found. Inserting first replace as fallback.")
+              const fallbackReplace = pairs[0].replace
+                .replace(/<div([^>]*data-type="legal-node"[^>]*)>/gi, '<div$1 data-ai-highlight="true">')
+                .replace(/<p([^>]*)>/gi, '<p$1 data-ai-highlight="true">')
+
+              editor.commands.insertContent(fallbackReplace)
               this.storage.state = "idle"
               editor.commands.aiGenerationSetIsLoading(false)
               if (!hasTriggeredMessage) {
@@ -394,6 +489,11 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
 
         this.storage.state = "idle"
         
+        // Registra o contexto conversacional para a IA ter memória contínua da peça
+        if (!isDocEmpty && userPrompt) {
+          this.storage.chatHistory.push({ role: "user", parts: [{ text: userPrompt }] })
+          this.storage.chatHistory.push({ role: "model", parts: [{ text: accumulatedText }] })
+        }
         // Disparar evento de conversão do Google Ads para Visualização de Página (Geração do Documento/Contrato)
         if (typeof window !== "undefined" && (window as any).gtag) {
           (window as any).gtag('event', 'conversion', {
