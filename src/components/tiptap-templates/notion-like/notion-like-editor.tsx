@@ -206,7 +206,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Slider } from "@/components/ui/slider"
 import { toast } from "sonner"
 import { Separator } from "../../../components/tiptap-ui-primitive/separator"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { ThemeToggle } from "./notion-like-editor-theme-toggle"
 import { useSearchParams } from "next/navigation"
 import { CollaborationUsers } from "../../../components/tiptap-templates/notion-like/notion-like-editor-collaboration-users"
 import { SignModal } from "../../../components/tiptap-ui/sign-modal/sign-modal"
@@ -791,7 +791,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly }: { isP
     }
   }, [])
   const [isSaving, setIsSaving] = useState(false)
-  const [fontSize, setFontSize] = useState<number>(13)
+  const [fontSize, setFontSize] = useState<number>(17)
   const [fontFamily, setFontFamily] = useState<string>("Cambria")
   const [isFontDropdownOpen, setIsFontDropdownOpen] = useState(false)
 
@@ -1461,25 +1461,25 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
 
 
           {!readOnly && (
-            <div className="flex items-center gap-0.5 sm:hidden h-7">
+            <div className="flex items-center gap-0 sm:hidden h-8">
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setFontSize(prev => Math.max(12, prev - 1))}
-                className="h-7 w-7 hover:bg-primary/10 hover:text-primary rounded-lg flex items-center justify-center p-0"
+                className="h-8 w-8 text-muted-foreground hover:text-foreground dark:hover:bg-primary/5 rounded-full transition-all flex items-center justify-center p-0 border border-transparent hover:border-border/40"
               >
-                <Minus size={13} />
+                <Minus className="w-3.5 h-3.5" />
               </Button>
-              <div className="flex items-center px-1 min-w-[1.2rem] justify-center select-none">
-                <span className="text-[10px] font-black text-foreground">{fontSize}</span>
+              <div className="flex items-center px-[2px] justify-center select-none">
+                <span className="text-[10.5px] font-black text-foreground/80">{fontSize}</span>
               </div>
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setFontSize(prev => Math.min(26, prev + 1))}
-                className="h-7 w-7 hover:bg-primary/10 hover:text-primary rounded-lg flex items-center justify-center p-0"
+                className="h-8 w-8 text-muted-foreground hover:text-foreground dark:hover:bg-primary/5 rounded-full transition-all flex items-center justify-center p-0 border border-transparent hover:border-border/40"
               >
-                <Plus size={13} />
+                <Plus className="w-3.5 h-3.5" />
               </Button>
             </div>
           )}
@@ -1504,7 +1504,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               )}
             >
               {/* Custom Elegant ExtraJus IA Icon */}
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-300 relative z-10 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.35)] animate-pulse shrink-0">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px] text-zinc-500 dark:text-zinc-300 relative z-10 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.35)] animate-pulse shrink-0">
                 <line x1="12" y1="3" x2="12" y2="21" />
                 <path d="M5 8h14" />
                 <path d="M5 8v2c0 2 2 3 5 3" />
@@ -1515,7 +1515,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               </svg>
               <span 
                 style={{ fontFamily: "'Cinzel', 'Cambria', 'Georgia', serif" }}
-                className={cn("text-[9.5px] font-bold uppercase tracking-[0.22em] relative z-10 bg-gradient-to-r from-zinc-700 via-zinc-500 to-zinc-700 dark:from-zinc-300 dark:via-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(255,255,255,0.2)] whitespace-nowrap")}
+                className={cn("text-[11.5px] font-bold uppercase tracking-[0.2em] relative z-10 bg-gradient-to-r from-zinc-700 via-zinc-500 to-zinc-700 dark:from-zinc-300 dark:via-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(255,255,255,0.2)] whitespace-nowrap")}
               >
                 ExtraJus IA
               </span>
@@ -1534,7 +1534,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         {!readOnly && (
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:hidden z-[110] flex items-center gap-1.5 select-none whitespace-nowrap">
             {/* Custom Elegant ExtraJus IA Icon for mobile */}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-[15px] h-[15px] text-zinc-500 dark:text-zinc-300 relative z-10 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.35)] animate-pulse shrink-0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-zinc-500 dark:text-zinc-300 relative z-10 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.35)] animate-pulse shrink-0">
               <line x1="12" y1="3" x2="12" y2="21" />
               <path d="M5 8h14" />
               <path d="M5 8v2c0 2 2 3 5 3" />
@@ -1545,7 +1545,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             </svg>
             <span 
               style={{ fontFamily: "'Cinzel', 'Cambria', 'Georgia', serif" }}
-              className="text-[11.5px] font-bold tracking-[0.2em] uppercase bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-800 dark:from-zinc-400 dark:via-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent filter drop-shadow-[0_0_8px_rgba(255,255,255,0.25)]"
+              className="text-[13.5px] font-bold tracking-[0.18em] uppercase bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-800 dark:from-zinc-400 dark:via-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent filter drop-shadow-[0_0_8px_rgba(255,255,255,0.25)]"
             >
               ExtraJus IA
             </span>
@@ -1580,7 +1580,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             </>
           )}
 
-          <div className="flex items-center gap-1.5 pl-2 max-sm:pl-0.5">
+          <div className="flex items-center">
             <ThemeToggle />
           </div>
         </div>
