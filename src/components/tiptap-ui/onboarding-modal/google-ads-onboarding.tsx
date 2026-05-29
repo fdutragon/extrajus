@@ -61,6 +61,7 @@ export function GoogleAdsOnboarding() {
     const params = new URLSearchParams(window.location.search)
     const isFromAds = params.get('utm_source') === 'google' || 
                       params.has('gclid') || 
+                      params.has('gad_source') || 
                       params.get('ref') === 'ads' ||
                       params.get('utm_campaign') === 'ads'
     
