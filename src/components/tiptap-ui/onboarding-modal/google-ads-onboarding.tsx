@@ -28,22 +28,22 @@ const STEPS: Step[] = [
     title: "A Notificação",
     highlight: "Definitiva",
     description: "Resolva calotes e exija seus direitos sem precisar pagar advogados caros. Use nossa inteligência para criar notificações letais e profissionais sob medida em segundos.",
-    icon: <Zap size={32} />,
-    color: "text-amber-500"
+    icon: <Zap size={28} strokeWidth={1.5} />,
+    color: "text-amber-500 dark:text-amber-400"
   },
   {
     title: "Poder de Coerção",
     highlight: "Imediato",
     description: "A IA utiliza terminologia jurídica formal que intimida e fundamenta seu direito, obrigando a parte contrária a agir antes de enfrentar processos e protestos.",
-    icon: <ShieldCheck size={32} />,
-    color: "text-emerald-500"
+    icon: <ShieldCheck size={28} strokeWidth={1.5} />,
+    color: "text-emerald-500 dark:text-emerald-400"
   },
   {
     title: "Pronto para",
     highlight: "Enviar",
     description: "Basta descrever o que aconteceu. O motor cirúrgico formata a notificação automaticamente com as leis aplicáveis. O resultado é um documento blindado.",
-    icon: <BrainCircuit size={32} />,
-    color: "text-primary"
+    icon: <BrainCircuit size={28} strokeWidth={1.5} />,
+    color: "text-primary dark:text-primary"
   }
 ]
 
@@ -107,12 +107,11 @@ export function GoogleAdsOnboarding({ onComplete }: GoogleAdsOnboardingProps) {
           </div>
 
           {/* Icon Animation */}
-          <div className={cn(
-            "w-20 h-20 max-sm:w-16 max-sm:h-16 rounded-[2rem] max-sm:rounded-2xl bg-secondary dark:bg-zinc-900 border border-border/40 dark:border-white/5 flex items-center justify-center relative z-10 shadow-xl dark:shadow-2xl animate-in zoom-in-50 duration-500",
-            step.color
-          )}>
-            <div className="absolute inset-0 bg-current opacity-10 blur-xl animate-pulse" />
-            {step.icon}
+          <div className="w-16 h-16 mt-3 sm:mt-4 rounded-full bg-zinc-50/50 dark:bg-zinc-900/40 border border-zinc-200/40 dark:border-zinc-800/80 flex items-center justify-center relative z-10 shadow-[0_8px_30px_rgb(0,0,0,0.02)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] animate-in zoom-in-50 duration-500">
+            <div className={cn("absolute inset-0 bg-current opacity-[0.04] dark:opacity-[0.06] rounded-full blur-xl animate-pulse", step.color)} />
+            <div className={step.color}>
+              {step.icon}
+            </div>
           </div>
 
           {/* Text Content */}
