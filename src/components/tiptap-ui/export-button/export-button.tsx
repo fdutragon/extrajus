@@ -40,8 +40,6 @@ export function ExportButton({
     }
   }
 
-
-
   const handleExport = async (e?: React.MouseEvent) => {
     if (e) {
       e.preventDefault()
@@ -241,18 +239,72 @@ export function ExportButton({
   return (
     <>
       {isPremium ? (
-        <Button
-          onClick={handleExportClick}
-          disabled={isExporting}
-          className="w-full max-w-[28rem] h-14 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black tracking-[0.15em] uppercase rounded-2xl transition-all shadow-[0_4px_20px_rgba(16,185,129,0.25)] hover:shadow-[0_4px_30px_rgba(16,185,129,0.45)] flex items-center justify-center gap-2 duration-300 transform hover:-translate-y-0.5 border border-emerald-500/20 text-xs active:scale-98"
-        >
-          {isExporting ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
-          ) : (
-            <Download className="w-5 h-5 animate-bounce" />
-          )}
-          <span>{isExporting ? "Preparando Notificação..." : "Baixar Notificação (.DOCX)"}</span>
-        </Button>
+        <div className="w-full max-w-[32rem] p-6 bg-muted/30 dark:bg-card/40 backdrop-blur-xl border border-border/80 rounded-[28px] shadow-[0_15px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_15px_40px_rgba(0,0,0,0.15)] flex flex-col items-center text-center space-y-4 animate-in fade-in slide-in-from-bottom-5 duration-700 mx-auto">
+          <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+          </div>
+          <div className="space-y-2">
+            <h4 className="text-xs sm:text-sm font-black tracking-[0.2em] uppercase bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500 bg-clip-text text-transparent">
+              {docType === "notificacao" ? "Notificação Pronta e Revisada" : "Contrato Pronto e Revisado"}
+            </h4>
+            <p className="text-xs sm:text-[13px] text-muted-foreground font-medium max-w-[28rem] leading-relaxed">
+              Sua minuta oficial foi compilada com inteligência jurídica avançada e está pronta no formato editável Word (.DOCX) profissional.
+            </p>
+          </div>
+
+          {/* Diferenciais Jurídicos de Alta Conversão */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 w-full max-w-[28rem] py-3.5 border-t border-b border-border/30 my-1 text-left px-2 sm:px-4">
+            <div className="flex items-center gap-2 text-[10.5px] sm:text-[11.5px] font-bold text-muted-foreground">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="w-3.5 h-3.5 text-emerald-500 shrink-0">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span>Minuta 100% Editável (.docx)</span>
+            </div>
+            <div className="flex items-center gap-2 text-[10.5px] sm:text-[11.5px] font-bold text-muted-foreground">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="w-3.5 h-3.5 text-emerald-500 shrink-0">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span>Validade Jurídica Nacional</span>
+            </div>
+            <div className="flex items-center gap-2 text-[10.5px] sm:text-[11.5px] font-bold text-muted-foreground">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="w-3.5 h-3.5 text-emerald-500 shrink-0">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span>Formatação Técnica ABNT</span>
+            </div>
+            <div className="flex items-center gap-2 text-[10.5px] sm:text-[11.5px] font-bold text-muted-foreground">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="w-3.5 h-3.5 text-emerald-500 shrink-0">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span>Proteção Contra Ambiguidades</span>
+            </div>
+          </div>
+          
+          <Button
+            onClick={handleExportClick}
+            disabled={isExporting}
+            className="w-full h-12 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black tracking-[0.15em] uppercase rounded-xl transition-all shadow-[0_4px_15px_rgba(16,185,129,0.2)] hover:shadow-[0_4px_25px_rgba(16,185,129,0.35)] flex items-center justify-center gap-2 duration-300 transform hover:-translate-y-0.5 border border-emerald-500/20 text-xs sm:text-xs active:scale-98"
+          >
+            {isExporting ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Download className="w-4 h-4 animate-bounce" />
+            )}
+            <span>{isExporting ? "Preparando Arquivo..." : `Baixar ${docType === "notificacao" ? "Notificação" : "Contrato"} (.DOCX)`}</span>
+          </Button>
+
+          {/* Micro-segurança de transação */}
+          <div className="text-[9px] font-black uppercase tracking-[0.12em] text-muted-foreground/40 flex items-center gap-1.5 justify-center pt-0.5">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3 h-3 text-emerald-500/60 shrink-0">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <span>Download Criptografado • Liberação Instantânea por PIX</span>
+          </div>
+        </div>
       ) : (
         <Button
           variant="ghost"
