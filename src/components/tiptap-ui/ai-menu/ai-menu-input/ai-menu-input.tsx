@@ -146,7 +146,7 @@ export function AiPromptInputToolbar({
       <ToolbarGroup>
         <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-           <span className="text-[10px] font-medium text-primary">IA Ativa</span>
+           <span className="text-[8.5px] font-medium text-primary">IA Ativa</span>
         </div>
       </ToolbarGroup>
 
