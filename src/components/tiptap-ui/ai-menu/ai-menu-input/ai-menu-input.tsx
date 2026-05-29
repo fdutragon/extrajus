@@ -158,7 +158,7 @@ export function AiPromptInputToolbar({
 
       <Spacer />
 
-      <ToolbarGroup className="gap-3 flex items-center">
+      <ToolbarGroup className="gap-5 flex items-center">
         {hasMicSupport && (
           <Button
             type="button"
