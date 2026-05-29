@@ -112,13 +112,13 @@ export function GoogleAdsOnboarding() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="max-w-md bg-zinc-950/95 border-none p-0 overflow-hidden rounded-[2.5rem] shadow-[0_0_50px_rgba(var(--primary-rgb),0.3)]">
-        <div className="relative px-6 py-10 flex flex-col items-center text-center gap-6 min-h-[450px] justify-center overflow-hidden">
+        <div className="relative px-6 py-10 max-sm:pt-12 max-sm:pb-6 max-sm:min-h-0 sm:min-h-[450px] flex flex-col items-center text-center gap-6 max-sm:gap-4 justify-center overflow-hidden">
           {/* Background FX */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(var(--primary-rgb),0.15),transparent_70%)]" />
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] mix-blend-overlay" />
 
           {/* Progress Bars (Stories Style) */}
-          <div className="absolute top-6 left-6 right-6 flex gap-1.5 z-20">
+          <div className="absolute top-6 max-sm:top-4 left-6 right-6 flex gap-1.5 z-20">
             {STEPS.map((_, i) => (
               <div key={i} className="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
                 <div 
@@ -134,7 +134,7 @@ export function GoogleAdsOnboarding() {
 
           {/* Icon Animation */}
           <div className={cn(
-            "w-20 h-20 rounded-[2rem] bg-zinc-900 border border-white/5 flex items-center justify-center relative z-10 shadow-2xl animate-in zoom-in-50 duration-500",
+            "w-20 h-20 max-sm:w-16 max-sm:h-16 rounded-[2rem] max-sm:rounded-2xl bg-zinc-900 border border-white/5 flex items-center justify-center relative z-10 shadow-2xl animate-in zoom-in-50 duration-500",
             step.color
           )}>
             <div className="absolute inset-0 bg-current opacity-10 blur-xl animate-pulse" />
@@ -155,7 +155,7 @@ export function GoogleAdsOnboarding() {
           </div>
 
           {/* Action Button */}
-          <div className="relative z-10 w-full px-2">
+          <div className="relative z-10 w-full px-2 flex flex-col gap-2">
             <Button 
               onClick={handleNext}
               className="w-full h-11 rounded-xl bg-white text-black hover:bg-zinc-200 font-black uppercase tracking-widest text-xs gap-2 group transition-all"
@@ -163,6 +163,17 @@ export function GoogleAdsOnboarding() {
               {isLastStep ? "Começar Agora" : "Próximo"}
               <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </Button>
+            {isLastStep && (
+              <button
+                onClick={() => {
+                  setCurrentStep(0)
+                  setProgress(0)
+                }}
+                className="text-[11px] text-zinc-500 hover:text-zinc-300 font-bold uppercase tracking-widest transition-colors py-1 cursor-pointer"
+              >
+                Voltar ao Início (Ler Novamente)
+              </button>
+            )}
           </div>
         </div>
       </DialogContent>
