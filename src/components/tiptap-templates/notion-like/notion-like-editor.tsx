@@ -210,7 +210,6 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { useSearchParams } from "next/navigation"
 import { CollaborationUsers } from "../../../components/tiptap-templates/notion-like/notion-like-editor-collaboration-users"
 import { SignModal } from "../../../components/tiptap-ui/sign-modal/sign-modal"
-import { OnboardingModal } from "../../../components/tiptap-ui/onboarding-modal/onboarding-modal"
 import { GoogleAdsOnboarding } from "../../../components/tiptap-ui/onboarding-modal/google-ads-onboarding"
 import { cn } from "@/lib/utils"
 import { TurnIntoDropdown } from "../../../components/tiptap-ui/turn-into-dropdown"
@@ -437,22 +436,6 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
   const [optimizedRisks, setOptimizedRisks] = useState<string[]>([])
   const [pendingOptimization, setPendingOptimization] = useState<string | null>(null)
   const { user } = useUser()
-  const [showOnboarding, setShowOnboarding] = useState(false)
-
-  const handleSelectTemplate = (prompt: string) => {
-    setShowOnboarding(false)
-    if (editor) {
-      editor.commands.clearContent()
-      setTimeout(() => {
-        ;(editor.chain() as any).aiTextPrompt({
-          text: prompt,
-          insert: true,
-          stream: true,
-          format: "rich-text",
-        }).run()
-      }, 300)
-    }
-  }
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -1933,8 +1916,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
           </aside>
         </>)}
 
-        <OnboardingModal isOpen={showOnboarding} onClose={() => setShowOnboarding(false)} onSelectTemplate={handleSelectTemplate} />
-        <GoogleAdsOnboarding onComplete={() => setShowOnboarding(true)} />
+        <GoogleAdsOnboarding />
       </div>
     </div>
   )
@@ -1963,7 +1945,7 @@ export function EditorProvider(props: EditorProviderProps) {
     editable: !readOnly,
     editorProps: { attributes: { class: "notion-like-editor" }, scrollThreshold: 0, scrollMargin: 0 },
     extensions: [
-      StarterKit.configure({ history: false, undoRedo: false, horizontalRule: false, dropcursor: { width: 2 } }),
+      StarterKit.configure({ undoRedo: false, horizontalRule: false, dropcursor: { width: 2 } }),
       HorizontalRule,
       TextAlign.configure({ types: ["heading", "paragraph", "legalNode", "notificationNode"] }),
       Collaboration.configure({ document: ydoc }),

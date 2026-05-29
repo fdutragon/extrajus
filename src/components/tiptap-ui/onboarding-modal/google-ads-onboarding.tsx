@@ -126,7 +126,7 @@ export function GoogleAdsOnboarding({ onComplete }: GoogleAdsOnboardingProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="max-w-md bg-zinc-950/95 border-none p-0 overflow-hidden rounded-[2.5rem] shadow-[0_0_50px_rgba(var(--primary-rgb),0.3)]">
-        <div className="relative px-6 sm:px-4 pt-10 pb-10 sm:pt-16 sm:pb-8 max-sm:pt-10 max-sm:pb-4 max-sm:min-h-0 sm:min-h-[450px] flex flex-col items-center text-center gap-6 max-sm:gap-3.5 justify-center overflow-hidden">
+        <div className="relative px-6 sm:px-4 pt-10 pb-6 sm:pt-12 sm:pb-6 max-sm:pt-10 max-sm:pb-4 max-sm:min-h-0 sm:min-h-[390px] flex flex-col items-center text-center gap-6 max-sm:gap-3.5 justify-center overflow-hidden">
           {/* Background FX */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(var(--primary-rgb),0.15),transparent_70%)]" />
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] mix-blend-overlay" />
@@ -157,13 +157,13 @@ export function GoogleAdsOnboarding({ onComplete }: GoogleAdsOnboardingProps) {
 
           {/* Text Content */}
           <div className="space-y-3 relative z-10">
-            <h2 className="text-xl sm:text-2xl font-black text-white leading-[1.3] uppercase tracking-wide">
+            <h2 className="text-lg sm:text-xl font-black text-white leading-[1.3] uppercase tracking-wide">
               {step.title}{" "}
               <span className={cn("text-primary drop-shadow-[0_0_15px_rgba(var(--primary-rgb),0.5)]", step.color)}>
                 {step.highlight}
               </span>
             </h2>
-            <p className="text-[12px] sm:text-[16px] text-zinc-400 font-medium leading-relaxed px-4 sm:px-2">
+            <p className="text-xs sm:text-[13.5px] text-zinc-400 font-medium leading-relaxed px-4 sm:px-2">
               {step.description}
             </p>
           </div>

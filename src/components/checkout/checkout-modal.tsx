@@ -287,7 +287,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                   <Button 
                     type="submit" 
                     disabled={loading}
-                    className="w-full h-11 max-sm:h-12 mt-3 bg-primary text-primary-foreground hover:bg-primary/90 font-black uppercase tracking-[0.1em] rounded-xl transition-all shadow-[0_4px_15px_rgba(var(--primary-rgb),0.3)] hover:shadow-[0_4px_25px_rgba(var(--primary-rgb),0.5)] flex items-center justify-center gap-2"
+                    className="w-full h-11 max-sm:h-12 mt-[18px] bg-primary text-primary-foreground hover:bg-primary/90 font-black uppercase tracking-[0.1em] rounded-xl transition-all shadow-[0_4px_15px_rgba(var(--primary-rgb),0.3)] hover:shadow-[0_4px_25px_rgba(var(--primary-rgb),0.5)] flex items-center justify-center gap-2"
                   >
                     {loading ? (
                       <>
