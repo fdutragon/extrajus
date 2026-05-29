@@ -165,10 +165,10 @@ export function AiPromptInputToolbar({
             onClick={toggleRecording}
             variant="ghost"
             className={cn(
-              "h-7 w-7 rounded-lg p-0 flex items-center justify-center shrink-0 transition-all duration-300 border",
+              "h-7 w-7 rounded-lg p-0 flex items-center justify-center shrink-0 transition-all duration-300 border border-transparent",
               isRecording 
                 ? "bg-red-500/10 text-red-500 hover:bg-red-500/20 border-red-500/20 animate-pulse" 
-                : "text-amber-500 bg-amber-500/5 border-amber-500/20 hover:bg-amber-500/15 hover:border-amber-500/40 shadow-[0_0_8px_rgba(245,158,11,0.15)] hover:shadow-[0_0_12px_rgba(245,158,11,0.3)] animate-pulse"
+                : "text-muted-foreground hover:bg-primary/10 hover:text-primary animate-pulse"
             )}
             aria-label="Gravar áudio"
           >
