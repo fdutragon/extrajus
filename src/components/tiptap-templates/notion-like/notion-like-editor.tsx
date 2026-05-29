@@ -419,7 +419,7 @@ const ORACLE_INSIGHTS = {
 /**
  * Component that creates and provides the editor instance
  */
-export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) {
+export function EditorLayout({ isPublic = false, readOnly: propReadOnly }: { isPublic?: boolean; readOnly?: boolean } = {}) {
   const [oracleTab, setOracleTab] = useState("insights")
   const [fileName, setFileName] = useState("NOTIFICACAO-EXTRAJUDICIAL")
   const [userContracts, setUserContracts] = useState<any[]>([])
@@ -768,7 +768,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
   }, [])
 
   const searchParams = useSearchParams()
-  const readOnly = searchParams?.get("mode") === "preview" || searchParams?.get("readOnly") === "true" || !editor || !editor.isEditable
+  const readOnly = propReadOnly || searchParams?.get("mode") === "preview" || searchParams?.get("readOnly") === "true" || !editor
   const docType = searchParams?.get("tipo") || "notificacao"
 
   const [signerEmail, setSignerEmail] = useState("")
@@ -2153,7 +2153,7 @@ export function EditorProvider(props: EditorProviderProps) {
 
   return (
     <EditorContext.Provider value={contextValue}>
-      <EditorLayout isPublic={isPublic} />
+      <EditorLayout isPublic={isPublic} readOnly={readOnly} />
     </EditorContext.Provider>
   )
 }
