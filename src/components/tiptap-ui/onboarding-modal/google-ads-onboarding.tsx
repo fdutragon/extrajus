@@ -86,16 +86,16 @@ export function GoogleAdsOnboarding({ onComplete }: GoogleAdsOnboardingProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="max-w-md bg-zinc-950/95 border-none p-0 overflow-hidden rounded-[2.5rem] shadow-[0_0_50px_rgba(var(--primary-rgb),0.3)]">
+      <DialogContent className="max-w-md bg-card/95 dark:bg-zinc-950/95 border border-border/40 dark:border-none p-0 overflow-hidden rounded-[2.5rem] shadow-[0_0_50px_rgba(var(--primary-rgb),0.15)] dark:shadow-[0_0_50px_rgba(var(--primary-rgb),0.3)]">
         <div className="relative px-6 sm:px-4 pt-10 pb-9 sm:pt-12 sm:pb-9 max-sm:pt-10 max-sm:pb-7 max-sm:min-h-0 sm:min-h-[390px] flex flex-col items-center text-center gap-6 max-sm:gap-3.5 justify-center overflow-hidden">
           {/* Background FX */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(var(--primary-rgb),0.15),transparent_70%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(var(--primary-rgb),0.08),transparent_70%)] dark:bg-[radial-gradient(circle_at_50%_0%,rgba(var(--primary-rgb),0.15),transparent_70%)]" />
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] mix-blend-overlay" />
 
           {/* Progress Bars (Stories Style) */}
           <div className="absolute top-6 sm:top-8 max-sm:top-4 left-6 sm:left-4 right-6 sm:right-4 flex gap-1.5 z-20">
             {STEPS.map((_, i) => (
-              <div key={i} className="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
+              <div key={i} className="h-1 flex-1 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
                 <div 
                   className={cn(
                     "h-full bg-primary transition-all duration-300 ease-out",
@@ -108,7 +108,7 @@ export function GoogleAdsOnboarding({ onComplete }: GoogleAdsOnboardingProps) {
 
           {/* Icon Animation */}
           <div className={cn(
-            "w-20 h-20 max-sm:w-16 max-sm:h-16 rounded-[2rem] max-sm:rounded-2xl bg-zinc-900 border border-white/5 flex items-center justify-center relative z-10 shadow-2xl animate-in zoom-in-50 duration-500",
+            "w-20 h-20 max-sm:w-16 max-sm:h-16 rounded-[2rem] max-sm:rounded-2xl bg-secondary dark:bg-zinc-900 border border-border/40 dark:border-white/5 flex items-center justify-center relative z-10 shadow-xl dark:shadow-2xl animate-in zoom-in-50 duration-500",
             step.color
           )}>
             <div className="absolute inset-0 bg-current opacity-10 blur-xl animate-pulse" />
@@ -117,13 +117,13 @@ export function GoogleAdsOnboarding({ onComplete }: GoogleAdsOnboardingProps) {
 
           {/* Text Content */}
           <div className="space-y-3 relative z-10">
-            <h2 className="text-lg sm:text-xl font-black text-white leading-[1.3] uppercase tracking-wide">
+            <h2 className="text-lg sm:text-xl font-black text-foreground dark:text-white leading-[1.3] uppercase tracking-wide">
               {step.title}{" "}
               <span className={cn("text-primary drop-shadow-[0_0_15px_rgba(var(--primary-rgb),0.5)]", step.color)}>
                 {step.highlight}
               </span>
             </h2>
-            <p className="text-[13px] sm:text-[14.5px] text-zinc-400 font-medium leading-relaxed px-4 sm:px-2 pb-2">
+            <p className="text-[13px] sm:text-[14.5px] text-muted-foreground dark:text-zinc-400 font-medium leading-relaxed px-4 sm:px-2 pb-2">
               {step.description}
             </p>
           </div>
@@ -132,7 +132,7 @@ export function GoogleAdsOnboarding({ onComplete }: GoogleAdsOnboardingProps) {
           <div className="relative z-10 w-full px-2">
             <Button 
               onClick={handleNext}
-              className="w-full h-11 rounded-xl bg-white text-black hover:bg-zinc-200 font-black uppercase tracking-widest text-xs gap-2 group transition-all"
+              className="w-full h-11 rounded-xl bg-primary text-primary-foreground dark:bg-white dark:text-black hover:bg-primary/90 dark:hover:bg-zinc-200 font-black uppercase tracking-widest text-xs gap-2 group transition-all shadow-md dark:shadow-none"
             >
               {isLastStep ? "Começar" : "Próximo"}
               <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
