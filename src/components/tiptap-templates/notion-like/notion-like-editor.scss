@@ -49,15 +49,40 @@ body {
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    padding-bottom: 1rem;
-    border-bottom: 1.5px solid color-mix(in srgb, var(--foreground) 25%, transparent);
+    padding-bottom: 1.25rem;
     margin-bottom: 1.75rem;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 2px;
+      width: 140px; /* Elegant centered bar */
+      background: linear-gradient(
+        90deg,
+        transparent,
+        color-mix(in srgb, var(--primary) 85%, transparent) 20%,
+        var(--primary) 50%,
+        color-mix(in srgb, var(--primary) 85%, transparent) 80%,
+        transparent
+      );
+      opacity: 0.8;
+      border-radius: 99px;
+    }
 
     @media screen and (max-width: 768px) {
       font-size: 1.4em;
-      padding-bottom: 0.5rem;
-      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      margin-bottom: 1.25rem;
       letter-spacing: 0.04em;
+
+      &::after {
+        width: 100px;
+        height: 1.5px;
+      }
     }
 
     @media screen and (min-width: 769px) {
@@ -145,9 +170,24 @@ body {
   }
 
   hr {
-    margin: 2.5rem 0;
+    margin: 3rem auto;
     border: 0;
-    border-top: 1.5px solid color-mix(in srgb, var(--primary) 20%, transparent);
+    height: 1.5px;
+    width: 35%;
+    background: linear-gradient(
+      90deg, 
+      transparent 0%, 
+      color-mix(in srgb, var(--primary) 50%, transparent) 20%, 
+      color-mix(in srgb, var(--primary) 75%, transparent) 50%, 
+      color-mix(in srgb, var(--primary) 50%, transparent) 80%, 
+      transparent 100%
+    );
+    opacity: 0.75;
+
+    @media screen and (max-width: 768px) {
+      margin: 2.25rem auto;
+      width: 45%;
+    }
   }
 
   // AI Highlight Global Styles
@@ -220,19 +260,11 @@ body {
       color: #f4f4f5;
     }
 
-    h1 {
-      border-bottom-color: color-mix(in srgb, var(--foreground) 20%, transparent);
-    }
-
     blockquote {
       background: rgba(229, 176, 59, 0.06);
       p {
         color: #a1a1aa;
       }
-    }
-
-    hr {
-      border-top-color: color-mix(in srgb, var(--primary) 25%, transparent);
     }
 
     table {
