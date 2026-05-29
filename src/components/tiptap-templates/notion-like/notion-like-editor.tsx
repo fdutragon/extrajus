@@ -422,7 +422,7 @@ const ORACLE_INSIGHTS = {
  */
 export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) {
   const [oracleTab, setOracleTab] = useState("insights")
-  const [fileName, setFileName] = useState("Documento_ExtraJus")
+  const [fileName, setFileName] = useState("NOTIFICACAO-EXTRAJUDICIAL")
   const [userContracts, setUserContracts] = useState<any[]>([])
   const [templates, setTemplates] = useState<any[]>([])
   const [historyLogs, setHistoryLogs] = useState<any[]>([])
@@ -463,6 +463,7 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
 
   const { state, updateState } = useAiMenuState()
   const { editor } = useContext(EditorContext)!
+  const { aiGenerationIsLoading } = useUiEditorState(editor)
 
   // Handle AI Onboarding Start Event
   useEffect(() => {
@@ -1124,14 +1125,14 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
 
   // Atualização instantânea local (latência zero) do contrato ativo na listagem da barra lateral
   useEffect(() => {
-    if (!room || fileName === "Documento_ExtraJus") return
+    if (!room || fileName === "NOTIFICACAO-EXTRAJUDICIAL") return
     setUserContracts((prev) =>
       prev.map((c) => (c.id === room ? { ...c, title: fileName } : c))
     )
   }, [fileName, room])
 
   useEffect(() => {
-    if (!room || readOnly || fileName === "Documento_ExtraJus") return
+    if (!room || readOnly || fileName === "NOTIFICACAO-EXTRAJUDICIAL") return
     const delayDebounceFn = setTimeout(async () => {
       await supabase.from('contracts').update({ title: fileName }).eq('id', room)
     }, 1000)
@@ -1407,12 +1408,12 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                   onChange={(e) => setFileName(e.target.value)}
                   placeholder="Nome..."
                   style={{ width: `${Math.min(28, Math.max(8, fileName.length + 1))}ch` }}
-                  className="bg-transparent border-0 border-b border-transparent hover:border-border/60 focus:border-primary text-[9px] font-black uppercase tracking-widest text-foreground outline-none px-0.5 py-0.5 transition-all max-w-[220px] max-lg:max-w-[120px] max-sm:max-w-[80px] truncate"
+                  className="bg-transparent border-0 border-b border-transparent hover:border-border/60 focus:border-primary text-[8.5px] font-black uppercase tracking-widest text-foreground outline-none px-0.5 py-0.5 transition-all max-w-[220px] max-lg:max-w-[120px] max-sm:max-w-[80px] truncate"
                 />
-                <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 pointer-events-none select-none -ml-1">.docx</span>
+                <span className="text-[8.5px] font-black uppercase tracking-widest text-muted-foreground/40 pointer-events-none select-none -ml-1">.docx</span>
               </div>
             ) : (
-              <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground truncate max-w-[220px] max-lg:max-w-[120px] max-sm:max-w-[80px]">{fileName}.docx</span>
+              <span className="text-[8.5px] font-black uppercase tracking-widest text-muted-foreground truncate max-w-[220px] max-lg:max-w-[120px] max-sm:max-w-[80px]">{fileName}.docx</span>
             )}
             {/* Version, word count and reading time removed for clean workspace layout */}
           </div>
@@ -1488,7 +1489,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             </Button>
           )}
 
-          {!readOnly && editor && !editor.isEmpty && (
+          {!readOnly && editor && !editor.isEmpty && !aiGenerationIsLoading && (
             <>
               <div className="max-sm:scale-[1.35]">
                 <ExportButton isPublic={isPublic} docType={docType} title={fileName} content={editor?.getHTML() || ""} />
@@ -1656,7 +1657,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                     </div>
                   )}
                   <EditorContentArea />
-                  {editor && !editor.isEmpty && docType === "notificacao" && editor.getText().length > 400 && (editor.getText().toLowerCase().includes("notificado") || editor.getText().toLowerCase().includes("assinatura")) && (
+                  {editor && !editor.isEmpty && !aiGenerationIsLoading && docType === "notificacao" && editor.getText().length > 400 && (editor.getText().toLowerCase().includes("notificado") || editor.getText().toLowerCase().includes("assinatura")) && (
                     <div className="mt-2.5 flex justify-center pb-28 pt-0.5 animate-in fade-in slide-in-from-bottom-3 duration-500 max-sm:px-4 max-sm:pb-60">
                       <ExportButton 
                         isPublic={isPublic} 
@@ -1933,7 +1934,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         </>)}
 
         <OnboardingModal isOpen={showOnboarding} onClose={() => setShowOnboarding(false)} onSelectTemplate={handleSelectTemplate} />
-        <GoogleAdsOnboarding />
+        <GoogleAdsOnboarding onComplete={() => setShowOnboarding(true)} />
       </div>
     </div>
   )
@@ -1962,7 +1963,7 @@ export function EditorProvider(props: EditorProviderProps) {
     editable: !readOnly,
     editorProps: { attributes: { class: "notion-like-editor" }, scrollThreshold: 0, scrollMargin: 0 },
     extensions: [
-      StarterKit.configure({ horizontalRule: false, dropcursor: { width: 2 } }),
+      StarterKit.configure({ history: false, undoRedo: false, horizontalRule: false, dropcursor: { width: 2 } }),
       HorizontalRule,
       TextAlign.configure({ types: ["heading", "paragraph", "legalNode", "notificationNode"] }),
       Collaboration.configure({ document: ydoc }),

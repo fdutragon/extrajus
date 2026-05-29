@@ -47,7 +47,11 @@ const STEPS: Step[] = [
   }
 ]
 
-export function GoogleAdsOnboarding() {
+interface GoogleAdsOnboardingProps {
+  onComplete?: () => void
+}
+
+export function GoogleAdsOnboarding({ onComplete }: GoogleAdsOnboardingProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [progress, setProgress] = useState(0)
@@ -57,43 +61,51 @@ export function GoogleAdsOnboarding() {
     const hasSeenOnboarding = sessionStorage.getItem('ads-onboarding-seen')
     if (hasSeenOnboarding) return
 
-    // Detect Google Ads traffic (UTM or GCLID or REF)
-    const params = new URLSearchParams(window.location.search)
-    const isFromAds = params.get('utm_source') === 'google' || 
-                      params.has('gclid') || 
-                      params.has('gad_source') || 
-                      params.get('ref') === 'ads' ||
-                      params.get('utm_campaign') === 'ads'
-    
-    if (isFromAds) {
-      console.log("[AdsOnboarding] Trânsito de Ads detectado. Preparando modal...")
-      // Pequeno delay para o editor carregar antes do "Wow"
-      const timer = setTimeout(() => {
-        setIsOpen(true)
-        sessionStorage.setItem('ads-onboarding-seen', 'true')
-      }, 1500)
-      return () => clearTimeout(timer)
-    }
+    console.log("[AdsOnboarding] Preparando modal de boas-vindas...")
+    // Pequeno delay para o editor carregar antes do "Wow"
+    const timer = setTimeout(() => {
+      setIsOpen(true)
+      sessionStorage.setItem('ads-onboarding-seen', 'true')
+    }, 1500)
+    return () => clearTimeout(timer)
   }, [])
 
+  // Efeito 1: Controla o progresso automático de cada slide de forma isolada
   useEffect(() => {
     if (!isOpen) return
 
+    // Se for o último slide, congela o progresso em 100% e não ativa o timer automático para não fechar sozinho
+    if (currentStep === STEPS.length - 1) {
+      setProgress(100)
+      return
+    }
+
+    setProgress(0)
+
     const timer = setInterval(() => {
       setProgress((prev) => {
-        if (prev >= 100) {
-          if (currentStep < STEPS.length - 1) {
-            setCurrentStep(s => s + 1)
-            return 0
-          }
-          return 100
+        if (prev < 100) {
+          return prev + 1.5 // Avança o progresso de forma constante e fluida
         }
-        return prev + 1 // Velocidade reduzida para dar mais tempo de leitura ao usuário
+        return 100
       })
-    }, 50)
+    }, 40)
 
     return () => clearInterval(timer)
   }, [isOpen, currentStep])
+
+  // Efeito 2: Faz a transição de slide segura fora do ciclo de atualização do progresso
+  useEffect(() => {
+    if (!isOpen) return
+
+    if (progress >= 100 && currentStep < STEPS.length - 1) {
+      const nextTimer = setTimeout(() => {
+        setCurrentStep((s) => s + 1)
+        setProgress(0)
+      }, 100) // Pequeno delay de transição para uma UX mais natural
+      return () => clearTimeout(nextTimer)
+    }
+  }, [progress, isOpen, currentStep])
 
   const handleNext = () => {
     if (currentStep < STEPS.length - 1) {
@@ -103,6 +115,8 @@ export function GoogleAdsOnboarding() {
       setIsOpen(false)
       // Custom event to trigger AI Prompt in the editor
       window.dispatchEvent(new CustomEvent('start-ai-onboarding'))
+      // Chamar callback para avançar para a segunda etapa (modal de templates)
+      onComplete?.()
     }
   }
 

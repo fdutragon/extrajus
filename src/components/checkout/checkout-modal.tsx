@@ -218,7 +218,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             if (step === "success" && !open) onClose();
           }}>
           <DialogContent 
-            className="w-full max-w-[92vw] md:max-w-[48rem] lg:max-w-[52rem] bg-background border border-border text-foreground rounded-[28px] max-sm:rounded-[24px] max-sm:!top-[50%] max-sm:!left-[50%] max-sm:!-translate-x-1/2 max-sm:!-translate-y-1/2 max-sm:w-[92vw] max-sm:h-auto max-sm:max-h-[96vh] max-sm:overflow-y-auto max-sm:flex max-sm:flex-col shadow-[0_0_50px_rgba(139,92,246,0.18)] p-6 max-sm:px-6 max-sm:py-6 md:max-h-[90vh] md:overflow-hidden overflow-y-auto transition-all duration-500 [&>button:last-child]:hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+            className="w-full max-w-[92vw] md:max-w-[48rem] lg:max-w-[52rem] bg-background border border-border text-foreground rounded-[28px] max-sm:rounded-[24px] max-sm:!top-[50%] max-sm:!left-[50%] max-sm:!-translate-x-1/2 max-sm:!-translate-y-1/2 max-sm:w-[92vw] max-sm:h-auto max-sm:max-h-[96vh] max-sm:overflow-y-auto max-sm:flex max-sm:flex-col shadow-[0_0_50px_rgba(139,92,246,0.18)] p-8 md:p-10 max-sm:p-6 md:max-h-[90vh] md:overflow-hidden overflow-y-auto transition-all duration-500 [&>button:last-child]:hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
           >
             {/* Invisible Focus Target to prevent auto opening keyboard on mobile */}
             <button className="sr-only opacity-0 absolute w-0 h-0" tabIndex={0} aria-hidden="true" />
@@ -275,7 +275,6 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             {step === "form" && (
               <form onSubmit={handleCheckout} className="flex flex-col space-y-5 max-sm:space-y-5.5 py-2 w-full max-sm:px-2">
                 <div className="flex flex-col">
-                  <label htmlFor="email" className="block text-xs font-black uppercase tracking-widest text-muted-foreground mb-2.5 max-sm:mb-3 text-center">Seu melhor e-mail</label>
                   <input 
                     id="email"
                     type="email" 
@@ -285,30 +284,29 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                     required
                     className="flex h-11 max-sm:h-12 w-full rounded-xl border border-input bg-background/50 px-4 py-2 text-sm max-sm:text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)]"
                   />
-                  <p className="text-[10px] md:text-xs text-muted-foreground font-medium mt-2 text-center">Enviaremos o documento para este e-mail</p>
+                  <Button 
+                    type="submit" 
+                    disabled={loading}
+                    className="w-full h-11 max-sm:h-12 mt-3 bg-primary text-primary-foreground hover:bg-primary/90 font-black uppercase tracking-[0.1em] rounded-xl transition-all shadow-[0_4px_15px_rgba(var(--primary-rgb),0.3)] hover:shadow-[0_4px_25px_rgba(var(--primary-rgb),0.5)] flex items-center justify-center gap-2"
+                  >
+                    {loading ? (
+                      <>
+                        <BrainCircuit size={18} className="animate-spin" />
+                        Processando...
+                      </>
+                    ) : (
+                      <>
+                        <Zap size={18} />
+                        Gerar PIX de R$ 37,00
+                      </>
+                    )}
+                  </Button>
                 </div>
-                <Button 
-                  type="submit" 
-                  disabled={loading}
-                  className="w-full h-11 max-sm:h-12 mt-4 max-sm:mt-5 bg-primary text-primary-foreground hover:bg-primary/90 font-black uppercase tracking-[0.1em] rounded-xl transition-all shadow-[0_4px_15px_rgba(var(--primary-rgb),0.3)] hover:shadow-[0_4px_25px_rgba(var(--primary-rgb),0.5)] flex items-center justify-center gap-2"
-                >
-                  {loading ? (
-                    <>
-                      <BrainCircuit size={18} className="animate-spin" />
-                      Processando...
-                    </>
-                  ) : (
-                    <>
-                      <Zap size={18} />
-                      Gerar PIX de R$ 37,00
-                    </>
-                  )}
-                </Button>
                 
                 <button 
                   type="button" 
                   onClick={onClose}
-                  className="mx-auto mt-4 max-sm:mt-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+                  className="mx-auto text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 hover:text-muted-foreground transition-colors"
                 >
                   Voltar para o editor
                 </button>

@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -12,6 +13,15 @@ const nextConfig: NextConfig = {
       "@tiptap/pm",
     ],
   },
+  serverExternalPackages: ["yjs"],
+  webpack: (config: any) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      yjs: path.resolve(process.cwd(), "node_modules/yjs"),
+    };
+    return config;
+  },
+  turbopack: {},
 };
 
 export default nextConfig;
