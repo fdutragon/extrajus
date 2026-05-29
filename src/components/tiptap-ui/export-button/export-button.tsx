@@ -308,9 +308,9 @@ export function ExportButton({
           disabled={isExporting}
         >
           {isExporting ? (
-            <Loader2 className="w-3 h-3 max-sm:w-[18px] max-sm:h-[18px] animate-spin text-primary" />
+            <Loader2 className="!w-3 !h-3 max-sm:!w-[18px] max-sm:!h-[18px] animate-spin text-primary" />
           ) : (
-            <Download className="w-3 h-3 max-sm:w-[18px] max-sm:h-[18px] transition-transform" />
+            <Download className="!w-3 !h-3 max-sm:!w-[18px] max-sm:!h-[18px] transition-transform" />
           )}
           <span className="text-[9px] font-black uppercase tracking-[0.2em] leading-none max-sm:hidden">
             {isExporting ? "Exportando" : "Baixar"}
