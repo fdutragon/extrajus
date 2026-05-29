@@ -240,16 +240,6 @@
 }
 
 @media screen and (max-width: 640px) {
-  .tiptap-ai-prompt-input::before {
-    display: none !important;
-    animation: none !important;
-  }
-  .tiptap-ai-prompt-input {
-    animation: none !important;
-    box-shadow: none !important;
-    background: var(--tiptap-ai-prompt-input-bg-color) !important;
-    border: 1px solid var(--tiptap-ai-prompt-input-border-color) !important;
-  }
   .tiptap-ai-prompt-input-inner {
     padding: 0.6rem 0.75rem !important;
     border-radius: 1rem !important;
