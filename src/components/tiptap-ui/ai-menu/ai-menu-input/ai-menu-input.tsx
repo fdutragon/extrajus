@@ -165,10 +165,10 @@ export function AiPromptInputToolbar({
             onClick={toggleRecording}
             variant="ghost"
             className={cn(
-              "h-7 w-7 rounded-lg p-0 flex items-center justify-center shrink-0 transition-all duration-300 border border-transparent",
+              "h-7 w-7 rounded-lg p-0 flex items-center justify-center shrink-0 transition-all duration-300 border",
               isRecording 
                 ? "bg-red-500/10 text-red-500 hover:bg-red-500/20 border-red-500/20 animate-pulse" 
-                : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                : "text-amber-500 bg-amber-500/5 border-amber-500/20 hover:bg-amber-500/15 hover:border-amber-500/40 shadow-[0_0_8px_rgba(245,158,11,0.15)] hover:shadow-[0_0_12px_rgba(245,158,11,0.3)] animate-pulse"
             )}
             aria-label="Gravar áudio"
           >
@@ -258,6 +258,7 @@ export function AiMenuInputTextarea({
   const [promptValue, setPromptValue] = useComboboxValueState()
   const [isFocused, setIsFocused] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
+  const [recordingFlash, setRecordingFlash] = useState(false)
   const [recognition, setRecognition] = useState<any>(null)
   
   const promptRef = useRef(promptValue)
@@ -266,6 +267,18 @@ export function AiMenuInputTextarea({
   useEffect(() => {
     promptRef.current = promptValue
   }, [promptValue])
+
+  useEffect(() => {
+    if (isRecording) {
+      setRecordingFlash(true)
+      const timer = setTimeout(() => {
+        setRecordingFlash(false)
+      }, 3000) // 3 segundos de destaque dourado/fogo místico
+      return () => clearTimeout(timer)
+    } else {
+      setRecordingFlash(false)
+    }
+  }, [isRecording])
 
   useEffect(() => {
     if (typeof window === "undefined") return
@@ -323,14 +336,12 @@ export function AiMenuInputTextarea({
     if (isRecording) {
       recognition.stop()
       setIsRecording(false)
-      toast.success("Gravação de voz finalizada.")
     } else {
       try {
         // Captura o valor exato que já estava no prompt antes de começar a falar
         recordingStartTextRef.current = promptRef.current || ""
         recognition.start()
         setIsRecording(true)
-        toast.info("Gravando áudio... Fale agora.", { duration: 2500 })
       } catch (err) {
         console.error(err)
         setIsRecording(false)
@@ -431,7 +442,10 @@ export function AiMenuInputTextarea({
 
   return (
     <div
-      className="tiptap-ai-prompt-input"
+      className={cn(
+        "tiptap-ai-prompt-input transition-all duration-700",
+        recordingFlash && "ring-2 ring-amber-500/80 shadow-[0_0_30px_rgba(245,158,11,0.45)] border-amber-500/50 scale-[1.015] bg-amber-500/5"
+      )}
       data-focused={isFocused}
       data-active-state={showPlaceholder || isLoading ? "off" : "on"}
       {...props}
