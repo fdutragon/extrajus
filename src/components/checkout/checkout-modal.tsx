@@ -219,7 +219,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
       if (step === "success" && !open) onClose();
     }}>
     <DialogContent 
-      className="w-full max-w-[92vw] md:max-w-[48rem] lg:max-w-[52rem] bg-background border border-border text-foreground rounded-[28px] max-sm:rounded-[24px] max-sm:!top-[50%] max-sm:!left-[50%] max-sm:!-translate-x-1/2 max-sm:!-translate-y-1/2 max-sm:w-[92vw] max-sm:h-auto max-sm:max-h-[96vh] max-sm:overflow-y-auto max-sm:flex max-sm:flex-col shadow-[0_0_50px_rgba(139,92,246,0.18)] p-8 md:p-10 max-sm:p-6 md:max-h-[90vh] md:overflow-hidden overflow-y-auto transition-all duration-500 [&>button:last-child]:hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+      className="w-full max-w-[92vw] md:max-w-[48rem] lg:max-w-[52rem] bg-background border border-border text-foreground rounded-[28px] max-sm:rounded-[24px] max-sm:!top-[50%] max-sm:!left-[50%] max-sm:!-translate-x-1/2 max-sm:!-translate-y-1/2 max-sm:w-[92vw] max-h-[88vh] overflow-y-auto flex flex-col shadow-[0_0_50px_rgba(139,92,246,0.18)] p-8 md:p-10 max-sm:p-6 transition-all duration-500 [&>button:last-child]:hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
     >
       {/* Invisible Focus Target to prevent auto opening keyboard on mobile */}
       <button className="sr-only opacity-0 absolute w-0 h-0" tabIndex={0} aria-hidden="true" />
@@ -371,10 +371,6 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
               >
                 Voltar para o editor
               </button>
-
-              <div className="text-[8px] max-sm:text-[9px] text-muted-foreground/40 text-center leading-normal font-mono border-t border-border/30 pt-3 mt-1">
-                Ambiente seguro em conformidade com a LGPD. Transações protegidas operadas pelo gateway seguro do CNPJ 53.693.993/0001-90.
-              </div>
             </form>
           )}
 
