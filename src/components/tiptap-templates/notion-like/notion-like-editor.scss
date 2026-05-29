@@ -28,6 +28,14 @@ body {
   text-align: justify;
   text-justify: inter-word;
 
+  // Garante que qualquer bloco focado ou scrollado dentro do editor mobile fique visível abaixo do header flutuante
+  > * {
+    scroll-margin-top: 85px;
+    @media screen and (max-width: 768px) {
+      scroll-margin-top: 80px; /* Suficiente para limpar o header de 56px com folga */
+    }
+  }
+
   p {
     margin-bottom: 12px;
     color: #3f3f46;

@@ -242,7 +242,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                 Libere {docType === "notificacao" ? "sua" : "seu"} <span className="bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">{docType === "notificacao" ? "Notificação" : "Contrato"}</span>
               </h3>
 
-              <p className="text-[0.825rem] max-sm:text-[0.85rem] max-sm:leading-[1.5] text-muted-foreground leading-relaxed font-medium">
+              <p className="text-[0.825rem] max-sm:text-[0.925rem] max-sm:leading-[1.5] text-muted-foreground leading-relaxed font-medium">
                 Finalize agora para baixar o arquivo editável em <strong className="text-foreground font-bold">Word (.DOCX)</strong>. O documento é seu: use, replique e adapte quantas vezes desejar, sem restrições.
               </p>
             </div>
