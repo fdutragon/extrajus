@@ -1386,7 +1386,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         }
       ` }} />
       
-      <header className="fixed top-0 left-0 w-full h-12 sm:h-[clamp(2.5rem,4vh,3.25rem)] border-b border-border bg-background/60 backdrop-blur-2xl flex items-center justify-between px-3 z-[1000] transition-all duration-500 group">
+      <header className="fixed top-0 left-0 w-full h-14 sm:h-[clamp(2.5rem,4vh,3.25rem)] border-b border-border bg-background/60 backdrop-blur-2xl flex items-center justify-between px-3 z-[1000] transition-all duration-500 group">
         <div className="flex items-center gap-1.5 max-sm:gap-2">
           {!readOnly && !isPublic && (
             <div className="flex items-center gap-1">
