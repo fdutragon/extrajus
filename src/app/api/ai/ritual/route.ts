@@ -127,7 +127,8 @@ REGRAS CRÍTICAS DE REDAÇÃO E CONTEÚDO:
 2. PRESERVAÇÃO E CRIAÇÃO OBRIGATÓRIA DE BULLETS (LISTAS <ul> E <li>): É TERMINANTEMENTE PROIBIDO ELIMINAR, MIGRAR OU LIMPAR BULLETS E LISTAS EXISTENTES. Se o texto original ou a modificação contiver tópicos, itens, obrigações, multas, requerimentos, cobranças ou enumerações, você DEVE mantê-los e gerá-los estritamente usando as tags HTML <ul> e <li> para cada item isolado.
 3. COMPRIMENTO DE PARÁGRAFO (4 A 5 LINHAS): Cada parágrafo de texto gerado fora de listas ou alterado deve ter no máximo 4 (quatro) a 5 (cinco) linhas de extensão.
 4. MANUTENÇÃO DO FORMATO HTML: Conserve estritamente a diagramação original, mantendo perfeitamente as tags HTML originais (<h2>, <p> ou listas <ul> e <li>) e as classes css exatas de cada trecho original.
- 
+5. FORMATAÇÃO E HIGIENE DE DADOS (CRÍTICO): Sempre que identificar ou alterar um CPF, CNPJ ou CEP, você DEVE aplicar obrigatoriamente a máscara nacional padrão (ex: CPF como XXX.XXX.XXX-XX, CNPJ como XX.XXX.XXX/XXXX-XX). Jamais deixe números corridos.
+6. ASSINATURAS LIMPAS (CRÍTICO): É TERMINANTEMENTE PROIBIDO inserir o CPF, CNPJ ou informações de qualificação pessoal ABAIXO da linha de assinatura. O espaço de assinatura deve ter apenas a linha de assinatura e o Nome/Papel da parte.
 REGRAS CRÍTICAS DE RETORNO (OBRIGATÓRIAS):
 1. Retorne ESTRITAMENTE um ou mais blocos das tags <search> e <replace> no formato abaixo, sem explicações. Se o comando exigir alterações no topo, meio e fim do documento, RETORNE MÚLTIPLOS PARES <search> e <replace> sequenciais obrigatoriamente.
 <search>PRIMEIRO_TRECHO_EXATO_ORIGINAL_A_SER_SUBSTITUÍDO</search>
@@ -198,7 +199,7 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
      * <div data-type="legal-node" data-level="4">Prazo de entrega em até...</div>
 6. Partes identificadas em preâmbulo com parágrafos (<p>). NUNCA use tabelas (<table>) no preâmbulo. NÃO insira nenhuma linha em branco entre a qualificação do Contratante e a do Contratado (devem vir em parágrafos contíguos sem nenhum espaçamento). NUNCA crie cláusula "DAS PARTES".
 7. Primeira cláusula SEMPRE é o Objeto do contrato.
-8. Seção de Data e Assinaturas (Fim do Contrato): É OBRIGATÓRIO incluir exatamente 1 parágrafo vazio com quebra (<p><br></p>) antes da data para criar um espaçamento elegante e compacto. A data e os campos de assinatura devem vir centralizados (usando os atributos data-node-text-align="center" e style="text-align: center;"). Cada campo de assinatura deve conter OBRIGATORIAMENTE a linha física de assinatura usando underline puro (__________________________________________) centralizado ACIMA do rótulo da parte em negrito. NÃO insira campo de testemunhas. Siga ESTRITAMENTE o exemplo de HTML abaixo para esta seção:
+8. Seção de Data e Assinaturas (Fim do Contrato): É OBRIGATÓRIO incluir exatamente 1 parágrafo vazio com quebra (<p><br></p>) antes da data para criar um espaçamento elegante e compacto. A data e os campos de assinatura devem vir centralizados (usando os atributos data-node-text-align="center" e style="text-align: center;"). Cada campo de assinatura deve conter OBRIGATORIAMENTE a linha física de assinatura usando underline puro (__________________________________________) centralizado ACIMA do rótulo da parte em negrito. É TERMINANTEMENTE PROIBIDO adicionar o CPF, CNPJ ou informações pessoais abaixo do nome na assinatura. NÃO insira campo de testemunhas. Siga ESTRITAMENTE o exemplo de HTML abaixo para esta seção:
    <p><br></p>
    <p data-node-text-align="center" style="text-align: center; margin-top: 24px;">[Cidade] - [UF], [Dia] de [Mês] de [Ano].</p>
    <p><br></p>
@@ -277,7 +278,7 @@ REGRAS DE FORMATAÇÃO E DIAGRAMAÇÃO DE LAYOUT INCRÍVEL (ESTRITAS):
    - NUNCA invente dados fictícios como nomes, CPFs ou endereços. Use SEMPRE placeholders entre colchetes como [Nome Completo], [Número de CPF/CNPJ] e [Endereço Completo].
    - NUNCA use tabelas (<table>) no preâmbulo. É TERMINANTEMENTE PROIBIDO inserir parágrafos vazios (<p><br></p>) ou linhas em branco entre o direcionamento ao Notificado (ETAPA 1) e o preâmbulo do Notificante (ETAPA 2). Em vez disso, utilize a tag <div data-type="spacer"></div> entre as duas etapas para criar um respiro visual técnico e preciso de exatamente uma linha.
 7. Destaque de Prazos e Valores: Utilize tags <strong> no corpo do texto para destacar valores em reais (ex: <strong>R$ 10.000,00</strong>) e prazos cruciais (ex: <strong>5 (cinco) dias</strong>).
-8. Seção de Fechamento e Assinatura Compacta: No final do documento, insira um único parágrafo de quebra (<p><br></p>) e centralize a data e os campos de assinatura (usando data-node-text-align="center" e style="text-align: center;"). A assinatura deve vir compactada:
+8. Seção de Fechamento e Assinatura Compacta: No final do documento, insira um único parágrafo de quebra (<p><br></p>) e centralize a data e os campos de assinatura (usando data-node-text-align="center" e style="text-align: center;"). É TERMINANTEMENTE PROIBIDO adicionar o CPF, CNPJ ou endereço pessoal abaixo do nome na assinatura. A assinatura deve vir compactada:
     <p><br></p>
     <p data-node-text-align="center" style="text-align: center;">[Cidade] - [UF], [Dia] de [Mês] de [Ano].</p>
     <p><br></p>
@@ -287,7 +288,8 @@ REGRAS DE FORMATAÇÃO E DIAGRAMAÇÃO DE LAYOUT INCRÍVEL (ESTRITAS):
 
 REGRAS DE HIGIENE DE CÓDIGO (CRÍTICAS):
 - PROIBIÇÃO ABSOLUTA DE ESPAÇOS DUPLOS OU PARÁGRAFOS VAZIOS REPETIDOS: Você NUNCA deve gerar dois ou mais parágrafos vazios (<p><br></p>) seguidos. O espaçamento deve ser sempre simples. Se precisar de um respiro visual, use exatamente UM parágrafo vazio e nada mais.
-- PROIBIÇÃO ABSOLUTA DE ADICIONAR ESPAÇOS OU RECUOS MANUAIS: O texto deve ser alinhado rigorosamente à margem esquerda. Você NUNCA deve inserir espaços em branco manuais (como &nbsp;, tabulações ou múltiplos espaços repetidos) no início dos parágrafos ou cabeçalhos.`;
+- PROIBIÇÃO ABSOLUTA DE ADICIONAR ESPAÇOS OU RECUOS MANUAIS: O texto deve ser alinhado rigorosamente à margem esquerda. Você NUNCA deve inserir espaços em branco manuais (como &nbsp;, tabulações ou múltiplos espaços repetidos) no início dos parágrafos ou cabeçalhos.
+- MÁSCARAS DE DADOS OBRIGATÓRIAS: Sempre que você gerar ou formatar um número de CPF, CNPJ, CEP ou Telefone, você DEVE aplicar rigorosamente a formatação pontuada nacional (ex: XXX.XXX.XXX-XX para CPF, XX.XXX.XXX/XXXX-XX para CNPJ). Jamais gere números corridos.`;
     }
 
     systemInstruction += "\nESTILO DE SUGESTÃO E REDAÇÃO REQUERIDO: " + aiMode + ". " + (
