@@ -558,11 +558,8 @@ export function EditorLayout({ isPublic = false }: { isPublic?: boolean } = {}) 
     window.addEventListener("scroll", preventPageScroll, { passive: true })
 
     // Ouve focusin e focusout globais de forma instantânea para matar qualquer delay de renderização
-    const handleFocusBlur = (e: FocusEvent) => {
+    const handleFocusBlur = () => {
       handleViewportChange()
-      if (e.type === "focusin") {
-        window.scrollTo(0, 0)
-      }
     }
 
     document.addEventListener("focusin", handleFocusBlur)
