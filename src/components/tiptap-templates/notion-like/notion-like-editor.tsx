@@ -2085,7 +2085,26 @@ export function EditorProvider(props: EditorProviderProps) {
     ],
   })
 
-  useEffect(() => { if (editor) editor.setEditable(!readOnly) }, [editor, readOnly])
+  useEffect(() => {
+    if (!editor) return
+    
+    const checkEditableState = () => {
+      if (typeof window !== "undefined") {
+        if (window.innerWidth < 768) {
+          // No celular, desativa a edição direta para que o cursor/teclado não apareça no documento
+          editor.setEditable(false)
+        } else {
+          // No desktop, segue o estado normal do readOnly
+          editor.setEditable(!readOnly)
+        }
+      }
+    }
+
+    checkEditableState()
+
+    window.addEventListener("resize", checkEditableState)
+    return () => window.removeEventListener("resize", checkEditableState)
+  }, [editor, readOnly])
 
   useEffect(() => {
     if (!editor || !templateSlug) return
