@@ -41,7 +41,7 @@ const STEPS: Step[] = [
   {
     title: "Pronto para",
     highlight: "Enviar",
-    description: "Basta descrever o que aconteceu. O motor cirúrgico formata a carta solene automaticamente com as leis aplicáveis. O resultado é um documento impecável e blindado.",
+    description: "Basta descrever o que aconteceu. O motor cirúrgico formata a notificação automaticamente com as leis aplicáveis. O resultado é um documento blindado.",
     icon: <BrainCircuit size={32} />,
     color: "text-primary"
   }
@@ -87,7 +87,7 @@ export function GoogleAdsOnboarding({ onComplete }: GoogleAdsOnboardingProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="max-w-md bg-zinc-950/95 border-none p-0 overflow-hidden rounded-[2.5rem] shadow-[0_0_50px_rgba(var(--primary-rgb),0.3)]">
-        <div className="relative px-6 sm:px-4 pt-10 pb-6 sm:pt-12 sm:pb-6 max-sm:pt-10 max-sm:pb-4 max-sm:min-h-0 sm:min-h-[390px] flex flex-col items-center text-center gap-6 max-sm:gap-3.5 justify-center overflow-hidden">
+        <div className="relative px-6 sm:px-4 pt-10 pb-9 sm:pt-12 sm:pb-9 max-sm:pt-10 max-sm:pb-7 max-sm:min-h-0 sm:min-h-[390px] flex flex-col items-center text-center gap-6 max-sm:gap-3.5 justify-center overflow-hidden">
           {/* Background FX */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(var(--primary-rgb),0.15),transparent_70%)]" />
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] mix-blend-overlay" />
