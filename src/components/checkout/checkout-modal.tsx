@@ -256,7 +256,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
               ))}
             </div>
             <p className="text-[0.75rem] max-sm:text-[0.85rem] leading-relaxed italic text-muted-foreground font-medium">
-              "Minha notificação de cobrança ficou impecável. Paguei no PIX e o Word editável abriu na hora. Economizei semanas de trabalho."
+              "Minha notificação de cobrança ficou impecável. Paguei no PIX e o Word editável abriu na hora. Economizei horas de trabalho."
             </p>
             <div className="text-[9px] font-black uppercase tracking-widest text-foreground/70">
               — Dr. Marcos R., Advogado Civilista
