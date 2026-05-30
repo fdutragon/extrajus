@@ -53,7 +53,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             if (typeof window !== "undefined" && (window as any).gtag) {
               (window as any).gtag('event', 'conversion', {
                 'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
-                'value': 37.00, // Valor real do download do documento
+                'value': 29.00, // Valor real do download do documento
                 'currency': 'BRL',
                 'transaction_id': pixData.externalId
               });
@@ -154,7 +154,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
       if (typeof window !== "undefined" && (window as any).gtag) {
         (window as any).gtag('event', 'conversion', {
           'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
-          'value': 37.00,
+          'value': 29.00,
           'currency': 'BRL',
           'transaction_id': data.externalId
           });
@@ -188,7 +188,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
           if (typeof window !== "undefined" && (window as any).gtag) {
           (window as any).gtag('event', 'conversion', {
           'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
-          'value': 37.00,
+          'value': 29.00,
           'currency': 'BRL',
           'transaction_id': pixData.externalId
           });
@@ -269,7 +269,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
               <div>
                 <div className="text-[0.625rem] max-sm:text-[0.7rem] font-black text-muted-foreground/60 uppercase tracking-widest mb-0.5">Investimento Único</div>
                 <div className="flex items-baseline gap-1.5 max-sm:gap-1.5">
-                  <span className="text-[1.75rem] max-sm:text-[1.8rem] font-black text-foreground">R$ 37,00</span>
+                  <span className="text-[1.75rem] max-sm:text-[1.8rem] font-black text-foreground">R$ 29,00</span>
                   <span className="text-[0.625rem] max-sm:text-[0.75rem] font-bold text-muted-foreground uppercase">/ download</span>
                 </div>
               </div>
@@ -346,7 +346,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                   ) : (
                     <>
                       <Zap size={18} />
-                      Gerar PIX de R$ 37,00
+                      Gerar PIX de R$ 29,00
                     </>
                   )}
                 </Button>
