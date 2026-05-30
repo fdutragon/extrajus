@@ -781,19 +781,23 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly }: { isP
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
   const aiPromptOpen = true // Sempre visível
 
+  const [isSaving, setIsSaving] = useState(false)
+  const [fontSize, setFontSize] = useState<number>(17)
+  const [fontFamily, setFontFamily] = useState<string>("Cambria")
+  const [isFontDropdownOpen, setIsFontDropdownOpen] = useState(false)
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const isMobileOrTablet = window.innerWidth < 1024
       if (isMobileOrTablet) {
         setLeftSidebarOpen(false)
         setRightSidebarOpen(false)
+        setFontSize(17)
+      } else {
+        setFontSize(14)
       }
     }
   }, [])
-  const [isSaving, setIsSaving] = useState(false)
-  const [fontSize, setFontSize] = useState<number>(17)
-  const [fontFamily, setFontFamily] = useState<string>("Cambria")
-  const [isFontDropdownOpen, setIsFontDropdownOpen] = useState(false)
 
   const handleManualSave = async () => {
     if (!provider) {

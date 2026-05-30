@@ -10,6 +10,11 @@
   position: relative;
   align-items: flex-start; // Garante que o contador alinhe perfeitamente no topo com a primeira linha do texto
   transition: all 0.5s ease;
+  font-size: 14px; // Fonte padrão Desktop
+
+  @media screen and (max-width: 768px) {
+    font-size: 17px; // Fonte padrão Mobile
+  }
 
   &[data-ai-highlight="true"] {
     background: rgba(139, 92, 246, 0.08); /* Violeta Lilith suave */

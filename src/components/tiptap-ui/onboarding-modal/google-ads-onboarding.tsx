@@ -54,6 +54,7 @@ interface GoogleAdsOnboardingProps {
 export function GoogleAdsOnboarding({ onComplete }: GoogleAdsOnboardingProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
+  const [progress, setProgress] = useState(0)
 
   useEffect(() => {
     // Evita múltiplos gatilhos na mesma sessão
@@ -69,9 +70,36 @@ export function GoogleAdsOnboarding({ onComplete }: GoogleAdsOnboardingProps) {
     return () => clearTimeout(timer)
   }, [])
 
+  // Auto-play slides com barra de progresso sincronizada
+  useEffect(() => {
+    if (!isOpen) return
+
+    setProgress(0)
+    const startTime = Date.now()
+    const duration = 5000 // 5 segundos por slide
+
+    // Timer para a transição do slide
+    const slideTimer = setTimeout(() => {
+      handleNext()
+    }, duration)
+
+    // Intervalo para a animação da barra
+    const progressInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime
+      const newProgress = Math.min((elapsed / duration) * 100, 100)
+      setProgress(newProgress)
+    }, 50)
+
+    return () => {
+      clearTimeout(slideTimer)
+      clearInterval(progressInterval)
+    }
+  }, [isOpen, currentStep])
+
   const handleNext = () => {
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(s => s + 1)
+      setProgress(0)
     } else {
       setIsOpen(false)
       // Custom event to trigger AI Prompt in the editor
@@ -98,9 +126,13 @@ export function GoogleAdsOnboarding({ onComplete }: GoogleAdsOnboardingProps) {
               <div key={i} className="h-1 flex-1 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
                 <div 
                   className={cn(
-                    "h-full bg-primary transition-all duration-300 ease-out",
-                    i <= currentStep ? "w-full" : "w-0"
+                    "h-full bg-primary transition-all ease-linear",
+                    i < currentStep ? "w-full" : i === currentStep ? "" : "w-0"
                   )}
+                  style={{ 
+                    width: i === currentStep ? `${progress}%` : i < currentStep ? '100%' : '0%',
+                    transitionDuration: i === currentStep ? '50ms' : '300ms'
+                  }}
                 />
               </div>
             ))}

@@ -32,6 +32,11 @@
   white-space: pre-wrap;
   outline: none;
   caret-color: var(--tt-cursor-color);
+  font-size: 14px; // Fonte padrão Desktop
+
+  @media screen and (max-width: 768px) {
+    font-size: 17px; // Fonte padrão Mobile
+  }
 
   // Paragraph spacing
   p:not(td p):not(th p) {
