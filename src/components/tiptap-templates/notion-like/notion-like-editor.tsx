@@ -452,7 +452,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
   // Sincronização de título com o modelo selecionado
   useEffect(() => {
     if (state.selectedContractType) {
-      setFileName(state.selectedContractType.toUpperCase())
+      setFileName(state.selectedContractType)
     }
   }, [state.selectedContractType])
 
@@ -1512,7 +1512,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         }
       ` }} />
       
-      <header className="fixed top-0 left-0 w-full h-14 sm:h-[clamp(2.5rem,4vh,3.25rem)] border-b border-border bg-background/60 backdrop-blur-2xl flex items-center justify-between px-3 z-[1000] transition-all duration-500 group">
+      <header className="fixed top-0 left-0 w-full h-16 sm:h-[clamp(2.5rem,4vh,3.25rem)] border-b border-border bg-background/60 backdrop-blur-2xl flex items-center justify-between px-3 z-[1000] transition-all duration-500 group">
         <div className="flex items-center gap-1.5 max-sm:gap-2">
           {!readOnly && !isPublic && (
             <div className="flex items-center gap-1">
@@ -1601,23 +1601,32 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
 
         {/* Centralized AI Brand Name only for mobile screen */}
         {!readOnly && (
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:hidden z-[110] flex items-center gap-2 select-none whitespace-nowrap pt-3">
-            {/* Custom Elegant ExtraJus IA Icon for mobile */}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-[22px] h-[22px] text-zinc-500 dark:text-zinc-300 relative z-10 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.35)] animate-pulse shrink-0">
-              <line x1="12" y1="3" x2="12" y2="21" />
-              <path d="M5 8h14" />
-              <path d="M5 8v2c0 2 2 3 5 3" />
-              <circle cx="5" cy="15" r="2" />
-              <path d="M19 8v2c0 2-2 3-5 3" />
-              <circle cx="19" cy="15" r="2" />
-              <path d="M12 9l1.5 1.5L12 12l-1.5-1.5z" fill="currentColor" />
-            </svg>
-            <div 
-              style={{ fontFamily: "'Cinzel', 'Cambria', 'Georgia', serif" }}
-              className="text-[10.5px] font-bold tracking-[0.18em] uppercase bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-800 dark:from-zinc-400 dark:via-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent filter drop-shadow-[0_0_8px_rgba(255,255,255,0.25)]"
-            >
-              ExtraJus IA
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:hidden z-[110] flex flex-col items-center gap-0.5 select-none whitespace-nowrap">
+            <div className="flex items-center gap-1.5">
+              {/* Custom Elegant ExtraJus IA Icon for mobile */}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-[20px] h-[20px] text-zinc-500 dark:text-zinc-300 relative z-10 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.35)] animate-pulse shrink-0">
+                <line x1="12" y1="3" x2="12" y2="21" />
+                <path d="M5 8h14" />
+                <path d="M5 8v2c0 2 2 3 5 3" />
+                <circle cx="5" cy="15" r="2" />
+                <path d="M19 8v2c0 2-2 3-5 3" />
+                <circle cx="19" cy="15" r="2" />
+                <path d="M12 9l1.5 1.5L12 12l-1.5-1.5z" fill="currentColor" />
+              </svg>
+              <div 
+                style={{ fontFamily: "'Cinzel', 'Cambria', 'Georgia', serif" }}
+                className="text-[9.5px] font-bold tracking-[0.18em] uppercase bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-800 dark:from-zinc-400 dark:via-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent filter drop-shadow-[0_0_8px_rgba(255,255,255,0.25)]"
+              >
+                ExtraJus IA
+              </div>
             </div>
+            
+            {/* Nome do Contrato Selecionado - Pequeno e Natural */}
+            {fileName && fileName !== "MINUTA-DE-CONTRATO" && (
+              <div className="text-[8px] font-medium text-muted-foreground/70 tracking-wide mt-[-2px]">
+                {fileName}
+              </div>
+            )}
           </div>
         )}
 
@@ -1787,7 +1796,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         </>)}
 
         <div className="flex-1 relative flex flex-col min-w-0 overflow-hidden">
-          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent max-sm:p-0 sm:p-4 pt-[4.5rem] max-sm:pt-[8.5rem] sm:pt-[4rem] sm:pb-32 relative z-10">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent max-sm:p-0 sm:p-4 pt-[4.5rem] max-sm:pt-[11rem] sm:pt-[4rem] sm:pb-32 relative z-10">
             {/* Subtle occult background glow behind the sheet */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/3 dark:bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse duration-[6000ms] max-sm:hidden" />
 
@@ -1796,7 +1805,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               "w-full max-w-full lg:max-w-[clamp(37.5rem,45vw,56.25rem)] mx-auto editor-glow-container max-sm:!p-0 max-sm:!rounded-none transition-all duration-700 shadow-2xl max-sm:shadow-none",
               (showEntranceGlow || editorFocused) && "glowing"
             )}>
-              <div className="w-full h-full sm:bg-card/90 sm:dark:bg-card/75 sm:backdrop-blur-xl sm:rounded-[30px] max-sm:rounded-none px-4 max-sm:px-0 py-8 max-sm:pt-14 max-sm:pb-48 sm:px-14 sm:py-12 relative min-h-[50rem] md:min-h-[74.25rem] editor-glow-content max-sm:bg-transparent max-sm:backdrop-blur-none max-sm:shadow-none">
+              <div className="w-full h-full sm:bg-card/90 sm:dark:bg-card/75 sm:backdrop-blur-xl sm:rounded-[30px] max-sm:rounded-none px-4 max-sm:px-0 py-8 max-sm:pt-4 max-sm:pb-48 sm:px-14 sm:py-12 relative min-h-[50rem] md:min-h-[74.25rem] editor-glow-content max-sm:bg-transparent max-sm:backdrop-blur-none max-sm:shadow-none">
                 {/* Grain overlay for paper feel */}
                 <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-[30px] max-sm:hidden" />
 

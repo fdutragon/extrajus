@@ -76,7 +76,7 @@ export function ContractTypeSelector({
     return (
       <div className="h-7 px-2 gap-1.5 rounded-lg text-muted-foreground bg-muted/30 border border-border/40 flex items-center max-w-[200px] opacity-60">
         <FileText className="w-3 h-3 shrink-0" />
-        <span className="text-[10px] font-bold uppercase tracking-wider truncate">
+        <span className="text-[9.5px] font-medium tracking-wide truncate">
           {selectedType || "Modelos"}
         </span>
       </div>
@@ -92,7 +92,7 @@ export function ContractTypeSelector({
           className="h-7 px-2 gap-1.5 rounded-lg text-primary bg-primary/5 hover:bg-primary/10 border border-primary/20 transition-all duration-300 max-w-[200px]"
         >
           <FileText className="w-3 h-3 shrink-0" />
-          <span className="text-[10px] font-bold uppercase tracking-wider truncate">
+          <span className="text-[9.5px] font-medium tracking-wide truncate">
             {selectedType || "Modelos"}
           </span>
           <ChevronDown className="w-3 h-3 opacity-50 shrink-0" />
