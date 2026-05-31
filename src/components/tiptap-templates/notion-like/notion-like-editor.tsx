@@ -1559,9 +1559,14 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
           )}
         </div>
 
+        {/* Persistent Centralized Branding - The Heart of ExtraJus */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-1.5 select-none whitespace-nowrap z-[110]">
+          <Logo showText={true} iconSize={typeof window !== 'undefined' && window.innerWidth < 1024 ? 28 : 24} variant="chrome" />
+        </div>
+
         {!readOnly && (
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center h-full gap-2 z-[110] max-sm:hidden">
-            <div className="flex items-center gap-0.5 opacity-60 hover:opacity-100 transition-opacity duration-500">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center h-full gap-2 z-[111] max-sm:hidden pointer-events-none">
+            <div className="flex items-center gap-0.5 opacity-60 hover:opacity-100 transition-opacity duration-500 pointer-events-auto">
               <MarkButton type="bold" />
               <MarkButton type="italic" />
               <MarkButton type="underline" />
@@ -1569,27 +1574,15 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               <UndoRedoButton action="undo" />
               <UndoRedoButton action="redo" />
             </div>
-            <div
-              className={cn(
-                "relative flex items-center justify-center px-4 h-full rounded-none border-x border-zinc-500/10 gap-1.5 overflow-hidden select-none whitespace-nowrap shrink-0"
-              )}
-            >
-              <Logo showText={true} iconSize={typeof window !== 'undefined' && window.innerWidth < 1024 ? 28 : 24} variant="chrome" />
-            </div>
-            <div className="flex items-center gap-0.5 opacity-60 hover:opacity-100 transition-opacity duration-500 max-md:hidden">
+            {/* Logo gap - maintains toolbar spacing while allowing the persistent logo layer below to show through */}
+            <div className="w-32 h-full border-x border-zinc-500/10 shrink-0" />
+            <div className="flex items-center gap-0.5 opacity-60 hover:opacity-100 transition-opacity duration-500 max-md:hidden pointer-events-auto">
               <TextAlignButton align="left" />
               <TextAlignButton align="center" />
               <TextAlignButton align="right" />
               <TextAlignButton align="justify" />
               <ColorTextPopover orientation="horizontal" />
             </div>
-          </div>
-        )}
-
-        {/* Centralized AI Brand Name only for mobile screen */}
-        {!readOnly && (
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:hidden z-[110] flex items-center gap-1.5 select-none whitespace-nowrap">
-            <Logo showText={true} iconSize={28} variant="chrome" />
           </div>
         )}
 
@@ -2128,7 +2121,7 @@ export function EditorProvider(props: EditorProviderProps) {
   useEffect(() => {
     if (!editor || !templateSlug) return
     const checkAndFill = async () => {
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise(resolve => setTimeout(resolve, 1500))
       if (editor.isEmpty) {
         const { data } = await createClient().from("templates").select("content").eq("slug", templateSlug).single()
         if (data?.content) {
@@ -2147,7 +2140,7 @@ export function EditorProvider(props: EditorProviderProps) {
     if (!isUuid) return
 
     const loadPurchasedContent = async () => {
-      await new Promise(resolve => setTimeout(resolve, 800)) // Wait for Yjs provider to sync/initialize
+      await new Promise(resolve => setTimeout(resolve, 2000)) // Wait for Yjs provider to sync/initialize
       if (editor.isEmpty) {
         const client = createClient()
         // 1. Verify if we have any Yjs updates in the database for this contract
