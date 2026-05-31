@@ -11,7 +11,7 @@ import type { Tone } from "../../../../components/tiptap-extension/gemini-ai-ext
 // Icons
 import { MicAiIcon } from "../../../../components/tiptap-icons/mic-ai-icon"
 import { AiSparklesIcon } from "../../../../components/tiptap-icons/ai-sparkles-icon"
-import { BrainCircuit, StopCircle as StopCircle2Icon, ArrowUp as ArrowUpIcon, Mic, MicOff } from "lucide-react"
+import { BrainCircuit, StopCircle as StopCircle2Icon, ArrowUp as ArrowUpIcon, Mic, MicOff, Search, FileText, ChevronDown } from "lucide-react"
 
 // UI Components
 import { SUPPORTED_TONES } from "../../../../components/tiptap-ui/ai-menu"
@@ -39,6 +39,95 @@ import type { AiMenuInputTextareaProps } from "../../../../components/tiptap-ui/
 
 // Styles
 import "../../../../components/tiptap-ui/ai-menu/ai-menu-input/ai-menu-input.scss"
+
+const CONTRACT_TYPES = [
+  "Prestação de Serviços", "Compra e Venda", "Aluguel Residencial", "Aluguel Comercial",
+  "Confidencialidade (NDA)", "Trabalho (CLT)", "Parceria Comercial", "Empréstimo (Mútuo)",
+  "Consultoria", "Honorários Advocatícios", "Software (SaaS)", "Licenciamento de Marca",
+  "Franquia", "Comodato", "Doação", "Arrendamento Rural", "Representação Comercial",
+  "Distribuição", "Corretagem", "Fiança", "Transporte de Cargas", "Empreitada",
+  "Sociedade Limitada", "Acordo de Sócios", "Vestimento (Vesting)", "Mútuo Conversível",
+  "Termo de Uso (Site)", "Política de Privacidade", "Cessão de Direitos", "Permuta",
+  "Consignação", "Agenciamento", "Hospedagem", "Eventos", "Publicidade",
+  "Patrocínio", "Terceirização", "Manutenção", "Seguro", "Arrendamento Mercantil",
+  "Depósito", "Mandato (Procuração)", "Transação (Acordo)", "Parceria Agrícola",
+  "Cessão de Imagem", "Direitos Autorais", "Franchising", "Leasing", "Factoring"
+]
+
+export function ContractTypeSelector({
+  onSelect,
+  selectedType = null,
+}: {
+  onSelect: (type: string) => void
+  selectedType?: string | null
+}) {
+  const [search, setSearch] = useState("")
+  const [isOpen, setIsOpen] = useState(false)
+
+  const filtered = CONTRACT_TYPES.filter(type => 
+    type.toLowerCase().includes(search.toLowerCase())
+  ).slice(0, search ? 10 : 4)
+
+  return (
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          className="h-7 px-2 gap-1.5 rounded-lg text-primary bg-primary/5 hover:bg-primary/10 border border-primary/20 transition-all duration-300 max-w-[200px]"
+        >
+          <FileText className="w-3 h-3 shrink-0" />
+          <span className="text-[10px] font-bold uppercase tracking-wider truncate">
+            {selectedType || "Modelos"}
+          </span>
+          <ChevronDown className="w-3 h-3 opacity-50 shrink-0" />
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent align="start" className="w-80 sm:w-96 p-0 overflow-hidden bg-zinc-950 border-zinc-800 shadow-2xl z-[3000]">
+        <div className="p-2 border-b border-zinc-800 bg-zinc-900/50">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+            <input 
+              autoFocus
+              placeholder="Buscar contrato..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
+            />
+          </div>
+        </div>
+        <div className="max-h-60 overflow-y-auto p-1 pb-4 scrollbar-minimalist">
+          {filtered.length > 0 ? (
+            filtered.map((type) => (
+              <DropdownMenuItem 
+                key={type}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer hover:bg-primary/10 focus:bg-primary/10 group transition-colors"
+                onSelect={() => {
+                  onSelect(type)
+                  setIsOpen(false)
+                  setSearch("")
+                }}
+              >
+                <div className="w-1.5 h-1.5 rounded-full bg-primary/40 group-hover:bg-primary transition-colors" />
+                <span className="text-[12px] font-medium text-zinc-300 group-hover:text-primary">{type}</span>
+              </DropdownMenuItem>
+            ))
+          ) : (
+            <div className="p-4 text-center">
+              <span className="text-[11px] text-muted-foreground">Nenhum modelo encontrado.</span>
+            </div>
+          )}
+        </div>
+        {!search && CONTRACT_TYPES.length > 4 && (
+          <div className="p-2 border-t border-zinc-800 bg-zinc-900/30 text-center">
+            <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold">Use a busca para ver mais modelos</span>
+          </div>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
 
 export function AiMenuInputPlaceholder({
   onPlaceholderClick,
@@ -118,6 +207,8 @@ export function AiPromptInputToolbar({
   isRecording = false,
   toggleRecording,
   hasMicSupport = false,
+  selectedContractType = null,
+  onContractTypeSelect,
 }: {
   showPlaceholder?: boolean
   onInputSubmit: (prompt: string) => void
@@ -126,6 +217,8 @@ export function AiPromptInputToolbar({
   isRecording?: boolean
   toggleRecording?: () => void
   hasMicSupport?: boolean
+  selectedContractType?: string | null
+  onContractTypeSelect?: (type: string) => void
 }) {
   const [tone, setTone] = useState<Tone | null>(null)
   const [promptValue] = useComboboxValueState()
@@ -149,11 +242,14 @@ export function AiPromptInputToolbar({
       className="tiptap-ai-prompt-input-toolbar pt-2"
       style={{ display: showPlaceholder ? "none" : "flex" }}
     >
-      <ToolbarGroup>
-        <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
-           <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-           <span className="text-[8.5px] font-medium text-primary">IA Ativa</span>
-        </div>
+      <ToolbarGroup className="flex items-center gap-2">
+        <ContractTypeSelector 
+          selectedType={selectedContractType}
+          onSelect={(type) => {
+            onContractTypeSelect?.(type)
+            onInputSubmit(`Crie um ${type} profissional com todas as cláusulas essenciais...`)
+          }} 
+        />
       </ToolbarGroup>
 
       <Spacer />
@@ -199,8 +295,6 @@ export function AiPromptInputToolbar({
 }
 
 // Algoritmo de deduplicação e fusão de frases em tempo real.
-// Evita repetições causadas pelo Chrome do Android que re-emite ou concatena frases inteiras nos índices de resultados subsequentes.
-// Ele faz um merge inteligente de sobreposição de prefixo/sufixo tanto para Desktop quanto para Mobile.
 function mergeTranscripts(parts: string[]): string {
   if (parts.length === 0) return ""
   let merged = parts[0].trim()
@@ -209,18 +303,15 @@ function mergeTranscripts(parts: string[]): string {
     const next = parts[i].trim()
     if (!next) continue
 
-    // Se o próximo bloco já começa com o acumulado, ele é o próprio acumulado atualizado (comum no Android)
     if (next.toLowerCase().startsWith(merged.toLowerCase())) {
       merged = next
       continue
     }
 
-    // Se o acumulado já contém o próximo bloco por inteiro, ignora a duplicidade
     if (merged.toLowerCase().includes(next.toLowerCase())) {
       continue
     }
 
-    // Busca sobreposições de palavras na junção (ex: "como vai tudo bem" + "tudo bem tudo ótimo")
     const mergedWords = merged.split(/\s+/)
     const nextWords = next.split(/\s+/)
     let overlapCount = 0
@@ -235,11 +326,9 @@ function mergeTranscripts(parts: string[]): string {
     }
 
     if (overlapCount > 0) {
-      // Remove a sobreposição do início do próximo bloco e concatena
       const nonOverlapping = nextWords.slice(overlapCount).join(" ")
       merged = `${merged} ${nonOverlapping}`.trim()
     } else {
-      // Sem sobreposição, simplesmente concatena com espaço
       merged = `${merged} ${next}`.trim()
     }
   }
@@ -264,6 +353,7 @@ export function AiMenuInputTextarea({
   ...props
 }: AiMenuInputTextareaProps) {
   const [promptValue, setPromptValue] = useComboboxValueState()
+  const [selectedContractType, setSelectedContractType] = useState<string | null>(null)
   const [isFocused, setIsFocused] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
   const [recordingFlash, setRecordingFlash] = useState(false)
@@ -281,7 +371,7 @@ export function AiMenuInputTextarea({
       setRecordingFlash(true)
       const timer = setTimeout(() => {
         setRecordingFlash(false)
-      }, 3000) // 3 segundos de destaque dourado/fogo místico
+      }, 3000)
       return () => clearTimeout(timer)
     } else {
       setRecordingFlash(false)
@@ -291,7 +381,6 @@ export function AiMenuInputTextarea({
   useEffect(() => {
     if (typeof window === "undefined") return
 
-    // Configura o Web Speech API para transcrição nativa em tempo real
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
     if (SpeechRecognition) {
       const rec = new SpeechRecognition()
@@ -301,16 +390,12 @@ export function AiMenuInputTextarea({
 
       rec.onresult = (event: any) => {
         const parts: string[] = []
-
-        // Coleta todos os fragmentos brutos produzidos pelo motor de voz na sessão ativa
         for (let i = 0; i < event.results.length; ++i) {
           const transcript = event.results[i][0].transcript
           if (transcript && transcript.trim()) {
             parts.push(transcript.trim())
           }
         }
-
-        // Consolida os fragmentos aplicando o algoritmo de fusão inteligente livre de duplicações
         const totalTranscript = mergeTranscripts(parts)
         const baseText = recordingStartTextRef.current || ""
         const newVal = baseText ? `${baseText.trim()} ${totalTranscript}` : totalTranscript
@@ -346,7 +431,6 @@ export function AiMenuInputTextarea({
       setIsRecording(false)
     } else {
       try {
-        // Captura o valor exato que já estava no prompt antes de começar a falar
         recordingStartTextRef.current = promptRef.current || ""
         recognition.start()
         setIsRecording(true)
@@ -362,6 +446,7 @@ export function AiMenuInputTextarea({
     if (cleanedPrompt) {
       onInputSubmit(cleanedPrompt)
       setPromptValue("")
+      setSelectedContractType(null)
     }
   }, [onInputSubmit, promptValue, setPromptValue])
 
@@ -394,8 +479,6 @@ export function AiMenuInputTextarea({
     [handleBlur]
   )
 
-  const [isMaster, setIsMaster] = useState(false)
-  
   const { provider } = useCollab()
   const [isSynced, setIsSynced] = useState(provider?.isSynced ?? false)
 
@@ -408,29 +491,6 @@ export function AiMenuInputTextarea({
     provider.on("status", handleStatus)
     return () => provider.off("status", handleStatus)
   }, [provider])
-
-  const aiSuggestion = (typeof window !== "undefined" ? window.localStorage.getItem("extrajus_ai_suggestion") : null);
-
-  const docType = (typeof window !== "undefined" ? localStorage.getItem("extrajus_ai_doc_type") : null) || "contrato";
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const urlParams = new URLSearchParams(window.location.search);
-      const urlTipo = urlParams.get("tipo");
-      if (urlTipo && ["contrato", "notificacao", "peticao"].includes(urlTipo)) {
-        localStorage.setItem("extrajus_ai_doc_type", urlTipo);
-      } else {
-        localStorage.setItem("extrajus_ai_doc_type", "contrato");
-      }
-    }
-
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user?.email === "felipedutra@outlook.com") {
-        setIsMaster(true)
-      }
-    })
-  }, [])
 
   const dynamicPlaceholder = !isSynced
     ? "Sincronizando ambiente da inteligência artificial..."
@@ -476,7 +536,7 @@ export function AiMenuInputTextarea({
                 </div>
               )}
               <Combobox
-                autoSelect="always"
+                autoSelect={false}
                 autoFocus={autoFocus}
                 render={
                   <TextareaAutosize
@@ -504,6 +564,8 @@ export function AiMenuInputTextarea({
               isRecording={isRecording}
               toggleRecording={toggleRecording}
               hasMicSupport={!!recognition}
+              selectedContractType={selectedContractType}
+              onContractTypeSelect={setSelectedContractType}
             />
           </>
         )}

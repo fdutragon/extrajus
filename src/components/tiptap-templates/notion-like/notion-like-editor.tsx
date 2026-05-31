@@ -1522,7 +1522,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               </svg>
               <span 
                 style={{ fontFamily: "'Cinzel', 'Cambria', 'Georgia', serif" }}
-                className={cn("text-[13px] font-bold uppercase tracking-[0.2em] relative z-10 bg-gradient-to-r from-zinc-700 via-zinc-500 to-zinc-700 dark:from-zinc-300 dark:via-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(255,255,255,0.2)] whitespace-nowrap")}
+                className={cn("text-[9px] font-bold uppercase tracking-[0.2em] relative z-10 bg-gradient-to-r from-zinc-700 via-zinc-500 to-zinc-700 dark:from-zinc-300 dark:via-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(255,255,255,0.2)] whitespace-nowrap")}
               >
                 ExtraJus IA
               </span>
@@ -1550,12 +1550,12 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               <circle cx="19" cy="15" r="2" />
               <path d="M12 9l1.5 1.5L12 12l-1.5-1.5z" fill="currentColor" />
             </svg>
-            <span 
+            <div 
               style={{ fontFamily: "'Cinzel', 'Cambria', 'Georgia', serif" }}
-              className="text-[13.5px] font-bold tracking-[0.18em] uppercase bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-800 dark:from-zinc-400 dark:via-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent filter drop-shadow-[0_0_8px_rgba(255,255,255,0.25)]"
+              className="text-[8.5px] font-bold tracking-[0.18em] uppercase bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-800 dark:from-zinc-400 dark:via-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent filter drop-shadow-[0_0_8px_rgba(255,255,255,0.25)]"
             >
               ExtraJus IA
-            </span>
+            </div>
           </div>
         )}
 

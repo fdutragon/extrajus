@@ -156,7 +156,7 @@
   font-size: clamp(0.656rem, calc(0.5625rem + 0.3vw), 0.75rem);
   font-weight: 500;
   line-height: 1.4;
-  padding: 0.55rem 0.7rem;
+  padding: 0.55rem 0.7rem 1.2rem 0.7rem; /* Aumentado padding bottom */
   border-radius: 0.375rem;
   background: none;
   appearance: none;
@@ -245,29 +245,31 @@
 
 @media screen and (max-width: 640px) {
   .tiptap-ai-prompt-input-inner {
-    padding: 0.55rem 0.7rem !important;
+    padding: 0.75rem 0.85rem !important; /* Aumentado padding */
     border-radius: 1rem !important;
-    gap: 0.25rem !important;
+    gap: 0.4rem !important; /* Aumentado gap */
     backdrop-filter: none !important;
   }
   .tiptap-ai-prompt-input {
-    border-radius: 1rem !important;
+    border-radius: 1.25rem !important; /* Mais arredondado no mobile */
+    width: calc(100vw - 2rem) !important; /* Quase largura total */
+    margin: 0 auto;
   }
   .tiptap-ai-prompt-input-content {
-    min-height: 3.25rem !important;
-    padding: 0.55rem 0.7rem !important;
-    font-size: 0.875rem !important;
+    min-height: 4.5rem !important; /* Aumentado altura mínima significativamente */
+    padding: 0.6rem 0.75rem 1.5rem 0.75rem !important; /* Ajustado padding interno */
+    font-size: 0.95rem !important; /* Texto um pouco maior para leitura no celular */
   }
   .tiptap-ai-prompt-input-placeholder-text {
-    font-size: 0.875rem !important;
+    font-size: 0.95rem !important;
     line-height: 1.4 !important;
   }
   .tiptap-ai-prompt-input-placeholder-content {
-    padding: 0.55rem 0.7rem !important;
-    gap: 6px !important;
+    padding: 0.6rem 0.75rem !important;
+    gap: 8px !important;
   }
   .tiptap-ai-prompt-input-toolbar {
-    padding-top: 0.25rem !important;
-    padding-bottom: 0.1rem !important;
+    padding-top: 0.4rem !important;
+    padding-bottom: 0.25rem !important;
   }
 }

@@ -4,8 +4,12 @@
   "description": "Plataforma de inteligência artificial para geração e análise de contratos profissionais.",
   "start_url": "/editor",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "minimal-ui"],
+  "orientation": "portrait-primary",
   "background_color": "#09090b",
   "theme_color": "#09090b",
+  "id": "/editor",
+  "categories": ["business", "productivity", "legal"],
   "icons": [
     {
       "src": "/icon.svg",
