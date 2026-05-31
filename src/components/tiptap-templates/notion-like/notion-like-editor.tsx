@@ -502,34 +502,24 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
         origHtmlHeight = html.style.height || ""
         origBodyOverflow = body.style.overflow || ""
         origBodyHeight = body.style.height || ""
-        origBodyPosition = body.style.position || ""
         origBodyWidth = body.style.width || ""
-        const scrollY = window.scrollY
 
         html.style.overflow = "hidden"
         html.style.height = "100dvh"
         body.style.overflow = "hidden"
         body.style.height = "100dvh"
-        body.style.position = "fixed"
         body.style.width = "100%"
-        body.style.top = `-${scrollY}px` // Mantém a posição visual
         isLocked = true
       }
     }
 
     const unlockBodyScroll = () => {
       if (isLocked) {
-        const scrollY = body.style.top ? parseInt(body.style.top || '0') * -1 : 0
-        
         html.style.overflow = origHtmlOverflow
         html.style.height = origHtmlHeight
         body.style.overflow = origBodyOverflow
         body.style.height = origBodyHeight
-        body.style.position = origBodyPosition
         body.style.width = origBodyWidth
-        body.style.top = ""
-        
-        window.scrollTo(0, scrollY) // Restaura o scroll real
         isLocked = false
       }
     }
@@ -540,24 +530,15 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
       const header = document.querySelector("header") as HTMLElement | null
       if (!header) return
       
-      const offsetTop = window.visualViewport?.offsetTop || 0
-      if (window.innerWidth < 768) {
-        if (offsetTop > 0) {
-          header.style.transition = "none"
-        } else {
-          header.style.transition = ""
-        }
-        header.style.top = `${offsetTop}px`
-      } else {
-        header.style.top = "0px"
-        header.style.transition = ""
-      }
-    }
+      const viewport = window.visualViewport
+      if (!viewport) return
 
-    // Trava o scroll da página externa para evitar o tranco/efeito de subir
-    const preventPageScroll = () => {
-      if (window.scrollY > 0) {
-        window.scrollTo(0, 0)
+      if (window.innerWidth < 768) {
+        // Ajusta a posição do header para acompanhar o topo da área visível (ignora o offset do teclado)
+        const offsetTop = viewport.offsetTop
+        header.style.transform = `translateY(${offsetTop}px)`
+      } else {
+        header.style.transform = ""
       }
     }
 
@@ -566,11 +547,10 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
       visualViewport.addEventListener("resize", handleViewportChange)
       visualViewport.addEventListener("scroll", handleViewportChange)
     }
-    window.addEventListener("scroll", preventPageScroll, { passive: true })
 
     // Ouve focusin e focusout globais de forma instantânea para matar qualquer delay de renderização
     const handleFocusBlur = () => {
-      handleViewportChange()
+      requestAnimationFrame(handleViewportChange)
     }
 
     document.addEventListener("focusin", handleFocusBlur)
@@ -591,7 +571,6 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
         visualViewport.removeEventListener("resize", handleViewportChange)
         visualViewport.removeEventListener("scroll", handleViewportChange)
       }
-      window.removeEventListener("scroll", preventPageScroll)
       document.removeEventListener("focusin", handleFocusBlur)
       document.removeEventListener("focusout", handleFocusBlur)
       window.removeEventListener("resize", handleResize)
