@@ -40,32 +40,34 @@ export function AiMenuActions({
   }, [editor, onAccept])
  
   return (
-    <div className="tiptap-ai-menu-actions mt-3.5 px-4 sm:px-6 py-3 border border-border/80 bg-card sm:bg-card/65 sm:backdrop-blur-md rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 shadow-sm animate-in fade-in duration-300 max-sm:shadow-none">
-      <div className="flex items-center gap-1.5 w-full sm:w-auto justify-center sm:justify-start">
+    <div className="tiptap-ai-menu-actions mt-3.5 px-3.5 sm:px-6 py-2.5 sm:py-3 border border-border/80 bg-card sm:bg-card/65 sm:backdrop-blur-md rounded-2xl flex items-center justify-between gap-2 sm:gap-4 shadow-sm animate-in fade-in duration-300 max-sm:shadow-none">
+      <div className="flex items-center gap-1.5 shrink-0">
         <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-        <span className="text-[10.5px] font-medium text-muted-foreground">
+        <span className="text-[10px] sm:text-[10.5px] font-medium text-muted-foreground whitespace-nowrap">
           {aiGenerationIsLoading ? "Gerando..." : "Sugestão pronta"}
         </span>
       </div>
  
-      <div className="flex items-center gap-2 w-full sm:w-auto">
+      <div className="flex items-center gap-1.5 sm:gap-2 flex-nowrap overflow-hidden">
         <Button
           variant="ghost"
-          className="flex-1 sm:flex-none h-8 sm:h-7.5 px-3.5 rounded-xl border border-red-500/10 bg-red-500/5 text-red-400 text-[11px] font-medium flex items-center justify-center gap-1.5 group/discard"
+          className="h-7.5 sm:h-7.5 px-2.5 sm:px-3.5 rounded-xl border border-red-500/10 bg-red-500/5 text-red-400 text-[10px] sm:text-[11px] font-medium flex items-center justify-center gap-1 sm:gap-1.5 group/discard shrink-0"
           onClick={handleDiscard}
         >
-          <Trash2 size={12} className="shrink-0" />
-          <span>Descartar</span>
+          <Trash2 size={11} className="sm:size-[12px] shrink-0" />
+          <span className="max-sm:hidden">Descartar</span>
+          <span className="sm:hidden">Sair</span>
         </Button>
  
         <Button
           variant="ghost"
-          className="flex-[1.5] sm:flex-none h-8 sm:h-7.5 px-5 rounded-xl bg-primary/10 border border-primary/30 text-primary text-[11px] font-semibold shadow-[0_0_10px_rgba(var(--primary-rgb),0.05)] transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-1.5 relative group/apply"
+          className="h-7.5 sm:h-7.5 px-3.5 sm:px-5 rounded-xl bg-primary/10 border border-primary/30 text-primary text-[10px] sm:text-[11px] font-semibold shadow-[0_0_10px_rgba(var(--primary-rgb),0.05)] transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-1 sm:gap-1.5 relative group/apply shrink-0"
           onClick={handleApply}
           disabled={aiGenerationIsLoading}
         >
-          <Sparkles size={12} className="relative z-10 transition-transform group-hover/apply:scale-110 shrink-0" />
-          <span className="relative z-10">Aplicar edição</span>
+          <Sparkles size={11} className="sm:size-[12px] relative z-10 transition-transform group-hover/apply:scale-110 shrink-0" />
+          <span className="relative z-10 whitespace-nowrap">Aplicar</span>
+          <span className="relative z-10 max-sm:hidden"> edição</span>
         </Button>
       </div>
     </div>

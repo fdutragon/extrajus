@@ -44,6 +44,7 @@
     font-weight: normal;
     margin-top: 0;
     margin-bottom: 12px;
+    color: hsl(var(--foreground) / 0.82); // Levemente cinza para evitar o "brancão" e melhorar a leitura
   }
 
   p.dense-metadata {
