@@ -82,9 +82,9 @@ export function NativePwaHandler() {
       })
       
       // Nota: Não é possível forçar o fechamento do browser e abertura do app de forma silenciosa por segurança,
-      // mas podemos redirecionar para a home para forçar o reconhecimento do display-mode se suportado
+      // mas podemos recarregar para forçar o reconhecimento do display-mode se suportado
       setTimeout(() => {
-        window.location.href = '/'
+        window.location.reload()
       }, 2000)
     })
 
