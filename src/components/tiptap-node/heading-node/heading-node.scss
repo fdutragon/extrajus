@@ -29,6 +29,8 @@
 
     @media screen and (max-width: 768px) {
       font-size: 2.15em; // Aumentado de 1.8em para destaque total no mobile
+      font-weight: 900 !important; // Negrito absoluto conforme solicitado
+      margin-bottom: 4rem !important; // Aumentado o espaço abaixo do título no mobile
     }
   }
 

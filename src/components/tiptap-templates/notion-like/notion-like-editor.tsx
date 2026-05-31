@@ -800,7 +800,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly }: { isP
       if (isMobileOrTablet) {
         setLeftSidebarOpen(false)
         setRightSidebarOpen(false)
-        setFontSize(14)
+        setFontSize(17) // Aumentado de 14 para 17 no mobile
       } else {
         setFontSize(14)
       }
@@ -1312,7 +1312,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         }
         .tiptap.ProseMirror {
           font-family: ${fontFamily === "Cambria" ? '"Cambria", "Georgia", serif' : fontFamily === "Inter" ? '"Inter", sans-serif' : fontFamily === "Times New Roman" ? '"Times New Roman", serif' : '"JetBrains Mono", monospace'} !important;
-          font-size: clamp(${(fontSize - 3) / 16}rem, calc(${(fontSize - 4.5) / 16}rem + 0.6vw), ${(fontSize + 1) / 16}rem) !important;
+          font-size: clamp(${(fontSize - 1) / 16}rem, calc(${(fontSize - 2) / 16}rem + 0.8vw), ${(fontSize + 2) / 16}rem) !important;
         }
         :is(aside, header, .ai-prompt-wrapper) .text-\\[14\\.5px\\] {
           font-size: clamp(0.85rem, calc(0.7rem + 0.4vw), 1rem) !important;
@@ -1639,7 +1639,10 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             </>
           )}
 
-          <div className="flex items-center">
+          <div className="flex items-center sm:hidden">
+            {/* ThemeToggle removido daqui pois agora está no início do header no mobile */}
+          </div>
+          <div className="max-sm:hidden flex items-center">
             <ThemeToggle />
           </div>
         </div>
