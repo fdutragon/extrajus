@@ -1295,8 +1295,11 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
   }, [editor, fileName, readOnly])
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden relative font-sans selection:bg-primary/30">
+    <div className="flex flex-col h-[100dvh] bg-background text-foreground overflow-hidden relative font-sans selection:bg-primary/30">
       <style dangerouslySetInnerHTML={{ __html: `
+        :root {
+          --vh: 100vh;
+        }
         .font-heading, :is(aside, header, [role="dialog"], .ai-prompt-wrapper) {
           --font-heading: var(--font-sans) !important;
           font-family: var(--font-sans) !important;
