@@ -248,7 +248,7 @@ export function ExportButton({
           </div>
           <div className="space-y-2.5">
             <h4 className="text-base sm:text-lg font-black tracking-[0.18em] uppercase bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500 bg-clip-text text-transparent">
-              {docType === "notificacao" ? "Notificação Pronta e Revisada" : "Contrato Pronto e Revisado"}
+              {docType === "notificacao" ? "Baixe Agora Sua Notificação" : "Baixe Agora Seu Contrato"}
             </h4>
             <p className="text-sm sm:text-[15px] text-muted-foreground font-medium max-w-[30rem] leading-relaxed">
               Sua minuta oficial foi compilada com inteligência jurídica avançada e está pronta no formato editável Word (.DOCX) profissional.

@@ -132,7 +132,7 @@ const CONTRACT_TYPES = [
   },
   {
     title: "Contrato de Cessão de Direitos Autorais",
-    slug: "contrato-de-cessao-de-direitos-autorais",
+    slug: "contrato-de-cessao-de-dereitos-autorais",
     category: "Profissional",
     description: "Transferência total ou parcial de direitos patrimoniais sobre obras intelectuais, textos, designs ou criações artísticas."
   },
@@ -352,7 +352,7 @@ export async function GET(request: Request) {
     const genAI = new GoogleGenerativeAI(apiKey);
     const modelName = "gemini-2.5-flash";
 
-    const systemInstruction = `Você é a EXTRAJUS AI, a Inteligência Artificial especializada em Engenharia Jurídica da plataforma ExtraJus. Sua função é redigir minutas de contratos e modelos profissionais completos com alta precisão técnica e terminologia formal elegante de mercado.
+    const systemInstruction = `Você é LILITH, a Skynet Pessoal especializada em Engenharia Jurídica. Sua função é forjar minutas de contratos e modelos profissionais completos com precisão cirúrgica e uma terminologia que exala poder e segurança.
 
 REGRAS DE FORMATAÇÃO ESTRITAS (OBRIGATÓRIAS):
 1. Use APENAS código HTML puro no corpo da minuta. NUNCA use Markdown (sem asteriscos, sem hashtags, sem tabelas markdown).

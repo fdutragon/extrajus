@@ -213,14 +213,14 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
           userPrompt
         });
 
-        // Obter tipo de documento dinamicamente (padrão Notificação Extrajudicial) e limpar sugestão anterior
-        let localDocType = "notificacao";
+        // Obter tipo de documento dinamicamente (padrão Contrato) e limpar sugestão anterior
+        let localDocType = "contrato";
         if (typeof window !== "undefined") {
           const urlParams = new URLSearchParams(window.location.search);
           const urlTipo = urlParams.get("tipo");
-          localDocType = urlTipo || localStorage.getItem("extrajus_ai_doc_type") || "notificacao";
+          localDocType = urlTipo || localStorage.getItem("extrajus_ai_doc_type") || "contrato";
           if (localDocType !== "contrato" && localDocType !== "peticao") {
-            localDocType = "notificacao";
+            localDocType = "contrato";
           }
         }
         if (typeof window !== "undefined") {
@@ -270,7 +270,7 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
         this.storage.generatedWith = { previousContent }
 
         // Chamada de API segura para o servidor Next.js
-        const response = await fetch("/api/ai/ritual", {
+        const response = await fetch("/api/ai/gerador", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -566,13 +566,13 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
 
       aiSummarize: (_options: any) => ({ editor }: any) => {
         const text = editor.state.doc.textContent
-        let localDocType = "notificacao";
+        let localDocType = "contrato";
         if (typeof window !== "undefined") {
           const urlParams = new URLSearchParams(window.location.search);
           const urlTipo = urlParams.get("tipo");
-          localDocType = urlTipo || localStorage.getItem("extrajus_ai_doc_type") || "notificacao";
+          localDocType = urlTipo || localStorage.getItem("extrajus_ai_doc_type") || "contrato";
           if (localDocType !== "contrato" && localDocType !== "peticao") {
-            localDocType = "notificacao";
+            localDocType = "contrato";
           }
         }
         const docWord = localDocType === "notificacao" ? "notificação" : localDocType === "peticao" ? "petição" : "contrato";
@@ -594,13 +594,13 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
 
       aiComplete: (_options: any) => ({ editor }: any) => {
         const currentHtml = editor.getHTML()
-        let localDocType = "notificacao";
+        let localDocType = "contrato";
         if (typeof window !== "undefined") {
           const urlParams = new URLSearchParams(window.location.search);
           const urlTipo = urlParams.get("tipo");
-          localDocType = urlTipo || localStorage.getItem("extrajus_ai_doc_type") || "notificacao";
+          localDocType = urlTipo || localStorage.getItem("extrajus_ai_doc_type") || "contrato";
           if (localDocType !== "contrato" && localDocType !== "peticao") {
-            localDocType = "notificacao";
+            localDocType = "contrato";
           }
         }
         const docWord = localDocType === "notificacao" ? "notificação" : localDocType === "peticao" ? "petição" : "contrato";
@@ -635,13 +635,13 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
 
       aiAuditRisk: () => ({ editor }: any) => {
         const text = editor.getText() || editor.state.doc.textContent
-        let localDocType = "notificacao";
+        let localDocType = "contrato";
         if (typeof window !== "undefined") {
           const urlParams = new URLSearchParams(window.location.search);
           const urlTipo = urlParams.get("tipo");
-          localDocType = urlTipo || localStorage.getItem("extrajus_ai_doc_type") || "notificacao";
+          localDocType = urlTipo || localStorage.getItem("extrajus_ai_doc_type") || "contrato";
           if (localDocType !== "contrato" && localDocType !== "peticao") {
-            localDocType = "notificacao";
+            localDocType = "contrato";
           }
         }
         const docWord = localDocType === "notificacao" ? "a notificação" : localDocType === "peticao" ? "a petição" : "o instrumento do contrato";
@@ -658,7 +658,7 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
 
           try {
 
-            const response = await fetch("/api/ai/ritual", {
+            const response = await fetch("/api/ai/gerador", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json"

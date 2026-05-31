@@ -138,7 +138,7 @@ export default function Home() {
             <Link href="#modelos">
               <Button size="lg" className="h-14 px-8 rounded-xl bg-primary text-primary-foreground font-black text-[11px] uppercase tracking-widest shadow-[0_0_25px_rgba(var(--primary),0.25)] hover:shadow-[0_0_35px_rgba(var(--primary),0.4)] hover:bg-primary/90 transition-all duration-300 group overflow-hidden border border-primary/30 active:scale-98">
                 <span className="relative z-10 flex items-center gap-2">
-                  Gerar Notificação Agora <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                  Gerar Contrato Agora <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </span>
               </Button>
             </Link>
@@ -560,7 +560,7 @@ export default function Home() {
               Perguntas Frequentes
             </h2>
             <p className="text-[13px] md:text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed font-medium">
-              Esclareça suas dúvidas técnicas e jurídicas e comece a elaborar documentos seguros agora.
+              Esclareça suas dúvidas técnicas e jurídicas e comece a elaborar contratos seguros agora.
             </p>
           </div>
 
@@ -579,7 +579,7 @@ export default function Home() {
             />
             <FAQItem
               question="Qual a vantagem de usar a ExtraJus em vez de baixar um modelo pronto do Google?"
-              answer="Modelos baixados da internet são estáticos, desatualizados e costumam conter termos que não se aplicam ao seu cenário real, gerando brechas fatais de rescisão. A ExtraJus gera modelos dinâmicos, analisa o texto em busca de contradições de datas/valores e melhora o contrato conforme as suas respostas."
+              answer="Modelos baixados da internet são estáticos, desatualizados e costumam conter termos que não se aplicam ao seu cenário real, gerando brechas fatais de rescisão. A ExtraJus gera contratos dinâmicos, analisa o texto em busca de contradições de datas/valores e melhora o contrato conforme as suas respostas."
             />
             <FAQItem
               question="Posso fazer o upload de contratos antigos que eu já costumo utilizar?"

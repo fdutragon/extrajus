@@ -17,25 +17,25 @@ export interface OnboardingModalProps {
 export function OnboardingModal({ isOpen, onSelectTemplate, onClose }: OnboardingModalProps) {
   const templates = [
     {
-      title: "Cobrança de Débito",
+      title: "Prestação de Serviços",
       icon: <Building size={20} />,
-      prompt: "Crie uma notificação extrajudicial de cobrança de débito. O Notificante é credor do valor de R$ 10.000,00 referente a serviços prestados e não pagos pelo Notificado. Exija o pagamento em até 5 dias sob pena de medidas judiciais, acréscimos legais e perdas e danos.",
+      prompt: "Crie um contrato de prestação de serviços para um designer freelancer. O contratado deve entregar a identidade visual e o site da empresa. Defina o valor total em R$ 5.000,00 com 50% de entrada e o restante na entrega final.",
       color: "text-blue-500",
       bg: "bg-blue-500/10",
       border: "border-blue-500/20"
     },
     {
-      title: "Desocupação de Imóvel",
+      title: "Confidencialidade (NDA)",
       icon: <FileText size={20} />,
-      prompt: "Elabore uma notificação extrajudicial para desocupação de imóvel. O Notificante é proprietário e notifica o inquilino (Notificado) para desocupar o imóvel comercial em 30 dias devido ao término do prazo do contrato de locação.",
+      prompt: "Elabore um contrato de confidencialidade (NDA) entre duas empresas que estão iniciando uma parceria comercial. Inclua cláusulas rigorosas de sigilo, proibição de uso de informações para fins próprios e multa de R$ 50.000,00 em caso de violação.",
       color: "text-emerald-500",
       bg: "bg-emerald-500/10",
       border: "border-emerald-500/20"
     },
     {
-      title: "Rescisão por Infração",
+      title: "Compra e Venda",
       icon: <ShieldAlert size={20} />,
-      prompt: "Redija uma notificação extrajudicial de rescisão contratual. O Notificante comunica a rescisão de contrato por descumprimento das obrigações do Notificado, exigindo a entrega de relatórios finais e devolução de bens em 48 horas.",
+      prompt: "Redija um contrato de compra e venda de equipamento industrial. O valor é de R$ 150.000,00. Inclua cláusula de garantia de 12 meses, responsabilidade pelo frete por conta do comprador e foro de eleição em São Paulo/SP.",
       color: "text-purple-500",
       bg: "bg-purple-500/10",
       border: "border-purple-500/20"
@@ -56,10 +56,10 @@ export function OnboardingModal({ isOpen, onSelectTemplate, onClose }: Onboardin
                 <Sparkles size={32} />
               </div>
               <DialogTitle className="text-3xl font-black tracking-tight text-zinc-100">
-                Qual <span className="text-primary">Notificação Extrajudicial</span> você precisa criar?
+                Qual <span className="text-primary">Contrato</span> você precisa criar?
               </DialogTitle>
               <p className="text-xs text-muted-foreground font-medium uppercase tracking-[0.2em] max-w-lg mx-auto">
-                A Inteligência Artificial da ExtraJus está pronta. Selecione um modelo rápido de notificação abaixo ou digite seu próprio comando no editor.
+                A Inteligência Artificial da ExtraJus está pronta. Selecione um modelo rápido de contrato abaixo ou digite seu próprio comando no editor.
               </p>
             </DialogHeader>
 

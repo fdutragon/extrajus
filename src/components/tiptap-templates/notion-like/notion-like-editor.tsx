@@ -769,7 +769,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly }: { isP
 
   const searchParams = useSearchParams()
   const readOnly = propReadOnly || searchParams?.get("mode") === "preview" || searchParams?.get("readOnly") === "true" || !editor
-  const docType = searchParams?.get("tipo") || "notificacao"
+  const docType = searchParams?.get("tipo") || "contrato"
 
   const [signerEmail, setSignerEmail] = useState("")
   const [sealingCode, setSealingCode] = useState("")
@@ -1739,7 +1739,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                     </div>
                   )}
                   <EditorContentArea />
-                  {editor && !editor.isEmpty && !aiGenerationIsLoading && docType === "notificacao" && editor.getText().length > 400 && (editor.getText().toLowerCase().includes("notificado") || editor.getText().toLowerCase().includes("assinatura")) && (
+                  {editor && !editor.isEmpty && !aiGenerationIsLoading && (docType === "notificacao" || docType === "contrato") && editor.getText().length > 400 && (editor.getText().toLowerCase().includes("notificado") || editor.getText().toLowerCase().includes("assinatura") || editor.getText().toLowerCase().includes("contratante")) && (
                     <div className="mt-2.5 flex justify-center pb-28 pt-0.5 animate-in fade-in slide-in-from-bottom-3 duration-500 max-sm:px-4 max-sm:pb-60">
                       <ExportButton 
                         isPublic={isPublic} 
@@ -1846,11 +1846,11 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                           : "Rode a análise inteligente para escanear o documento e sugerir cláusulas protetoras complementares sob demanda."}
                       </p>
                       <Button 
-                        onClick={runAudit} 
-                        disabled={isAuditing} 
-                        className="font-heading font-medium w-full bg-transparent border border-primary/50 text-primary hover:bg-primary hover:border-primary hover:text-primary-foreground text-[10px] font-bold uppercase tracking-[0.2em] h-8 rounded-xl transition-all shadow-[0_0_10px_rgba(var(--primary),0.05)] hover:shadow-[0_0_20px_rgba(var(--primary),0.2)]"
+                      onClick={runAudit} 
+                      disabled={isAuditing} 
+                      className="font-heading font-medium w-full bg-transparent border border-primary/50 text-primary hover:bg-primary hover:border-primary hover:text-primary-foreground text-[10px] font-bold uppercase tracking-[0.2em] h-8 rounded-xl transition-all shadow-[0_0_10px_rgba(var(--primary),0.05)] hover:shadow-[0_0_20px_rgba(var(--primary),0.2)]"
                       >
-                        {docType === "notificacao" ? "Analisar Notificação" : "Analisar Cláusulas"}
+                      {docType === "notificacao" ? "Analisar Notificação" : "Analisar Contrato"}
                       </Button>
                     </div>
                   ) : (

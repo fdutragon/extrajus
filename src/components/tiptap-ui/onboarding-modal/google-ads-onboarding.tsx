@@ -25,23 +25,23 @@ interface Step {
 
 const STEPS: Step[] = [
   {
-    title: "A Notificação",
-    highlight: "Definitiva",
-    description: "Resolva calotes e exija seus direitos sem precisar pagar advogados caros. Use nossa inteligência para criar notificações letais e profissionais sob medida em segundos.",
+    title: "O Contrato",
+    highlight: "Perfeito",
+    description: "Proteja seus negócios e blinde suas relações comerciais sem precisar de advogados caros. Use nossa inteligência para criar contratos robustos e profissionais sob medida em segundos.",
     icon: <Zap size={28} strokeWidth={1.5} />,
     color: "text-amber-500 dark:text-amber-400"
   },
   {
-    title: "Poder de Coerção",
-    highlight: "Imediato",
-    description: "A IA utiliza terminologia jurídica formal que intimida e fundamenta seu direito, obrigando a parte contrária a agir antes de enfrentar processos e protestos.",
+    title: "Segurança Jurídica",
+    highlight: "Total",
+    description: "A IA utiliza terminologia jurídica de ponta que garante a validade do seu acordo, protegendo seus interesses e prevenindo litígios futuros com cláusulas de alta performance.",
     icon: <ShieldCheck size={28} strokeWidth={1.5} />,
     color: "text-emerald-500 dark:text-emerald-400"
   },
   {
     title: "Pronto para",
-    highlight: "Enviar",
-    description: "Basta descrever o que aconteceu. O motor cirúrgico formata a notificação automaticamente com as leis aplicáveis. O resultado é um documento blindado.",
+    highlight: "Assinar",
+    description: "Basta descrever o seu acordo. O motor cirúrgico formata o contrato automaticamente com a estrutura jurídica ideal. O resultado é um documento pronto para ser assinado.",
     icon: <BrainCircuit size={28} strokeWidth={1.5} />,
     color: "text-primary dark:text-primary"
   }

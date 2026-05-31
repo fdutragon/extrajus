@@ -409,17 +409,9 @@ export function AiMenuInputTextarea({
     return () => provider.off("status", handleStatus)
   }, [provider])
 
-  const [aiSuggestion, setAiSuggestion] = useState<string | null>(() => typeof window !== "undefined" ? window.localStorage.getItem("extrajus_ai_suggestion") : null)
+  const aiSuggestion = (typeof window !== "undefined" ? window.localStorage.getItem("extrajus_ai_suggestion") : null);
 
-  useEffect(() => {
-    const handleSuggestionUpdate = () => {
-      setAiSuggestion(window.localStorage.getItem("extrajus_ai_suggestion"))
-    }
-    window.addEventListener("ai-suggestion-updated", handleSuggestionUpdate)
-    return () => window.removeEventListener("ai-suggestion-updated", handleSuggestionUpdate)
-  }, [])
-
-  const docType = (typeof window !== "undefined" ? localStorage.getItem("extrajus_ai_doc_type") : null) || "notificacao";
+  const docType = (typeof window !== "undefined" ? localStorage.getItem("extrajus_ai_doc_type") : null) || "contrato";
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -428,7 +420,7 @@ export function AiMenuInputTextarea({
       if (urlTipo && ["contrato", "notificacao", "peticao"].includes(urlTipo)) {
         localStorage.setItem("extrajus_ai_doc_type", urlTipo);
       } else {
-        localStorage.setItem("extrajus_ai_doc_type", "notificacao");
+        localStorage.setItem("extrajus_ai_doc_type", "contrato");
       }
     }
 
@@ -443,10 +435,10 @@ export function AiMenuInputTextarea({
   const dynamicPlaceholder = !isSynced
     ? "Sincronizando ambiente da inteligência artificial..."
     : isRecording
-    ? "Gravando áudio... Fale o que aconteceu e a IA transcreverá em tempo real."
+    ? "Gravando áudio... Fale os termos do acordo e a IA redigirá o contrato em tempo real."
     : isEditing
-    ? "Escreva o que você deseja alterar, complementar ou remover na sua notificação..."
-    : "Descreva o teor da sua notificação extrajudicial (ex: cobrança de débitos, desocupação de imóvel) e os fatos principais...";
+    ? "Escreva o que você deseja alterar, complementar ou remover nas cláusulas do seu contrato..."
+    : "Qual contrato você deseja criar hoje? (ex: Prestação de Serviços, NDA) Descreva os detalhes do acordo...";
 
   return (
     <div

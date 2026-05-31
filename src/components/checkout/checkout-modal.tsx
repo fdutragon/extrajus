@@ -240,11 +240,11 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             </div>
 
             <h3 className="text-[1.65rem] max-sm:text-[1.6rem] font-black text-foreground leading-[1.1] tracking-tight whitespace-nowrap max-sm:mt-2">
-              Libere {docType === "notificacao" ? "sua" : "seu"} <span className="bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">{docType === "notificacao" ? "Notificação" : "Contrato"}</span>
+              Baixe Agora Seu <span className="bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">{docType === "notificacao" ? "Notificação" : "Contrato"}</span>
             </h3>
 
             <p className="text-[0.825rem] max-sm:text-[0.925rem] max-sm:leading-[1.5] text-muted-foreground leading-relaxed font-medium">
-              Finalize agora para baixar o arquivo editável em <strong className="text-foreground font-bold">Word (.DOCX)</strong>. O documento é seu: use, replique e adapte quantas vezes desejar, sem restrições.
+              Obtenha agora sua minuta profissional <strong className="text-foreground font-bold">100% editável em Word (.DOCX)</strong>. O documento é seu: use, replique e adapte com total segurança jurídica.
             </p>
           </div>
 
@@ -256,10 +256,10 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
               ))}
             </div>
             <p className="text-[0.75rem] max-sm:text-[0.85rem] leading-relaxed italic text-muted-foreground font-medium">
-              "Minha notificação de cobrança ficou impecável. Paguei no PIX e o Word editável abriu na hora. Economizei horas de trabalho."
+              "Meu contrato de prestação de serviços ficou impecável. Paguei no PIX e o Word editável abriu na hora. Economizei horas de trabalho e custos com advogados."
             </p>
             <div className="text-[9px] font-black uppercase tracking-widest text-foreground/70">
-              — Dr. Marcos R., Advogado Civilista
+              — Marcos R., Empreendedor Digital
             </div>
           </div>
 
