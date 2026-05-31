@@ -83,6 +83,7 @@ export function ContractTypeSelector({
       }
     }
 
+    handleResize()
     window.visualViewport.addEventListener('resize', handleResize)
     return () => window.visualViewport?.removeEventListener('resize', handleResize)
   }, [])
