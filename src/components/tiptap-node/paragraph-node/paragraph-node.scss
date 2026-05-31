@@ -48,7 +48,11 @@
   }
 
   p.dense-metadata {
-    margin-bottom: 2px !important; // Reduz o espaçamento entrelinhas das qualificações densas para um visual compacto e solene
+    margin-bottom: 3px !important; // Reduz o espaçamento entrelinhas das qualificações densas para um visual compacto e solene
+    
+    @media screen and (max-width: 768px) {
+      margin-bottom: 8px !important; // Aumentado no mobile conforme solicitado
+    }
   }
 
   p.spacer-before {

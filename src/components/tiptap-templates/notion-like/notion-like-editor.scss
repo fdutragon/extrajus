@@ -87,13 +87,13 @@ body {
 
     @media screen and (max-width: 768px) {
       font-size: 1.4em;
-      padding-bottom: 0.5rem;
-      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem !important; // Aumentado de 0.5rem para afastar o divisor roxo
+      margin-bottom: 3.5rem !important; // Aumentado de 1.5rem para maior respiro
       letter-spacing: 0.04em;
 
       &::after {
         width: 100px;
-        height: 1.5px;
+        height: 2px;
       }
     }
 

@@ -129,11 +129,12 @@
 
   @media screen and (max-width: 768px) {
     font-size: 15px !important; // Reduzido de 17px para ser proporcional
+    margin-bottom: 0.6rem;
 
     &.legal-node-level-1 {
-      margin-top: 1.2rem; // Reduzido
-      margin-bottom: 0.35rem;
-      font-size: 1.05em !important; // Reduzido de 1.15em
+      margin-top: 2.2rem !important; // Aumentado para maior distanciamento entre cláusulas no mobile
+      margin-bottom: 0.8rem !important;
+      font-size: 0.95em !important; // Reduzido conforme solicitado
     }
 
     &.legal-node-level-2 {

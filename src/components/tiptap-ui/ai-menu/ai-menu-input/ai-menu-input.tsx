@@ -99,9 +99,8 @@ export function ContractTypeSelector({
 
   if (disabled) {
     return (
-      <div className="h-7 px-2.5 gap-1.5 rounded-lg text-muted-foreground bg-muted/30 border border-border/40 flex items-center opacity-60">
-        <FileText className="w-3 h-3 shrink-0" />
-        <span className="text-[10px] font-bold tracking-widest uppercase">
+      <div className="h-7 px-0 pl-2.5 gap-1.5 text-muted-foreground flex items-center opacity-60">
+        <span className="text-[9px] font-bold tracking-widest uppercase">
           {cleanContractName(selectedType).toUpperCase()}
         </span>
       </div>
@@ -115,12 +114,11 @@ export function ContractTypeSelector({
           <Button
             type="button"
             variant="ghost"
-            className="h-7 px-2.5 gap-1.5 rounded-lg text-primary bg-primary/5 hover:bg-primary/10 border border-primary/20 transition-all duration-300"
+            className="h-7 px-0 pl-2.5 gap-1.5 text-primary transition-all duration-300 hover:bg-transparent"
           />
         }
       >
-        <FileText className="w-3 h-3 shrink-0" />
-        <span className="text-[10px] font-bold tracking-widest uppercase">
+        <span className="text-[9px] font-bold tracking-widest uppercase">
           {cleanContractName(selectedType).toUpperCase()}
         </span>
         <ChevronDown className="w-3 h-3 opacity-50 shrink-0" />
@@ -134,9 +132,9 @@ export function ContractTypeSelector({
           transform: `translateY(-50%)`
         }}
       >
-        <div className="p-2 border-b border-zinc-800 bg-zinc-900/50">
+        <div className="p-2.5 border-b border-zinc-800 bg-zinc-900/50">
           <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             {/* Honeypot hidden inputs to trick browser autofill */}
             <input style={{ display: 'none' }} aria-hidden="true" type="text" name="fake-email-ai" />
             <input style={{ display: 'none' }} aria-hidden="true" type="password" name="fake-password-ai" />
@@ -154,24 +152,24 @@ export function ContractTypeSelector({
               autoCapitalize="off"
               spellCheck={false}
               data-form-type="other"
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden"
+              className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-9 pr-3 py-2.5 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden"
             />
           </div>
         </div>
-        <div className="max-h-[140px] overflow-y-auto p-0 scrollbar-minimalist">
+        <div className="max-h-[280px] sm:max-h-[200px] overflow-y-auto p-0 scrollbar-minimalist">
           {filtered.length > 0 ? (
             filtered.map((type) => (
               <button 
                 key={type}
-                className="w-full flex items-center gap-2 px-3 py-1 rounded-none first:pt-1.5 last:pb-1.5 cursor-pointer group transition-colors text-left"
+                className="w-full flex items-center gap-3 px-4 py-3 sm:py-2.5 rounded-none first:pt-2 last:pb-2 cursor-pointer group transition-colors text-left hover:bg-transparent focus:bg-transparent"
                 onClick={() => {
                   onSelect(type)
                   setIsOpen(false)
                   setSearch("")
                 }}
               >
-                <div className="w-1.5 h-1.5 rounded-full bg-primary/40 group-hover:bg-primary transition-colors shrink-0" />
-                <span className="text-[12px] font-medium text-zinc-300 group-hover:text-primary truncate">{type}</span>
+                <div className="w-2 h-2 rounded-full bg-primary/40 group-hover:bg-primary transition-colors shrink-0" />
+                <span className="text-[13px] sm:text-[12px] font-medium text-zinc-300 group-hover:text-primary truncate uppercase tracking-tight">{type}</span>
               </button>
             ))
           ) : (
