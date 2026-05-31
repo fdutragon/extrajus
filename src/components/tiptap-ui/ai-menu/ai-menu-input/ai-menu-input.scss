@@ -252,7 +252,7 @@
   }
   .tiptap-ai-prompt-input {
     border-radius: 1.25rem !important; /* Mais arredondado no mobile */
-    width: calc(100vw - 2rem) !important; /* Quase largura total */
+    width: 100% !important;
     margin: 0 auto;
   }
   .tiptap-ai-prompt-input-content {

@@ -1270,8 +1270,6 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
     }
   }, [editor, fileName, readOnly])
 
-  const [showPremiumCta, setShowPremiumCta] = useState(true)
-
   return (
     <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden relative font-sans selection:bg-primary/30">
       <style dangerouslySetInnerHTML={{ __html: `
@@ -1742,32 +1740,13 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                     </div>
                   )}
                   <EditorContentArea />
-                  {editor && !editor.isEmpty && !aiGenerationIsLoading && (docType === "notificacao" || docType === "contrato") && editor.getText().length > 400 && (editor.getText().toLowerCase().includes("notificado") || editor.getText().toLowerCase().includes("assinatura") || editor.getText().toLowerCase().includes("contratante")) && showPremiumCta && (
-                    <div className="fixed inset-0 z-[1500] flex items-center justify-center p-4 bg-zinc-950/40 backdrop-blur-md animate-in fade-in duration-500">
-                      <div className="w-full max-w-[30rem] relative scale-110 sm:scale-125">
-                        <button 
-                          onClick={() => setShowPremiumCta(false)}
-                          className="absolute -top-14 right-0 text-white/50 hover:text-white transition-colors p-2 bg-white/5 rounded-full border border-white/10"
-                        >
-                          <X size={20} />
-                        </button>
-                        <ExportButton 
-                          isPublic={isPublic} 
-                          docType={docType} 
-                          title={fileName} 
-                          content={editor?.getHTML() || ""} 
-                          variant="premium" 
-                        />
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
           </main>
           
           {!readOnly && aiPromptOpen && (
-            <div className="absolute sm:bottom-12 fixed max-sm:bottom-8 left-1/2 -translate-x-1/2 w-full max-w-[30rem] z-[100] px-4 transition-all duration-500 animate-in fade-in slide-in-from-bottom-5 ai-prompt-wrapper">
+            <div className="absolute sm:bottom-12 max-sm:bottom-8 left-1/2 -translate-x-1/2 w-full max-w-[30rem] z-[100] px-4 transition-all duration-500 animate-in fade-in slide-in-from-bottom-5 ai-prompt-wrapper flex justify-center">
                <AiMenu plain={true} />
             </div>
           )}

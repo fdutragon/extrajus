@@ -207,7 +207,6 @@ export function AiPromptInputToolbar({
   isRecording = false,
   toggleRecording,
   hasMicSupport = false,
-  selectedContractType = null,
   onContractTypeSelect,
 }: {
   showPlaceholder?: boolean
@@ -217,7 +216,6 @@ export function AiPromptInputToolbar({
   isRecording?: boolean
   toggleRecording?: () => void
   hasMicSupport?: boolean
-  selectedContractType?: string | null
   onContractTypeSelect?: (type: string) => void
 }) {
   const [tone, setTone] = useState<Tone | null>(null)
@@ -244,10 +242,8 @@ export function AiPromptInputToolbar({
     >
       <ToolbarGroup className="flex items-center gap-2">
         <ContractTypeSelector 
-          selectedType={selectedContractType}
           onSelect={(type) => {
             onContractTypeSelect?.(type)
-            onInputSubmit(`Crie um ${type} profissional com todas as cláusulas essenciais...`)
           }} 
         />
       </ToolbarGroup>
@@ -565,6 +561,61 @@ export function AiMenuInputTextarea({
               toggleRecording={toggleRecording}
               hasMicSupport={!!recognition}
               selectedContractType={selectedContractType}
+              onContractTypeSelect={setSelectedContractType}
+            />
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+ctTypeSelect={setSelectedContractType}
+            />
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+e px-[0.7rem] py-[0.55rem] max-sm:px-[0.7rem] max-sm:py-[0.55rem] flex items-start z-30 pr-[0.7rem]">
+                    <span suppressHydrationWarning className="tiptap-ai-prompt-input-placeholder-text leading-[1.5] font-medium">
+                      {dynamicPlaceholder}
+                    </span>
+                  </div>
+                )}
+                <Combobox
+                  autoSelect={false}
+                  autoFocus={autoFocus}
+                  render={
+                    <TextareaAutosize
+                      onChange={(e) => setPromptValue(e.target.value)}
+                      value={promptValue}
+                      onKeyDown={handleKeyDown}
+                      onFocus={handleFocus}
+                      onBlur={handleTextareaBlur}
+                      className={cn(
+                        "tiptap-ai-prompt-input-content relative z-20",
+                        selectedContractType ? "pt-1.5" : "pt-[0.55rem]"
+                      )}
+                      placeholder=""
+                      autoFocus={autoFocus}
+                      style={{
+                        display: showPlaceholder ? "none" : "flex",
+                      }}
+                    />
+                  }
+                />
+              </div>
+            </div>
+
+            <AiPromptInputToolbar
+              showPlaceholder={showPlaceholder}
+              onInputSubmit={handleSubmit}
+              onToneChange={onToneChange}
+              isEmpty={!promptValue?.trim() && !selectedContractType}
+              isRecording={isRecording}
+              toggleRecording={toggleRecording}
+              hasMicSupport={!!recognition}
               onContractTypeSelect={setSelectedContractType}
             />
           </>
