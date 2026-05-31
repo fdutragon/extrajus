@@ -1757,7 +1757,18 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               </div>
               <div className="relative mb-6 shrink-0">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={14} />
-                <input type="text" placeholder="Filtrar documentos..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-muted/30 border border-border/60 rounded-xl pl-8 pr-3 py-2 text-xs placeholder:text-muted-foreground/40 font-semibold" />
+                <input 
+                  type="text" 
+                  placeholder="Filtrar documentos..." 
+                  value={searchQuery} 
+                  onChange={(e) => setSearchQuery(e.target.value)} 
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck={false}
+                  data-form-type="other"
+                  className="w-full bg-muted/30 border border-border/60 rounded-xl pl-8 pr-3 py-2 text-xs placeholder:text-muted-foreground/40 font-semibold" 
+                />
               </div>
               <ScrollArea className="flex-1 w-full">
                 <div className="space-y-6 pb-6">
