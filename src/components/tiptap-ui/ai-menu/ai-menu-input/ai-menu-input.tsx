@@ -11,7 +11,7 @@ import type { Tone } from "../../../../components/tiptap-extension/gemini-ai-ext
 // Icons
 import { MicAiIcon } from "../../../../components/tiptap-icons/mic-ai-icon"
 import { AiSparklesIcon } from "../../../../components/tiptap-icons/ai-sparkles-icon"
-import { BrainCircuit, StopCircle as StopCircle2Icon, ArrowUp as ArrowUpIcon, Mic, MicOff, Search, FileText, ChevronDown, X } from "lucide-react"
+import { BrainCircuit, StopCircle as StopCircle2Icon, ArrowUp as ArrowUpIcon, Mic, MicOff, Search, FileText, ChevronDown, X, Cloud } from "lucide-react"
 
 // UI Components
 import { SUPPORTED_TONES } from "../../../../components/tiptap-ui/ai-menu"
@@ -73,7 +73,41 @@ export function ContractTypeSelector({
 }) {
   const [search, setSearch] = useState("")
   const [isOpen, setIsOpen] = useState(false)
+  const [isInstalled, setIsInstalled] = useState(false)
   const { editor } = useTiptapEditor()
+
+  useEffect(() => {
+    // Função unificada de detecção de PWA
+    const checkInstallation = () => {
+      if (typeof window === "undefined") return false
+      
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
+      const isNavStandalone = (window.navigator as any).standalone === true
+      const isReferrerPwa = document.referrer.includes('android-app://') // Android TWA detection
+      
+      return isStandalone || isNavStandalone || isReferrerPwa
+    }
+
+    // Verifica estado inicial imediatamente
+    setIsInstalled(checkInstallation())
+
+    const handleStatusChange = (e: any) => {
+      setIsInstalled(!!e.detail?.installed || checkInstallation())
+    }
+
+    // Listener para mudanças dinâmicas e evento customizado
+    window.addEventListener("pwa-installed-status-changed", handleStatusChange)
+    
+    // Adiciona listener para mudança de display-mode (caso o usuário instale sem fechar)
+    const mediaQuery = window.matchMedia('(display-mode: standalone)')
+    const handleMediaChange = (e: MediaQueryListEvent) => setIsInstalled(e.matches)
+    mediaQuery.addEventListener('change', handleMediaChange)
+
+    return () => {
+      window.removeEventListener("pwa-installed-status-changed", handleStatusChange)
+      mediaQuery.removeEventListener('change', handleMediaChange)
+    }
+  }, [])
 
   const filtered = CONTRACT_TYPES.filter(type => 
     type.toLowerCase().includes(search.toLowerCase())
@@ -86,6 +120,14 @@ export function ContractTypeSelector({
       e.preventDefault()
       e.stopPropagation()
       
+      if (isInstalled) {
+        toast.success("Seu progresso está sendo sincronizado no armazenamento local e na nuvem.", {
+          icon: <Cloud className="w-4 h-4 text-emerald-500" />,
+          duration: 3000
+        })
+        return
+      }
+
       // Abre o modal personalizado de instalação (funciona em mobile e pc)
       window.dispatchEvent(new CustomEvent("open-pwa-modal"))
       return
@@ -101,16 +143,32 @@ export function ContractTypeSelector({
             variant="ghost"
             onClick={handleSaveClick}
             className={cn(
-              "h-7 px-0 pl-2.5 gap-1.5 transition-all duration-300 hover:bg-transparent",
-              isEditing ? "text-muted-foreground opacity-90" : "text-primary"
+              "h-7 px-0 pl-2.5 gap-2 transition-all duration-500 hover:bg-transparent flex items-center",
+              isEditing ? "opacity-100" : "text-primary hover:opacity-80"
             )}
           />
         }
       >
-        <span className="text-[9px] font-bold tracking-widest uppercase">
-          {isEditing ? "SALVAR CONTRATO" : cleanContractName(selectedType).toUpperCase()}
-        </span>
-        {!isEditing && <ChevronDown className="w-3 h-3 opacity-50 shrink-0" />}
+        <div className="flex items-center gap-1.5">
+          {isEditing && (
+            <div className={cn(
+              "w-1 h-1 rounded-full shrink-0 transition-all duration-500",
+              isInstalled ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]" : "bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.6)]"
+            )} />
+          )}
+          <span className={cn(
+            "text-[8.5px] font-black tracking-[0.15em] uppercase transition-colors duration-500",
+            isEditing 
+              ? (isInstalled ? "text-emerald-500/90" : "text-emerald-500 animate-pulse-subtle") 
+              : "text-primary/90"
+          )}>
+            {isEditing 
+              ? (isInstalled ? "CONTRATO SALVO" : "SALVAR CONTRATO") 
+              : cleanContractName(selectedType).toUpperCase()
+            }
+          </span>
+          {!isEditing && <ChevronDown className="w-3 h-3 opacity-30 shrink-0" />}
+        </div>
       </DialogTrigger>
 
       <DialogContent 

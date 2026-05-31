@@ -269,7 +269,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
               <div>
                 <div className="text-[0.625rem] max-sm:text-[0.7rem] font-black text-muted-foreground/60 uppercase tracking-widest mb-0.5">Investimento Único</div>
                 <div className="flex items-baseline gap-1.5 max-sm:gap-1.5">
-                  <span className="text-[1.75rem] max-sm:text-[1.8rem] font-black text-foreground">R$ 29,00</span>
+                  <span className="text-[1.75rem] max-sm:text-[1.8rem] font-black text-foreground">R$ 37,00</span>
                   <span className="text-[0.625rem] max-sm:text-[0.75rem] font-bold text-muted-foreground uppercase">/ download</span>
                 </div>
               </div>
@@ -336,7 +336,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                 <Button 
                   type="submit" 
                   disabled={loading}
-                  className="w-full h-11 max-sm:h-12 mt-[18px] bg-primary text-primary-foreground hover:bg-primary/90 font-black uppercase tracking-[0.1em] rounded-xl transition-all shadow-[0_4px_15px_rgba(var(--primary-rgb),0.3)] hover:shadow-[0_4px_25px_rgba(var(--primary-rgb),0.5)] flex items-center justify-center gap-2"
+                  className="w-full h-11 max-sm:h-12 mt-[18px] bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-[0.1em] rounded-xl transition-all shadow-[0_4px_15px_rgba(16,185,129,0.3)] hover:shadow-[0_4px_25px_rgba(16,185,129,0.5)] flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <>
@@ -346,7 +346,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                   ) : (
                     <>
                       <Zap size={18} />
-                      Gerar PIX de R$ 29,00
+                      Gerar PIX de R$ 37,00
                     </>
                   )}
                 </Button>

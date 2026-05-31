@@ -11,6 +11,16 @@ export function NativePwaHandler() {
   const hasTriggered = useRef(false)
 
   useEffect(() => {
+    // Verifica se já está rodando como PWA (instalado)
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone
+    
+    // Pequeno delay para garantir que os listeners de outros componentes já foram registrados
+    if (isStandalone) {
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent("pwa-installed-status-changed", { detail: { installed: true } }))
+      }, 500)
+    }
+
     const handleBeforeInstallPrompt = (e: Event) => {
       // Impede que o navegador mostre o banner automático imediatamente
       e.preventDefault()
@@ -63,6 +73,18 @@ export function NativePwaHandler() {
     window.addEventListener("appinstalled", () => {
       deferredPrompt.current = null
       hasTriggered.current = true
+      window.dispatchEvent(new CustomEvent("pwa-installed-status-changed", { detail: { installed: true } }))
+      
+      // Tenta abrir o app ou informar que já pode ser aberto
+      toast.success("ExtraJus instalada! Abrindo o aplicativo...", {
+        duration: 3000
+      })
+      
+      // Nota: Não é possível forçar o fechamento do browser e abertura do app de forma silenciosa por segurança,
+      // mas podemos redirecionar para a home para forçar o reconhecimento do display-mode se suportado
+      setTimeout(() => {
+        window.location.href = '/'
+      }, 2000)
     })
 
     return () => {

@@ -31,44 +31,44 @@ export function PwaInstallModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[500px] max-w-[calc(100vw-2rem)] p-0 overflow-hidden border-zinc-800 bg-zinc-950 shadow-2xl">
+      <DialogContent className="sm:max-w-[600px] max-w-[calc(100vw-2rem)] p-0 overflow-hidden border-zinc-800 bg-zinc-950 shadow-2xl">
         <div className="relative p-10 flex flex-col items-center text-center">
           
-          <div className="h-16 w-16 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-6 shadow-inner group transition-all duration-500 hover:border-primary/50">
+          <div className="h-14 w-16 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-6 shadow-inner group transition-all duration-500 hover:border-primary/50">
              {platform === "mobile" ? (
-               <Smartphone className="w-8 h-8 text-primary animate-pulse" />
+               <Smartphone className="w-7 h-7 text-primary animate-pulse" />
              ) : (
-               <Monitor className="w-8 h-8 text-primary animate-pulse" />
+               <Monitor className="w-7 h-7 text-primary animate-pulse" />
              )}
           </div>
 
           <DialogHeader className="mb-8">
-            <DialogTitle className="text-3xl font-black tracking-tighter text-white uppercase italic">
-              Ative o Salvamento Automático
+            <DialogTitle className="text-2xl font-black tracking-tighter text-white uppercase italic">
+              Salvamento Automático
             </DialogTitle>
-            <DialogDescription className="text-zinc-400 text-base leading-relaxed mt-4 max-w-md mx-auto">
+            <DialogDescription className="text-zinc-500 text-sm leading-relaxed mt-3 max-w-md mx-auto font-medium">
               Garanta que sua obra nunca seja perdida. Transforme a ExtraJus em um aplicativo de elite.
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full mb-8">
             <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] text-center transition-all hover:bg-white/[0.05]">
-              <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-                <Cloud className="w-5 h-5 text-emerald-500" />
+              <div className="h-9 w-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                <Cloud className="w-4 h-4 text-emerald-500" />
               </div>
               <div>
-                <p className="text-[12px] font-black text-zinc-100 uppercase tracking-tighter mb-1">Edição sem Limites</p>
-                <p className="text-[10px] text-zinc-500 leading-tight">Salve e edite seu modelo quando quiser.</p>
+                <p className="text-[13px] font-black text-zinc-100 uppercase tracking-tighter mb-1">Edição sem Limites</p>
+                <p className="text-[13px] text-zinc-400 font-medium leading-tight">Salve e edite seu modelo quando quiser.</p>
               </div>
             </div>
 
             <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] text-center transition-all hover:bg-white/[0.05]">
-              <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(245,158,11,0.1)]">
-                <Zap className="w-5 h-5 text-amber-500" />
+              <div className="h-9 w-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
+                <Zap className="w-4 h-4 text-amber-500" />
               </div>
               <div>
-                <p className="text-[12px] font-black text-zinc-100 uppercase tracking-tighter mb-1">Instalação Instantânea</p>
-                <p className="text-[10px] text-zinc-500 leading-tight">Instale em segundos sem sair do site.</p>
+                <p className="text-[13px] font-black text-zinc-100 uppercase tracking-tighter mb-1">Instalação Instantânea</p>
+                <p className="text-[13px] text-zinc-400 font-medium leading-tight">Instale em segundos sem sair do site.</p>
               </div>
             </div>
           </div>
