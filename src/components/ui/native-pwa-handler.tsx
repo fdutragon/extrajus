@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef } from "react"
+import { toast } from "sonner"
 
 /**
  * Componente silencioso que gerencia o prompt nativo de instalação do PWA.

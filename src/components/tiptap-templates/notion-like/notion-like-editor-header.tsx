@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils"
 import "../../../components/tiptap-templates/notion-like/notion-like-editor-header.scss"
 import { SignModal } from "../../../components/tiptap-ui/sign-modal/sign-modal"
 import { createClient } from "@/utils/supabase/client"
+import { Logo } from "@/components/ui/logo"
 
 export function NotionEditorHeader() {
   const { room } = useCollab()
@@ -105,12 +106,12 @@ export function NotionEditorHeader() {
       <div className="flex items-center gap-3">
         <Link href="/dashboard">
           <Button variant="ghost" size="icon" className="h-7 w-7 max-sm:h-10 max-sm:w-10 hover:bg-primary/10 hover:text-primary rounded-lg max-sm:rounded-xl transition-all">
-            <ChevronLeft className="w-4 h-4 max-sm:w-[18px] max-sm:h-[18px]" />
+            <ChevronLeft className="w-4 h-4 max-sm:w-[22px] max-sm:h-[22px]" />
           </Button>
         </Link>
-        <div className="flex items-baseline gap-2 group cursor-default">
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary transition-all">Cânone</span>
-          <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest opacity-60">v2.4.0</span>
+        <div className="flex items-center gap-2 group cursor-default">
+          <Logo showText={true} iconSize={typeof window !== 'undefined' && window.innerWidth < 1024 ? 28 : 22} variant="chrome" />
+          <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest opacity-60 hidden sm:block">v2.4.0</span>
         </div>
         
         <Separator orientation="vertical" className="h-4 mx-1 opacity-20" />
@@ -122,7 +123,7 @@ export function NotionEditorHeader() {
       </div>
 
       {/* Center: Document Title - The Soul of the Contract */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-3 group cursor-default">
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-3 group cursor-default max-sm:hidden">
         <div className="w-1 h-4 bg-primary/20 group-hover:bg-primary transition-all rounded-full" />
         <div className="flex items-center gap-2">
           <FileText size={12} className="text-muted-foreground group-hover:text-primary transition-colors" />
@@ -133,16 +134,17 @@ export function NotionEditorHeader() {
 
       {/* Right: Collaboration & The Ritual */}
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2 pr-2 border-r border-border">
+        <div className="flex items-center gap-2 pr-2 border-r border-border max-sm:pr-0 max-sm:border-r-0">
           {/* Sinapses Balance Pill */}
           <Button
             variant="ghost"
             size="sm"
             onClick={handleOpenPlans}
-            className="h-7 gap-1.5 px-3 rounded-lg text-primary hover:bg-primary/10 transition-all font-bold text-[9px] uppercase tracking-widest flex items-center border border-primary/20 bg-primary/5 hover:border-primary/45 shadow-sm shadow-primary/5 group"
+            className="h-7 gap-1.5 px-3 rounded-lg text-primary hover:bg-primary/10 transition-all font-bold text-[10px] max-sm:text-[11px] uppercase tracking-widest flex items-center border border-primary/20 bg-primary/5 hover:border-primary/45 shadow-sm shadow-primary/5 group"
           >
-            <Brain size={12} className="text-primary animate-pulse shrink-0 group-hover:scale-110 transition-transform" />
-            <span>{credits !== null ? `${credits} Sinapses` : "..."}</span>
+            <Brain size={14} className="text-primary animate-pulse shrink-0 group-hover:scale-110 transition-transform" />
+            <span className="max-sm:hidden">{credits !== null ? `${credits} Sinapses` : "..."}</span>
+            <span className="sm:hidden">{credits !== null ? credits : "..."}</span>
           </Button>
 
           <Button 

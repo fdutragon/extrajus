@@ -1526,31 +1526,35 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             </div>
           )}
 
+          <div className="flex items-center gap-2 group cursor-default">
+            <Logo showText={true} iconSize={typeof window !== 'undefined' && window.innerWidth < 1024 ? 28 : 22} variant="chrome" />
+          </div>
+
           {/* ThemeToggle no início apenas no mobile */}
           <div className="sm:hidden flex items-center">
             <ThemeToggle />
           </div>
 
           {!readOnly && (
-            <div className="flex items-center gap-0 h-8">
+            <div className="flex items-center gap-0.5 h-9">
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setFontSize(prev => Math.max(12, prev - 1))}
-                className="h-8 w-8 text-muted-foreground hover:text-foreground dark:hover:bg-primary/5 rounded-full transition-all flex items-center justify-center p-0 border border-transparent hover:border-border/40"
+                className="h-9 w-9 text-muted-foreground hover:text-foreground dark:hover:bg-primary/5 rounded-full transition-all flex items-center justify-center p-0 border border-transparent hover:border-border/40"
               >
-                <Minus className="w-3.5 h-3.5" />
+                <Minus className="w-4 h-4" />
               </Button>
-              <div className="flex items-center px-[2px] justify-center select-none">
-                <span className="text-[10.5px] font-black text-foreground/80">{fontSize}</span>
+              <div className="flex items-center px-1 justify-center select-none min-w-[24px]">
+                <span className="text-[12px] font-black text-foreground/80">{fontSize}</span>
               </div>
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setFontSize(prev => Math.min(26, prev + 1))}
-                className="h-8 w-8 text-muted-foreground hover:text-foreground dark:hover:bg-primary/5 rounded-full transition-all flex items-center justify-center p-0 border border-transparent hover:border-border/40"
+                className="h-9 w-9 text-muted-foreground hover:text-foreground dark:hover:bg-primary/5 rounded-full transition-all flex items-center justify-center p-0 border border-transparent hover:border-border/40"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-4 h-4" />
               </Button>
             </div>
           )}
