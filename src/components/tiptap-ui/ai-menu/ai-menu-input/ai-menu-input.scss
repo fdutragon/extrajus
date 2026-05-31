@@ -246,7 +246,7 @@
 @media screen and (max-width: 640px) {
   .tiptap-ai-prompt-input-inner {
     padding: 0.75rem 0.85rem !important; /* Aumentado padding */
-    border-radius: 1rem !important;
+    border-radius: calc(1.25rem - 1.5px) !important; /* Sincronizado com o pai para não sobrar espaço nas curvas */
     gap: 0.4rem !important; /* Aumentado gap */
     backdrop-filter: none !important;
   }
@@ -254,6 +254,8 @@
     border-radius: 1.25rem !important; /* Mais arredondado no mobile */
     width: 100% !important;
     margin: 0 auto;
+    padding: 1.5px !important; /* Leve aumento para garantir visibilidade da cor na curva */
+    background: var(--tiptap-ai-prompt-input-border-color) !important; /* Força a cor da borda */
   }
   .tiptap-ai-prompt-input-content {
     min-height: 4.5rem !important; /* Aumentado altura mínima significativamente */
