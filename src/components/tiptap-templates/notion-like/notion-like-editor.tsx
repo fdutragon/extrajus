@@ -1288,14 +1288,21 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         return true
       })
 
-      if (firstH1 && firstH1 !== fileName && firstH1.length > 2) {
+      if (firstH1 && firstH1.length > 2) {
         // Limpa possíveis colchetes ou espaços sobressalentes
         const cleanTitle = firstH1
           .replace(/[\[\]]/g, "")
           .trim()
         
         if (cleanTitle) {
-          setFileName(cleanTitle)
+          if (cleanTitle !== fileName) {
+            setFileName(cleanTitle)
+          }
+
+          // Sincroniza de volta para o estado global da IA se estiver vazio ou genérico
+          if (!state.selectedContractType || state.selectedContractType === "Modelos") {
+            updateState({ selectedContractType: cleanTitle })
+          }
         }
       }
     }
@@ -1594,9 +1601,9 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
 
         {/* Centralized AI Brand Name only for mobile screen */}
         {!readOnly && (
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:hidden z-[110] flex items-center gap-1.5 select-none whitespace-nowrap pt-3">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:hidden z-[110] flex items-center gap-2 select-none whitespace-nowrap pt-3">
             {/* Custom Elegant ExtraJus IA Icon for mobile */}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-zinc-500 dark:text-zinc-300 relative z-10 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.35)] animate-pulse shrink-0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-[22px] h-[22px] text-zinc-500 dark:text-zinc-300 relative z-10 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.35)] animate-pulse shrink-0">
               <line x1="12" y1="3" x2="12" y2="21" />
               <path d="M5 8h14" />
               <path d="M5 8v2c0 2 2 3 5 3" />
@@ -1607,7 +1614,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             </svg>
             <div 
               style={{ fontFamily: "'Cinzel', 'Cambria', 'Georgia', serif" }}
-              className="text-[8.5px] font-bold tracking-[0.18em] uppercase bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-800 dark:from-zinc-400 dark:via-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent filter drop-shadow-[0_0_8px_rgba(255,255,255,0.25)]"
+              className="text-[10.5px] font-bold tracking-[0.18em] uppercase bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-800 dark:from-zinc-400 dark:via-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent filter drop-shadow-[0_0_8px_rgba(255,255,255,0.25)]"
             >
               ExtraJus IA
             </div>
@@ -1780,7 +1787,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         </>)}
 
         <div className="flex-1 relative flex flex-col min-w-0 overflow-hidden">
-          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent max-sm:p-0 sm:p-4 pt-[4.5rem] max-sm:pt-[6.5rem] sm:pt-[4rem] relative z-10">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent max-sm:p-0 sm:p-4 pt-[4.5rem] max-sm:pt-[8.5rem] sm:pt-[4rem] sm:pb-32 relative z-10">
             {/* Subtle occult background glow behind the sheet */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/3 dark:bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse duration-[6000ms] max-sm:hidden" />
 
@@ -2065,7 +2072,6 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
           </aside>
         </>)}
 
-        <GoogleAdsOnboarding />
       </div>
     </div>
   )

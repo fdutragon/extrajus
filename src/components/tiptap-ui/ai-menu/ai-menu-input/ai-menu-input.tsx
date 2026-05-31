@@ -99,7 +99,7 @@ export function ContractTypeSelector({
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="start" className="w-80 sm:w-96 p-0 overflow-hidden bg-zinc-950 border-zinc-800 shadow-2xl z-[3000]">
+      <DropdownMenuContent align="start" side="top" sideOffset={10} className="w-80 sm:w-96 p-0 overflow-hidden bg-zinc-950 border-zinc-800 shadow-2xl z-[3000]">
         <div className="p-2 border-b border-zinc-800 bg-zinc-900/50">
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -108,6 +108,11 @@ export function ContractTypeSelector({
               placeholder="Buscar contrato..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
+              data-form-type="other"
               className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
             />
           </div>
@@ -574,6 +579,11 @@ export function AiMenuInputTextarea({
                       onKeyDown={handleKeyDown}
                       onFocus={handleFocus}
                       onBlur={handleTextareaBlur}
+                      autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="off"
+                      spellCheck={false}
+                      data-form-type="other"
                       className={cn(
                         "tiptap-ai-prompt-input-content relative z-20",
                         "pt-[0.55rem]"
