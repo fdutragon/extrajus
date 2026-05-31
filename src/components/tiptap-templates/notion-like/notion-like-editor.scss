@@ -62,7 +62,7 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.08em;
     padding-bottom: 1.1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 2.5rem;
     position: relative;
 
     &::after {
@@ -88,7 +88,7 @@ body {
     @media screen and (max-width: 768px) {
       font-size: 1.4em;
       padding-bottom: 0.5rem;
-      margin-bottom: 0.75rem;
+      margin-bottom: 1.5rem;
       letter-spacing: 0.04em;
 
       &::after {
@@ -124,15 +124,15 @@ body {
   }
 
   h2 {
-    font-size: 1.25rem;
+    font-size: 0.95rem; /* Reduzido de 1.1rem */
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.08em; /* Aumentado levemente o espaçamento para compensar o tamanho menor */
     position: relative;
-    padding-left: 1.25rem;
-    margin-top: 2.25rem;
-    margin-bottom: 1.25rem;
+    padding-left: 1rem;
+    margin-top: 1.75rem;
+    margin-bottom: 0.85rem;
     color: var(--foreground);
-    font-weight: 900;
+    font-weight: 800;
     display: flex;
     align-items: center;
 
@@ -140,22 +140,22 @@ body {
       content: '';
       position: absolute;
       left: 0;
-      top: 12.5%;
-      height: 75%;
-      width: 4.5px;
+      top: 15%;
+      height: 70%;
+      width: 3.5px;
       border-radius: 99px;
       background: linear-gradient(180deg, var(--primary) 0%, #a855f7 100%);
       box-shadow: 0 0 10px rgba(139, 92, 246, 0.35);
     }
 
     @media screen and (max-width: 768px) {
-      font-size: 1.15rem;
-      padding-left: 1rem;
-      margin-top: 1.75rem;
-      margin-bottom: 1rem;
+      font-size: 0.85rem; /* Reduzido de 1rem */
+      padding-left: 0.85rem;
+      margin-top: 1.25rem;
+      margin-bottom: 0.65rem;
 
       &::before {
-        width: 3.5px;
+        width: 3px;
         height: 70%;
         top: 15%;
       }
@@ -163,13 +163,15 @@ body {
   }
 
   h3 {
-    font-size: 1.05rem;
-    letter-spacing: 0.02em;
-    margin-top: 1.75rem;
+    font-size: 0.85rem; /* Reduzido de 0.95rem */
+    letter-spacing: 0.04em;
+    margin-top: 1.25rem;
+    font-weight: 800;
+    text-transform: uppercase;
 
     @media screen and (max-width: 768px) {
-      font-size: 1.2rem;
-      margin-top: 1.25rem;
+      font-size: 0.8rem; /* Reduzido de 1.05rem */
+      margin-top: 1rem;
       margin-bottom: 0.5rem;
     }
   }
@@ -216,8 +218,10 @@ body {
   }
 
   hr {
-    margin: 3rem auto;
-    margin-bottom: 4rem; /* Espaço extra abaixo do divisor */
+    margin-top: 2.5rem;
+    margin-bottom: 3.5rem;
+    margin-left: auto;
+    margin-right: auto;
     border: 0;
     height: 1.5px;
     width: 35%;
@@ -232,8 +236,8 @@ body {
     opacity: 0.75;
 
     @media screen and (max-width: 768px) {
-      margin: 2.25rem auto;
-      margin-bottom: 3.5rem; /* Espaço extra abaixo do divisor mobile */
+      margin-top: 2rem;
+      margin-bottom: 2.5rem;
       width: 45%;
     }
   }

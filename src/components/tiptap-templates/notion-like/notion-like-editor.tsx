@@ -501,6 +501,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly }: { isP
         origBodyHeight = body.style.height || ""
         origBodyPosition = body.style.position || ""
         origBodyWidth = body.style.width || ""
+        const scrollY = window.scrollY
 
         html.style.overflow = "hidden"
         html.style.height = "100dvh"
@@ -508,18 +509,24 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly }: { isP
         body.style.height = "100dvh"
         body.style.position = "fixed"
         body.style.width = "100%"
+        body.style.top = `-${scrollY}px` // Mantém a posição visual
         isLocked = true
       }
     }
 
     const unlockBodyScroll = () => {
       if (isLocked) {
+        const scrollY = body.style.top ? parseInt(body.style.top || '0') * -1 : 0
+        
         html.style.overflow = origHtmlOverflow
         html.style.height = origHtmlHeight
         body.style.overflow = origBodyOverflow
         body.style.height = origBodyHeight
         body.style.position = origBodyPosition
         body.style.width = origBodyWidth
+        body.style.top = ""
+        
+        window.scrollTo(0, scrollY) // Restaura o scroll real
         isLocked = false
       }
     }
@@ -929,38 +936,64 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly }: { isP
     let foundObject = isNotification ? true : false
     
     editor.state.doc.descendants((node: any, pos: number) => {
-      const isTargetNode = isNotification
-        ? ((node.type.name === "heading" && (node.attrs.level === 1 || node.attrs.level === 2)) ||
-           (node.type.name === "notificationNode" && node.attrs.level === 1))
-        : ((node.type.name === "heading" && (node.attrs.level === 1 || node.attrs.level === 2)) ||
-           (node.type.name === "legalNode" && node.attrs.level === 1))
+      const text = node.textContent.trim()
+      const titleUpper = text.toUpperCase()
+
+      // Define o que consideramos um "nó alvo" (cláusula)
+      let isTargetNode = false
+
+      if (isNotification) {
+        isTargetNode = (node.type.name === "heading" && (node.attrs.level === 1 || node.attrs.level === 2)) ||
+                       (node.type.name === "notificationNode" && node.attrs.level === 1)
+      } else {
+        // Para contratos, aceitamos Headings, LegalNodes nível 1, ou parágrafos curtos que pareçam títulos de cláusula
+        isTargetNode = (node.type.name === "heading" && (node.attrs.level === 1 || node.attrs.level === 2)) ||
+                       (node.type.name === "legalNode" && node.attrs.level === 1) ||
+                       (node.type.name === "paragraph" && text.length > 5 && text.length < 80 && (titleUpper.includes("CLÁUSULA") || titleUpper.includes("DO OBJETO") || titleUpper.includes("DAS OBRIGAÇÕES") || titleUpper.includes("DO PREÇO") || titleUpper.includes("DO FORO")))
+      }
 
       if (isTargetNode) {
-        const title = node.textContent.trim().toUpperCase()
-        
         if (!isNotification) {
-          // Critério de início: Ignora tudo antes da primeira menção a "OBJETO" ou se for puramente nomes de partes
-          if (!foundObject && (title.includes("OBJETO") || title.includes("DO OBJETO"))) {
+          // Critério de início: Ignora tudo antes da primeira menção a "OBJETO"
+          if (!foundObject && (titleUpper.includes("OBJETO") || titleUpper.includes("DO OBJETO"))) {
             foundObject = true
           }
 
-          // Critério de parada: Para de adicionar se chegar no "FORO"
-          if (title.includes("FORO") || title.includes("DO FORO")) {
+          // Critério de parada: Para de adicionar se chegar no "FORO" ou Assinaturas
+          if (titleUpper.includes("FORO") || titleUpper.includes("DO FORO") || titleUpper.includes("ASSINATURA")) {
             return false
           }
         }
 
-        // Só adiciona se já tiver passado pelas qualificações
+        // Só adiciona se já tiver passado pelas qualificações (ou se for notificação, que sempre é true)
         if (foundObject) {
           clauses.push({
             id: `clause-${pos}`,
-            title: node.textContent.trim(),
+            title: text,
             pos
           })
         }
       }
       return true
     })
+
+    // Fallback de resiliência: se o documento tiver texto, mas não achou os padrões estritos acima (ex: colagem pura), 
+    // tenta achar pelo menos os títulos em negrito (paragraphs curtos)
+    if (clauses.length === 0 && editor.getText().length > 150) {
+       editor.state.doc.descendants((node: any, pos: number) => {
+         const text = node.textContent.trim()
+         if (node.type.name === "paragraph" && text.length > 5 && text.length < 100 && /^[A-Z0-9]/.test(text)) {
+           // Checa se o texto tem formatação bold ou se está em caixa alta
+           const isUpperCase = text === text.toUpperCase()
+           const hasBoldMark = node.marks && node.marks.some((m: any) => m.type.name === "bold")
+           
+           if (isUpperCase || hasBoldMark) {
+             clauses.push({ id: `clause-fb-${pos}`, title: text, pos })
+           }
+         }
+       })
+    }
+
     return clauses
   }
 
@@ -1720,7 +1753,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         </>)}
 
         <div className="flex-1 relative flex flex-col min-w-0 overflow-hidden">
-          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent max-sm:p-0 sm:p-[clamp(1rem,2vw,2rem)] pt-[4.5rem] max-sm:pt-[3.5rem] sm:pt-[calc(clamp(1.5rem,3vh,2.5rem)+1rem)] relative z-10">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent max-sm:p-0 sm:p-4 pt-[4.5rem] max-sm:pt-[3.5rem] sm:pt-[4rem] relative z-10">
             {/* Subtle occult background glow behind the sheet */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/3 dark:bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse duration-[6000ms] max-sm:hidden" />
 
@@ -1729,7 +1762,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               "w-full max-w-full lg:max-w-[clamp(37.5rem,45vw,56.25rem)] mx-auto editor-glow-container max-sm:!p-0 max-sm:!rounded-none transition-all duration-700 shadow-2xl max-sm:shadow-none",
               (showEntranceGlow || editorFocused) && "glowing"
             )}>
-              <div className="w-full h-full sm:bg-card/90 sm:dark:bg-card/75 sm:backdrop-blur-xl sm:rounded-[30px] max-sm:rounded-none px-4 max-sm:px-0 py-8 max-sm:pt-6 max-sm:pb-64 sm:px-[clamp(2.5rem,5.5vw,5.5rem)] sm:py-[clamp(2.5rem,4.5vw,5.5rem)] relative min-h-[50rem] md:min-h-[74.25rem] editor-glow-content max-sm:bg-transparent max-sm:backdrop-blur-none max-sm:shadow-none">
+              <div className="w-full h-full sm:bg-card/90 sm:dark:bg-card/75 sm:backdrop-blur-xl sm:rounded-[30px] max-sm:rounded-none px-4 max-sm:px-0 py-8 max-sm:pt-6 max-sm:pb-64 sm:px-8 sm:py-12 relative min-h-[50rem] md:min-h-[74.25rem] editor-glow-content max-sm:bg-transparent max-sm:backdrop-blur-none max-sm:shadow-none">
                 {/* Grain overlay for paper feel */}
                 <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-[30px] max-sm:hidden" />
 
