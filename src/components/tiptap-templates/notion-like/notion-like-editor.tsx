@@ -1299,8 +1299,10 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             setFileName(cleanTitle)
           }
 
-          // Sincroniza de volta para o estado global da IA se estiver vazio ou genérico
-          if (!state.selectedContractType || state.selectedContractType === "Modelos") {
+          // Sincroniza RIGOROSAMENTE o estado global da IA com o título do documento.
+          // Isso garante que após a primeira edição, ou se o usuário alterar o H1,
+          // o prompt da IA (que usa o selectedContractType) não perca o nome do contrato.
+          if (state.selectedContractType !== cleanTitle) {
             updateState({ selectedContractType: cleanTitle })
           }
         }

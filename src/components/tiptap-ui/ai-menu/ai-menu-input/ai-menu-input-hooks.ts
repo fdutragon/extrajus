@@ -8,10 +8,7 @@ export function useKeyboardHandlers(
 ) {
   return useCallback(
     (event: React.KeyboardEvent) => {
-      if (isHotkey("backspace", event) && !promptValue?.length) {
-        event.preventDefault()
-        onClose?.()
-      } else if (isHotkey("enter", event) && !event.shiftKey) {
+      if (isHotkey("enter", event) && !event.shiftKey) {
         event.preventDefault()
         onInputSubmit?.()
       } else if (isHotkey("escape", event)) {
@@ -19,7 +16,7 @@ export function useKeyboardHandlers(
         onClose?.()
       }
     },
-    [promptValue, onClose, onInputSubmit]
+    [onInputSubmit, onClose]
   )
 }
 

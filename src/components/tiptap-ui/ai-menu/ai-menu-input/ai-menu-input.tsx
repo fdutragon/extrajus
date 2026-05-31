@@ -30,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from "../../../../components/tiptap-ui-primitive/dropdown-menu"
 import { TextareaAutosize } from "../../../../components/tiptap-ui-primitive/textarea-autosize"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 
 import {
   useBlurHandler,
@@ -70,7 +71,7 @@ export function ContractTypeSelector({
 
   const filtered = CONTRACT_TYPES.filter(type => 
     type.toLowerCase().includes(search.toLowerCase())
-  ).slice(0, search ? 10 : 4)
+  )
 
   if (disabled) {
     return (
@@ -84,26 +85,27 @@ export function ContractTypeSelector({
   }
 
   return (
-    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-      <DropdownMenuTrigger asChild>
-        <Button
-          type="button"
-          variant="ghost"
-          className="h-7 px-2 gap-1.5 rounded-lg text-primary bg-primary/5 hover:bg-primary/10 border border-primary/20 transition-all duration-300 max-w-[200px]"
-        >
-          <FileText className="w-3 h-3 shrink-0" />
-          <span className="text-[9.5px] font-medium tracking-wide truncate">
-            {selectedType || "Modelos"}
-          </span>
-          <ChevronDown className="w-3 h-3 opacity-50 shrink-0" />
-        </Button>
-      </DropdownMenuTrigger>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger 
+        render={
+          <Button
+            type="button"
+            variant="ghost"
+            className="h-7 px-2 gap-1.5 rounded-lg text-primary bg-primary/5 hover:bg-primary/10 border border-primary/20 transition-all duration-300 max-w-[200px]"
+          />
+        }
+      >
+        <FileText className="w-3 h-3 shrink-0" />
+        <span className="text-[9.5px] font-medium tracking-wide truncate">
+          {selectedType || "Modelos"}
+        </span>
+        <ChevronDown className="w-3 h-3 opacity-50 shrink-0" />
+      </DialogTrigger>
 
-      <DropdownMenuContent align="start" side="top" sideOffset={10} className="w-80 sm:w-96 p-0 overflow-hidden bg-zinc-950 border-zinc-800 shadow-2xl z-[3000]">
+      <DialogContent showCloseButton={false} className="w-[90vw] max-w-sm p-0 overflow-hidden bg-zinc-950 border-zinc-800 shadow-2xl z-[100000]">
         <div className="p-2 border-b border-zinc-800 bg-zinc-900/50">
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-            {/* Honeypot hidden inputs to trick browser autofill */}
             <input style={{ display: 'none' }} aria-hidden="true" type="text" name="fake-email-ai" />
             <input style={{ display: 'none' }} aria-hidden="true" type="password" name="fake-password-ai" />
             <input 
@@ -116,27 +118,27 @@ export function ContractTypeSelector({
               autoCapitalize="off"
               spellCheck={false}
               data-form-type="other"
-              name={`search_${Math.random().toString(36).substring(7)}`}
-              id={`search_${Math.random().toString(36).substring(7)}`}
+              name="contract_search_filter_dummy_input"
+              id="contract_search_filter_dummy_input"
               className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
             />
           </div>
         </div>
-        <div className="max-h-60 overflow-y-auto p-1 pb-4 scrollbar-minimalist">
+        <div className="max-h-[140px] overflow-y-auto p-1 scrollbar-minimalist">
           {filtered.length > 0 ? (
             filtered.map((type) => (
-              <DropdownMenuItem 
+              <button 
                 key={type}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer hover:bg-primary/10 focus:bg-primary/10 group transition-colors"
-                onSelect={() => {
+                className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer hover:bg-primary/10 focus:bg-primary/10 group transition-colors text-left"
+                onClick={() => {
                   onSelect(type)
                   setIsOpen(false)
                   setSearch("")
                 }}
               >
-                <div className="w-1.5 h-1.5 rounded-full bg-primary/40 group-hover:bg-primary transition-colors" />
-                <span className="text-[12px] font-medium text-zinc-300 group-hover:text-primary">{type}</span>
-              </DropdownMenuItem>
+                <div className="w-1.5 h-1.5 rounded-full bg-primary/40 group-hover:bg-primary transition-colors shrink-0" />
+                <span className="text-[12px] font-medium text-zinc-300 group-hover:text-primary truncate">{type}</span>
+              </button>
             ))
           ) : (
             <div className="p-4 text-center">
@@ -144,13 +146,8 @@ export function ContractTypeSelector({
             </div>
           )}
         </div>
-        {!search && CONTRACT_TYPES.length > 4 && (
-          <div className="p-2 border-t border-zinc-800 bg-zinc-900/30 text-center">
-            <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold">Use a busca para ver mais modelos</span>
-          </div>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </DialogContent>
+    </Dialog>
   )
 }
 
@@ -474,17 +471,23 @@ export function AiMenuInputTextarea({
     }
   }, [recognition, isRecording])
 
+  const { editor } = useTiptapEditor()
+
   const handleSubmit = useCallback(() => {
     const cleanedPrompt = promptValue?.trim()
+    
     if (cleanedPrompt || selectedContractType) {
-      const finalPrompt = selectedContractType 
+      const isEditorEmpty = !editor || editor.isEmpty
+      const isInitialGeneration = isEditorEmpty && selectedContractType
+
+      const finalPrompt = isInitialGeneration 
         ? `Crie um ${selectedContractType} profissional com todas as cláusulas essenciais, considerando os seguintes detalhes adicionais: ${cleanedPrompt || 'Sem detalhes adicionais.'}`
         : cleanedPrompt
         
       onInputSubmit(finalPrompt || "")
       setPromptValue("")
     }
-  }, [onInputSubmit, promptValue, setPromptValue, selectedContractType])
+  }, [onInputSubmit, promptValue, setPromptValue, selectedContractType, editor])
 
   const handleKeyDown = useKeyboardHandlers(promptValue, onClose, handleSubmit)
 
@@ -589,8 +592,8 @@ export function AiMenuInputTextarea({
                       autoCapitalize="off"
                       spellCheck={false}
                       data-form-type="other"
-                      name={`prompt_${Math.random().toString(36).substring(7)}`}
-                      id={`prompt_${Math.random().toString(36).substring(7)}`}
+                      name="ai_prompt_input_field"
+                      id="ai_prompt_input_field"
                       className={cn(
                         "tiptap-ai-prompt-input-content relative z-20",
                         "pt-[0.55rem]"
