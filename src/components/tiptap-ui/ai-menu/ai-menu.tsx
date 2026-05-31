@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { type Editor } from "@tiptap/react"
 import { cn } from "@/lib/utils"
 
@@ -265,6 +265,15 @@ export function AiMenuContent({
     selectionHasText(editor) ||
     (aiGenerationHasMessage && state.shouldShowInput && state.inputIsFocused)
 
+  const [hasManuallyEdited, setHasManuallyEdited] = useState(false)
+
+  // Ouve edições manuais para liberar os botões de Descartar/Finalizar
+  useEffect(() => {
+    const handleManualEdit = () => setHasManuallyEdited(true)
+    window.addEventListener("user-manual-edit", handleManualEdit)
+    return () => window.removeEventListener("user-manual-edit", handleManualEdit)
+  }, [])
+
   if (plain) {
     return (
       <ComboboxProvider>
@@ -293,7 +302,7 @@ export function AiMenuContent({
             onToneChange={(tone: any) => updateState({ tone })}
           />
 
-          {aiGenerationHasMessage && !aiGenerationIsLoading && (
+          {aiGenerationHasMessage && !aiGenerationIsLoading && hasManuallyEdited && (
             <AiMenuActions
               editor={editor || ({} as any)}
               options={{ tone: state.tone, format: "rich-text" }}
@@ -353,7 +362,7 @@ export function AiMenuContent({
             onToneChange={(tone: any) => updateState({ tone })}
           />
 
-          {aiGenerationHasMessage && !aiGenerationIsLoading && (
+          {aiGenerationHasMessage && !aiGenerationIsLoading && hasManuallyEdited && (
             <AiMenuActions
               editor={editor}
               options={{ tone: state.tone, format: "rich-text" }}

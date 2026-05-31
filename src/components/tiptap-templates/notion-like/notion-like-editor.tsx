@@ -1526,10 +1526,6 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             </div>
           )}
 
-          <div className="flex items-center gap-2 group cursor-default">
-            <Logo showText={true} iconSize={typeof window !== 'undefined' && window.innerWidth < 1024 ? 28 : 22} variant="chrome" />
-          </div>
-
           {/* ThemeToggle no início apenas no mobile */}
           <div className="sm:hidden flex items-center">
             <ThemeToggle />
@@ -1564,7 +1560,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         </div>
 
         {!readOnly && (
-          <div className="absolute left-1/2 top-0 -translate-x-1/2 flex items-center h-full gap-2 z-[110] max-sm:hidden">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center h-full gap-2 z-[110] max-sm:hidden">
             <div className="flex items-center gap-0.5 opacity-60 hover:opacity-100 transition-opacity duration-500">
               <MarkButton type="bold" />
               <MarkButton type="italic" />
@@ -1575,25 +1571,10 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             </div>
             <div
               className={cn(
-                "relative flex items-center justify-center px-3 h-full rounded-none border-x border-zinc-500/10 gap-1.5 overflow-hidden select-none whitespace-nowrap shrink-0"
+                "relative flex items-center justify-center px-4 h-full rounded-none border-x border-zinc-500/10 gap-1.5 overflow-hidden select-none whitespace-nowrap shrink-0"
               )}
             >
-              {/* Custom Elegant ExtraJus IA Icon */}
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-[17px] h-[17px] text-zinc-500 dark:text-zinc-300 relative z-10 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.35)] animate-pulse shrink-0">
-                <line x1="12" y1="3" x2="12" y2="21" />
-                <path d="M5 8h14" />
-                <path d="M5 8v2c0 2 2 3 5 3" />
-                <circle cx="5" cy="15" r="2" />
-                <path d="M19 8v2c0 2-2 3-5 3" />
-                <circle cx="19" cy="15" r="2" />
-                <path d="M12 9l1.5 1.5L12 12l-1.5-1.5z" fill="currentColor" />
-              </svg>
-              <span 
-                style={{ fontFamily: "'Cinzel', 'Cambria', 'Georgia', serif" }}
-                className={cn("text-[9px] font-bold uppercase tracking-[0.2em] relative z-10 bg-gradient-to-r from-zinc-700 via-zinc-500 to-zinc-700 dark:from-zinc-300 dark:via-zinc-100 dark:to-zinc-300 bg-clip-text text-transparent drop-shadow-[0_0_6px_rgba(255,255,255,0.2)] whitespace-nowrap")}
-              >
-                ExtraJus IA
-              </span>
+              <Logo showText={true} iconSize={typeof window !== 'undefined' && window.innerWidth < 1024 ? 28 : 24} variant="chrome" />
             </div>
             <div className="flex items-center gap-0.5 opacity-60 hover:opacity-100 transition-opacity duration-500 max-md:hidden">
               <TextAlignButton align="left" />
@@ -1608,22 +1589,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         {/* Centralized AI Brand Name only for mobile screen */}
         {!readOnly && (
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:hidden z-[110] flex items-center gap-1.5 select-none whitespace-nowrap">
-            {/* Custom Elegant ExtraJus IA Icon for mobile */}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-[20px] h-[20px] text-zinc-500 dark:text-zinc-300 relative z-10 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.35)] animate-pulse shrink-0">
-              <line x1="12" y1="3" x2="12" y2="21" />
-              <path d="M5 8h14" />
-              <path d="M5 8v2c0 2 2 3 5 3" />
-              <circle cx="5" cy="15" r="2" />
-              <path d="M19 8v2c0 2-2 3-5 3" />
-              <circle cx="19" cy="15" r="2" />
-              <path d="M12 9l1.5 1.5L12 12l-1.5-1.5z" fill="currentColor" />
-            </svg>
-            <div 
-              style={{ fontFamily: "'Cinzel', 'Cambria', 'Georgia', serif" }}
-              className="text-[9.5px] font-bold tracking-[0.18em] uppercase bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-800 dark:from-zinc-400 dark:via-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent filter drop-shadow-[0_0_8px_rgba(255,255,255,0.25)]"
-            >
-              ExtraJus IA
-            </div>
+            <Logo showText={true} iconSize={28} variant="chrome" />
           </div>
         )}
 
