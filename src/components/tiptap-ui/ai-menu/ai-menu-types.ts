@@ -12,6 +12,7 @@ export interface AiMenuState {
   shouldShowInput: boolean
   inputIsFocused: boolean
   fallbackAnchor: AiMenuPosition
+  selectedContractType?: string | null
 }
 
 export interface AiMenuStateContextValue {

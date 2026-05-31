@@ -35,6 +35,8 @@ import {
   useBlurHandler,
   useKeyboardHandlers,
 } from "../../../../components/tiptap-ui/ai-menu/ai-menu-input/ai-menu-input-hooks"
+import { useAiMenuState } from "../../../../components/tiptap-ui/ai-menu/ai-menu-hooks"
+import { useTiptapEditor } from "../../../../hooks/use-tiptap-editor"
 import type { AiMenuInputTextareaProps } from "../../../../components/tiptap-ui/ai-menu/ai-menu-input/ai-menu-input-types"
 
 // Styles
@@ -57,9 +59,11 @@ const CONTRACT_TYPES = [
 export function ContractTypeSelector({
   onSelect,
   selectedType = null,
+  disabled = false,
 }: {
   onSelect: (type: string) => void
   selectedType?: string | null
+  disabled?: boolean
 }) {
   const [search, setSearch] = useState("")
   const [isOpen, setIsOpen] = useState(false)
@@ -67,6 +71,17 @@ export function ContractTypeSelector({
   const filtered = CONTRACT_TYPES.filter(type => 
     type.toLowerCase().includes(search.toLowerCase())
   ).slice(0, search ? 10 : 4)
+
+  if (disabled) {
+    return (
+      <div className="h-7 px-2 gap-1.5 rounded-lg text-muted-foreground bg-muted/30 border border-border/40 flex items-center max-w-[200px] opacity-60">
+        <FileText className="w-3 h-3 shrink-0" />
+        <span className="text-[10px] font-bold uppercase tracking-wider truncate">
+          {selectedType || "Modelos"}
+        </span>
+      </div>
+    )
+  }
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
@@ -218,10 +233,11 @@ export function AiPromptInputToolbar({
   toggleRecording?: () => void
   hasMicSupport?: boolean
   selectedContractType?: string | null
-  onContractTypeSelect?: (type: string) => void
+  onContractTypeSelect?: (type: string | null) => void
 }) {
   const [tone, setTone] = useState<Tone | null>(null)
   const [promptValue] = useComboboxValueState()
+  const { editor } = useTiptapEditor()
 
   const handleToneChange = useCallback(
     (newTone: string) => {
@@ -235,6 +251,8 @@ export function AiPromptInputToolbar({
     onInputSubmit(promptValue)
   }, [onInputSubmit, promptValue])
 
+  const isEditorEmpty = !editor || editor.isEmpty
+
   return (
     <Toolbar
       variant="floating"
@@ -245,6 +263,7 @@ export function AiPromptInputToolbar({
       <ToolbarGroup className="flex items-center gap-2">
         <ContractTypeSelector 
           selectedType={selectedContractType}
+          disabled={!isEditorEmpty}
           onSelect={(type) => {
             onContractTypeSelect?.(type)
           }} 
@@ -351,7 +370,13 @@ export function AiMenuInputTextarea({
   ...props
 }: AiMenuInputTextareaProps) {
   const [promptValue, setPromptValue] = useComboboxValueState()
-  const [selectedContractType, setSelectedContractType] = useState<string | null>(null)
+  const { state, updateState } = useAiMenuState()
+  const selectedContractType = state.selectedContractType
+  
+  const setSelectedContractType = useCallback((type: string | null) => {
+    updateState({ selectedContractType: type })
+  }, [updateState])
+
   const [isFocused, setIsFocused] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
   const [recordingFlash, setRecordingFlash] = useState(false)
@@ -448,7 +473,6 @@ export function AiMenuInputTextarea({
         
       onInputSubmit(finalPrompt || "")
       setPromptValue("")
-      setSelectedContractType(null)
     }
   }, [onInputSubmit, promptValue, setPromptValue, selectedContractType])
 
@@ -582,5 +606,3 @@ export function AiMenuInputTextarea({
     </div>
   )
 }
-
-

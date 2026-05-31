@@ -58,6 +58,9 @@ export function AiMenuActions({
           <span className="whitespace-nowrap">Descartar</span>
         </Button>
 
+        {/* Separador Vertical */}
+        <div className="w-[1px] h-4 bg-border/60 mx-1 shrink-0 max-sm:mx-0.5" />
+ 
         <Button
           variant="ghost"
           className="h-8 sm:h-7.5 px-3.5 sm:px-5 rounded-xl bg-primary/10 border border-primary/30 text-primary text-[10px] sm:text-[11px] font-semibold shadow-[0_0_10px_rgba(var(--primary-rgb),0.05)] transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-1.5 relative group/apply flex-[1.5] sm:flex-none"

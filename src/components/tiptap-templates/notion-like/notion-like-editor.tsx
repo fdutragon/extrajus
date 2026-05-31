@@ -420,7 +420,7 @@ const ORACLE_INSIGHTS = {
 /**
  * Component that creates and provides the editor instance
  */
-export function EditorLayout({ isPublic = false, readOnly: propReadOnly }: { isPublic?: boolean; readOnly?: boolean } = {}) {
+export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templateSlug }: { isPublic?: boolean; readOnly?: boolean; templateSlug?: string | null } = {}) {
   const [oracleTab, setOracleTab] = useState("insights")
   const [fileName, setFileName] = useState("MINUTA-DE-CONTRATO")
   const [userContracts, setUserContracts] = useState<any[]>([])
@@ -449,21 +449,24 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly }: { isP
   const { editor } = useContext(EditorContext)!
   const { aiGenerationIsLoading } = useUiEditorState(editor)
 
-  // Handle AI Onboarding Start Event
+  // Sincronização de título com o modelo selecionado
   useEffect(() => {
-    const handleStartAi = () => {
-      setTimeout(() => {
-        const input = document.querySelector('.ai-menu-input textarea') as HTMLTextAreaElement | null
-        if (input) {
-          input.focus()
-          // Garante que o cursor vá para o final do texto se houver algum
-          input.setSelectionRange(input.value.length, input.value.length)
-        }
-      }, 300)
+    if (state.selectedContractType) {
+      setFileName(state.selectedContractType.toUpperCase())
     }
-    window.addEventListener('start-ai-onboarding', handleStartAi)
-    return () => window.removeEventListener('start-ai-onboarding', handleStartAi)
-  }, [])
+  }, [state.selectedContractType])
+
+  // Mapeamento inicial de Template Slug para Tipo de Contrato
+  useEffect(() => {
+    if (templateSlug && !state.selectedContractType) {
+      const formattedName = templateSlug
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
+      
+      updateState({ selectedContractType: formattedName })
+    }
+  }, [templateSlug, state.selectedContractType, updateState])
 
   useEffect(() => {
     const handleAiFinished = (e: any) => {
@@ -1591,7 +1594,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
 
         {/* Centralized AI Brand Name only for mobile screen */}
         {!readOnly && (
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:hidden z-[110] flex items-center gap-1.5 select-none whitespace-nowrap">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:hidden z-[110] flex items-center gap-1.5 select-none whitespace-nowrap pt-3">
             {/* Custom Elegant ExtraJus IA Icon for mobile */}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] text-zinc-500 dark:text-zinc-300 relative z-10 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.35)] animate-pulse shrink-0">
               <line x1="12" y1="3" x2="12" y2="21" />
@@ -1777,7 +1780,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         </>)}
 
         <div className="flex-1 relative flex flex-col min-w-0 overflow-hidden">
-          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent max-sm:p-0 sm:p-4 pt-[4.5rem] max-sm:pt-[4.5rem] sm:pt-[4rem] relative z-10">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent max-sm:p-0 sm:p-4 pt-[4.5rem] max-sm:pt-[6.5rem] sm:pt-[4rem] relative z-10">
             {/* Subtle occult background glow behind the sheet */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/3 dark:bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse duration-[6000ms] max-sm:hidden" />
 
@@ -2196,7 +2199,7 @@ export function EditorProvider(props: EditorProviderProps) {
 
   return (
     <EditorContext.Provider value={contextValue}>
-      <EditorLayout isPublic={isPublic} readOnly={readOnly} />
+      <EditorLayout isPublic={isPublic} readOnly={readOnly} templateSlug={templateSlug} />
     </EditorContext.Provider>
   )
 }
