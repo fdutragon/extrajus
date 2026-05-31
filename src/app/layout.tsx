@@ -30,6 +30,12 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "ExtraJus",
+  },
 };
 
 import { ThemeProvider } from "@/components/theme-provider";
@@ -38,6 +44,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Toaster } from "sonner";
 import { SinapsesPlansModal } from "@/components/ui/sinapses-plans-modal";
+import { NativePwaHandler } from "@/components/ui/native-pwa-handler";
 
 export default function RootLayout({
   children,
@@ -95,13 +102,10 @@ export default function RootLayout({
             <NativePwaHandler />
             <Analytics />
             <SpeedInsights />
-          </TooltipProvider>
-        </ThemeProvider>
-      </body>
-    </html>
-  );
-}
-{`
+
+            {/* PWA Service Worker Registration */}
+            <Script id="pwa-init" strategy="lazyOnload">
+              {`
                 if ('serviceWorker' in navigator) {
                   window.addEventListener('load', function() {
                     navigator.serviceWorker.register('/sw.js').then(
