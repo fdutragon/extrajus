@@ -268,38 +268,40 @@ export function AiMenuContent({
   if (plain) {
     return (
       <ComboboxProvider>
-        <AiMenuInputTextarea
-          ref={tiptapAiPromptInputRef}
-          isLoading={aiGenerationIsLoading}
-          autoFocus={false}
-          isEditing={!editor?.isEmpty && (editor ? editor.getText().trim().length > 100 : false)}
-          onStop={() => {
-            if (!editor) return
-            ;(editor.chain() as any).aiReject({ type: "reset" }).run()
-            reset()
-            ;(editor.commands as any).resetUiState()
-          }}
-          showPlaceholder={
-            !aiGenerationIsLoading &&
-            aiGenerationHasMessage &&
-            !state.shouldShowInput
-          }
-          onInputFocus={() => updateState({ inputIsFocused: true })}
-          onInputBlur={() => updateState({ inputIsFocused: false })}
-          onClose={handleInputOnClose}
-          onPlaceholderClick={() => updateState({ shouldShowInput: true })}
-          onInputSubmit={(value) => handlePromptSubmit(value)}
-          onToneChange={(tone: any) => updateState({ tone })}
-        />
-
-        {aiGenerationHasMessage && !aiGenerationIsLoading && (
-          <AiMenuActions
-            editor={editor || ({} as any)}
-            options={{ tone: state.tone, format: "rich-text" }}
-            onAccept={handleOnAccept}
-            onReject={handleOnReject}
+        <div className="flex flex-col w-full gap-2">
+          <AiMenuInputTextarea
+            ref={tiptapAiPromptInputRef}
+            isLoading={aiGenerationIsLoading}
+            autoFocus={false}
+            isEditing={!editor?.isEmpty && (editor ? editor.getText().trim().length > 100 : false)}
+            onStop={() => {
+              if (!editor) return
+              ;(editor.chain() as any).aiReject({ type: "reset" }).run()
+              reset()
+              ;(editor.commands as any).resetUiState()
+            }}
+            showPlaceholder={
+              !aiGenerationIsLoading &&
+              aiGenerationHasMessage &&
+              !state.shouldShowInput
+            }
+            onInputFocus={() => updateState({ inputIsFocused: true })}
+            onInputBlur={() => updateState({ inputIsFocused: false })}
+            onClose={handleInputOnClose}
+            onPlaceholderClick={() => updateState({ shouldShowInput: true })}
+            onInputSubmit={(value) => handlePromptSubmit(value)}
+            onToneChange={(tone: any) => updateState({ tone })}
           />
-        )}
+
+          {aiGenerationHasMessage && !aiGenerationIsLoading && (
+            <AiMenuActions
+              editor={editor || ({} as any)}
+              options={{ tone: state.tone, format: "rich-text" }}
+              onAccept={handleOnAccept}
+              onReject={handleOnReject}
+            />
+          )}
+        </div>
       </ComboboxProvider>
     )
   }
@@ -327,7 +329,7 @@ export function AiMenuContent({
         className="tiptap-ai-menu"
         flip={false}
       >
-        <Card>
+        <Card className="flex flex-col gap-2">
           <AiMenuInputTextarea
             ref={tiptapAiPromptInputRef}
             isLoading={aiGenerationIsLoading}

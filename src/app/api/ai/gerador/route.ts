@@ -258,10 +258,10 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
 1. Use APENAS HTML. NUNCA use Markdown.
 2. Título principal centralizado: <h1 data-node-text-align="center"><strong>[TÍTULO DO CONTRATO]</strong></h1>. O uso do atributo data-node-text-align="center" na tag h1 é OBRIGATÓRIO para garantir o alinhamento centralizado.
 3. Parágrafos: <p>...</p> (NÃO inclua atributos style).
-4. Hierarquia jurídica via LegalNodes (NUNCA use ul/ol/li). O TÍTULO da cláusula deve vir SOZINHO no nível 1 (ex: 'DO OBJETO', 'DO PREÇO'). NUNCA misture o texto explicativo ou o conteúdo na mesma linha do título do nível 1.
-   O CONTEÚDO descritivo ou o parágrafo da cláusula deve vir OBRIGATORIAMENTE na linha de baixo (um bloco separado) como nível 2 (que possui fonte menor):
+4. Hierarquia jurídica via LegalNodes (NUNCA use ul/ol/li). O TÍTULO da cláusula deve vir SOZINHO no nível 1 (ex: 'Objeto', 'Preço e Condições de Pagamento'). NUNCA misture o texto explicativo ou o conteúdo na mesma linha do título do nível 1.
+   - PROIBIÇÃO DE ESTILIZAÇÃO MANUAL: É TERMINANTEMENTE PROIBIDO o uso de tags de estilo como <strong>, <b>, <i> ou <u> dentro de qualquer <div data-type="legal-node">. O sistema aplica automaticamente o negrito, o tamanho da fonte e a caixa alta (uppercase) via CSS com base no data-level. Forneça o texto limpo.
    Exemplo Correto:
-   <div data-type="legal-node" data-level="1">DO OBJETO</div>
+   <div data-type="legal-node" data-level="1">Objeto</div>
    <div data-type="legal-node" data-level="2">O presente contrato tem como objeto o desenvolvimento de...</div>
 5. PROIBIÇÃO ABSOLUTA DE NUMERAÇÃO E PREFIXOS MANUAIS: O editor da ExtraJus gera AUTOMATICAMENTE todas as numerações, símbolos e letras de hierarquia jurídica (cláusulas, parágrafos, incisos e alíneas). 
    - NUNCA insira manualmente prefixos como "Cláusula Primeira", "Cláusula X", "1. ", "1 -", "1) ", "Parágrafo Único:", "§ 1º", "I -", "II -", "a)", "b)", etc.

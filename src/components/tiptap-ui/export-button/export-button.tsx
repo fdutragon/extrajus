@@ -303,16 +303,16 @@ export function ExportButton({
         <Button
           variant="ghost"
           size="sm"
-          className="h-8 sm:h-7 gap-2 sm:gap-1.5 max-sm:gap-0 px-4 sm:px-3 max-sm:px-0 max-sm:w-10 max-sm:h-10 text-muted-foreground hover:text-foreground dark:hover:bg-primary/5 rounded-full transition-all group border border-transparent hover:border-border/40 flex items-center justify-center shrink-0"
+          className="h-8 sm:h-7 gap-2 sm:gap-1.5 px-3 sm:px-3 text-muted-foreground hover:text-foreground dark:hover:bg-primary/5 rounded-full transition-all group border border-transparent hover:border-border/40 flex items-center justify-center shrink-0"
           onClick={handleExportClick}
           disabled={isExporting}
         >
           {isExporting ? (
-            <Loader2 className="!w-3 !h-3 max-sm:!w-[18px] max-sm:!h-[18px] animate-spin text-primary" />
+            <Loader2 className="!w-3 !h-3 max-sm:!w-[14px] max-sm:!h-[14px] animate-spin text-primary" />
           ) : (
-            <Download className="!w-3 !h-3 max-sm:!w-[18px] max-sm:!h-[18px] transition-transform" />
+            <Download className="!w-3 !h-3 max-sm:!w-[14px] max-sm:!h-[14px] transition-transform" />
           )}
-          <span className="text-[8px] font-black uppercase tracking-[0.2em] leading-none max-sm:hidden">
+          <span className="text-[8px] sm:text-[8px] max-sm:text-[10px] font-black uppercase tracking-[0.2em] leading-none">
             {isExporting ? "Exportando" : "Baixar"}
           </span>
         </Button>

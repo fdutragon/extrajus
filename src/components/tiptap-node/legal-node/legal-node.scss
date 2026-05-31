@@ -54,17 +54,19 @@
   &.legal-node-level-1 {
     counter-increment: clausula;
     counter-reset: paragrafo inciso;
-    margin-top: 2.2rem; // Elevado para 2.2rem para autoridade máxima
-    margin-bottom: 0.7rem;
+    margin-top: 1.75rem; // Reduzido de 2.2rem para um respiro mais equilibrado
+    margin-bottom: 0.6rem;
     font-weight: 700;
-    font-size: 1.3em;
+    font-size: 1.15em; // Reduzido de 1.3em para evitar redundância visual
+    text-transform: uppercase; // Garante uniformidade sem depender da IA
+    letter-spacing: 0.02em;
     
     .legal-node-counter {
-      margin-right: 0.5rem;
+      margin-right: 0.85rem; // Aumentado levemente de 0.5rem para melhor respiro
     }
     
     .legal-node-counter::before {
-      content: "Cláusula " counter(clausula) " -";
+      content: "Cláusula " counter(clausula) " — "; // Trocado hífen por travessão com espaço extra
     }
   }
 
@@ -126,14 +128,14 @@
   /* Evita espaçamento excessivo quando uma cláusula segue imediatamente um inciso ou alínea, mantendo o respiro solicitado */
   &.legal-node-level-3 + &.legal-node-level-1,
   &.legal-node-level-4 + &.legal-node-level-1 {
-    margin-top: 1.2rem;
+    margin-top: 1.1rem;
   }
 
   @media screen and (max-width: 768px) {
     &.legal-node-level-1 {
-      margin-top: 1.5rem;
-      margin-bottom: 0.5rem;
-      font-size: 1.55em !important;
+      margin-top: 1.4rem;
+      margin-bottom: 0.4rem;
+      font-size: 1.15em !important; // Reduzido drasticamente de 1.55em
     }
 
     &.legal-node-level-2 {

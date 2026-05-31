@@ -40,18 +40,18 @@ export function AiMenuActions({
   }, [editor, onAccept])
  
   return (
-    <div className="tiptap-ai-menu-actions mt-3.5 px-6 py-3 border border-border/80 bg-card sm:bg-card/65 sm:backdrop-blur-md rounded-2xl flex items-center justify-between gap-4 shadow-sm animate-in fade-in duration-300 max-sm:shadow-none">
-      <div className="flex items-center gap-1.5">
+    <div className="tiptap-ai-menu-actions mt-3.5 px-4 sm:px-6 py-3 border border-border/80 bg-card sm:bg-card/65 sm:backdrop-blur-md rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 shadow-sm animate-in fade-in duration-300 max-sm:shadow-none">
+      <div className="flex items-center gap-1.5 w-full sm:w-auto justify-center sm:justify-start">
         <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
         <span className="text-[10.5px] font-medium text-muted-foreground">
           {aiGenerationIsLoading ? "Gerando..." : "Sugestão pronta"}
         </span>
       </div>
  
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 w-full sm:w-auto">
         <Button
           variant="ghost"
-          className="h-7.5 px-3.5 rounded-xl border border-red-500/10 bg-red-500/5 text-red-400 text-[11px] font-medium flex items-center gap-1.5 group/discard"
+          className="flex-1 sm:flex-none h-8 sm:h-7.5 px-3.5 rounded-xl border border-red-500/10 bg-red-500/5 text-red-400 text-[11px] font-medium flex items-center justify-center gap-1.5 group/discard"
           onClick={handleDiscard}
         >
           <Trash2 size={12} className="shrink-0" />
@@ -60,7 +60,7 @@ export function AiMenuActions({
  
         <Button
           variant="ghost"
-          className="h-7.5 px-5 rounded-xl bg-primary/10 border border-primary/30 text-primary text-[11px] font-semibold shadow-[0_0_10px_rgba(var(--primary-rgb),0.05)] transition-all duration-300 active:scale-[0.97] flex items-center gap-1.5 relative group/apply"
+          className="flex-[1.5] sm:flex-none h-8 sm:h-7.5 px-5 rounded-xl bg-primary/10 border border-primary/30 text-primary text-[11px] font-semibold shadow-[0_0_10px_rgba(var(--primary-rgb),0.05)] transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-1.5 relative group/apply"
           onClick={handleApply}
           disabled={aiGenerationIsLoading}
         >

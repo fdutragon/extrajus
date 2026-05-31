@@ -1439,7 +1439,8 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
             opacity: 0.65;
           }
         }
-        .tiptap.ProseMirror p.is-empty.with-slash::before {
+        .tiptap.is-editor-empty p::before {
+          content: attr(data-placeholder);
           background: linear-gradient(
             90deg,
             var(--placeholder-color, rgba(120,120,120,0.4)) 20%,
@@ -1454,33 +1455,50 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
           background-clip: text;
           text-fill-color: transparent;
           animation: placeholder-text-shimmer 3.5s infinite linear;
-          font-weight: 700;
-          font-style: italic;
-          opacity: 0.8;
+          font-weight: 800;
+          font-style: normal;
+          text-transform: uppercase;
+          letter-spacing: 0.15em;
+          opacity: 0.6;
           transition: all 0.3s ease;
+          display: block;
+          text-align: center;
+          margin-bottom: 2rem;
         }
-        .tiptap.ProseMirror p.is-empty.with-slash::after {
+        .tiptap.is-editor-empty p::after {
           content: '';
           display: block;
-          margin-top: 24px;
-          height: 52px;
-          width: 90%;
+          margin-top: 1rem;
+          height: 400px;
+          width: 100%;
           background: 
-            linear-gradient(90deg, transparent, hsl(var(--primary)/0.25), transparent) no-repeat,
-            linear-gradient(to bottom, 
-              hsl(var(--muted)/0.35) 0px, hsl(var(--muted)/0.35) 10px, 
-              transparent 10px, transparent 20px,
-              hsl(var(--muted)/0.25) 20px, hsl(var(--muted)/0.25) 30px, 
-              transparent 30px, transparent 40px,
-              hsl(var(--muted)/0.15) 40px, hsl(var(--muted)/0.15) 50px
-            );
-          background-size: 200% 100%, auto;
-          background-position: -200% 0, 0 0;
-          mask-image: linear-gradient(to right, black 85%, transparent);
-          -webkit-mask-image: linear-gradient(to right, black 85%, transparent);
-          animation: placeholder-bars-shimmer 2.5s infinite linear, skeleton-breath 3.5s ease-in-out infinite;
+            /* Título centralizado */
+            linear-gradient(to right, hsl(var(--muted)/0.2) 0%, hsl(var(--muted)/0.2) 100%) no-repeat center 0 / 40% 12px,
+            
+            /* Qualificação das partes */
+            linear-gradient(to right, hsl(var(--muted)/0.1) 0%, hsl(var(--muted)/0.1) 100%) no-repeat 0 45px / 95% 8px,
+            linear-gradient(to right, hsl(var(--muted)/0.1) 0%, hsl(var(--muted)/0.1) 100%) no-repeat 0 65px / 90% 8px,
+            linear-gradient(to right, hsl(var(--muted)/0.1) 0%, hsl(var(--muted)/0.1) 100%) no-repeat 0 85px / 40% 8px,
+
+            /* Cláusula 1 */
+            linear-gradient(to right, hsl(var(--muted)/0.15) 0%, hsl(var(--muted)/0.15) 100%) no-repeat 0 130px / 30% 10px,
+            linear-gradient(to right, hsl(var(--muted)/0.1) 0%, hsl(var(--muted)/0.1) 100%) no-repeat 0 155px / 100% 8px,
+            linear-gradient(to right, hsl(var(--muted)/0.1) 0%, hsl(var(--muted)/0.1) 100%) no-repeat 0 175px / 95% 8px,
+            linear-gradient(to right, hsl(var(--muted)/0.1) 0%, hsl(var(--muted)/0.1) 100%) no-repeat 0 195px / 85% 8px,
+
+            /* Cláusula 2 */
+            linear-gradient(to right, hsl(var(--muted)/0.15) 0%, hsl(var(--muted)/0.15) 100%) no-repeat 0 240px / 35% 10px,
+            linear-gradient(to right, hsl(var(--muted)/0.1) 0%, hsl(var(--muted)/0.1) 100%) no-repeat 0 265px / 98% 8px,
+            linear-gradient(to right, hsl(var(--muted)/0.1) 0%, hsl(var(--muted)/0.1) 100%) no-repeat 0 285px / 92% 8px,
+            
+            /* Assinaturas no fim */
+            linear-gradient(to right, hsl(var(--muted)/0.2) 0%, hsl(var(--muted)/0.2) 100%) no-repeat 10% 360px / 30% 1.5px,
+            linear-gradient(to right, hsl(var(--muted)/0.2) 0%, hsl(var(--muted)/0.2) 100%) no-repeat 60% 360px / 30% 1.5px;
+          
+          mask-image: linear-gradient(to bottom, black 70%, transparent);
+          -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent);
+          animation: skeleton-breath 3.5s ease-in-out infinite;
           pointer-events: none;
-          border-radius: 6px;
         }
       ` }} />
       
@@ -1753,7 +1771,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         </>)}
 
         <div className="flex-1 relative flex flex-col min-w-0 overflow-hidden">
-          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent max-sm:p-0 sm:p-4 pt-[4.5rem] max-sm:pt-[3.5rem] sm:pt-[4rem] relative z-10">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent max-sm:p-0 sm:p-4 pt-[4.5rem] max-sm:pt-[4.5rem] sm:pt-[4rem] relative z-10">
             {/* Subtle occult background glow behind the sheet */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/3 dark:bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse duration-[6000ms] max-sm:hidden" />
 
@@ -1762,7 +1780,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               "w-full max-w-full lg:max-w-[clamp(37.5rem,45vw,56.25rem)] mx-auto editor-glow-container max-sm:!p-0 max-sm:!rounded-none transition-all duration-700 shadow-2xl max-sm:shadow-none",
               (showEntranceGlow || editorFocused) && "glowing"
             )}>
-              <div className="w-full h-full sm:bg-card/90 sm:dark:bg-card/75 sm:backdrop-blur-xl sm:rounded-[30px] max-sm:rounded-none px-4 max-sm:px-0 py-8 max-sm:pt-6 max-sm:pb-64 sm:px-8 sm:py-12 relative min-h-[50rem] md:min-h-[74.25rem] editor-glow-content max-sm:bg-transparent max-sm:backdrop-blur-none max-sm:shadow-none">
+              <div className="w-full h-full sm:bg-card/90 sm:dark:bg-card/75 sm:backdrop-blur-xl sm:rounded-[30px] max-sm:rounded-none px-4 max-sm:px-0 py-8 max-sm:pt-14 max-sm:pb-48 sm:px-8 sm:py-12 relative min-h-[50rem] md:min-h-[74.25rem] editor-glow-content max-sm:bg-transparent max-sm:backdrop-blur-none max-sm:shadow-none">
                 {/* Grain overlay for paper feel */}
                 <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-[30px] max-sm:hidden" />
 
@@ -2045,7 +2063,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
 }
 
 export function EditorProvider(props: EditorProviderProps) {
-  const { provider, ydoc, placeholder = "Comece a redigir...", geminiKey, templateSlug, readOnly, isPublic } = props
+  const { provider, ydoc, placeholder = "Modelo de Contrato", geminiKey, templateSlug, readOnly, isPublic } = props
   const { user } = useUser()
   const { setTocContent } = useToc()
   const { room } = useCollab()
@@ -2072,7 +2090,11 @@ export function EditorProvider(props: EditorProviderProps) {
       TextAlign.configure({ types: ["heading", "paragraph", "legalNode", "notificationNode"] }),
       Collaboration.configure({ document: ydoc }),
       CollaborationCaret.configure({ provider, user: { id: user.id, name: user.name, color: user.color } }),
-      Placeholder.configure({ placeholder, emptyNodeClass: "is-empty with-slash" }),
+      Placeholder.configure({ 
+        placeholder, 
+        emptyNodeClass: "is-empty with-slash",
+        showOnlyWhenEditable: false,
+      }),
       TableKit.configure({ table: { resizable: true, cellMinWidth: 120 } }),
       NodeBackground.configure({ types: ["paragraph", "heading", "blockquote", "tableCell", "tableHeader", "tocNode", "legalNode", "notificationNode"] }),
       NodeAlignment, Superscript, Subscript, Indent, TextStyle, Color, Highlight.configure({ multicolor: true }), Selection, Image,
@@ -2173,7 +2195,7 @@ export function EditorProvider(props: EditorProviderProps) {
   )
 }
 
-export function NotionEditor({ room, placeholder = "Comece a redigir...", templateSlug, readOnly, isPublic }: NotionEditorProps) {
+export function NotionEditor({ room, placeholder = "Modelo de Contrato", templateSlug, readOnly, isPublic }: NotionEditorProps) {
   return (
     <UserProvider>
       <CollabProvider room={room} key={room}>
@@ -2189,7 +2211,7 @@ export function NotionEditor({ room, placeholder = "Comece a redigir...", templa
   )
 }
 
-export function NotionEditorContent({ placeholder, templateSlug, readOnly: propReadOnly, isPublic }: { placeholder?: string, templateSlug?: string | null, readOnly?: boolean, isPublic?: boolean }) {
+export function NotionEditorContent({ placeholder = "Modelo de Contrato", templateSlug, readOnly: propReadOnly, isPublic }: { placeholder?: string, templateSlug?: string | null, readOnly?: boolean, isPublic?: boolean }) {
   const { provider, ydoc, setupError: collabSetupError, room } = useCollab()
   const { geminiKey, setupError: aiSetupError } = useAi()
   const [contractStatus, setContractStatus] = useState<string | null>(null)
