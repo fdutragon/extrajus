@@ -128,29 +128,34 @@
   }
 
   @media screen and (max-width: 768px) {
+    font-size: 15px !important; // Reduzido de 17px para ser proporcional
+
     &.legal-node-level-1 {
-      margin-top: 1.4rem;
-      margin-bottom: 0.4rem;
-      font-size: 1.15em !important; // Reduzido drasticamente de 1.55em
+      margin-top: 1.2rem; // Reduzido
+      margin-bottom: 0.35rem;
+      font-size: 1.05em !important; // Reduzido de 1.15em
     }
 
     &.legal-node-level-2 {
-      margin-left: 0.85rem;
-      margin-bottom: 0.4rem;
+      margin-left: 0.75rem;
+      margin-bottom: 0.35rem;
+      font-size: 0.95em !important;
       
       .legal-node-counter {
-        min-width: 1.6rem;
+        min-width: 1.4rem;
       }
     }
 
     &.legal-node-level-3 {
-      margin-left: 1.65rem;
-      margin-bottom: 0.4rem;
+      margin-left: 1.4rem;
+      margin-bottom: 0.35rem;
+      font-size: 0.95em !important;
     }
 
     &.legal-node-level-4 {
-      margin-left: 2.45rem;
-      margin-bottom: 0.4rem;
+      margin-left: 2rem;
+      margin-bottom: 0.35rem;
+      font-size: 0.95em !important;
     }
   }
 }

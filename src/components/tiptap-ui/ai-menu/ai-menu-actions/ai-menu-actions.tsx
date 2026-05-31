@@ -34,8 +34,16 @@ export function AiMenuActions({
  
   const handleApply = useCallback(() => {
     if (!editor) return
+    
+    // 1. Limpa os destaques de edição da IA
     ;(editor.commands as any).clearAiHighlights()
+    
+    // 2. Aceita formalmente a alteração no documento
     ;(editor.commands as any).aiAccept()
+    
+    // 3. Dispara o evento global para acionar o fluxo de Download/Checkout (idêntico ao botão Baixar)
+    window.dispatchEvent(new CustomEvent("trigger-document-export"))
+    
     onAccept?.()
   }, [editor, onAccept])
  
@@ -68,7 +76,7 @@ export function AiMenuActions({
           disabled={aiGenerationIsLoading}
         >
           <Sparkles size={11} className="sm:size-[12px] relative z-10 transition-transform group-hover/apply:scale-110 shrink-0" />
-          <span className="relative z-10 whitespace-nowrap">Aplicar Sugestão</span>
+          <span className="relative z-10 whitespace-nowrap">Finalizar Contrato</span>
         </Button>
       </div>
     </div>

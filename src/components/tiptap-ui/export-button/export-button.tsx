@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Download, Loader2 } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { toast } from "sonner"
 import { CheckoutModal } from "@/components/checkout/checkout-modal"
 
@@ -11,36 +11,20 @@ export function ExportButton({
   docType = "contrato",
   title = "Documento",
   content = "",
-  variant = "toolbar"
+  variant = "toolbar",
+  isLanding = false
 }: { 
   isPublic?: boolean
   docType?: string
   title?: string
   content?: string
   variant?: "toolbar" | "premium"
+  isLanding?: boolean
 }) {
   const [isExporting, setIsExporting] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const handleExportClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    
-    // Disparar evento de conversão do Google Ads para Iniciar finalização de compra
-    if (typeof window !== "undefined" && (window as any).gtag) {
-      (window as any).gtag('event', 'conversion', {
-        'send_to': 'AW-18191879169/KGlTCMW5uLUcEIGYyOJD'
-      });
-    }
-    
-    if (isPublic) {
-      setIsModalOpen(true)
-    } else {
-      handleExport()
-    }
-  }
-
-  const handleExport = async (e?: React.MouseEvent) => {
+  const handleExport = useCallback(async (e?: React.MouseEvent) => {
     if (e) {
       e.preventDefault()
       e.stopPropagation()
@@ -74,6 +58,7 @@ export function ExportButton({
           
           // Disparar evento para abrir modal de planos de Sinapses
           window.dispatchEvent(new CustomEvent("open-plans-modal"))
+          setIsExporting(false)
           return
         }
       }
@@ -148,47 +133,6 @@ export function ExportButton({
               margin-bottom: 12.0pt;
               text-align: justify;
             }
-            .legal-node-level-1 {
-              font-weight: bold;
-              font-size: 13.0pt;
-              margin-top: 18.0pt;
-              color: #000000;
-            }
-            .legal-node-level-2 {
-              margin-left: 24.0pt;
-            }
-            .legal-node-level-3 {
-              margin-left: 48.0pt;
-            }
-            .legal-node-level-4 {
-              margin-left: 72.0pt;
-            }
-            .legal-node-counter {
-              font-weight: bold;
-              margin-right: 8.0pt;
-              display: inline-block;
-            }
-            .legal-node-content {
-              display: inline;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin-top: 12.0pt;
-              margin-bottom: 12.0pt;
-            }
-            td, th {
-              border: 1.0pt solid #000000;
-              padding: 8.0pt 10.0pt;
-              text-align: left;
-              vertical-align: top;
-            }
-            strong, b {
-              font-weight: bold;
-            }
-            em, i {
-              font-style: italic;
-            }
           </style>
         </head>
         <body>
@@ -199,54 +143,74 @@ export function ExportButton({
         </html>
       `
 
-      // 4. Gerar o Blob e fazer download com extensão .docx
-      const blob = new Blob(['\ufeff' + wordHtml], {
-        type: 'application/msword;charset=utf-8'
+      // 4. Criar o blob e baixar o arquivo
+      const blob = new Blob(['\ufeff', wordHtml], {
+        type: 'application/msword'
       })
-      
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = `extrajus-documento-${new Date().getTime()}.docx`
-      document.body.appendChild(a)
-      a.click()
-      
-      // Cleanup
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
 
-      // Notificar se for você (isentado) ou usuário comum (cobrado)
-      if (isPublic) {
-        toast.success("Download gratuito liberado com sucesso!", { id: exportToast })
-      } else if (data.isMaster) {
-        toast.success("Download master gratuito liberado com sucesso!", { id: exportToast })
-      } else {
-        toast.success("Download concluído! Debitadas 2 Sinapses do seu saldo.", { id: exportToast })
-      }
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(blob)
+      link.download = `${title.replace(/\s+/g, '-').toLowerCase() || 'documento'}.doc`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
 
-      // Emitir evento global de perfil atualizado para atualizar os saldos de créditos exibidos no header e sidebar em tempo real!
-      window.dispatchEvent(new Event("profile-updated"))
-    } catch (error) {
-      console.error("Export DOCX error:", error)
-      toast.error("Falha ao baixar o arquivo DOCX.", { id: exportToast })
+      toast.success("Documento exportado com sucesso!", { id: exportToast })
+
+    } catch (err: any) {
+      console.error("Export error", err)
+      toast.error(err.message || "Erro ao exportar documento.", { id: exportToast })
     } finally {
       setIsExporting(false)
     }
-  }
+  }, [isPublic, title])
 
-  const isPremium = variant === "premium"
+  const handleExportClick = useCallback((e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+    
+    // Disparar evento de conversão do Google Ads para Iniciar finalização de compra
+    if (typeof window !== "undefined" && (window as any).gtag) {
+      (window as any).gtag('event', 'conversion', {
+        'send_to': 'AW-18191879169/KGlTCMW5uLUcEIGYyOJD'
+      });
+    }
+    
+    if (isPublic) {
+      setIsModalOpen(true)
+    } else {
+      handleExport()
+    }
+  }, [isPublic, handleExport])
+
+  // Listener global para acionar a exportação via IA ou outros componentes
+  useEffect(() => {
+    const handleTriggerExport = () => {
+      handleExportClick()
+    }
+    window.addEventListener("trigger-document-export", handleTriggerExport)
+    return () => window.removeEventListener("trigger-document-export", handleTriggerExport)
+  }, [handleExportClick])
+
+  const editorElement = typeof document !== "undefined" ? document.querySelector(".notion-like-editor-content") : null
+
+  if (!editorElement && typeof document !== "undefined") {
+    // Componente montado mas editor não encontrado (provavelmente ainda carregando)
+  }
 
   return (
     <>
-      {isPremium ? (
-        <div className="w-full max-w-[32rem] p-6 bg-muted/30 dark:bg-card/40 backdrop-blur-xl border border-border/80 rounded-[28px] shadow-[0_15px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_15px_40px_rgba(0,0,0,0.15)] flex flex-col items-center text-center space-y-4 animate-in fade-in slide-in-from-bottom-5 duration-700 mx-auto">
-          <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.15)]">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-              <polyline points="22 4 12 14.01 9 11.01" />
-            </svg>
-          </div>
-          <div className="space-y-2.5">
+      {isLanding ? (
+        <div className="flex flex-col items-center gap-6 w-full max-w-[40rem] mx-auto p-6 sm:p-10 bg-card/40 border border-border/40 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl relative overflow-hidden group">
+          {/* Subtle occult glow background */}
+          <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-500/5 blur-[80px] rounded-full -z-10 group-hover:bg-emerald-500/10 transition-all duration-700" />
+          
+          <div className="flex flex-col items-center text-center gap-3">
+            <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.1)] mb-2">
+               <Download className="w-7 h-7 text-emerald-500 animate-pulse" />
+            </div>
             <h4 className="text-base sm:text-lg font-black tracking-[0.18em] uppercase bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500 bg-clip-text text-transparent">
               {docType === "notificacao" ? "Baixe Agora Sua Notificação" : "Baixe Agora Seu Contrato"}
             </h4>

@@ -57,6 +57,13 @@ const CONTRACT_TYPES = [
   "Cessão de Imagem", "Direitos Autorais", "Franchising", "Leasing", "Factoring"
 ]
 
+const cleanContractName = (name: string | null) => {
+  if (!name) return "MODELOS"
+  return name
+    .replace(/(contrato de |minuta de |contrato |minuta )/gi, "")
+    .trim()
+}
+
 export function ContractTypeSelector({
   onSelect,
   selectedType = null,
@@ -76,8 +83,6 @@ export function ContractTypeSelector({
     const handleResize = () => {
       const viewport = window.visualViewport
       if (viewport) {
-        // Quando o teclado sobe, a altura do visualViewport diminui.
-        // A diferença entre a altura da janela e o viewport é o teclado.
         const offset = window.innerHeight - viewport.height
         setKeyboardOffset(offset > 0 ? offset / 2 : 0)
       }
@@ -96,8 +101,8 @@ export function ContractTypeSelector({
     return (
       <div className="h-7 px-2.5 gap-1.5 rounded-lg text-muted-foreground bg-muted/30 border border-border/40 flex items-center opacity-60">
         <FileText className="w-3 h-3 shrink-0" />
-        <span className="text-[10px] font-medium tracking-wide">
-          {selectedType || "Modelos"}
+        <span className="text-[10px] font-bold tracking-widest uppercase">
+          {cleanContractName(selectedType).toUpperCase()}
         </span>
       </div>
     )
@@ -115,24 +120,32 @@ export function ContractTypeSelector({
         }
       >
         <FileText className="w-3 h-3 shrink-0" />
-        <span className="text-[10px] font-medium tracking-wide">
-          {selectedType || "Modelos"}
+        <span className="text-[10px] font-bold tracking-widest uppercase">
+          {cleanContractName(selectedType).toUpperCase()}
         </span>
         <ChevronDown className="w-3 h-3 opacity-50 shrink-0" />
       </DialogTrigger>
 
       <DialogContent 
         showCloseButton={false} 
-        className="w-[90vw] max-w-sm p-0 overflow-hidden bg-zinc-950 border-zinc-800 shadow-2xl z-[100000] transition-transform duration-200"
-        style={{ transform: `translate(-50%, calc(-50% - ${keyboardOffset}px))` }}
+        className="inset-x-0 mx-auto w-[calc(100vw-2rem)] max-w-sm p-0 overflow-hidden bg-zinc-950 border-zinc-800 shadow-2xl z-[100000]"
+        style={{ 
+          top: keyboardOffset > 0 ? `calc(50% - ${keyboardOffset}px)` : '50%',
+          transform: `translateY(-50%)`
+        }}
       >
         <div className="p-2 border-b border-zinc-800 bg-zinc-900/50">
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+            {/* Honeypot hidden inputs to trick browser autofill */}
+            <input style={{ display: 'none' }} aria-hidden="true" type="text" name="fake-email-ai" />
+            <input style={{ display: 'none' }} aria-hidden="true" type="password" name="fake-password-ai" />
             <input 
               autoFocus
               type="search"
               role="searchbox"
+              name="contract-search-field-no-autofill"
+              id="contract-search-field-no-autofill"
               placeholder="Buscar contrato..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -145,12 +158,12 @@ export function ContractTypeSelector({
             />
           </div>
         </div>
-        <div className="max-h-[140px] overflow-y-auto p-1 scrollbar-minimalist">
+        <div className="max-h-[140px] overflow-y-auto p-0 scrollbar-minimalist">
           {filtered.length > 0 ? (
             filtered.map((type) => (
               <button 
                 key={type}
-                className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer hover:bg-primary/10 focus:bg-primary/10 group transition-colors text-left"
+                className="w-full flex items-center gap-2 px-3 py-1 rounded-none first:pt-1.5 last:pb-1.5 cursor-pointer group transition-colors text-left"
                 onClick={() => {
                   onSelect(type)
                   setIsOpen(false)
