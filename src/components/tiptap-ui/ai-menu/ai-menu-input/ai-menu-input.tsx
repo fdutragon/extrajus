@@ -11,7 +11,7 @@ import type { Tone } from "../../../../components/tiptap-extension/gemini-ai-ext
 // Icons
 import { MicAiIcon } from "../../../../components/tiptap-icons/mic-ai-icon"
 import { AiSparklesIcon } from "../../../../components/tiptap-icons/ai-sparkles-icon"
-import { BrainCircuit, StopCircle as StopCircle2Icon, ArrowUp as ArrowUpIcon, Mic, MicOff, Search, FileText, ChevronDown } from "lucide-react"
+import { BrainCircuit, StopCircle as StopCircle2Icon, ArrowUp as ArrowUpIcon, Mic, MicOff, Search, FileText, ChevronDown, X } from "lucide-react"
 
 // UI Components
 import { SUPPORTED_TONES } from "../../../../components/tiptap-ui/ai-menu"
@@ -207,6 +207,7 @@ export function AiPromptInputToolbar({
   isRecording = false,
   toggleRecording,
   hasMicSupport = false,
+  selectedContractType = null,
   onContractTypeSelect,
 }: {
   showPlaceholder?: boolean
@@ -216,6 +217,7 @@ export function AiPromptInputToolbar({
   isRecording?: boolean
   toggleRecording?: () => void
   hasMicSupport?: boolean
+  selectedContractType?: string | null
   onContractTypeSelect?: (type: string) => void
 }) {
   const [tone, setTone] = useState<Tone | null>(null)
@@ -242,6 +244,7 @@ export function AiPromptInputToolbar({
     >
       <ToolbarGroup className="flex items-center gap-2">
         <ContractTypeSelector 
+          selectedType={selectedContractType}
           onSelect={(type) => {
             onContractTypeSelect?.(type)
           }} 
@@ -290,7 +293,6 @@ export function AiPromptInputToolbar({
   )
 }
 
-// Algoritmo de deduplicação e fusão de frases em tempo real.
 function mergeTranscripts(parts: string[]): string {
   if (parts.length === 0) return ""
   let merged = parts[0].trim()
@@ -439,17 +441,21 @@ export function AiMenuInputTextarea({
 
   const handleSubmit = useCallback(() => {
     const cleanedPrompt = promptValue?.trim()
-    if (cleanedPrompt) {
-      onInputSubmit(cleanedPrompt)
+    if (cleanedPrompt || selectedContractType) {
+      const finalPrompt = selectedContractType 
+        ? `Crie um ${selectedContractType} profissional com todas as cláusulas essenciais, considerando os seguintes detalhes adicionais: ${cleanedPrompt || 'Sem detalhes adicionais.'}`
+        : cleanedPrompt
+        
+      onInputSubmit(finalPrompt || "")
       setPromptValue("")
       setSelectedContractType(null)
     }
-  }, [onInputSubmit, promptValue, setPromptValue])
+  }, [onInputSubmit, promptValue, setPromptValue, selectedContractType])
 
   const handleKeyDown = useKeyboardHandlers(promptValue, onClose, handleSubmit)
 
   const handleBlur = useBlurHandler(
-    promptValue.trim() === "",
+    promptValue.trim() === "" && !selectedContractType,
     onInputBlur,
     onEmptyBlur
   )
@@ -494,6 +500,8 @@ export function AiMenuInputTextarea({
     ? "Gravando áudio... Fale os termos do acordo e a IA redigirá o contrato em tempo real."
     : isEditing
     ? "Escreva o que você deseja alterar, complementar ou remover nas cláusulas do seu contrato..."
+    : selectedContractType 
+    ? "Adicione detalhes (ex: nomes, valores, prazos)..." 
     : "Qual contrato você deseja criar hoje? (ex: Prestação de Serviços, NDA) Descreva os detalhes do acordo...";
 
   return (
@@ -523,61 +531,28 @@ export function AiMenuInputTextarea({
           <AiMenuInputPlaceholder onPlaceholderClick={handleOnPlaceholderClick} placeholder={dynamicPlaceholder} />
         ) : (
           <>
-            <div className="relative w-full flex-1">
-              {!promptValue && (
-                <div suppressHydrationWarning className="absolute inset-0 pointer-events-none px-[0.7rem] py-[0.55rem] max-sm:px-[0.7rem] max-sm:py-[0.55rem] flex items-start z-30 pr-[0.7rem]">
-                   <span suppressHydrationWarning className="tiptap-ai-prompt-input-placeholder-text leading-[1.5] font-medium">
-                     {dynamicPlaceholder}
-                   </span>
+            <div className="relative w-full flex-1 flex flex-col">
+              {/* Modelo Travado (Badge) */}
+              {selectedContractType && (
+                <div className="px-[0.7rem] pt-[0.6rem] pb-0 flex animate-in fade-in slide-in-from-left-2 duration-300">
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-primary text-primary-foreground rounded-lg border border-primary/30 shadow-[0_0_15px_rgba(var(--primary-rgb),0.2)]">
+                    <FileText className="w-3 h-3" />
+                    <span className="text-[10px] font-black uppercase tracking-widest leading-none">
+                      {selectedContractType}
+                    </span>
+                    <button 
+                      onClick={() => setSelectedContractType(null)}
+                      className="ml-1 hover:bg-white/20 rounded-full p-0.5 transition-colors"
+                    >
+                      <X className="w-2.5 h-2.5" />
+                    </button>
+                  </div>
                 </div>
               )}
-              <Combobox
-                autoSelect={false}
-                autoFocus={autoFocus}
-                render={
-                  <TextareaAutosize
-                    onChange={(e) => setPromptValue(e.target.value)}
-                    value={promptValue}
-                    onKeyDown={handleKeyDown}
-                    onFocus={handleFocus}
-                    onBlur={handleTextareaBlur}
-                    className="tiptap-ai-prompt-input-content relative z-20"
-                    placeholder=""
-                    autoFocus={autoFocus}
-                    style={{
-                      display: showPlaceholder ? "none" : "flex",
-                    }}
-                  />
-                }
-              />
-            </div>
 
-            <AiPromptInputToolbar
-              showPlaceholder={showPlaceholder}
-              onInputSubmit={handleSubmit}
-              onToneChange={onToneChange}
-              isEmpty={!promptValue?.trim()}
-              isRecording={isRecording}
-              toggleRecording={toggleRecording}
-              hasMicSupport={!!recognition}
-              selectedContractType={selectedContractType}
-              onContractTypeSelect={setSelectedContractType}
-            />
-          </>
-        )}
-      </div>
-    </div>
-  )
-}
-ctTypeSelect={setSelectedContractType}
-            />
-          </>
-        )}
-      </div>
-    </div>
-  )
-}
-e px-[0.7rem] py-[0.55rem] max-sm:px-[0.7rem] max-sm:py-[0.55rem] flex items-start z-30 pr-[0.7rem]">
+              <div className="relative flex-1">
+                {!promptValue && (
+                  <div suppressHydrationWarning className="absolute inset-0 pointer-events-none px-[0.7rem] py-[0.55rem] max-sm:px-[0.7rem] max-sm:py-[0.55rem] flex items-start z-30 pr-[0.7rem]">
                     <span suppressHydrationWarning className="tiptap-ai-prompt-input-placeholder-text leading-[1.5] font-medium">
                       {dynamicPlaceholder}
                     </span>
@@ -616,6 +591,7 @@ e px-[0.7rem] py-[0.55rem] max-sm:px-[0.7rem] max-sm:py-[0.55rem] flex items-sta
               isRecording={isRecording}
               toggleRecording={toggleRecording}
               hasMicSupport={!!recognition}
+              selectedContractType={selectedContractType}
               onContractTypeSelect={setSelectedContractType}
             />
           </>

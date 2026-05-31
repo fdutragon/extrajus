@@ -783,7 +783,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly }: { isP
   const aiPromptOpen = true // Sempre visível
 
   const [isSaving, setIsSaving] = useState(false)
-  const [fontSize, setFontSize] = useState<number>(17)
+  const [fontSize, setFontSize] = useState<number>(14)
   const [fontFamily, setFontFamily] = useState<string>("Cambria")
   const [isFontDropdownOpen, setIsFontDropdownOpen] = useState(false)
 
@@ -793,7 +793,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly }: { isP
       if (isMobileOrTablet) {
         setLeftSidebarOpen(false)
         setRightSidebarOpen(false)
-        setFontSize(17)
+        setFontSize(14)
       } else {
         setFontSize(14)
       }
@@ -1720,7 +1720,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
         </>)}
 
         <div className="flex-1 relative flex flex-col min-w-0 overflow-hidden">
-          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent max-sm:p-0 sm:p-[clamp(1rem,2vw,2rem)] pt-[4.5rem] max-sm:pt-20 sm:pt-[calc(clamp(2.5rem,4vh,3.25rem)+2rem)] relative z-10">
+          <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent max-sm:p-0 sm:p-[clamp(1rem,2vw,2rem)] pt-[4.5rem] max-sm:pt-[3.5rem] sm:pt-[calc(clamp(1.5rem,3vh,2.5rem)+1rem)] relative z-10">
             {/* Subtle occult background glow behind the sheet */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/3 dark:bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse duration-[6000ms] max-sm:hidden" />
 
@@ -1729,7 +1729,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               "w-full max-w-full lg:max-w-[clamp(37.5rem,45vw,56.25rem)] mx-auto editor-glow-container max-sm:!p-0 max-sm:!rounded-none transition-all duration-700 shadow-2xl max-sm:shadow-none",
               (showEntranceGlow || editorFocused) && "glowing"
             )}>
-              <div className="w-full h-full sm:bg-card/90 sm:dark:bg-card/75 sm:backdrop-blur-xl sm:rounded-[30px] max-sm:rounded-none px-4 max-sm:px-0 py-8 max-sm:pt-20 max-sm:pb-24 sm:px-[clamp(2.5rem,5.5vw,5.5rem)] sm:py-[clamp(2.5rem,4.5vw,5.5rem)] relative min-h-[50rem] md:min-h-[74.25rem] editor-glow-content max-sm:bg-transparent max-sm:backdrop-blur-none max-sm:shadow-none">
+              <div className="w-full h-full sm:bg-card/90 sm:dark:bg-card/75 sm:backdrop-blur-xl sm:rounded-[30px] max-sm:rounded-none px-4 max-sm:px-0 py-8 max-sm:pt-6 max-sm:pb-64 sm:px-[clamp(2.5rem,5.5vw,5.5rem)] sm:py-[clamp(2.5rem,4.5vw,5.5rem)] relative min-h-[50rem] md:min-h-[74.25rem] editor-glow-content max-sm:bg-transparent max-sm:backdrop-blur-none max-sm:shadow-none">
                 {/* Grain overlay for paper feel */}
                 <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-[30px] max-sm:hidden" />
 
