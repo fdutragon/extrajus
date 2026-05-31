@@ -1295,10 +1295,13 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
   }, [editor, fileName, readOnly])
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-background text-foreground overflow-hidden relative font-sans selection:bg-primary/30">
+    <div 
+      className="flex flex-col bg-background text-foreground overflow-hidden relative font-sans selection:bg-primary/30"
+      style={{ height: 'var(--vh, 100dvh)' }}
+    >
       <style dangerouslySetInnerHTML={{ __html: `
         :root {
-          --vh: 100vh;
+          --vh: 100dvh;
         }
         .font-heading, :is(aside, header, [role="dialog"], .ai-prompt-wrapper) {
           --font-heading: var(--font-sans) !important;
@@ -1607,7 +1610,7 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
 
 
 
-      <div className={cn("flex-1 flex relative overflow-hidden h-full transition-all duration-700")}>
+      <div className={cn("flex-1 flex relative overflow-hidden min-h-0")}>
         <div className="flex-1 relative flex flex-col min-w-0 overflow-hidden">
           <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar bg-transparent max-sm:p-0 sm:p-4 sm:pb-32 relative z-10">
             {/* Subtle occult background glow behind the sheet */}
