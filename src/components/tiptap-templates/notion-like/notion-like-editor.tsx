@@ -1601,32 +1601,23 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
 
         {/* Centralized AI Brand Name only for mobile screen */}
         {!readOnly && (
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:hidden z-[110] flex flex-col items-center gap-0.5 select-none whitespace-nowrap">
-            <div className="flex items-center gap-1.5">
-              {/* Custom Elegant ExtraJus IA Icon for mobile */}
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-[20px] h-[20px] text-zinc-500 dark:text-zinc-300 relative z-10 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.35)] animate-pulse shrink-0">
-                <line x1="12" y1="3" x2="12" y2="21" />
-                <path d="M5 8h14" />
-                <path d="M5 8v2c0 2 2 3 5 3" />
-                <circle cx="5" cy="15" r="2" />
-                <path d="M19 8v2c0 2-2 3-5 3" />
-                <circle cx="19" cy="15" r="2" />
-                <path d="M12 9l1.5 1.5L12 12l-1.5-1.5z" fill="currentColor" />
-              </svg>
-              <div 
-                style={{ fontFamily: "'Cinzel', 'Cambria', 'Georgia', serif" }}
-                className="text-[9.5px] font-bold tracking-[0.18em] uppercase bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-800 dark:from-zinc-400 dark:via-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent filter drop-shadow-[0_0_8px_rgba(255,255,255,0.25)]"
-              >
-                ExtraJus IA
-              </div>
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:hidden z-[110] flex items-center gap-1.5 select-none whitespace-nowrap">
+            {/* Custom Elegant ExtraJus IA Icon for mobile */}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-[20px] h-[20px] text-zinc-500 dark:text-zinc-300 relative z-10 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.35)] animate-pulse shrink-0">
+              <line x1="12" y1="3" x2="12" y2="21" />
+              <path d="M5 8h14" />
+              <path d="M5 8v2c0 2 2 3 5 3" />
+              <circle cx="5" cy="15" r="2" />
+              <path d="M19 8v2c0 2-2 3-5 3" />
+              <circle cx="19" cy="15" r="2" />
+              <path d="M12 9l1.5 1.5L12 12l-1.5-1.5z" fill="currentColor" />
+            </svg>
+            <div 
+              style={{ fontFamily: "'Cinzel', 'Cambria', 'Georgia', serif" }}
+              className="text-[9.5px] font-bold tracking-[0.18em] uppercase bg-gradient-to-r from-zinc-800 via-zinc-600 to-zinc-800 dark:from-zinc-400 dark:via-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent filter drop-shadow-[0_0_8px_rgba(255,255,255,0.25)]"
+            >
+              ExtraJus IA
             </div>
-            
-            {/* Nome do Contrato Selecionado - Pequeno e Natural */}
-            {fileName && fileName !== "MINUTA-DE-CONTRATO" && (
-              <div className="text-[8px] font-medium text-muted-foreground/70 tracking-wide mt-[-2px]">
-                {fileName}
-              </div>
-            )}
           </div>
         )}
 
@@ -1757,12 +1748,17 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
               </div>
               <div className="relative mb-6 shrink-0">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={14} />
+                {/* Honeypot hidden inputs to trick browser autofill */}
+                <input style={{ display: 'none' }} aria-hidden="true" type="text" name="fake-email" />
+                <input style={{ display: 'none' }} aria-hidden="true" type="password" name="fake-password" />
                 <input 
                   type="text" 
+                  name={`filter_${Math.random().toString(36).substring(7)}`}
+                  id={`filter_${Math.random().toString(36).substring(7)}`}
                   placeholder="Filtrar documentos..." 
                   value={searchQuery} 
                   onChange={(e) => setSearchQuery(e.target.value)} 
-                  autoComplete="off"
+                  autoComplete="one-time-code"
                   autoCorrect="off"
                   autoCapitalize="off"
                   spellCheck={false}
