@@ -68,6 +68,24 @@ export function ContractTypeSelector({
 }) {
   const [search, setSearch] = useState("")
   const [isOpen, setIsOpen] = useState(false)
+  const [keyboardOffset, setKeyboardOffset] = useState(0)
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.visualViewport) return
+
+    const handleResize = () => {
+      const viewport = window.visualViewport
+      if (viewport) {
+        // Quando o teclado sobe, a altura do visualViewport diminui.
+        // A diferença entre a altura da janela e o viewport é o teclado.
+        const offset = window.innerHeight - viewport.height
+        setKeyboardOffset(offset > 0 ? offset / 2 : 0)
+      }
+    }
+
+    window.visualViewport.addEventListener('resize', handleResize)
+    return () => window.visualViewport?.removeEventListener('resize', handleResize)
+  }, [])
 
   const filtered = CONTRACT_TYPES.filter(type => 
     type.toLowerCase().includes(search.toLowerCase())
@@ -75,9 +93,9 @@ export function ContractTypeSelector({
 
   if (disabled) {
     return (
-      <div className="h-7 px-2 gap-1.5 rounded-lg text-muted-foreground bg-muted/30 border border-border/40 flex items-center max-w-[200px] opacity-60">
+      <div className="h-7 px-2.5 gap-1.5 rounded-lg text-muted-foreground bg-muted/30 border border-border/40 flex items-center opacity-60">
         <FileText className="w-3 h-3 shrink-0" />
-        <span className="text-[9.5px] font-medium tracking-wide truncate">
+        <span className="text-[10px] font-medium tracking-wide">
           {selectedType || "Modelos"}
         </span>
       </div>
@@ -91,36 +109,38 @@ export function ContractTypeSelector({
           <Button
             type="button"
             variant="ghost"
-            className="h-7 px-2 gap-1.5 rounded-lg text-primary bg-primary/5 hover:bg-primary/10 border border-primary/20 transition-all duration-300 max-w-[200px]"
+            className="h-7 px-2.5 gap-1.5 rounded-lg text-primary bg-primary/5 hover:bg-primary/10 border border-primary/20 transition-all duration-300"
           />
         }
       >
         <FileText className="w-3 h-3 shrink-0" />
-        <span className="text-[9.5px] font-medium tracking-wide truncate">
+        <span className="text-[10px] font-medium tracking-wide">
           {selectedType || "Modelos"}
         </span>
         <ChevronDown className="w-3 h-3 opacity-50 shrink-0" />
       </DialogTrigger>
 
-      <DialogContent showCloseButton={false} className="w-[90vw] max-w-sm p-0 overflow-hidden bg-zinc-950 border-zinc-800 shadow-2xl z-[100000]">
+      <DialogContent 
+        showCloseButton={false} 
+        className="w-[90vw] max-w-sm p-0 overflow-hidden bg-zinc-950 border-zinc-800 shadow-2xl z-[100000] transition-transform duration-200"
+        style={{ transform: `translate(-50%, calc(-50% - ${keyboardOffset}px))` }}
+      >
         <div className="p-2 border-b border-zinc-800 bg-zinc-900/50">
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-            <input style={{ display: 'none' }} aria-hidden="true" type="text" name="fake-email-ai" />
-            <input style={{ display: 'none' }} aria-hidden="true" type="password" name="fake-password-ai" />
             <input 
               autoFocus
+              type="search"
+              role="searchbox"
               placeholder="Buscar contrato..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              autoComplete="new-password"
+              autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
               spellCheck={false}
               data-form-type="other"
-              name="contract_search_filter_dummy_input"
-              id="contract_search_filter_dummy_input"
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
+              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden"
             />
           </div>
         </div>
@@ -478,14 +498,22 @@ export function AiMenuInputTextarea({
     
     if (cleanedPrompt || selectedContractType) {
       const isEditorEmpty = !editor || editor.isEmpty
-      const isInitialGeneration = isEditorEmpty && selectedContractType
 
-      const finalPrompt = isInitialGeneration 
-        ? `Crie um ${selectedContractType} profissional com todas as cláusulas essenciais, considerando os seguintes detalhes adicionais: ${cleanedPrompt || 'Sem detalhes adicionais.'}`
-        : cleanedPrompt
+      let finalPrompt = ""
+
+      if (isEditorEmpty && selectedContractType) {
+        // Modo Criação Inicial: O documento está vazio e um modelo foi selecionado.
+        finalPrompt = `Crie um ${selectedContractType} profissional com todas as cláusulas essenciais, considerando os seguintes detalhes adicionais: ${cleanedPrompt || 'Sem detalhes adicionais.'}`
+      } else {
+        // Modo Edição Cirúrgica: O documento já tem conteúdo (o usuário está editando um bloco ou adicionando texto).
+        // Aqui nós ignoramos o selectedContractType para não recriar o contrato do zero.
+        finalPrompt = cleanedPrompt || ""
+      }
         
-      onInputSubmit(finalPrompt || "")
-      setPromptValue("")
+      if (finalPrompt) {
+        onInputSubmit(finalPrompt)
+        setPromptValue("")
+      }
     }
   }, [onInputSubmit, promptValue, setPromptValue, selectedContractType, editor])
 
