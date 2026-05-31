@@ -103,16 +103,21 @@ export function ContractTypeSelector({
         <div className="p-2 border-b border-zinc-800 bg-zinc-900/50">
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+            {/* Honeypot hidden inputs to trick browser autofill */}
+            <input style={{ display: 'none' }} aria-hidden="true" type="text" name="fake-email-ai" />
+            <input style={{ display: 'none' }} aria-hidden="true" type="password" name="fake-password-ai" />
             <input 
               autoFocus
               placeholder="Buscar contrato..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              autoComplete="off"
+              autoComplete="new-password"
               autoCorrect="off"
               autoCapitalize="off"
               spellCheck={false}
               data-form-type="other"
+              name={`search_${Math.random().toString(36).substring(7)}`}
+              id={`search_${Math.random().toString(36).substring(7)}`}
               className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
             />
           </div>
@@ -579,11 +584,13 @@ export function AiMenuInputTextarea({
                       onKeyDown={handleKeyDown}
                       onFocus={handleFocus}
                       onBlur={handleTextareaBlur}
-                      autoComplete="off"
+                      autoComplete="new-password"
                       autoCorrect="off"
                       autoCapitalize="off"
                       spellCheck={false}
                       data-form-type="other"
+                      name={`prompt_${Math.random().toString(36).substring(7)}`}
+                      id={`prompt_${Math.random().toString(36).substring(7)}`}
                       className={cn(
                         "tiptap-ai-prompt-input-content relative z-20",
                         "pt-[0.55rem]"
