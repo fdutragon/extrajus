@@ -18,22 +18,41 @@ export function PwaInstallPrompt() {
       setDeferredPrompt(e)
     }
 
-    const handleAiFinished = () => {
-      // Quando a IA termina de gerar o contrato, se o prompt estiver disponível, mostramos o convite
+    const handleUserEdit = () => {
+      // Quando o usuário faz uma edição manual, se o prompt estiver disponível, mostramos o convite
       if (deferredPrompt) {
-        // Delay pequeno para não atropelar o sucesso da geração
+        // Delay para não interromper o fluxo de escrita imediatamente
         setTimeout(() => {
           setShowPrompt(true)
-        }, 3000)
+        }, 2000)
       }
     }
 
+    const handleAppInstalled = () => {
+      console.log('PWA was installed')
+      
+      // Dispara o evento de conversão do Google Ads para Instalação do App
+      if (typeof window !== "undefined" && (window as any).gtag) {
+        (window as any).gtag('event', 'conversion', {
+            'send_to': 'AW-18191879169/hEqyCJvpwrYcEIGYyOJD',
+            'value': 1.0,
+            'currency': 'BRL'
+        });
+        console.log("[Google Ads] Conversão de Instalação PWA disparada!");
+      }
+
+      setDeferredPrompt(null)
+      setShowPrompt(false)
+    }
+
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
-    window.addEventListener("ai-generation-finished", handleAiFinished)
+    window.addEventListener("user-manual-edit", handleUserEdit)
+    window.addEventListener("appinstalled", handleAppInstalled)
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
-      window.removeEventListener("ai-generation-finished", handleAiFinished)
+      window.removeEventListener("user-manual-edit", handleUserEdit)
+      window.removeEventListener("appinstalled", handleAppInstalled)
     }
   }, [deferredPrompt])
 

@@ -194,7 +194,8 @@ import {
   Eye,
   Type,
   Minus,
-  Plus
+  Plus,
+  X
 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
@@ -421,7 +422,7 @@ const ORACLE_INSIGHTS = {
  */
 export function EditorLayout({ isPublic = false, readOnly: propReadOnly }: { isPublic?: boolean; readOnly?: boolean } = {}) {
   const [oracleTab, setOracleTab] = useState("insights")
-  const [fileName, setFileName] = useState("NOTIFICACAO-EXTRAJUDICIAL")
+  const [fileName, setFileName] = useState("MINUTA-DE-CONTRATO")
   const [userContracts, setUserContracts] = useState<any[]>([])
   const [templates, setTemplates] = useState<any[]>([])
   const [historyLogs, setHistoryLogs] = useState<any[]>([])
@@ -1223,14 +1224,14 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
 
   // Atualização instantânea local (latência zero) do contrato ativo na listagem da barra lateral
   useEffect(() => {
-    if (!room || fileName === "NOTIFICACAO-EXTRAJUDICIAL") return
+    if (!room || fileName === "MINUTA-DE-CONTRATO") return
     setUserContracts((prev) =>
       prev.map((c) => (c.id === room ? { ...c, title: fileName } : c))
     )
   }, [fileName, room])
 
   useEffect(() => {
-    if (!room || readOnly || fileName === "NOTIFICACAO-EXTRAJUDICIAL") return
+    if (!room || readOnly || fileName === "MINUTA-DE-CONTRATO") return
     const delayDebounceFn = setTimeout(async () => {
       await supabase.from('contracts').update({ title: fileName }).eq('id', room)
     }, 1000)
@@ -1268,6 +1269,8 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
       editor.off("update", handleUpdate)
     }
   }, [editor, fileName, readOnly])
+
+  const [showPremiumCta, setShowPremiumCta] = useState(true)
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden relative font-sans selection:bg-primary/30">
@@ -1739,15 +1742,23 @@ DIRETRIZES DE REDAÇÃO JURÍDICA:
                     </div>
                   )}
                   <EditorContentArea />
-                  {editor && !editor.isEmpty && !aiGenerationIsLoading && (docType === "notificacao" || docType === "contrato") && editor.getText().length > 400 && (editor.getText().toLowerCase().includes("notificado") || editor.getText().toLowerCase().includes("assinatura") || editor.getText().toLowerCase().includes("contratante")) && (
-                    <div className="mt-2.5 flex justify-center pb-28 pt-0.5 animate-in fade-in slide-in-from-bottom-3 duration-500 max-sm:px-4 max-sm:pb-60">
-                      <ExportButton 
-                        isPublic={isPublic} 
-                        docType={docType} 
-                        title={fileName} 
-                        content={editor?.getHTML() || ""} 
-                        variant="premium" 
-                      />
+                  {editor && !editor.isEmpty && !aiGenerationIsLoading && (docType === "notificacao" || docType === "contrato") && editor.getText().length > 400 && (editor.getText().toLowerCase().includes("notificado") || editor.getText().toLowerCase().includes("assinatura") || editor.getText().toLowerCase().includes("contratante")) && showPremiumCta && (
+                    <div className="fixed inset-0 z-[1500] flex items-center justify-center p-4 bg-zinc-950/40 backdrop-blur-md animate-in fade-in duration-500">
+                      <div className="w-full max-w-[30rem] relative scale-110 sm:scale-125">
+                        <button 
+                          onClick={() => setShowPremiumCta(false)}
+                          className="absolute -top-14 right-0 text-white/50 hover:text-white transition-colors p-2 bg-white/5 rounded-full border border-white/10"
+                        >
+                          <X size={20} />
+                        </button>
+                        <ExportButton 
+                          isPublic={isPublic} 
+                          docType={docType} 
+                          title={fileName} 
+                          content={editor?.getHTML() || ""} 
+                          variant="premium" 
+                        />
+                      </div>
                     </div>
                   )}
                 </div>
@@ -2070,6 +2081,11 @@ export function EditorProvider(props: EditorProviderProps) {
       UniqueID.configure({ types: ["table", "paragraph", "bulletList", "orderedList", "heading", "blockquote", "codeBlock", "tocNode", "legalNode", "notificationNode"], filterTransaction: (transaction) => !isChangeOrigin(transaction) }),
       Typography, UiState, TocNode.configure({ topOffset: 48 }), Gemini.configure({ apiKey: geminiKey || "" }), Spacer, BubbleMenuExtension, AiHighlightManager,
     ],
+    onUpdate({ transaction }) {
+      if (transaction.docChanged && !isChangeOrigin(transaction)) {
+        window.dispatchEvent(new CustomEvent("user-manual-edit"))
+      }
+    },
   })
 
   useEffect(() => {

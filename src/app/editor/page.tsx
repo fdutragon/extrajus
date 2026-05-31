@@ -76,11 +76,23 @@ function EditorContent() {
   const [isPublic, setIsPublic] = useState<boolean | null>(null)
 
   useEffect(() => {
-    if (!room) {
-      const newRoom = `extrajus-draft-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
-      const params = new URLSearchParams(searchParams.toString())
-      params.set("room", newRoom)
-      router.replace(`${window.location.pathname}?${params.toString()}`)
+    if (typeof window !== "undefined") {
+      if (room) {
+        localStorage.setItem("extrajus_last_room", room)
+      } else {
+        const lastRoom = localStorage.getItem("extrajus_last_room")
+        if (lastRoom && lastRoom.startsWith("extrajus-draft-")) {
+          const params = new URLSearchParams(searchParams.toString())
+          params.set("room", lastRoom)
+          router.replace(`${window.location.pathname}?${params.toString()}`)
+          return
+        }
+        
+        const newRoom = `extrajus-draft-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+        const params = new URLSearchParams(searchParams.toString())
+        params.set("room", newRoom)
+        router.replace(`${window.location.pathname}?${params.toString()}`)
+      }
     }
   }, [room, searchParams, router])
 
