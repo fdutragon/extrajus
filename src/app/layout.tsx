@@ -44,6 +44,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Toaster } from "sonner";
 import { SinapsesPlansModal } from "@/components/ui/sinapses-plans-modal";
+import { PwaInstallModal } from "@/components/ui/pwa-install-modal";
 import { NativePwaHandler } from "@/components/ui/native-pwa-handler";
 
 export default function RootLayout({
@@ -99,6 +100,7 @@ export default function RootLayout({
             {children}
             <Toaster richColors closeButton theme="dark" position="bottom-right" />
             <SinapsesPlansModal />
+            <PwaInstallModal />
             <NativePwaHandler />
             <Analytics />
             <SpeedInsights />

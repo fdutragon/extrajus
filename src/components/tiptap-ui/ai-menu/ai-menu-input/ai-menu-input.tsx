@@ -67,44 +67,50 @@ const cleanContractName = (name: string | null) => {
 export function ContractTypeSelector({
   onSelect,
   selectedType = null,
-  disabled = false,
 }: {
   onSelect: (type: string) => void
   selectedType?: string | null
-  disabled?: boolean
 }) {
   const [search, setSearch] = useState("")
   const [isOpen, setIsOpen] = useState(false)
+  const { editor } = useTiptapEditor()
 
   const filtered = CONTRACT_TYPES.filter(type => 
     type.toLowerCase().includes(search.toLowerCase())
   )
 
-  if (disabled) {
-    return (
-      <div className="h-7 px-0 pl-2.5 gap-1.5 text-muted-foreground flex items-center opacity-60">
-        <span className="text-[9px] font-bold tracking-widest uppercase">
-          {cleanContractName(selectedType).toUpperCase()}
-        </span>
-      </div>
-    )
+  const isEditing = selectedType && editor && !editor.isEmpty
+
+  const handleSaveClick = (e: React.MouseEvent) => {
+    if (isEditing) {
+      e.preventDefault()
+      e.stopPropagation()
+      
+      // Abre o modal personalizado de instalação (funciona em mobile e pc)
+      window.dispatchEvent(new CustomEvent("open-pwa-modal"))
+      return
+    }
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={(open) => !isEditing && setIsOpen(open)}>
       <DialogTrigger 
         render={
           <Button
             type="button"
             variant="ghost"
-            className="h-7 px-0 pl-2.5 gap-1.5 text-primary transition-all duration-300 hover:bg-transparent"
+            onClick={handleSaveClick}
+            className={cn(
+              "h-7 px-0 pl-2.5 gap-1.5 transition-all duration-300 hover:bg-transparent",
+              isEditing ? "text-muted-foreground opacity-90" : "text-primary"
+            )}
           />
         }
       >
         <span className="text-[9px] font-bold tracking-widest uppercase">
-          {cleanContractName(selectedType).toUpperCase()}
+          {isEditing ? "SALVAR CONTRATO" : cleanContractName(selectedType).toUpperCase()}
         </span>
-        <ChevronDown className="w-3 h-3 opacity-50 shrink-0" />
+        {!isEditing && <ChevronDown className="w-3 h-3 opacity-50 shrink-0" />}
       </DialogTrigger>
 
       <DialogContent 
@@ -281,7 +287,6 @@ export function AiPromptInputToolbar({
       <ToolbarGroup className="flex items-center gap-2">
         <ContractTypeSelector 
           selectedType={selectedContractType}
-          disabled={!isEditorEmpty}
           onSelect={(type) => {
             onContractTypeSelect?.(type)
           }} 
