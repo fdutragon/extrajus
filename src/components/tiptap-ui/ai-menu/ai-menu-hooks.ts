@@ -83,7 +83,10 @@ export function useAiMenuStateProvider() {
   )
 
   const reset = useCallback(() => {
-    setState(initialState)
+    setState((prev) => ({
+      ...initialState,
+      selectedContractType: prev.selectedContractType, // Preserva o modelo selecionado
+    }))
     cleanupFallbackAnchors()
   }, [])
 

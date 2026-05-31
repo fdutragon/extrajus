@@ -59,24 +59,21 @@ export function AiMenuActions({
       <div className="flex items-center gap-2 sm:gap-2 flex-nowrap w-full sm:w-auto">
         <Button
           variant="ghost"
-          className="h-8 sm:h-7.5 px-3 sm:px-3.5 rounded-xl border border-red-500/10 bg-red-500/5 text-red-400 text-[10px] sm:text-[11px] font-medium flex items-center justify-center gap-1.5 group/discard flex-1 sm:flex-none"
+          className="h-9 sm:h-7.5 px-3 sm:px-3.5 rounded-xl border border-red-500/20 bg-red-600 text-white text-[11px] sm:text-[11px] font-bold flex items-center justify-center gap-1.5 group/discard flex-1 sm:flex-none hover:bg-red-700 transition-colors"
           onClick={handleDiscard}
         >
-          <Trash2 size={11} className="sm:size-[12px] shrink-0" />
-          <span className="whitespace-nowrap">Descartar</span>
+          <Trash2 size={12} className="sm:size-[12px] shrink-0" />
+          <span className="whitespace-nowrap uppercase tracking-tight">Descartar</span>
         </Button>
 
-        {/* Separador Vertical */}
-        <div className="w-[1px] h-4 bg-border/60 mx-1 shrink-0 max-sm:mx-0.5" />
- 
         <Button
           variant="ghost"
-          className="h-8 sm:h-7.5 px-3.5 sm:px-5 rounded-xl bg-primary/10 border border-primary/30 text-primary text-[10px] sm:text-[11px] font-semibold shadow-[0_0_10px_rgba(var(--primary-rgb),0.05)] transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-1.5 relative group/apply flex-[1.5] sm:flex-none"
+          className="h-9 sm:h-7.5 px-3.5 sm:px-5 rounded-xl bg-emerald-600 border border-emerald-500/20 text-white text-[11px] sm:text-[11px] font-bold shadow-lg transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-1.5 relative group/apply flex-1 sm:flex-none hover:bg-emerald-700"
           onClick={handleApply}
           disabled={aiGenerationIsLoading}
         >
-          <Sparkles size={11} className="sm:size-[12px] relative z-10 transition-transform group-hover/apply:scale-110 shrink-0" />
-          <span className="relative z-10 whitespace-nowrap">Finalizar Contrato</span>
+          <Sparkles size={12} className="sm:size-[12px] relative z-10 transition-transform group-hover/apply:scale-110 shrink-0" />
+          <span className="relative z-10 whitespace-nowrap uppercase tracking-tight">Finalizar</span>
         </Button>
       </div>
     </div>

@@ -75,23 +75,6 @@ export function ContractTypeSelector({
 }) {
   const [search, setSearch] = useState("")
   const [isOpen, setIsOpen] = useState(false)
-  const [keyboardOffset, setKeyboardOffset] = useState(0)
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.visualViewport) return
-
-    const handleResize = () => {
-      const viewport = window.visualViewport
-      if (viewport) {
-        const offset = window.innerHeight - viewport.height
-        setKeyboardOffset(offset > 0 ? offset / 2 : 0)
-      }
-    }
-
-    handleResize()
-    window.visualViewport.addEventListener('resize', handleResize)
-    return () => window.visualViewport?.removeEventListener('resize', handleResize)
-  }, [])
 
   const filtered = CONTRACT_TYPES.filter(type => 
     type.toLowerCase().includes(search.toLowerCase())
@@ -126,11 +109,7 @@ export function ContractTypeSelector({
 
       <DialogContent 
         showCloseButton={false} 
-        className="inset-x-0 mx-auto w-[calc(100vw-2rem)] max-w-sm p-0 overflow-hidden bg-zinc-950 border-zinc-800 shadow-2xl z-[100000]"
-        style={{ 
-          top: keyboardOffset > 0 ? `calc(50% - ${keyboardOffset}px)` : '50%',
-          transform: `translateY(-50%)`
-        }}
+        className="inset-x-0 mx-auto w-[calc(100vw-2rem)] max-w-sm p-0 overflow-hidden bg-zinc-950 border-zinc-800 shadow-2xl z-[100000] top-[15%] translate-y-0 sm:top-1/2 sm:-translate-y-1/2"
       >
         <div className="p-2.5 border-b border-zinc-800 bg-zinc-900/50">
           <div className="relative">

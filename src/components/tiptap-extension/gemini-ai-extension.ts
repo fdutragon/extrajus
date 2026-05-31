@@ -113,7 +113,7 @@ REGRAS DE HIGIENE DE CÓDIGO (CRÍTICAS):
 - PROIBIÇÃO ABSOLUTA DE ADICIONAR ESPAÇOS OU RECUOS MANUAIS: O texto deve ser alinhado rigorosamente à margem esquerda. Você NUNCA deve inserir espaços em branco manuais (como &nbsp;, tabulações ou múltiplos espaços repetidos) no início dos parágrafos ou cabeçalhos.`;
 
 // Função auxiliar cirúrgica para injetar data-ai-highlight="true" na tag de bloco pai que contém a alteração
-function injectHighlightToParentBlock(html: string, searchText: string, replaceText: string): { success: boolean; result: string } {
+function injectHighlightToParentBlock(html: string, searchText: string, replaceText: string, shouldHighlight: boolean): { success: boolean; result: string } {
   const index = html.indexOf(searchText)
   if (index === -1) {
     return { success: false, result: html }
@@ -121,6 +121,10 @@ function injectHighlightToParentBlock(html: string, searchText: string, replaceT
 
   // Executa a substituição da primeira ocorrência do searchText
   let updatedHtml = html.substring(0, index) + replaceText + html.substring(index + searchText.length)
+
+  if (!shouldHighlight) {
+    return { success: true, result: updatedHtml }
+  }
 
   // Olha para trás na string HTML a partir do índice da ocorrência para achar a tag de bloco de abertura correspondente
   const leftChunk = html.substring(0, index)
@@ -374,21 +378,26 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
             let atLeastOneApplied = false
 
             for (const pair of pairs) {
-              const searchText = pair.search
-              let replaceText = pair.replace
+              const searchText = pair.search.trim()
+              let replaceText = pair.replace.trim()
 
-              // Injeta o atributo de highlight da IA para que o usuário veja o que mudou
-              // caso o próprio replaceText contiver tags
-              replaceText = replaceText
-                .replace(/<div([^>]*data-type="legal-node"[^>]*)>/gi, '<div$1 data-ai-highlight="true">')
-                .replace(/<p([^>]*)>/gi, '<p$1 data-ai-highlight="true">')
+              // Verifica se houve de fato alteração antes de prosseguir com highlight
+              const hasChanged = searchText !== replaceText
+
+              if (hasChanged) {
+                // Injeta o atributo de highlight da IA para que o usuário veja o que mudou
+                // caso o próprio replaceText contiver tags
+                replaceText = replaceText
+                  .replace(/<div([^>]*data-type="legal-node"[^>]*)>/gi, '<div$1 data-ai-highlight="true">')
+                  .replace(/<p([^>]*)>/gi, '<p$1 data-ai-highlight="true">')
+              }
 
               let applied = false
 
               // Nível 1: Substituição cirúrgica exata com marcação automática do bloco pai
               let currentHtmlSearchIndex = workingHtml.indexOf(searchText)
               while (currentHtmlSearchIndex !== -1) {
-                const injectionResult = injectHighlightToParentBlock(workingHtml, searchText, replaceText)
+                const injectionResult = injectHighlightToParentBlock(workingHtml, searchText, replaceText, hasChanged)
                 if (injectionResult.success) {
                   workingHtml = injectionResult.result
                   applied = true
@@ -409,7 +418,7 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
 
                 let cleanSearchIndex = workingHtml.indexOf(cleanSearch)
                 while (cleanSearchIndex !== -1) {
-                  const injectionResult = injectHighlightToParentBlock(workingHtml, cleanSearch, cleanReplace)
+                  const injectionResult = injectHighlightToParentBlock(workingHtml, cleanSearch, cleanReplace, hasChanged)
                   if (injectionResult.success) {
                     workingHtml = injectionResult.result
                     applied = true
