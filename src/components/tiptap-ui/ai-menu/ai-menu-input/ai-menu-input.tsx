@@ -175,7 +175,6 @@ export function ContractTypeSelector({
 
       <DialogContent 
         showCloseButton={false} 
-        onOpenAutoFocus={(e) => e.preventDefault()}
         className="inset-x-0 mx-auto w-[calc(100vw-2rem)] max-w-sm p-0 overflow-hidden bg-zinc-950 border-zinc-800 shadow-2xl z-[100000] top-[15%] translate-y-0 sm:top-1/2 sm:-translate-y-1/2"
       >
         <div className="p-2.5 border-b border-zinc-800 bg-zinc-900/50">
@@ -185,7 +184,6 @@ export function ContractTypeSelector({
             <input style={{ display: 'none' }} aria-hidden="true" type="text" name="fake-email-ai" />
             <input style={{ display: 'none' }} aria-hidden="true" type="password" name="fake-password-ai" />
             <input 
-              autoFocus
               type="search"
               role="searchbox"
               name="contract-search-field-no-autofill"
