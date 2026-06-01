@@ -1,6 +1,6 @@
 "use client"
 
-import { 
+import {
   ChevronLeft,
   Share2,
   Download,
@@ -49,11 +49,11 @@ function InviteButton({ room }: { room: string }) {
   }
 
   return (
-    <Button 
-      variant="ghost" 
-      size="sm" 
+    <Button
+      variant="ghost"
+      size="sm"
       className={cn(
-        "h-7 gap-2 px-3 rounded-lg transition-all font-bold text-[9px] uppercase tracking-widest",
+        "h-6 gap-2 px-3 rounded-lg transition-all font-bold text-[9px] uppercase tracking-widest",
         copied ? "text-primary bg-primary/10" : "text-primary hover:bg-primary/10"
       )}
       onClick={handleInvite}
