@@ -69,7 +69,6 @@ export function NativePwaHandler() {
     }
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
-    window.addEventListener("user-manual-edit", handleUserEdit)
     window.addEventListener("trigger-pwa-install", showNativePrompt)
     window.addEventListener("appinstalled", () => {
       deferredPrompt.current = null
@@ -90,7 +89,6 @@ export function NativePwaHandler() {
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
-      window.removeEventListener("user-manual-edit", handleUserEdit)
       window.removeEventListener("trigger-pwa-install", showNativePrompt)
     }
   }, [])

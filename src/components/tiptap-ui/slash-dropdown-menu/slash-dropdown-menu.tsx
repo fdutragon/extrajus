@@ -106,6 +106,17 @@ const List = ({
   onSelect,
   config,
 }: SuggestionMenuRenderProps & { config?: SlashMenuConfig }) => {
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      if (items.length > 0) {
+        const activeEl = document.activeElement as HTMLElement | null
+        if (activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA" || activeEl.classList.contains("ProseMirror"))) {
+          activeEl.blur()
+        }
+      }
+    }
+  }, [items.length])
+
   const renderedItems = useMemo(() => {
     const rendered: React.ReactElement[] = []
     const showGroups = config?.showGroups !== false

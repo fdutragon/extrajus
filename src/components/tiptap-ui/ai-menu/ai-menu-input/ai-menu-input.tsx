@@ -154,15 +154,15 @@ export function ContractTypeSelector({
         <div className="flex items-center gap-1.5">
           {isEditing && (
             <div className={cn(
-              "w-1 h-1 rounded-full shrink-0 transition-all duration-500",
-              isInstalled ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]" : "bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.6)]"
+              "w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-500",
+              isInstalled ? "bg-zinc-500 shadow-[0_0_8px_rgba(113,113,122,0.4)]" : "bg-zinc-600 animate-pulse shadow-[0_0_8px_rgba(113,113,122,0.4)]"
             )} />
           )}
           <span className={cn(
             "text-[8.5px] font-black tracking-[0.15em] uppercase transition-colors duration-500",
             isEditing 
-              ? (isInstalled ? "text-emerald-500/90" : "text-emerald-500 animate-pulse-subtle") 
-              : "text-primary/90"
+              ? "text-zinc-500 dark:text-zinc-500" 
+              : "text-zinc-500 dark:text-zinc-500 hover:text-zinc-400"
           )}>
             {isEditing 
               ? (isInstalled ? "CONTRATO SALVO" : "SALVAR CONTRATO") 
@@ -175,6 +175,7 @@ export function ContractTypeSelector({
 
       <DialogContent 
         showCloseButton={false} 
+        onOpenAutoFocus={(e) => e.preventDefault()}
         className="inset-x-0 mx-auto w-[calc(100vw-2rem)] max-w-sm p-0 overflow-hidden bg-zinc-950 border-zinc-800 shadow-2xl z-[100000] top-[15%] translate-y-0 sm:top-1/2 sm:-translate-y-1/2"
       >
         <div className="p-2.5 border-b border-zinc-800 bg-zinc-900/50">

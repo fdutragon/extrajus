@@ -73,7 +73,7 @@ export function AiMenuActions({
           disabled={aiGenerationIsLoading}
         >
           <Sparkles size={12} className="sm:size-[12px] relative z-10 transition-transform group-hover/apply:scale-110 shrink-0" />
-          <span className="relative z-10 whitespace-nowrap uppercase tracking-tight">Finalizar</span>
+          <span className="relative z-10 whitespace-nowrap uppercase tracking-tight">Aplicar Alterações</span>
         </Button>
       </div>
     </div>
