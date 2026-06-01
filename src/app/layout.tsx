@@ -17,7 +17,7 @@ const sansFont = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "ExtraJus — Inteligência Jurídica e Contratos de Alto Impacto",
+  title: "ExtraJus IA - Gerador de Contratos",
   description: "Ecossistema de alta tecnologia e inteligência artificial para redação, auditoria e blindagem contratual definitiva.",
   icons: {
     icon: [

@@ -41,9 +41,6 @@ export function AiMenuActions({
     // 2. Aceita formalmente a alteração no documento
     ;(editor.commands as any).aiAccept()
     
-    // 3. Dispara o evento global para acionar o fluxo de Download/Checkout (idêntico ao botão Baixar)
-    window.dispatchEvent(new CustomEvent("trigger-document-export"))
-    
     onAccept?.()
   }, [editor, onAccept])
  

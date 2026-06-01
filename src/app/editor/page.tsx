@@ -81,7 +81,7 @@ function EditorContent() {
         localStorage.setItem("extrajus_last_room", room)
       } else {
         const lastRoom = localStorage.getItem("extrajus_last_room")
-        if (lastRoom && lastRoom.startsWith("extrajus-draft-")) {
+        if (lastRoom) {
           const params = new URLSearchParams(searchParams.toString())
           params.set("room", lastRoom)
           router.replace(`${window.location.pathname}?${params.toString()}`)

@@ -234,7 +234,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
         {/* Painel Esquerdo: A Oferta Suprema (6 colunas) */}
         <div className="md:col-span-6 flex flex-col justify-between border-b md:border-b-0 md:border-r border-border/60 pb-5 max-sm:pb-5 md:pb-0 md:pr-5 lg:pr-6 space-y-5 max-sm:space-y-5.5 shrink-0">
           <div className="space-y-4 max-sm:space-y-4 max-sm:pt-0 max-sm:flex max-sm:flex-col max-sm:items-center max-sm:text-center">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 max-sm:py-1 max-sm:px-3 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 max-sm:py-1 max-sm:px-3 bg-emerald-500/10 border border-emerald-500/20 rounded-full max-sm:hidden">
               <CheckCircle2 size={14} className="text-emerald-500 animate-pulse max-sm:w-[13px] max-sm:h-[13px]" />
               <span className="text-[10px] max-sm:text-[10.5px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Minuta Revisada e Aprovada</span>
             </div>

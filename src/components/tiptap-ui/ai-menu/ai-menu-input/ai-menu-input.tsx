@@ -145,7 +145,7 @@ export function ContractTypeSelector({
             variant="ghost"
             onClick={handleSaveClick}
             className={cn(
-              "h-7 px-0 pl-2.5 gap-2 transition-all duration-500 hover:bg-transparent flex items-center",
+              "h-7 px-0 pl-2.5 gap-2 transition-all duration-500 hover:bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent data-[state=open]:!bg-transparent [-webkit-tap-highlight-color:transparent] flex items-center",
               isEditing ? "opacity-100" : "text-primary hover:opacity-80"
             )}
           />
@@ -209,10 +209,10 @@ export function ContractTypeSelector({
                   <button 
                     key={type}
                     className={cn(
-                      "w-full flex items-center gap-3 px-4 py-3 sm:py-2.5 rounded-none first:pt-2 last:pb-2 cursor-pointer group transition-colors text-left",
+                      "w-full flex items-center gap-3 px-4 py-3 sm:py-2.5 rounded-none first:pt-2 last:pb-2 cursor-pointer group transition-colors text-left [-webkit-tap-highlight-color:transparent]",
                       isSelected 
                         ? "bg-primary/10 text-primary border-l-2 border-primary" 
-                        : "hover:bg-zinc-900/40 focus:bg-zinc-900/40 hover:text-primary"
+                        : "hover:bg-zinc-900/40 focus:bg-zinc-900/40 hover:text-primary active:bg-transparent focus:bg-transparent"
                     )}
                     onClick={() => {
                       onSelect(type)
