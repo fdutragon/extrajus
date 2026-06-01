@@ -135,8 +135,8 @@ export function Logo({ className, showText = true, iconSize = 32, variant = "chr
 
       {showText && (
         <span className={cn(
-          "font-sans font-black tracking-[0.28em] text-foreground leading-none flex items-center",
-          isLarge ? "text-[10.5px]" : isMedium ? "text-[9px]" : "text-[7.5px] sm:text-[7.5px] max-sm:text-[10px]"
+          "font-sans font-black tracking-[0.28em] text-foreground leading-none flex items-center max-sm:hidden",
+          isLarge ? "text-[10.5px]" : isMedium ? "text-[9px]" : "text-[7.5px] sm:text-[7.5px]"
         )}>
           Extra<span style={{ color: jusColor, filter: jusShadow }} className="transition-all duration-500">Jus</span>
         </span>

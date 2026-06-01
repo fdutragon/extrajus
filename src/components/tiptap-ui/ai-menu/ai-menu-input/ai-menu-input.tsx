@@ -109,9 +109,11 @@ export function ContractTypeSelector({
     }
   }, [])
 
+  const isSearching = search.trim().length > 0
   const filtered = CONTRACT_TYPES.filter(type => 
     type.toLowerCase().includes(search.toLowerCase())
   )
+  const displayedTypes = isSearching ? filtered : filtered.slice(0, 4)
 
   const isEditing = selectedType && editor && !editor.isEmpty
 
@@ -200,21 +202,42 @@ export function ContractTypeSelector({
           </div>
         </div>
         <div className="max-h-[280px] sm:max-h-[200px] overflow-y-auto p-0 scrollbar-minimalist">
-          {filtered.length > 0 ? (
-            filtered.map((type) => (
-              <button 
-                key={type}
-                className="w-full flex items-center gap-3 px-4 py-3 sm:py-2.5 rounded-none first:pt-2 last:pb-2 cursor-pointer group transition-colors text-left hover:bg-transparent focus:bg-transparent"
-                onClick={() => {
-                  onSelect(type)
-                  setIsOpen(false)
-                  setSearch("")
-                }}
-              >
-                <div className="w-2 h-2 rounded-full bg-primary/40 group-hover:bg-primary transition-colors shrink-0" />
-                <span className="text-[13px] sm:text-[12px] font-medium text-zinc-300 group-hover:text-primary truncate uppercase tracking-tight">{type}</span>
-              </button>
-            ))
+          {displayedTypes.length > 0 ? (
+            <>
+              {displayedTypes.map((type) => {
+                const isSelected = selectedType === type
+                return (
+                  <button 
+                    key={type}
+                    className={cn(
+                      "w-full flex items-center gap-3 px-4 py-3 sm:py-2.5 rounded-none first:pt-2 last:pb-2 cursor-pointer group transition-colors text-left",
+                      isSelected 
+                        ? "bg-primary/10 text-primary border-l-2 border-primary" 
+                        : "hover:bg-zinc-900/40 focus:bg-zinc-900/40 hover:text-primary"
+                    )}
+                    onClick={() => {
+                      onSelect(type)
+                      setIsOpen(false)
+                      setSearch("")
+                    }}
+                  >
+                    <div className={cn(
+                      "w-2 h-2 rounded-full transition-colors shrink-0",
+                      isSelected ? "bg-primary" : "bg-primary/40 group-hover:bg-primary"
+                    )} />
+                    <span className={cn(
+                      "text-[13px] sm:text-[12px] font-medium truncate uppercase tracking-tight transition-colors",
+                      isSelected ? "text-primary" : "text-zinc-300 group-hover:text-primary"
+                    )}>{type}</span>
+                  </button>
+                )
+              })}
+              {!isSearching && (
+                <div className="p-3 text-center border-t border-zinc-900/50 bg-zinc-950/80">
+                  <span className="text-[10px] font-mono tracking-widest text-primary/70 uppercase">⚡ + 50 modelos de elite no acervo</span>
+                </div>
+              )}
+            </>
           ) : (
             <div className="p-4 text-center">
               <span className="text-[11px] text-muted-foreground">Nenhum modelo encontrado.</span>

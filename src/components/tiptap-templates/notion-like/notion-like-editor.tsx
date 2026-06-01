@@ -217,6 +217,7 @@ import {
   AiMenuStateProvider,
 } from "../../../components/tiptap-ui/ai-menu/ai-menu"
 import { useAiMenuState } from "../../../components/tiptap-ui/ai-menu/ai-menu-hooks"
+import { SetupErrorMessage } from "./setup-error-message"
 import { ExportButton } from "../../../components/tiptap-ui/export-button/export-button"
 import { BubbleMenu } from "../../../components/tiptap-ui/bubble-menu/bubble-menu"
 import {
@@ -611,23 +612,23 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
           </div>
 
           {!readOnly && (
-            <div className="flex items-center gap-0.5 h-9">
+            <div className="flex items-center gap-0.5 max-sm:gap-0 h-9">
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setFontSize(prev => Math.max(12, prev - 1))}
-                className="h-9 w-9 text-muted-foreground hover:text-foreground rounded-full transition-all flex items-center justify-center p-0"
+                className="h-9 w-9 max-sm:h-7 max-sm:w-7 text-muted-foreground hover:text-foreground rounded-full transition-all flex items-center justify-center p-0"
               >
                 <Minus className="w-4 h-4" />
               </Button>
-              <div className="flex items-center px-1 justify-center select-none min-w-[24px]">
+              <div className="flex items-center px-1 max-sm:px-0.5 justify-center select-none min-w-[24px] max-sm:min-w-[16px]">
                 <span className="text-[12px] font-black text-foreground/80">{fontSize}</span>
               </div>
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setFontSize(prev => Math.min(26, prev + 1))}
-                className="h-9 w-9 text-muted-foreground hover:text-foreground rounded-full transition-all flex items-center justify-center p-0"
+                className="h-9 w-9 max-sm:h-7 max-sm:w-7 text-muted-foreground hover:text-foreground rounded-full transition-all flex items-center justify-center p-0"
               >
                 <Plus className="w-4 h-4" />
               </Button>
@@ -704,7 +705,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
               "w-full max-w-full lg:max-w-[clamp(37.5rem,45vw,56.25rem)] mx-auto editor-glow-container max-sm:!p-0 max-sm:!rounded-none transition-all duration-700 shadow-2xl max-sm:shadow-none",
               (showEntranceGlow || editorFocused) && "glowing"
             )}>
-              <div className="w-full h-full sm:bg-card/90 sm:dark:bg-card/75 sm:backdrop-blur-xl sm:rounded-[30px] max-sm:rounded-none px-4 max-sm:px-0 py-8 max-sm:pt-4 max-sm:pb-48 sm:px-14 sm:py-12 relative min-h-[50rem] md:min-h-[74.25rem] editor-glow-content max-sm:bg-transparent max-sm:backdrop-blur-none max-sm:shadow-none">
+              <div className="w-full h-full sm:bg-card/90 sm:dark:bg-card/75 sm:backdrop-blur-xl sm:rounded-[30px] max-sm:rounded-none px-4 max-sm:px-0 py-8 max-sm:pt-8 max-sm:pb-48 sm:px-14 sm:py-12 relative min-h-[50rem] md:min-h-[74.25rem] editor-glow-content max-sm:bg-transparent max-sm:backdrop-blur-none max-sm:shadow-none">
                 <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-[30px] max-sm:hidden" />
 
                 <div className="relative z-10">
@@ -751,7 +752,11 @@ export function EditorProvider(props: EditorProviderProps) {
   const editor = useEditor({
     immediatelyRender: false,
     editable: !readOnly,
-    editorProps: { attributes: { class: "notion-like-editor" }, scrollThreshold: 0, scrollMargin: 0 },
+    editorProps: { 
+      attributes: { class: "notion-like-editor" }, 
+      scrollThreshold: { top: 80, bottom: 160, left: 0, right: 0 }, 
+      scrollMargin: { top: 80, bottom: 160, left: 0, right: 0 } 
+    },
     extensions: [
       StarterKit.configure({ undoRedo: false, horizontalRule: false, dropcursor: { width: 2 } }),
       HorizontalRule,
