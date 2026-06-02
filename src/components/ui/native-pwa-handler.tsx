@@ -56,14 +56,6 @@ export function NativePwaHandler() {
       
       if (outcome === 'accepted') {
         localStorage.setItem("pwa-installed", "true")
-        // Conversão do Google Ads para Instalação
-        if (typeof window !== "undefined" && (window as any).gtag) {
-          (window as any).gtag('event', 'conversion', {
-              'send_to': 'AW-18191879169/hEqyCJvpwrYcEIGYyOJD',
-              'value': 1.0,
-              'currency': 'BRL'
-          });
-        }
 
         // Removemos a dependência do evento 'appinstalled' (que falha em alguns celulares)
         // Disparamos o sucesso após 10 segundos fixos, tempo suficiente para a instalação concluir

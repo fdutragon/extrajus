@@ -29,6 +29,15 @@ export function PwaInstallModal() {
   }, [])
 
   const handleInstall = () => {
+    // Conversão do Google Ads para Clique no Botão de Instalação
+    if (typeof window !== "undefined" && (window as any).gtag) {
+      (window as any).gtag('event', 'conversion', {
+          'send_to': 'AW-18191879169/hEqyCJvpwrYcEIGYyOJD',
+          'value': 1.0,
+          'currency': 'BRL'
+      });
+    }
+
     // Dispara o prompt nativo via o handler existente
     window.dispatchEvent(new CustomEvent("trigger-pwa-install"))
     setIsOpen(false)
