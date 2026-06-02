@@ -635,15 +635,44 @@ export function AiMenuInputTextarea({
     return () => provider.off("status", handleStatus)
   }, [provider])
 
-  const dynamicPlaceholder = !isSynced
-    ? "Sincronizando ambiente da inteligência artificial..."
-    : isRecording
-    ? "Gravando áudio... Fale os termos do acordo e a IA redigirá o contrato em tempo real."
-    : isEditing
-    ? "Escreva o que você deseja alterar, complementar ou remover nas cláusulas do seu contrato..."
-    : selectedContractType 
-    ? "Adicione detalhes (ex: nomes, valores, prazos)..." 
-    : "Qual contrato você deseja criar hoje? (ex: Prestação de Serviços, NDA) Descreva os detalhes do acordo...";
+  const getPlaceholder = () => {
+    if (!isSynced) return "Sincronizando ambiente da inteligência artificial..."
+    if (isRecording) return "Gravando áudio... Fale os termos do acordo e a IA redigirá o contrato em tempo real."
+    if (isEditing) return "Escreva o que você deseja alterar, complementar ou remover nas cláusulas..."
+    
+    if (selectedContractType) {
+      const type = selectedContractType.toLowerCase()
+      if (type.includes("prestação de serviços") || type.includes("empreitada") || type.includes("consultoria")) {
+        return `Descreva o serviço, prazos, valor e forma de pagamento para ${selectedContractType}...`
+      }
+      if (type.includes("compra e venda") || type.includes("permuta")) {
+        return `Qual o bem (imóvel, veículo, produto), valor e condições de entrega?`
+      }
+      if (type.includes("aluguel") || type.includes("arrendamento") || type.includes("comodato")) {
+        return `Descreva o imóvel/bem, valor do aluguel, prazo e garantias (caução, fiador)...`
+      }
+      if (type.includes("confidencialidade") || type.includes("nda")) {
+        return `Qual projeto ou informação será protegida? Há multa por vazamento?`
+      }
+      if (type.includes("trabalho") || type.includes("clt")) {
+        return `Qual o cargo, salário, carga horária e local de trabalho?`
+      }
+      if (type.includes("sociedade") || type.includes("acordo de sócios") || type.includes("parceria")) {
+        return `Qual o objetivo da parceria, investimento e como os lucros serão divididos?`
+      }
+      if (type.includes("empréstimo") || type.includes("mútuo")) {
+        return `Qual o valor emprestado, taxa de juros, prazo e forma de pagamento?`
+      }
+      if (type.includes("licenciamento") || type.includes("franquia") || type.includes("direitos autorais")) {
+        return `Descreva a marca/obra, limites de uso (território, prazo) e royalties...`
+      }
+      return `Adicione os detalhes essenciais para o seu ${selectedContractType} (ex: objeto, valores, prazos)...`
+    }
+    
+    return "Qual contrato você deseja criar hoje? (ex: Prestação de Serviços, NDA)..."
+  }
+
+  const dynamicPlaceholder = getPlaceholder()
 
   return (
     <div

@@ -3,18 +3,22 @@
 import { useEffect, useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Smartphone, Monitor, Cloud, ShieldCheck, Zap, Download } from "lucide-react"
+import { Smartphone, Monitor, Cloud, ShieldCheck, Zap, Download, Share, PlusSquare } from "lucide-react"
 
 export function PwaInstallModal() {
   const [isOpen, setIsOpen] = useState(false)
   const [platform, setPlatform] = useState<"mobile" | "desktop">("mobile")
+  const [isIOS, setIsIOS] = useState(false)
 
   useEffect(() => {
     const handleOpen = () => {
-      // Detecta plataforma básico
       if (typeof window !== "undefined") {
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
         setPlatform(isMobile ? "mobile" : "desktop")
+
+        // Detecção de iOS agressiva (incluindo iPadOS moderno)
+        const isIOSDevice = (/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) && !(window as any).MSStream
+        setIsIOS(isIOSDevice)
       }
       setIsOpen(true)
     }
@@ -68,20 +72,40 @@ export function PwaInstallModal() {
               </div>
               <div>
                 <p className="text-[13px] font-black text-zinc-100 uppercase tracking-tighter mb-1">Instalação Instantânea</p>
-                <p className="text-[13px] text-zinc-400 font-medium leading-tight">Instale em segundos sem sair do site.</p>
+                <p className="text-[13px] text-zinc-400 font-medium leading-tight">{isIOS ? "Processo nativo seguro do Safari." : "Instale em segundos sem sair do site."}</p>
               </div>
             </div>
           </div>
 
           <div className="flex flex-col w-full gap-4">
-            <Button 
-              onClick={handleInstall}
-              className="w-full bg-primary text-primary-foreground font-black py-7 rounded-2xl hover:scale-[1.02] transition-all shadow-[0_10px_30px_rgba(var(--primary-rgb),0.25)] group relative overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] transition-transform" />
-              <Download className="mr-2 h-5 w-5 group-hover:animate-bounce relative z-10" />
-              <span className="relative z-10 tracking-wider">INSTALAR APP AGORA</span>
-            </Button>
+            {isIOS ? (
+              <div className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-5 text-left flex flex-col gap-4 shadow-inner">
+                <p className="text-[11px] text-zinc-400 font-bold uppercase tracking-widest text-center">Como Instalar no iPhone/iPad:</p>
+                
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 shadow-sm">
+                    <Share className="w-4 h-4 text-primary" />
+                  </div>
+                  <p className="text-[13px] text-zinc-200 font-medium leading-tight">1. Toque em <strong>Compartilhar</strong> na barra do Safari.</p>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 shadow-sm">
+                    <PlusSquare className="w-4 h-4 text-primary" />
+                  </div>
+                  <p className="text-[13px] text-zinc-200 font-medium leading-tight">2. Escolha <strong>Adicionar à Tela de Início</strong>.</p>
+                </div>
+              </div>
+            ) : (
+              <Button 
+                onClick={handleInstall}
+                className="w-full bg-primary text-primary-foreground font-black py-7 rounded-2xl hover:scale-[1.02] transition-all shadow-[0_10px_30px_rgba(var(--primary-rgb),0.25)] group relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] transition-transform" />
+                <Download className="mr-2 h-5 w-5 group-hover:animate-bounce relative z-10" />
+                <span className="relative z-10 tracking-wider">INSTALAR APP AGORA</span>
+              </Button>
+            )}
             <button 
               onClick={() => setIsOpen(false)}
               className="text-[9px] font-bold text-zinc-600 hover:text-zinc-400 transition-colors uppercase tracking-[0.3em] py-2"
