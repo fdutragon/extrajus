@@ -113,7 +113,7 @@ export function ContractTypeSelector({
   const filtered = CONTRACT_TYPES.filter(type => 
     type.toLowerCase().includes(search.toLowerCase())
   )
-  const displayedTypes = isSearching ? filtered : filtered.slice(0, 4)
+  const displayedTypes = filtered
 
   const isEditing = editor && !editor.isEmpty
 
@@ -175,7 +175,7 @@ export function ContractTypeSelector({
 
       <DialogContent 
         showCloseButton={false} 
-        className="inset-x-0 mx-auto w-[calc(100vw-2rem)] max-w-sm p-0 overflow-hidden bg-popover border-border shadow-2xl z-[100000] top-[15%] translate-y-0 sm:top-1/2 sm:-translate-y-1/2"
+        className="inset-x-0 mx-auto w-[calc(100vw-2rem)] max-w-sm p-0 overflow-hidden bg-popover border-border shadow-2xl z-[100000] top-[8%] translate-y-0 sm:top-1/2 sm:-translate-y-1/2"
       >
         <div className="p-2.5 border-b border-border bg-muted/30">
           <div className="relative">
@@ -188,7 +188,7 @@ export function ContractTypeSelector({
               role="searchbox"
               name="contract-search-field-no-autofill"
               id="contract-search-field-no-autofill"
-              placeholder="Buscar contrato..."
+              placeholder="Buscar modelo..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               autoComplete="off"
@@ -200,7 +200,7 @@ export function ContractTypeSelector({
             />
           </div>
         </div>
-        <div className="max-h-[280px] sm:max-h-[360px] overflow-y-auto p-0 scrollbar-minimalist relative">
+        <div className="max-h-[240px] overflow-y-auto p-0 scrollbar-minimalist relative">
           {displayedTypes.length > 0 ? (
             <>
               {displayedTypes.map((type) => {
@@ -232,17 +232,15 @@ export function ContractTypeSelector({
                 )
               })}
               <div className="h-2 shrink-0"></div>
-              {!isSearching && (
-                <div className="sm:sticky sm:bottom-0 sm:z-10 p-3 pb-4 text-center border-t border-border bg-popover/95 backdrop-blur-sm">
-                  <span className="text-[10px] font-mono font-bold tracking-widest text-primary/90 dark:text-primary/70 uppercase">⚡ + 50 modelos de elite no acervo</span>
-                </div>
-              )}
             </>
           ) : (
             <div className="p-4 text-center">
               <span className="text-[11px] text-muted-foreground">Nenhum modelo encontrado.</span>
             </div>
           )}
+        </div>
+        <div className="w-full p-3 pb-4 text-center border-t border-border bg-popover/95 backdrop-blur-sm shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] z-10 shrink-0">
+          <span className="text-[11px] sm:text-[12px] font-mono font-bold tracking-widest text-primary/90 dark:text-primary/70 uppercase">⚡ + 50 Modelos Completos no acervo</span>
         </div>
       </DialogContent>
     </Dialog>

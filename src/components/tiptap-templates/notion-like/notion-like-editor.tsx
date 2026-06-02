@@ -757,7 +757,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
 }
 
 export function EditorProvider(props: EditorProviderProps) {
-  const { provider, ydoc, placeholder = "Pressione '/' para comandos ou comece a digitar seu contrato...", geminiKey, templateSlug, readOnly, isPublic } = props
+  const { provider, ydoc, placeholder = "Pressione '/' para adicionar cláusulas...", geminiKey, templateSlug, readOnly, isPublic } = props
   const { user } = useUser()
   const { setTocContent } = useToc()
   const { room } = useCollab()
@@ -892,7 +892,7 @@ export function EditorProvider(props: EditorProviderProps) {
   )
 }
 
-export function NotionEditor({ room, placeholder = "Pressione '/' para comandos ou comece a digitar seu contrato...", templateSlug, readOnly, isPublic }: NotionEditorProps) {
+export function NotionEditor({ room, placeholder = "Pressione '/' para adicionar cláusulas...", templateSlug, readOnly, isPublic }: NotionEditorProps) {
   return (
     <UserProvider>
       <CollabProvider room={room} key={room}>
@@ -908,7 +908,7 @@ export function NotionEditor({ room, placeholder = "Pressione '/' para comandos 
   )
 }
 
-export function NotionEditorContent({ placeholder = "Pressione '/' para comandos ou comece a digitar seu contrato...", templateSlug, readOnly: propReadOnly, isPublic }: { placeholder?: string, templateSlug?: string | null, readOnly?: boolean, isPublic?: boolean }) {
+export function NotionEditorContent({ placeholder = "Pressione '/' para adicionar cláusulas...", templateSlug, readOnly: propReadOnly, isPublic }: { placeholder?: string, templateSlug?: string | null, readOnly?: boolean, isPublic?: boolean }) {
   const { provider, ydoc, setupError: collabSetupError, room } = useCollab()
   const { geminiKey, setupError: aiSetupError } = useAi()
   const [contractStatus, setContractStatus] = useState<string | null>(null)

@@ -12,14 +12,8 @@
   "categories": ["business", "productivity", "legal"],
   "icons": [
     {
-      "src": "/icon-app-v3.svg?v=24",
-      "sizes": "192x192 256x256",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icon-splash.svg?v=24",
-      "sizes": "512x512",
+      "src": "/icon-app-v3.svg?v=25",
+      "sizes": "192x192 256x256 512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
