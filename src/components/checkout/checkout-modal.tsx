@@ -26,6 +26,8 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
   const [pixData, setPixData] = useState<{ qrCode: string, code: string, externalId: string } | null>(null)
   const [copied, setCopied] = useState(false)
   const hasAutoChecked = useRef(false)
+  const conversionFiredRef = useRef(false)
+  const isProcessingRef = useRef(false)
 
   // Reset state when opened
   useEffect(() => {
@@ -35,6 +37,8 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
       setLoading(false)
       setEmail("")
       setName("Cliente")
+      conversionFiredRef.current = false
+      isProcessingRef.current = false
     }
   }, [isOpen])
 
@@ -48,8 +52,10 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
         const res = await fetch(`/api/billing/status?externalId=${pixData.externalId}`)
         if (res.ok) {
           const data = await res.json()
-          if (data.status === "COMPLETE") {            // Dispara o evento de conversão de compra do Google Ads no frontend
-            if (typeof window !== "undefined" && (window as any).gtag) {
+          if (data.status === "COMPLETE") {            
+            // Dispara o evento de conversão de compra do Google Ads no frontend
+            if (typeof window !== "undefined" && (window as any).gtag && !conversionFiredRef.current) {
+              conversionFiredRef.current = true;
               (window as any).gtag('event', 'conversion', {
                 'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
                 'value': 37.00, // Valor real do download do documento (R$ 37,00)
@@ -71,10 +77,11 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
     return () => clearInterval(interval)
   }, [step, pixData])
 
-  const handleCheckout = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!name.trim() || !email.trim()) return
+  const handleCheckout = async (e?: React.FormEvent | React.MouseEvent | React.KeyboardEvent) => {
+    if (e) e.preventDefault()
+    if (!name.trim() || !email.trim() || isProcessingRef.current) return
 
+    isProcessingRef.current = true
     setLoading(true)
     try {
       const res = await fetch("/api/billing/checkout-doc", {
@@ -102,16 +109,18 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
       toast.error(err.message)
     } finally {
       setLoading(false)
+      isProcessingRef.current = false
     }
   }
 
   // Developer simulation: Creates account and completes payment instantly
   const handleDevSimulateAll = async () => {
-    if (!name.trim() || !email.trim()) {
-      toast.error("Por favor, preencha o Nome e o E-mail no formulário antes de clicar em simular!")
+    if (!name.trim() || !email.trim() || isProcessingRef.current) {
+      if (!isProcessingRef.current) toast.error("Por favor, preencha o Nome e o E-mail no formulário antes de clicar em simular!")
       return
     }
 
+    isProcessingRef.current = true
     setLoading(true)
     try {
       // 1. Create transaction and account using the actual user inputted name and email
@@ -150,7 +159,8 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
 
       // 3. Transition to success
       // Dispara o evento de conversão de compra do Google Ads na simulação dev
-      if (typeof window !== "undefined" && (window as any).gtag) {
+      if (typeof window !== "undefined" && (window as any).gtag && !conversionFiredRef.current) {
+        conversionFiredRef.current = true;
         (window as any).gtag('event', 'conversion', {
           'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
           'value': 37.00,
@@ -166,12 +176,14 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
       toast.error(err.message)
     } finally {
       setLoading(false)
+      isProcessingRef.current = false
     }
   }
 
   // Developer simulation: Confirms the active PIX payment
   const handleDevSimulatePaymentOnly = async () => {
-    if (!pixData?.externalId) return
+    if (!pixData?.externalId || isProcessingRef.current) return
+    isProcessingRef.current = true
     setLoading(true)
     try {
       const res = await fetch("/api/billing/status", {
@@ -184,7 +196,8 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
       if (!res.ok) throw new Error(data.error || "Falha ao simular confirmação de pagamento")
 
       // Dispara o evento de conversão de compra do Google Ads na simulação dev
-      if (typeof window !== "undefined" && (window as any).gtag) {
+      if (typeof window !== "undefined" && (window as any).gtag && !conversionFiredRef.current) {
+        conversionFiredRef.current = true;
         (window as any).gtag('event', 'conversion', {
           'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
           'value': 37.00,
@@ -200,6 +213,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
       toast.error(err.message)
     } finally {
       setLoading(false)
+      isProcessingRef.current = false
     }
   }
 
@@ -327,7 +341,10 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             </DialogDescription>
           </DialogHeader>
           {step === "form" && (
-            <form onSubmit={handleCheckout} className="flex flex-col space-y-4 max-sm:space-y-4.5 py-2 w-full max-sm:px-2">
+            <div 
+              onKeyDown={(e) => { if (e.key === 'Enter') handleCheckout(e) }} 
+              className="flex flex-col space-y-4 max-sm:space-y-4.5 py-2 w-full max-sm:px-2"
+            >
               <div className="flex flex-col">
                 <input 
                   id="email"
@@ -335,11 +352,11 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="exemplo@email.com" 
-                  required
                   className="flex h-11 max-sm:h-12 w-full rounded-xl border border-input bg-background/50 px-4 py-2 text-sm max-sm:text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)]"
                 />
                 <Button 
-                  type="submit" 
+                  type="button" 
+                  onClick={handleCheckout}
                   disabled={loading}
                   className="w-full h-11 max-sm:h-12 mt-[18px] bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-[0.1em] rounded-xl transition-all shadow-[0_4px_15px_rgba(16,185,129,0.3)] hover:shadow-[0_4px_25px_rgba(16,185,129,0.5)] flex items-center justify-center gap-2"
                 >
@@ -364,7 +381,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
               >
                 Voltar para o editor
               </button>
-            </form>
+            </div>
           )}
 
           {step === "pix" && pixData && (
