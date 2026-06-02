@@ -21,16 +21,16 @@ export const metadata: Metadata = {
   description: "Ecossistema de alta tecnologia e inteligência artificial para redação, auditoria e blindagem contratual definitiva.",
   icons: {
     icon: [
-      { url: "/icon-app-v3.svg?v=16", type: "image/svg+xml" }
+      { url: "/icon-app-v3.svg?v=21", type: "image/svg+xml" }
     ],
-    shortcut: "/icon-app-v3.svg?v=16",
-    apple: "/icon-app-v3.svg?v=16"
+    shortcut: "/icon-app-v3.svg?v=21",
+    apple: "/icon-app-v3.svg?v=21"
   },
   robots: {
     index: true,
     follow: true,
   },
-  manifest: "/manifest.json?v=16",
+  manifest: "/manifest.json?v=21",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

@@ -17,10 +17,10 @@ export function Logo({ className, showText = true, iconSize = 32, variant = "chr
   const strokeColor = isQuartz ? "url(#quartzGradient)" : "url(#chromeGradient)"
   const fillColor = isQuartz ? "url(#frostedGradient)" : "url(#darkGradient)"
   const diamondFill = isQuartz ? "rgba(255, 255, 255, 0.05)" : "#050507"
-  const jusColor = isQuartz ? "#ffffff" : "#eab308"
+  const jusColor = isQuartz ? "#ffffff" : "#facc15"
   const jusShadow = isQuartz 
-    ? "drop-shadow-[0_0_8px_rgba(255,255,255,0.35)]" 
-    : "drop-shadow-[0_0_4px_rgba(209,213,223,0.15)]"
+    ? "drop-shadow(0 0 8px rgba(255,255,255,0.35))" 
+    : "drop-shadow(0 0 4px rgba(209,213,223,0.15))"
 
   return (
     <div className={cn("flex items-center gap-1.5 select-none", className)}>
@@ -35,111 +35,87 @@ export function Logo({ className, showText = true, iconSize = 32, variant = "chr
         {...props}
       >
         <defs>
-          {/* Variante Gold: Ouro Imperial e Obsidiana (Ideal para Sidebar/Header) */}
+          {/* Variante Gold: Ouro Imperial e Obsidiana */}
           <linearGradient id="chromeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fef08a" /> {/* Ouro Claro */}
-            <stop offset="30%" stopColor="#eab308" /> {/* Ouro Brilhante */}
-            <stop offset="70%" stopColor="#a16207" /> {/* Ouro Antigo */}
-            <stop offset="100%" stopColor="#422006" /> {/* Ouro Negro */}
+            <stop offset="0%" stopColor="#fefce8" />
+            <stop offset="40%" stopColor="#fde047" />
+            <stop offset="80%" stopColor="#eab308" />
+            <stop offset="100%" stopColor="#ca8a04" />
           </linearGradient>
           <linearGradient id="darkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#141419" /> {/* Obsidian Light */}
-            <stop offset="100%" stopColor="#050507" /> {/* Vácuo Negro */}
+            <stop offset="0%" stopColor="#141419" />
+            <stop offset="100%" stopColor="#050507" />
           </linearGradient>
 
-          {/* Variante Quartz: Platina Ultra Clara e Cristal de Quartzo (Ideal para Loading/Auth) */}
+          {/* Variante Quartz: Platina Ultra Clara e Cristal de Quartzo */}
           <linearGradient id="quartzGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#ffffff" /> {/* Branco Puro */}
-            <stop offset="50%" stopColor="#f3f4f6" /> {/* Prata Ultra Claro */}
-            <stop offset="100%" stopColor="#e5e7eb" /> {/* Platina Suave */}
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="50%" stopColor="#f3f4f6" />
+            <stop offset="100%" stopColor="#e5e7eb" />
           </linearGradient>
           <linearGradient id="frostedGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="rgba(255, 255, 255, 0.08)" /> {/* Quartzo Translúcido */}
+            <stop offset="0%" stopColor="rgba(255, 255, 255, 0.08)" />
             <stop offset="100%" stopColor="rgba(255, 255, 255, 0.02)" /> 
           </linearGradient>
         </defs>
 
-        {/* Hexágono Brutalista Selo de Força */}
-        <polygon 
-          points="50,6 88,28 88,72 50,94 12,72 12,28" 
-          fill={fillColor} 
+        {/* Outer Hexagon Brackets (The Shields of Law) */}
+        <path 
+          d="M 42,14 L 16,30 L 16,70 L 42,86" 
+          fill="none" 
           stroke={strokeColor} 
-          strokeWidth="2.5" 
-          strokeLinejoin="round"
-        />
-        
-        {/* Portal de Conectividade Interno */}
-        <polygon 
-          points="50,12 82,31 82,69 50,88 18,69 18,31" 
-          stroke={strokeColor} 
-          strokeWidth="1.2" 
-          strokeDasharray="4 6" 
-          opacity="0.3"
-        />
-
-        {/* Lâminas Sétricas de Equilíbrio / Asas Geométricas */}
-        {/* Lado Esquerdo */}
-        <path 
-          d="M47 25 L23 46 L31 54 L47 46 Z" 
-          fill={strokeColor} 
-          opacity="0.95" 
-        />
-        <path 
-          d="M47 49 L27 66 L35 72 L47 61 Z" 
-          fill={strokeColor} 
-          opacity="0.75" 
-        />
-
-        {/* Lado Direito */}
-        <path 
-          d="M53 25 L77 46 L69 54 L53 46 Z" 
-          fill={strokeColor} 
-          opacity="0.95" 
-        />
-        <path 
-          d="M53 49 L73 66 L65 72 L53 61 Z" 
-          fill={strokeColor} 
-          opacity="0.75" 
-        />
-        
-        {/* Espada Central Vertical (Eixo da Verdade) */}
-        <line 
-          x1="50" 
-          y1="16" 
-          x2="50" 
-          y2="84" 
-          stroke={strokeColor} 
-          strokeWidth="2.2" 
+          strokeWidth="4" 
           strokeLinecap="round" 
+          strokeLinejoin="round" 
+        />
+        <path 
+          d="M 58,14 L 84,30 L 84,70 L 58,86" 
+          fill="none" 
+          stroke={strokeColor} 
+          strokeWidth="4" 
+          strokeLinecap="round" 
+          strokeLinejoin="round" 
         />
 
-        {/* Diamante Central (Core de Inteligência) */}
+        {/* Inner Data Brackets (The Code/Variables) */}
         <path 
-          d="M50,44 L56,50 L50,56 L44,50 Z" 
-          fill={diamondFill} 
+          d="M 46,32 L 33,40 L 33,60 L 46,68" 
+          fill="none" 
           stroke={strokeColor} 
           strokeWidth="1.5" 
+          strokeLinecap="round" 
+          strokeLinejoin="round" 
+          opacity="0.4"
+        />
+        <path 
+          d="M 54,32 L 67,40 L 67,60 L 54,68" 
+          fill="none" 
+          stroke={strokeColor} 
+          strokeWidth="1.5" 
+          strokeLinecap="round" 
+          strokeLinejoin="round" 
+          opacity="0.4"
         />
 
-        {/* Luz de Sinapse Ativa Pulsante no centro do Diamante (Core da IA) */}
+        {/* The Core (Intelligence / AI) */}
         <circle 
           cx="50" 
           cy="50" 
-          r="2" 
-          fill="#ffffff" 
+          r="4.5" 
+          fill={jusColor} 
           className="animate-pulse"
           style={{
-            filter: "drop-shadow(0 0 4px rgba(255,255,255,0.85))",
+            filter: jusShadow,
           }}
         />
       </svg>
 
       {showText && (
         <span className={cn(
-          "font-sans font-black tracking-[0.28em] text-foreground leading-none flex items-center max-sm:hidden",
-          isLarge ? "text-[12px] md:text-[15px]" : isMedium ? "text-[10.5px] md:text-[13px]" : "text-[10px] sm:text-[10px]"
+          "font-sans font-semibold uppercase tracking-[0.35em] text-foreground leading-none flex items-center max-sm:hidden",
+          isLarge ? "text-[10px] md:text-[12px]" : isMedium ? "text-[9px] md:text-[10px]" : "text-[8px] sm:text-[8.5px]"
         )}>
-          Extra<span style={{ color: jusColor, filter: jusShadow }} className="transition-all duration-500">Jus</span>
+          EXTRA<span style={{ color: jusColor, filter: jusShadow }} className="transition-all duration-500">JUS</span>
         </span>
       )}
     </div>
