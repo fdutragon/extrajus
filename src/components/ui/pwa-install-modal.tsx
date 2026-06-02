@@ -38,11 +38,15 @@ export function PwaInstallModal() {
       });
     }
 
-    // Inicia a contagem de 10s exatamente no momento em que o usuário inicia a instalação nativa
-    setTimeout(() => {
-      localStorage.setItem("pwa_assumed_installed", "true")
-      window.dispatchEvent(new CustomEvent("pwa-assumed-installed-changed"))
-    }, 10000)
+    // No iOS não há prompt nativo rastreável via JS, então iniciamos o timer cego de 10s.
+    // No Android/Desktop, o `native-pwa-handler` escuta o "accepted" do prompt nativo e
+    // SÓ DEPOIS dispara os exatos 10 segundos de espera.
+    if (isIOS) {
+      setTimeout(() => {
+        localStorage.setItem("pwa_assumed_installed", "true")
+        window.dispatchEvent(new CustomEvent("pwa-assumed-installed-changed"))
+      }, 10000)
+    }
 
     // Dispara o prompt nativo via o handler existente
     window.dispatchEvent(new CustomEvent("trigger-pwa-install"))
