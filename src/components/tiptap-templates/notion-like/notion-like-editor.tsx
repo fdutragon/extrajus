@@ -262,33 +262,37 @@ export interface EditorProviderProps {
  */
 export function LoadingSpinner({ text = "Estabelecendo Conexão..." }: { text?: string }) {
   return (
-    <div className="fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-zinc-950 overflow-hidden select-none">
+    <div className="fixed inset-0 z-[1000] bg-zinc-950 overflow-hidden select-none">
       {/* Background Dark Occult Luxury Ambience */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(229,176,59,0.06),transparent_65%)] animate-pulse duration-[4000ms]" />
       
       {/* Subtle background grids */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
 
-      <div className="relative flex flex-col items-center gap-7 animate-in fade-in zoom-in-95 duration-1000">
+      {/* Absolute Centering to prevent dynamic layout shift / PWA chrome jumps */}
+      <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-5 animate-in fade-in zoom-in-95 duration-1000 w-full max-w-xs">
         
         {/* Glowing Logo Container with Ring */}
         <div className="relative flex items-center justify-center">
           {/* Pulsing Outer Glow */}
-          <div className="absolute w-32 h-32 bg-primary/10 rounded-full blur-2xl animate-pulse duration-[2000ms]" />
+          <div className="absolute w-24 h-24 bg-primary/10 rounded-full blur-2xl animate-pulse duration-[2000ms]" />
           
           {/* Animated Spinner Ring */}
-          <div className="absolute w-24 h-24 rounded-full border-2 border-primary/10 border-t-primary/70 animate-spin duration-[1500ms]" />
+          <div className="absolute w-18 h-18 rounded-full border-2 border-primary/10 border-t-primary/70 animate-spin duration-[1500ms]" />
           
           {/* Logo with premium style */}
-          <div className="relative p-4 rounded-full bg-black/40 border border-white/5 backdrop-blur-xl shadow-2xl flex items-center justify-center">
-            <Logo iconSize={48} showText={false} className="flex-col text-center" />
+          <div className="relative p-3 rounded-full bg-black/40 border border-white/5 backdrop-blur-xl shadow-2xl flex items-center justify-center">
+            <Logo iconSize={32} showText={false} className="flex-col text-center" />
           </div>
         </div>
 
         {/* Loading Text */}
         <div className="flex flex-col items-center gap-2 max-w-xs text-center px-4 relative z-10">
-          <p className="text-[10px] text-zinc-500 font-mono tracking-[0.3em] uppercase italic animate-pulse select-none">
-            Iniciando Motor
+          <span className="font-sans font-black tracking-[0.25em] text-zinc-100 uppercase text-xs select-none">
+            Extra<span className="text-primary drop-shadow-[0_0_8px_rgba(234,179,8,0.4)]">Jus</span>
+          </span>
+          <p className="text-[8px] text-zinc-500 font-mono tracking-[0.3em] uppercase italic animate-pulse select-none mt-0.5">
+            {text}
           </p>
         </div>
       </div>

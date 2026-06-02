@@ -51,7 +51,7 @@ export function PwaInstallModal() {
               Salvamento Automático
             </DialogTitle>
             <DialogDescription className="text-zinc-500 text-sm leading-relaxed mt-3 max-w-md mx-auto font-medium">
-              Garanta que sua obra nunca seja perdida. Transforme a ExtraJus em um aplicativo de elite.
+              Garanta que suas minutas nunca sejam perdidas. Tenha a ExtraJus como um aplicativo dedicado que ajuda a fechar bons contratos no seu dia a dia.
             </DialogDescription>
           </DialogHeader>
 
@@ -62,7 +62,7 @@ export function PwaInstallModal() {
               </div>
               <div>
                 <p className="text-[13px] font-black text-zinc-100 uppercase tracking-tighter mb-1">Edição sem Limites</p>
-                <p className="text-[13px] text-zinc-400 font-medium leading-tight">Salve e edite seu modelo quando quiser.</p>
+                <p className="text-[13px] text-zinc-400 font-medium leading-tight">Salve e edite quando quiser.</p>
               </div>
             </div>
 
