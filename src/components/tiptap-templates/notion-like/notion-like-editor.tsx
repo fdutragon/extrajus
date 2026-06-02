@@ -842,34 +842,6 @@ export function EditorProvider(props: EditorProviderProps) {
   })
 
   useEffect(() => {
-    if (!editor) return
-
-    const updateMobileInputMode = () => {
-      if (typeof window === "undefined") return
-      const isMobile = window.innerWidth < 768
-      const pm = editor.view.dom
-      
-      // Bloqueia teclado virtual e seleção de texto no celular se o contrato não estiver vazio
-      if (isMobile && !editor.isEmpty) {
-        pm.setAttribute("inputmode", "none")
-        pm.style.userSelect = "none"
-        pm.style.webkitUserSelect = "none"
-      } else {
-        pm.removeAttribute("inputmode")
-        pm.style.userSelect = ""
-        pm.style.webkitUserSelect = ""
-      }
-    }
-
-    updateMobileInputMode()
-    editor.on("update", updateMobileInputMode)
-
-    return () => {
-      editor.off("update", updateMobileInputMode)
-    }
-  }, [editor])
-
-  useEffect(() => {
     if (!editor || !templateSlug) return
     const checkAndFill = async () => {
       await new Promise(resolve => setTimeout(resolve, 1500))
