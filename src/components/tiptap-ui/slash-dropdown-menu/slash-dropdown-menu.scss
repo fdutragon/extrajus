@@ -23,6 +23,7 @@ span.tiptap-slash-decoration {
 span.tiptap-slash-decoration::after {
   color: var(--tt-slash-decoration-color);
   font-weight: 700;
+  font-size: 0.75em;
 }
 
 span.tiptap-slash-decoration.is-empty::after {

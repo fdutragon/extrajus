@@ -782,23 +782,18 @@ export function EditorProvider(props: EditorProviderProps) {
       scrollMargin: { top: 80, bottom: 160, left: 0, right: 0 },
       handleDOMEvents: {
         copy: (view, event) => {
-          if (typeof window !== "undefined" && window.innerWidth < 768) {
-            event.preventDefault()
-            return true
-          }
-          return false
+          event.preventDefault()
+          return true
         },
         cut: (view, event) => {
-          if (typeof window !== "undefined" && window.innerWidth < 768) {
-            event.preventDefault()
-            return true
-          }
-          return false
+          event.preventDefault()
+          return true
         },
         paste: (view, event) => {
+          // Allow paste normally on desktop, keep it blocked on mobile if it was
           if (typeof window !== "undefined" && window.innerWidth < 768) {
-            event.preventDefault()
-            return true
+            // event.preventDefault() 
+            // return true
           }
           return false
         },
@@ -845,6 +840,30 @@ export function EditorProvider(props: EditorProviderProps) {
       }
     },
   })
+
+  useEffect(() => {
+    if (!editor) return
+
+    const updateMobileInputMode = () => {
+      if (typeof window === "undefined") return
+      const isMobile = window.innerWidth < 768
+      const pm = editor.view.dom
+      
+      // Bloqueia teclado virtual no celular se o contrato não estiver vazio
+      if (isMobile && !editor.isEmpty) {
+        pm.setAttribute("inputmode", "none")
+      } else {
+        pm.removeAttribute("inputmode")
+      }
+    }
+
+    updateMobileInputMode()
+    editor.on("update", updateMobileInputMode)
+
+    return () => {
+      editor.off("update", updateMobileInputMode)
+    }
+  }, [editor])
 
   useEffect(() => {
     if (!editor || !templateSlug) return

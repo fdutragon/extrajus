@@ -265,7 +265,7 @@ export function AiMenuInputPlaceholder({
     >
       <div className="tiptap-ai-prompt-input-placeholder-content pr-4 truncate">
         <span className="tiptap-ai-prompt-input-placeholder-text truncate block w-full">
-          {placeholder || "Descreva os termos, dite o acordo usando recurso de voz ou selecione um modelo no botão abaixo. Que tipo de documento blindará o seu negócio hoje?"}
+          {placeholder || "Descreva os termos, dite o acordo por voz ou escolha um modelo pronto. Que documento vai blindar o seu negócio hoje?"}
         </span>
       </div>
       <Button data-style="primary" disabled className="h-7 w-7 rounded-lg p-0 flex items-center justify-center shrink-0">
@@ -468,7 +468,7 @@ export function AiMenuInputTextarea({
   onPlaceholderClick,
   showPlaceholder = false,
   isLoading = false,
-  placeholder = "Descreva os termos, dite o acordo usando recurso de voz ou selecione um modelo no botão abaixo. Que tipo de documento blindará o seu negócio hoje?",
+  placeholder = "Descreva os termos, dite o acordo por voz ou escolha um modelo pronto. Que documento vai blindar o seu negócio hoje?",
   autoFocus = true,
   isEditing = false,
   ...props
@@ -670,7 +670,7 @@ export function AiMenuInputTextarea({
       return `Adicione os detalhes essenciais para o seu ${selectedContractType} (ex: objeto, valores, prazos)...`
     }
     
-    return "Descreva os termos, dite o acordo usando recurso de voz ou selecione um modelo no botão abaixo. Que tipo de documento blindará o seu negócio hoje?"
+    return "Descreva os termos, dite o acordo por voz ou escolha um modelo pronto. Que documento vai blindar o seu negócio hoje?"
   }
 
   const dynamicPlaceholder = getPlaceholder()
