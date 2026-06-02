@@ -612,7 +612,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
           </div>
 
           {!readOnly && (
-            <div className="flex items-center gap-0.5 max-sm:gap-0 h-9">
+            <div className="flex items-center gap-0.5 md:gap-0 max-sm:gap-0 h-9">
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -621,7 +621,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
               >
                 <Minus className="w-4 h-4" />
               </Button>
-              <div className="flex items-center px-1 max-sm:px-0.5 justify-center select-none min-w-[24px] max-sm:min-w-[16px]">
+              <div className="flex items-center px-1 md:px-0.5 max-sm:px-0.5 justify-center select-none min-w-[24px] md:min-w-[18px] max-sm:min-w-[16px]">
                 <span className="text-[12px] font-black text-foreground/80">{fontSize}</span>
               </div>
               <Button 
@@ -641,7 +641,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
 
         {/* Persistent Centralized Branding */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-1.5 select-none whitespace-nowrap z-[110]">
-          <Logo showText={true} iconSize={typeof window !== 'undefined' && window.innerWidth < 1024 ? 28 : 24} variant="chrome" />
+          <Logo showText={true} iconSize={typeof window !== 'undefined' && window.innerWidth < 1024 ? 24 : 36} variant="chrome" />
         </div>
 
         {!readOnly && (

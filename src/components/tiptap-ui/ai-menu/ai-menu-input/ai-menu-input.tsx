@@ -145,21 +145,21 @@ export function ContractTypeSelector({
             variant="ghost"
             onClick={handleSaveClick}
             className={cn(
-              "h-7 px-0 pl-2.5 gap-2 transition-all duration-500 hover:bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent data-[state=open]:!bg-transparent [-webkit-tap-highlight-color:transparent] flex items-center",
+              "h-7 md:h-9 px-0 pl-2.5 md:pl-4 gap-2 transition-all duration-500 hover:bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent data-[state=open]:!bg-transparent [-webkit-tap-highlight-color:transparent] flex items-center",
               isEditing ? "opacity-100" : "text-primary hover:opacity-80"
             )}
           />
         }
       >
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 md:gap-2">
           {isEditing && (
             <div className={cn(
-              "w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-500",
+              "w-1.5 h-1.5 md:w-2 md:h-2 rounded-full shrink-0 transition-all duration-500",
               isInstalled ? "bg-zinc-500 shadow-[0_0_8px_rgba(113,113,122,0.4)]" : "bg-zinc-600 animate-pulse shadow-[0_0_8px_rgba(113,113,122,0.4)]"
             )} />
           )}
           <span className={cn(
-            "text-[8.5px] font-black tracking-[0.15em] uppercase transition-colors duration-500",
+            "text-[8.5px] md:text-[11px] font-black tracking-[0.15em] uppercase transition-colors duration-500",
             isEditing 
               ? "text-zinc-500 dark:text-zinc-500" 
               : "text-zinc-500 dark:text-zinc-500 hover:text-zinc-400"
@@ -169,7 +169,7 @@ export function ContractTypeSelector({
               : cleanContractName(selectedType).toUpperCase()
             }
           </span>
-          {!isEditing && <ChevronDown className="w-3 h-3 opacity-30 shrink-0" />}
+          {!isEditing && <ChevronDown className="w-3 h-3 md:w-4 md:h-4 opacity-30 shrink-0" />}
         </div>
       </DialogTrigger>
 
