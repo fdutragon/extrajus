@@ -15,10 +15,10 @@
   </defs>
 
   <!-- Fundo escuro fixo -->
-  <rect width="100" height="100" fill="#09090b" rx="20" />
+  <rect width="100" height="100" fill="#09090b" />
   
-  <!-- Logo redimensionado para ter bastante respiro (12% do bg) -->
-  <g transform="translate(44, 44) scale(0.12)">
+  <!-- Logo redimensionado para ter bastante respiro (12% do bg) e levemente deslocado para cima -->
+  <g transform="translate(44, 40) scale(0.12)">
     <!-- Outer Hexagon Brackets -->
     <path 
       d="M 42,14 L 16,30 L 16,70 L 42,86" 

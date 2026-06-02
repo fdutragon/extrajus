@@ -69,18 +69,27 @@ export function NativePwaHandler() {
         // Disparamos o sucesso após 10 segundos fixos, tempo suficiente para a instalação concluir
         window.dispatchEvent(new CustomEvent("pwa-installed-status-changed", { detail: { installed: true } }))
         setTimeout(() => {
-          toast.success("ExtraJus instalada com sucesso! Redirecionando...", {
-            duration: 3000,
-            className: "text-[11px]"
-          })
-          setTimeout(() => {
-             const isMobile = typeof navigator !== "undefined" && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-             if (isMobile) {
-               window.open(window.location.href, "_blank")
-             } else {
+          const isMobile = typeof navigator !== "undefined" && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+          
+          if (isMobile) {
+            toast.success("ExtraJus instalada com sucesso!", {
+              description: "O aplicativo já está pronto no seu celular.",
+              duration: 10000,
+              className: "text-[11px]",
+              action: {
+                label: "Abrir App",
+                onClick: () => window.open(window.location.href, "_blank")
+              }
+            })
+          } else {
+            toast.success("ExtraJus instalada com sucesso! Redirecionando...", {
+              duration: 3000,
+              className: "text-[11px]"
+            })
+            setTimeout(() => {
                window.location.href = "web+extrajus://editor"
-             }
-          }, 3000)
+            }, 3000)
+          }
         }, 10000)
       }
       
