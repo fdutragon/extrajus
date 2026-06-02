@@ -17,6 +17,7 @@ export function NativePwaHandler() {
     
     // Pequeno delay para garantir que os listeners de outros componentes já foram registrados
     if (isStandalone) {
+      localStorage.setItem("pwa-installed", "true")
       setTimeout(() => {
         window.dispatchEvent(new CustomEvent("pwa-installed-status-changed", { detail: { installed: true } }))
       }, 500)
@@ -54,6 +55,7 @@ export function NativePwaHandler() {
       console.log(`[PWA] Resposta do usuário: ${outcome}`)
       
       if (outcome === 'accepted') {
+        localStorage.setItem("pwa-installed", "true")
         // Conversão do Google Ads para Instalação
         if (typeof window !== "undefined" && (window as any).gtag) {
           (window as any).gtag('event', 'conversion', {
@@ -79,12 +81,19 @@ export function NativePwaHandler() {
       hasTriggered.current = true
     }
 
+    const handleAppInstalledEvent = () => {
+      localStorage.setItem("pwa-installed", "true")
+      window.dispatchEvent(new CustomEvent("pwa-installed-status-changed", { detail: { installed: true } }))
+    }
+
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
     window.addEventListener("trigger-pwa-install", showNativePrompt)
+    window.addEventListener("appinstalled", handleAppInstalledEvent)
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
       window.removeEventListener("trigger-pwa-install", showNativePrompt)
+      window.removeEventListener("appinstalled", handleAppInstalledEvent)
     }
   }, [])
 

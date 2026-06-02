@@ -73,34 +73,55 @@ export function ContractTypeSelector({
 }) {
   const [search, setSearch] = useState("")
   const [isOpen, setIsOpen] = useState(false)
+  const [isStandalone, setIsStandalone] = useState(false)
   const [isInstalled, setIsInstalled] = useState(false)
   const { editor } = useTiptapEditor()
 
   useEffect(() => {
-    // Função unificada de detecção de PWA
+    const checkStandalone = () => {
+      if (typeof window === "undefined") return false
+      return window.matchMedia('(display-mode: standalone)').matches || 
+             (window.navigator as any).standalone === true ||
+             document.referrer.includes('android-app://')
+    }
+
     const checkInstallation = () => {
       if (typeof window === "undefined") return false
-      
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
-      const isNavStandalone = (window.navigator as any).standalone === true
-      const isReferrerPwa = document.referrer.includes('android-app://') // Android TWA detection
-      
-      return isStandalone || isNavStandalone || isReferrerPwa
+      const standalone = checkStandalone()
+      const localInstalled = localStorage.getItem("pwa-installed") === "true"
+      return standalone || localInstalled
     }
 
     // Verifica estado inicial imediatamente
+    const standaloneVal = checkStandalone()
+    setIsStandalone(standaloneVal)
     setIsInstalled(checkInstallation())
 
+    // Tenta detectar PWA instalada via API do Chrome
+    if (typeof navigator !== 'undefined' && 'getInstalledRelatedApps' in navigator) {
+      (navigator as any).getInstalledRelatedApps().then((apps: any[]) => {
+        if (apps.length > 0) {
+          localStorage.setItem("pwa-installed", "true")
+          setIsInstalled(true)
+        }
+      }).catch(() => {})
+    }
+
     const handleStatusChange = (e: any) => {
-      setIsInstalled(!!e.detail?.installed || checkInstallation())
+      const installed = !!e.detail?.installed || checkInstallation()
+      setIsInstalled(installed)
+      setIsStandalone(checkStandalone())
     }
 
     // Listener para mudanças dinâmicas e evento customizado
     window.addEventListener("pwa-installed-status-changed", handleStatusChange)
     
-    // Adiciona listener para mudança de display-mode (caso o usuário instale sem fechar)
+    // Adiciona listener para mudança de display-mode
     const mediaQuery = window.matchMedia('(display-mode: standalone)')
-    const handleMediaChange = (e: MediaQueryListEvent) => setIsInstalled(e.matches)
+    const handleMediaChange = (e: MediaQueryListEvent) => {
+      setIsStandalone(e.matches)
+      setIsInstalled(e.matches || localStorage.getItem("pwa-installed") === "true")
+    }
     mediaQuery.addEventListener('change', handleMediaChange)
 
     return () => {
@@ -109,12 +130,6 @@ export function ContractTypeSelector({
     }
   }, [])
 
-  const isSearching = search.trim().length > 0
-  const filtered = CONTRACT_TYPES.filter(type => 
-    type.toLowerCase().includes(search.toLowerCase())
-  )
-  const displayedTypes = filtered
-
   const isEditing = editor && !editor.isEmpty
 
   const handleSaveClick = (e: React.MouseEvent) => {
@@ -122,8 +137,18 @@ export function ContractTypeSelector({
       e.preventDefault()
       e.stopPropagation()
       
-      if (isInstalled) {
+      if (isStandalone) {
         toast.success("Seu progresso está sendo sincronizado no armazenamento local e na nuvem.", {
+          icon: <Cloud className="w-4 h-4 text-emerald-500" />,
+          duration: 3000
+        })
+        return
+      }
+
+      if (isInstalled) {
+        // Redireciona/Abre a PWA
+        window.open(window.location.href, "_blank")
+        toast.success("Abrindo a ExtraJus no App...", {
           icon: <Cloud className="w-4 h-4 text-emerald-500" />,
           duration: 3000
         })
@@ -155,17 +180,21 @@ export function ContractTypeSelector({
           {isEditing && (
             <div className={cn(
               "w-1.5 h-1.5 md:w-2 md:h-2 rounded-full shrink-0 transition-all duration-500",
-              isInstalled ? "bg-zinc-500 shadow-[0_0_8px_rgba(113,113,122,0.4)]" : "bg-zinc-600 animate-pulse shadow-[0_0_8px_rgba(113,113,122,0.4)]"
+              isStandalone 
+                ? "bg-zinc-500 shadow-[0_0_8px_rgba(113,113,122,0.4)]" 
+                : isInstalled
+                  ? "bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.4)]"
+                  : "bg-zinc-600 animate-pulse shadow-[0_0_8px_rgba(113,113,122,0.4)]"
             )} />
           )}
           <span className={cn(
             "text-[8.5px] md:text-[11px] font-black tracking-[0.15em] uppercase transition-colors duration-500",
             isEditing 
-              ? "text-zinc-500 dark:text-zinc-500" 
+              ? (isInstalled && !isStandalone ? "text-emerald-500 animate-pulse" : "text-zinc-500 dark:text-zinc-500") 
               : "text-zinc-800 dark:text-zinc-200 drop-shadow-[0_0_8px_rgba(0,0,0,0.3)] dark:drop-shadow-[0_0_10px_rgba(255,255,255,0.4)] animate-pulse"
           )}>
             {isEditing 
-              ? (isInstalled ? "CONTRATO SALVO" : "SALVAR CONTRATO") 
+              ? (isStandalone ? "CONTRATO SALVO" : isInstalled ? "CONTINUAR NO APP" : "SALVAR CONTRATO") 
               : cleanContractName(selectedType).toUpperCase()
             }
           </span>
