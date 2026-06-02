@@ -44,3 +44,8 @@ next-env.d.ts
 # Authentication tokens
 .npmrc
 .mcp.json
+
+# temporary files
+scratch/
+test.docx
+*.docx
