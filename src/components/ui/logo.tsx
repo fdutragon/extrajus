@@ -31,6 +31,7 @@ export function Logo({ className, showText = true, iconSize = 32, variant = "chr
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="shrink-0 transition-all duration-500 hover:scale-105"
+        style={{ maxWidth: iconSize, maxHeight: iconSize }}
         {...props}
       >
         <defs>
@@ -136,7 +137,7 @@ export function Logo({ className, showText = true, iconSize = 32, variant = "chr
       {showText && (
         <span className={cn(
           "font-sans font-black tracking-[0.28em] text-foreground leading-none flex items-center max-sm:hidden",
-          isLarge ? "text-[12px] md:text-[15px]" : isMedium ? "text-[10.5px] md:text-[13px]" : "text-[7.5px] sm:text-[7.5px]"
+          isLarge ? "text-[12px] md:text-[15px]" : isMedium ? "text-[10.5px] md:text-[13px]" : "text-[10px] sm:text-[10px]"
         )}>
           Extra<span style={{ color: jusColor, filter: jusShadow }} className="transition-all duration-500">Jus</span>
         </span>

@@ -12,7 +12,7 @@
   "categories": ["business", "productivity", "legal"],
   "icons": [
     {
-      "src": "/icon-splash.svg?v=6",
+      "src": "/icon-splash.svg?v=7",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any"

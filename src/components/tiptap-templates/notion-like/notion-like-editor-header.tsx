@@ -110,7 +110,12 @@ export function NotionEditorHeader() {
           </Button>
         </Link>
         <div className="flex items-center gap-2 group cursor-default">
-          <Logo showText={true} iconSize={typeof window !== 'undefined' && window.innerWidth < 1024 ? 28 : 22} variant="chrome" />
+          <div className="hidden sm:flex items-center">
+            <Logo showText={true} iconSize={22} variant="chrome" />
+          </div>
+          <div className="flex sm:hidden items-center">
+            <Logo showText={true} iconSize={28} variant="chrome" />
+          </div>
           <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest opacity-60 hidden sm:block">v2.4.0</span>
         </div>
         

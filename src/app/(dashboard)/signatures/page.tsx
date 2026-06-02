@@ -99,7 +99,7 @@ export default function SignaturesPage() {
     }
   }
 
-  const handleDownloadContract = (doc: any) => {
+  const handleDownloadContract = async (doc: any) => {
     if (!doc || !doc.contracts?.content) {
       toast.error("O conteúdo do documento não está disponível para download.");
       return;
@@ -109,124 +109,25 @@ export default function SignaturesPage() {
       const rawHtml = doc.contracts.content;
       const title = doc.contracts.title || "Contrato";
 
-      const wordHtml = `
-        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
-        <head>
-          <meta charset="utf-8">
-          <title>\${title}</title>
-          <style>
-            @page Section1 {
-              size: 595.3pt 841.9pt; /* A4 */
-              margin: 72.0pt 90.0pt 72.0pt 90.0pt;
-              mso-header-margin: 36.0pt;
-              mso-footer-margin: 36.0pt;
-              mso-paper-source: 0;
-            }
-            div.Section1 {
-              page: Section1;
-            }
-            body {
-              font-family: 'Cambria', 'Georgia', 'Times New Roman', serif;
-              font-size: 12.0pt;
-              line-height: 1.6;
-              color: #000000;
-            }
-            h1 {
-              font-size: 16.0pt;
-              font-weight: bold;
-              text-align: center;
-              text-transform: uppercase;
-              margin-top: 12.0pt;
-              margin-bottom: 24.0pt;
-              color: #000000;
-            }
-            h2 {
-              font-size: 13.0pt;
-              font-weight: bold;
-              margin-top: 18.0pt;
-              margin-bottom: 6.0pt;
-              color: #000000;
-            }
-            p {
-              text-align: justify;
-              margin-bottom: 12.0pt;
-              line-height: 1.6;
-            }
-            p:not([data-node-text-align="center"]):not([data-node-text-align="right"]):not(.align-center):not(.align-right):not(.no-indent) {
-              text-indent: 3.5em;
-            }
-            p.dense-metadata {
-              margin-bottom: 2.0pt;
-            }
-            .legal-node {
-              margin-bottom: 12.0pt;
-              text-align: justify;
-            }
-            .legal-node-level-1 {
-              font-weight: bold;
-              font-size: 13.0pt;
-              margin-top: 18.0pt;
-              color: #000000;
-            }
-            .legal-node-level-2 {
-              margin-left: 24.0pt;
-            }
-            .legal-node-level-3 {
-              margin-left: 48.0pt;
-            }
-            .legal-node-level-4 {
-              margin-left: 72.0pt;
-            }
-            .legal-node-counter {
-              font-weight: bold;
-              margin-right: 8.0pt;
-              display: inline-block;
-            }
-            .legal-node-content {
-              display: inline;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin-top: 12.0pt;
-              margin-bottom: 12.0pt;
-            }
-            td, th {
-              border: 1.0pt solid #000000;
-              padding: 8.0pt 10.0pt;
-              text-align: left;
-              vertical-align: top;
-            }
-            strong, b {
-              font-weight: bold;
-            }
-            em, i {
-              font-style: italic;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="Section1">
-            \${rawHtml}
-          </div>
-        </body>
-        </html>
-      `;
-
-      const blob = new Blob(['\\ufeff' + wordHtml], {
-        type: 'application/msword;charset=utf-8'
+      const res = await fetch("/api/billing/generate-docx", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, content: rawHtml })
       });
-      
+
+      if (!res.ok) throw new Error("Falha na formatação do documento.");
+
+      const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `\${title.toLowerCase().replace(/[^a-z0-9]/gi, '_')}.docx`;
+      a.download = `${title.toLowerCase().replace(/[^a-z0-9]/gi, '_')}.doc`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       
-      toast.success("Documento Word (.DOCX) baixado com sucesso!");
+      toast.success("Documento Word (.DOC) baixado com sucesso!");
     } catch (err) {
       console.error(err);
       toast.error("Falha ao exportar o documento para Word.");

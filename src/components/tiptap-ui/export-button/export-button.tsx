@@ -69,85 +69,16 @@ export function ExportButton({
       // 2. Obter o HTML bruto do editor
       const rawHtml = editorElement.innerHTML
 
-      // 3. Criar o cabeçalho específico do Word com suporte a estilos modernos e fontes elegantes
-      const wordHtml = `
-        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
-        <head>
-          <meta charset="utf-8">
-          <title>Documento ExtraJus</title>
-          <!--[if gte mso 9]>
-          <xml>
-            <w:WordDocument>
-              <w:View>Print</w:View>
-              <w:Zoom>100</w:Zoom>
-              <w:DoNotOptimizeForBrowser/>
-            </w:WordDocument>
-          </xml>
-          <![endif]-->
-          <style>
-            @page Section1 {
-              size: 595.3pt 841.9pt; /* A4 */
-              margin: 72.0pt 72.0pt 72.0pt 72.0pt; /* Margens de 2.54cm (padrão) */
-              mso-header-margin: 36.0pt;
-              mso-footer-margin: 36.0pt;
-              mso-paper-source: 0;
-            }
-            div.Section1 {
-              page: Section1;
-            }
-            body {
-              font-family: 'Cambria', 'Georgia', 'Times New Roman', serif;
-              font-size: 12.0pt;
-              line-height: 1.6;
-              color: #000000;
-            }
-            h1 {
-              font-size: 16.0pt;
-              font-weight: bold;
-              text-align: center;
-              text-transform: uppercase;
-              margin-top: 12.0pt;
-              margin-bottom: 24.0pt;
-              color: #000000;
-            }
-            h2 {
-              font-size: 13.0pt;
-              font-weight: bold;
-              margin-top: 18.0pt;
-              margin-bottom: 6.0pt;
-              color: #000000;
-            }
-            p {
-              text-align: justify;
-              margin-bottom: 12.0pt;
-              line-height: 1.6;
-            }
-            p:not([data-node-text-align="center"]):not([data-node-text-align="right"]):not(.align-center):not(.align-right):not(.no-indent) {
-              text-indent: 3.5em;
-            }
-            p.dense-metadata {
-              margin-bottom: 2.0pt;
-            }
-            /* Suporte completo à estrutura de Legal Nodes do ExtraJus */
-            .legal-node {
-              margin-bottom: 12.0pt;
-              text-align: justify;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="Section1">
-            ${rawHtml}
-          </div>
-        </body>
-        </html>
-      `
+      // 3. Gerar o DOCX de forma 100% segura e limpa pelo servidor
+      const res = await fetch("/api/billing/generate-docx", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, content: rawHtml })
+      });
 
-      // 4. Criar o blob e baixar o arquivo
-      const blob = new Blob(['\ufeff', wordHtml], {
-        type: 'application/msword'
-      })
+      if (!res.ok) throw new Error("Falha na formatação do documento.");
 
+      const blob = await res.blob();
       const link = document.createElement('a')
       link.href = URL.createObjectURL(blob)
       link.download = `${title.replace(/\s+/g, '-').toLowerCase() || 'documento'}.doc`
