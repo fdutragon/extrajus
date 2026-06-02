@@ -494,7 +494,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
     if (typeof window !== "undefined") {
       const isMobileOrTablet = window.innerWidth < 1024
       if (isMobileOrTablet) {
-        setFontSize(17)
+        setFontSize(15)
       } else {
         setFontSize(14)
       }
