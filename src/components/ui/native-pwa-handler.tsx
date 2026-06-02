@@ -94,19 +94,12 @@ export function NativePwaHandler() {
       hasTriggered.current = true
     }
 
-    const handleAppInstalledEvent = () => {
-      localStorage.setItem("pwa-installed", "true")
-      window.dispatchEvent(new CustomEvent("pwa-installed-status-changed", { detail: { installed: true } }))
-    }
-
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
     window.addEventListener("trigger-pwa-install", showNativePrompt)
-    window.addEventListener("appinstalled", handleAppInstalledEvent)
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
       window.removeEventListener("trigger-pwa-install", showNativePrompt)
-      window.removeEventListener("appinstalled", handleAppInstalledEvent)
     }
   }, [])
 
