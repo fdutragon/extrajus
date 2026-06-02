@@ -78,12 +78,14 @@ export function NativePwaHandler() {
       hasTriggered.current = true
       window.dispatchEvent(new CustomEvent("pwa-installed-status-changed", { detail: { installed: true } }))
       
-      // Tenta abrir o app ou informar que já pode ser aberto
-      toast.success("ExtraJus instalada com sucesso!", {
-        description: "O ícone está na tela inicial. Abra o app para continuar.",
-        duration: 5000,
-        className: "text-[11px]"
-      })
+      // Tenta abrir o app ou informar que já pode ser aberto com um delay de 5 segundos
+      setTimeout(() => {
+        toast.success("ExtraJus instalada com sucesso!", {
+          description: "O ícone está na tela inicial. Abra o app para continuar.",
+          duration: 5000,
+          className: "text-[11px]"
+        })
+      }, 5000)
       
       // Nota: Não é possível forçar o fechamento do browser e abertura do app de forma silenciosa por segurança.
     }

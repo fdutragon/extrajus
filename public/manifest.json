@@ -12,16 +12,16 @@
   "categories": ["business", "productivity", "legal"],
   "icons": [
     {
-      "src": "/icon-v2.svg",
-      "sizes": "any",
+      "src": "/icon-app-v3.svg",
+      "sizes": "192x192",
       "type": "image/svg+xml",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "/icon-v2.svg",
-      "sizes": "any",
+      "sizes": "512x512",
       "type": "image/svg+xml",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ]
 }
