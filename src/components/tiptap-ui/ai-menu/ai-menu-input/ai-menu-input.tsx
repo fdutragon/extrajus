@@ -115,7 +115,7 @@ export function ContractTypeSelector({
   )
   const displayedTypes = isSearching ? filtered : filtered.slice(0, 4)
 
-  const isEditing = selectedType && editor && !editor.isEmpty
+  const isEditing = editor && !editor.isEmpty
 
   const handleSaveClick = (e: React.MouseEvent) => {
     if (isEditing) {
