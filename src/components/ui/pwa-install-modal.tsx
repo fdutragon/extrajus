@@ -22,22 +22,17 @@ export function PwaInstallModal() {
         setIsIOS(isIOSDevice)
       }
       setIsOpen(true)
+
+      // Inicia a heurística de 10s de forma independente do modal fechar ou não
+      setTimeout(() => {
+        localStorage.setItem("pwa_assumed_installed", "true")
+        window.dispatchEvent(new CustomEvent("pwa-assumed-installed-changed"))
+      }, 10000)
     }
 
     window.addEventListener("open-pwa-modal", handleOpen)
     return () => window.removeEventListener("open-pwa-modal", handleOpen)
   }, [])
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout
-    if (isOpen) {
-      timer = setTimeout(() => {
-        localStorage.setItem("pwa_assumed_installed", "true")
-        window.dispatchEvent(new CustomEvent("pwa-assumed-installed-changed"))
-      }, 10000)
-    }
-    return () => clearTimeout(timer)
-  }, [isOpen])
 
   const handleInstall = () => {
     // Conversão do Google Ads para Clique no Botão de Instalação
@@ -48,11 +43,6 @@ export function PwaInstallModal() {
           'currency': 'BRL'
       });
     }
-
-    // Acelera a suposição se o usuário clica no botão ativamente
-    localStorage.setItem("pwa_assumed_installed", "true")
-    window.dispatchEvent(new CustomEvent("pwa-assumed-installed-changed"))
-
     // Dispara o prompt nativo via o handler existente
     window.dispatchEvent(new CustomEvent("trigger-pwa-install"))
     setIsOpen(false)
