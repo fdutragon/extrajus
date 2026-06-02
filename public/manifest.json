@@ -1,8 +1,8 @@
 {
   "name": "ExtraJus AI - Engenharia Jurídica",
   "short_name": "ExtraJus",
-  "description": "Plataforma de inteligência artificial para geração e análise de contratos profissionais.",
-  "start_url": "/editor",
+  "description": "Inteligência Artificial de Contratos",
+  "start_url": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "minimal-ui"],
   "orientation": "portrait-primary",
