@@ -198,7 +198,7 @@ export function ExportButton({
         <Button
           variant="ghost"
           size="sm"
-          className="h-8 sm:h-7 gap-2 sm:gap-1.5 px-3 text-muted-foreground hover:text-foreground md:bg-primary md:text-primary-foreground md:hover:bg-primary/90 dark:md:bg-primary/10 dark:md:text-primary dark:md:hover:bg-primary/20 rounded-lg transition-all group border border-transparent md:border-primary/20 flex items-center justify-center shrink-0 shadow-sm md:shadow-md dark:md:shadow-none"
+          className="h-8 sm:h-7 gap-2 sm:gap-1.5 px-3 text-muted-foreground hover:text-foreground md:bg-primary md:text-primary-foreground md:hover:bg-primary/90 dark:md:bg-primary/10 dark:md:text-primary dark:md:hover:bg-primary/20 rounded-lg transition-all group border border-transparent md:border-primary/20 flex items-center justify-center shrink-0 md:shadow-md dark:md:shadow-none"
           onClick={handleExportClick}
           disabled={isExporting}
         >
