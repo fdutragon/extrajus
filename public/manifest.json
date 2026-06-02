@@ -12,13 +12,19 @@
   "categories": ["business", "productivity", "legal"],
   "icons": [
     {
-      "src": "/icon-app-v3.svg?v=28",
-      "sizes": "192x192 256x256 512x512 1024x1024",
+      "src": "/icon-app-v3.svg?v=29",
+      "sizes": "192x192 256x256 1024x1024",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/icon-mobile.svg?v=28",
+      "src": "/icon-splash.svg?v=29",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-mobile.svg?v=29",
       "sizes": "192x192 256x256 512x512 1024x1024",
       "type": "image/svg+xml",
       "purpose": "maskable"

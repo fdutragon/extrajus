@@ -17,8 +17,8 @@
   <!-- Fundo escuro fixo -->
   <rect width="100" height="100" fill="#09090b" rx="20" />
   
-  <!-- Logo redimensionado para ocupar 30% do bg -->
-  <g transform="translate(35, 35) scale(0.30)">
+  <!-- Logo redimensionado para ocupar 20% do bg -->
+  <g transform="translate(40, 40) scale(0.20)">
     <!-- Outer Hexagon Brackets -->
     <path 
       d="M 42,14 L 16,30 L 16,70 L 42,86" 

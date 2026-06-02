@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-  manifest: "/manifest.json?v=28",
+  manifest: "/manifest.json?v=29",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
