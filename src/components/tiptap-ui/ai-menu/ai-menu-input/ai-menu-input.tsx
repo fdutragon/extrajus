@@ -130,6 +130,12 @@ export function ContractTypeSelector({
     }
   }, [])
 
+  const isSearching = search.trim().length > 0
+  const filtered = CONTRACT_TYPES.filter(type => 
+    type.toLowerCase().includes(search.toLowerCase())
+  )
+  const displayedTypes = filtered
+
   const isEditing = editor && !editor.isEmpty
 
   const handleSaveClick = (e: React.MouseEvent) => {
