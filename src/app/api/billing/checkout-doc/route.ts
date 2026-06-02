@@ -120,7 +120,7 @@ export async function POST(request: Request) {
       .select("external_id, pix_code")
       .eq("user_id", userId)
       .eq("status", "PENDING")
-      .eq("amount_cents", 3700)
+      .eq("amount_cents", 2700)
       .like("external_id", `paydoc_${doc.id}%`)
       .order("created_at", { ascending: false })
       .limit(1)
@@ -142,7 +142,7 @@ export async function POST(request: Request) {
     }
 
     const externalId = `paydoc_${doc.id}`;
-    const amountCents = 3700; // R$ 37,00
+    const amountCents = 2700; // R$ 27,00
 
     // 3. Register transaction
     const { error: dbError } = await supabaseAdmin
