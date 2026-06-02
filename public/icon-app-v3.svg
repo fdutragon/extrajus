@@ -1,6 +1,6 @@
 <svg
-  width="128"
-  height="128"
+  width="512"
+  height="512"
   viewBox="0 0 100 100"
   fill="none"
   xmlns="http://www.w3.org/2000/svg"
@@ -9,7 +9,7 @@
   <rect width="100" height="100" fill="#09090b" rx="20" />
   
   <!-- Logo redimensionado para ocupar adequadamente o ícone do app -->
-  <g transform="scale(0.85) translate(8.8, 8.8)">
+  <g transform="scale(0.95) translate(2.63, 2.63)">
     <polygon 
       points="50,6 88,28 88,72 50,94 12,72 12,28" 
       fill="#0c0c0e"

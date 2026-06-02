@@ -1,28 +1,28 @@
 <svg
   width="512"
   height="512"
-  viewBox="0 0 512 512"
+  viewBox="0 0 100 100"
   fill="none"
   xmlns="http://www.w3.org/2000/svg"
 >
-  <!-- Fundo transparente para mesclar perfeitamente com o background_color do manifest -->
-  <rect width="512" height="512" fill="#09090b" />
+  <!-- Fundo escuro fixo -->
+  <rect width="100" height="100" fill="#09090b" rx="20" />
   
-  <!-- Logo centralizada e super luxuosa, tamanho reduzido conforme pedido -->
-  <g transform="translate(206, 160) scale(1)">
+  <!-- Logo redimensionado para ocupar adequadamente o ícone do app -->
+  <g transform="scale(0.95) translate(2.63, 2.63)">
     <polygon 
       points="50,6 88,28 88,72 50,94 12,72 12,28" 
       fill="#0c0c0e"
       stroke="#e2c9a3" 
-      stroke-width="4" 
-      stroke-linejoin="round"
+      strokeWidth="4" 
+      strokeLinejoin="round"
     />
     
     <polygon 
       points="50,12 82,31 82,69 50,88 18,69 18,31" 
       stroke="#e2c9a3" 
-      stroke-width="1.5" 
-      stroke-dasharray="4 6" 
+      strokeWidth="1.5" 
+      strokeDasharray="4 6" 
       opacity="0.4"
     />
 
@@ -54,43 +54,15 @@
       x2="50" 
       y2="84" 
       stroke="#e2c9a3" 
-      stroke-width="2.8" 
-      stroke-linecap="round" 
+      strokeWidth="2.8" 
+      strokeLinecap="round" 
     />
 
     <path 
       d="M50,44 L56,50 L50,56 L44,50 Z" 
       fill="#0c0c0e" 
       stroke="#e2c9a3" 
-      stroke-width="1" 
+      strokeWidth="1" 
     />
   </g>
-
-  <!-- Texto EXTRAJUS em baixo, alinhado e perfeitamente renderizado -->
-  <text 
-    x="256" 
-    y="320" 
-    font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" 
-    font-weight="900" 
-    font-size="32" 
-    fill="#ffffff" 
-    letter-spacing="0.28em" 
-    text-anchor="middle"
-  >
-    EXTRA<tspan fill="#d4af37">JUS</tspan>
-  </text>
-  
-  <text 
-    x="256" 
-    y="350" 
-    font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" 
-    font-weight="400" 
-    font-size="12" 
-    fill="#a1a1aa" 
-    letter-spacing="0.1em" 
-    text-anchor="middle"
-    opacity="0.6"
-  >
-    ENGENHARIA JURÍDICA
-  </text>
 </svg>

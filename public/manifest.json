@@ -1,7 +1,7 @@
 {
-  "name": "ExtraJus AI - Engenharia Jurídica",
+  "name": "ExtraJus",
   "short_name": "ExtraJus",
-  "description": "Inteligência Artificial de Contratos",
+  "description": "Engenharia Jurídica & IA",
   "start_url": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "minimal-ui"],
@@ -12,28 +12,28 @@
   "categories": ["business", "productivity", "legal"],
   "icons": [
     {
-      "src": "/icon-app-v3.svg?v=13",
+      "src": "/icon-app-v3.svg?v=16",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-app-v3.svg?v=16",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/icon-app-v3.svg?v=13",
+      "src": "/icon-app-v3.svg?v=16",
       "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icon-app-v3.svg?v=13",
-      "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "maskable"
     },
     {
-      "src": "/icon-splash.svg?v=13",
+      "src": "/icon-app-v3.svg?v=16",
       "sizes": "512x512",
       "type": "image/svg+xml",
-      "purpose": "any"
+      "purpose": "maskable"
     }
   ]
 }
