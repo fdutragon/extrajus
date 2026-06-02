@@ -76,15 +76,13 @@ export function NativePwaHandler() {
       window.dispatchEvent(new CustomEvent("pwa-installed-status-changed", { detail: { installed: true } }))
       
       // Tenta abrir o app ou informar que já pode ser aberto
-      toast.success("ExtraJus instalada! Abrindo o aplicativo...", {
-        duration: 3000
+      toast.success("ExtraJus instalada! O ícone já está na sua tela inicial.", {
+        description: "Abra o aplicativo agora para continuar editando seu contrato de onde parou.",
+        duration: 5000
       })
       
-      // Nota: Não é possível forçar o fechamento do browser e abertura do app de forma silenciosa por segurança,
-      // mas podemos recarregar para forçar o reconhecimento do display-mode se suportado
-      setTimeout(() => {
-        window.location.reload()
-      }, 2000)
+      // Nota: Não é possível forçar o fechamento do browser e abertura do app de forma silenciosa por segurança (restrição nativa do Android/iOS).
+      // O usuário deve abrir pelo ícone na tela inicial.
     })
 
     return () => {

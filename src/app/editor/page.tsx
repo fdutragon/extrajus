@@ -79,8 +79,13 @@ function EditorContent() {
     if (typeof window !== "undefined") {
       if (room) {
         localStorage.setItem("extrajus_last_room", room)
+        document.cookie = `extrajus_last_room=${room}; path=/; max-age=31536000;`
       } else {
-        const lastRoom = localStorage.getItem("extrajus_last_room")
+        let lastRoom = localStorage.getItem("extrajus_last_room")
+        if (!lastRoom) {
+          const match = document.cookie.match(new RegExp('(^| )extrajus_last_room=([^;]+)'))
+          if (match) lastRoom = match[2]
+        }
         if (lastRoom) {
           const params = new URLSearchParams(searchParams.toString())
           params.set("room", lastRoom)
