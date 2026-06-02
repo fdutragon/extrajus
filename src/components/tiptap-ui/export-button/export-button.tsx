@@ -10,7 +10,6 @@ export function ExportButton({
   isPublic = false,
   docType = "contrato",
   title = "Documento",
-  content = "",
   variant = "toolbar",
   isLanding = false
 }: { 
