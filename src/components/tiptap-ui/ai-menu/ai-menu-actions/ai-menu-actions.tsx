@@ -56,21 +56,21 @@ export function AiMenuActions({
       <div className="flex items-center gap-2 sm:gap-2 flex-nowrap w-full sm:w-auto">
         <Button
           variant="ghost"
-          className="h-9 sm:h-7.5 px-3 sm:px-3.5 rounded-xl border border-red-500/20 bg-red-600 text-white text-[11px] sm:text-[11px] font-bold flex items-center justify-center gap-1.5 group/discard flex-1 sm:flex-none hover:bg-red-700 transition-colors"
+          className="h-9 sm:h-7.5 px-2 text-red-500 hover:text-red-400 hover:bg-transparent text-[11px] sm:text-[9px] font-bold flex items-center justify-center gap-1.5 group/discard flex-1 sm:flex-none transition-colors"
           onClick={handleDiscard}
         >
-          <Trash2 size={12} className="sm:size-[12px] shrink-0" />
+          <Trash2 size={12} className="sm:size-[10px] shrink-0" />
           <span className="whitespace-nowrap uppercase tracking-tight">Descartar</span>
         </Button>
 
         <Button
           variant="ghost"
-          className="h-9 sm:h-7.5 px-3.5 sm:px-5 rounded-xl bg-emerald-600 border border-emerald-500/20 text-white text-[11px] sm:text-[11px] font-bold shadow-lg transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-1.5 relative group/apply flex-1 sm:flex-none hover:bg-emerald-700"
+          className="h-9 sm:h-7.5 px-2 text-emerald-500 hover:text-emerald-400 hover:bg-transparent text-[11px] sm:text-[9px] font-bold transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-1.5 group/apply flex-1 sm:flex-none"
           onClick={handleApply}
           disabled={aiGenerationIsLoading}
         >
-          <Sparkles size={12} className="sm:size-[12px] relative z-10 transition-transform group-hover/apply:scale-110 shrink-0" />
-          <span className="relative z-10 whitespace-nowrap uppercase tracking-tight">Aplicar Alterações</span>
+          <Sparkles size={12} className="sm:size-[10px] transition-transform group-hover/apply:scale-110 shrink-0" />
+          <span className="whitespace-nowrap uppercase tracking-tight">Aplicar Alterações</span>
         </Button>
       </div>
     </div>
