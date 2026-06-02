@@ -388,7 +388,7 @@ export function AiPromptInputToolbar({
             )}
             aria-label="Gravar áudio"
           >
-            {isRecording ? <MicOff className="w-3.5 h-3.5 text-red-500" /> : <Mic className="w-3.5 h-3.5" />}
+            {isRecording ? <MicOff className="w-4 h-4 text-red-500 animate-pulse" /> : <Mic className="w-4 h-4 text-red-500/80 hover:text-red-500 transition-colors" />}
           </Button>
         )}
 
