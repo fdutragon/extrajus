@@ -293,6 +293,17 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
         {/* Painel Direito: Formulário, PIX ou Sucesso (6 colunas) */}
         <div className="md:col-span-6 flex flex-col justify-center min-h-[260px] max-sm:min-h-0 max-sm:pt-1 max-sm:flex-1 max-sm:justify-start">
           
+          {/* Título Principal Acima das Barras */}
+          <DialogHeader className="mb-3.5 text-center flex flex-col items-center shrink-0">
+            <DialogTitle className={cn(
+              "flex items-center justify-center gap-2 text-[1.1rem] max-sm:text-[1.15rem] font-black tracking-[0.12em] bg-gradient-to-r from-primary via-amber-500 to-primary dark:via-amber-400 bg-clip-text text-transparent",
+              step === "pix" && "max-sm:hidden"
+            )}>
+              <Lock size={18} className="text-primary animate-pulse filter drop-shadow-[0_0_6px_rgba(234,179,8,0.4)] max-sm:w-[16px] max-sm:h-[16px]" />
+              {step === "form" ? "Acesso ao Documento" : step === "pix" ? "Finalizar Pagamento" : "Sucesso!"}
+            </DialogTitle>
+          </DialogHeader>
+
           {/* Barra de Progresso Líquida (UX de 3 etapas) */}
           <div className="w-full flex items-center justify-between gap-2 mb-5 max-sm:mb-3 px-1 shrink-0 select-none">
             <div className="flex-1 flex flex-col gap-1">
@@ -321,25 +332,18 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             </div>
           </div>
 
-          <DialogHeader className={cn("mb-4 max-sm:mb-4 text-center flex flex-col items-center", step === "pix" && "max-sm:mb-2 max-sm:mt-0")}>
-            <DialogTitle className={cn(
-              "flex items-center justify-center gap-2 text-[1.1rem] max-sm:text-[1.15rem] font-black tracking-[0.12em] bg-gradient-to-r from-primary via-amber-500 to-primary dark:via-amber-400 bg-clip-text text-transparent",
-              step === "pix" && "max-sm:hidden"
-            )}>
-              <Lock size={18} className="text-primary animate-pulse filter drop-shadow-[0_0_6px_rgba(234,179,8,0.4)] max-sm:w-[16px] max-sm:h-[16px]" />
-              {step === "form" ? "Acesso ao Documento" : step === "pix" ? "Finalizar Pagamento" : "Sucesso!"}
-            </DialogTitle>
+          <div className={cn("mb-4 max-sm:mb-4 text-center flex flex-col items-center", step === "pix" && "max-sm:mb-2 max-sm:mt-0")}>
             <DialogDescription className={cn(
               "text-[0.825rem] max-sm:text-[0.85rem] max-sm:leading-[1.4] text-muted-foreground font-medium tracking-wide mt-1.5 max-sm:mt-2 leading-relaxed text-center",
               step === "pix" && "max-sm:mt-0"
             )}>
               {step === "form"
-                ? "Para continuar, informe seu e-mail principal. Enviaremos o documento editável Word (.DOCX) e o recibo para ele."
+                ? "Informe o e-mail onde deseja receber o arquivo editável do seu documento e as instruções de acesso:"
                 : step === "pix"
                 ? "Efetue o pagamento via PIX para liberação instantânea do seu documento Word editável."
                 : "Seu pagamento foi confirmado. O download está disponível abaixo."}
             </DialogDescription>
-          </DialogHeader>
+          </div>
           {step === "form" && (
             <div 
               onKeyDown={(e) => { if (e.key === 'Enter') handleCheckout(e) }} 
@@ -362,7 +366,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                 >
                   {loading ? (
                     <>
-                      <BrainCircuit size={18} className="animate-spin" />
+                       <BrainCircuit size={18} className="animate-spin" />
                       Processando...
                     </>
                   ) : (
@@ -398,17 +402,16 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
               <div className="w-full space-y-3 max-sm:space-y-2 flex flex-col items-center">
                 <Button 
                   onClick={copyPix} 
-                  variant="outline" 
                   className={cn(
-                    "w-full h-11 max-sm:h-12 max-sm:text-sm font-black uppercase tracking-[0.1em] rounded-xl transition-all duration-500 flex items-center justify-center gap-2 border",
+                    "w-full h-11 max-sm:h-12 max-sm:text-sm font-black uppercase tracking-[0.1em] rounded-xl transition-all duration-500 flex items-center justify-center gap-2 text-white shadow-[0_4px_15px_rgba(16,185,129,0.3)] hover:shadow-[0_4px_25px_rgba(16,185,129,0.5)]",
                     copied 
-                      ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.15)]" 
-                      : "border-border hover:border-primary/40 bg-background text-foreground hover:bg-muted/50 shadow-sm"
+                      ? "bg-emerald-700 hover:bg-emerald-800" 
+                      : "bg-emerald-600 hover:bg-emerald-700"
                   )}
                 >
                   {copied ? (
                     <>
-                      <CheckCircle2 size={18} className="text-emerald-500 animate-bounce max-sm:w-[16px] max-sm:h-[16px]" />
+                      <CheckCircle2 size={18} className="text-white animate-bounce max-sm:w-[16px] max-sm:h-[16px]" />
                       Chave Copiada!
                     </>
                   ) : (
@@ -418,6 +421,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                     </>
                   )}
                 </Button>
+
 
                 {(email.toLowerCase().trim() === "felipe.dutragon@gmail.com" || email.toLowerCase().trim() === "contato@extrajus.pro") && (
                   <Button 
