@@ -37,10 +37,10 @@ export function Logo({ className, showText = true, iconSize = 32, variant = "chr
         <defs>
           {/* Variante Gold: Ouro Imperial e Obsidiana */}
           <linearGradient id="chromeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" className="text-yellow-500 dark:text-yellow-100" stopColor="currentColor" />
-            <stop offset="40%" className="text-yellow-600 dark:text-yellow-300" stopColor="currentColor" />
-            <stop offset="80%" className="text-yellow-700 dark:text-yellow-500" stopColor="currentColor" />
-            <stop offset="100%" className="text-yellow-800 dark:text-yellow-700" stopColor="currentColor" />
+            <stop offset="0%" stopColor="#fefce8" />
+            <stop offset="40%" stopColor="#fde047" />
+            <stop offset="80%" stopColor="#eab308" />
+            <stop offset="100%" stopColor="#ca8a04" />
           </linearGradient>
           <linearGradient id="darkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#141419" />
@@ -58,6 +58,9 @@ export function Logo({ className, showText = true, iconSize = 32, variant = "chr
             <stop offset="100%" stopColor="rgba(255, 255, 255, 0.02)" /> 
           </linearGradient>
         </defs>
+
+        {/* Fundo Escuro para Tema Claro */}
+        <rect width="100" height="100" rx="22" className="fill-[#09090b] dark:fill-transparent" />
 
         {/* Outer Hexagon Brackets (The Shields of Law) */}
         <path 
@@ -102,7 +105,8 @@ export function Logo({ className, showText = true, iconSize = 32, variant = "chr
           cx="50" 
           cy="50" 
           r="4.5" 
-          className={cn("animate-pulse", isQuartz ? "fill-white" : "fill-yellow-600 dark:fill-yellow-400")}
+          fill={jusColor} 
+          className="animate-pulse"
           style={{
             filter: jusShadow,
           }}
@@ -111,7 +115,7 @@ export function Logo({ className, showText = true, iconSize = 32, variant = "chr
 
       {showText && (
         <span className={cn(
-          "font-sans font-semibold uppercase tracking-[0.35em] text-foreground leading-none flex items-center max-sm:hidden",
+          "font-sans font-black uppercase tracking-[0.35em] text-black dark:text-white leading-none flex items-center",
           isLarge ? "text-[10px] md:text-[12px]" : isMedium ? "text-[9px] md:text-[10px]" : "text-[8px] sm:text-[8.5px]"
         )}>
           EXTRA<span style={{ filter: jusShadow }} className={cn("transition-all duration-500", isQuartz ? "text-white" : "text-yellow-600 dark:text-yellow-400")}>JUS</span>
