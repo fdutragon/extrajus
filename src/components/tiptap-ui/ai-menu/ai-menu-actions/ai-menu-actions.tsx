@@ -56,21 +56,21 @@ export function AiMenuActions({
       <div className="flex items-center gap-2.5 sm:gap-3 flex-nowrap w-full sm:w-auto">
         <Button
           variant="ghost"
-          className="ai-btn-discard h-9 sm:h-8 text-red-600 dark:text-red-400/90 hover:text-red-500 text-[11px] sm:text-[10px] font-semibold flex items-center justify-center gap-1.5 group/discard flex-1 sm:flex-none transition-all duration-300 rounded-full"
+          className="ai-btn-discard h-9 sm:h-8 text-red-600 dark:text-red-400/90 hover:text-red-500 text-[11px] sm:text-[10px] font-semibold flex items-center justify-center gap-2.5 group/discard flex-1 sm:flex-none transition-all duration-300 rounded-full"
           onClick={handleDiscard}
         >
-          <Trash2 size={14} className="sm:size-[12px] shrink-0 transition-transform group-hover/discard:scale-110" />
-          <span className="whitespace-nowrap">Descartar</span>
+          <Trash2 size={12} className="sm:size-[13.5px] shrink-0 transition-transform group-hover/discard:scale-110 self-center" />
+          <span className="whitespace-nowrap leading-none">Descartar</span>
         </Button>
 
         <Button
           variant="ghost"
-          className="ai-btn-apply h-9 sm:h-8 text-emerald-600 dark:text-emerald-400 text-[11px] sm:text-[10px] font-bold transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-2 group/apply flex-1 sm:flex-none rounded-full"
+          className="ai-btn-apply h-9 sm:h-8 text-emerald-600 dark:text-emerald-400 text-[11px] sm:text-[10px] font-bold transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-3 group/apply flex-1 sm:flex-none rounded-full"
           onClick={handleApply}
           disabled={aiGenerationIsLoading}
         >
-          <Sparkles size={14} className="sm:size-[12px] transition-transform group-hover/apply:scale-110 shrink-0" />
-          <span className="whitespace-nowrap">Aplicar</span>
+          <Sparkles size={12} className="sm:size-[13.5px] transition-transform group-hover/apply:scale-110 shrink-0 self-center" />
+          <span className="whitespace-nowrap leading-none">Aplicar</span>
         </Button>
       </div>
     </div>
