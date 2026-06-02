@@ -60,18 +60,5 @@
       "text": "text",
       "url": "url"
     }
-  },
-  "screenshots": [
-    {
-      "src": "/dash.jpg",
-      "sizes": "1280x720",
-      "type": "image/jpeg",
-      "form_factor": "wide"
-    },
-    {
-      "src": "/dash.jpg",
-      "sizes": "1280x720",
-      "type": "image/jpeg"
-    }
-  ]
+  }
 }
