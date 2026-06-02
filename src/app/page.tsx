@@ -89,14 +89,14 @@ function EditorContent() {
         if (lastRoom) {
           const params = new URLSearchParams(searchParams.toString())
           params.set("room", lastRoom)
-          window.location.replace(`${window.location.pathname}?${params.toString()}`)
+          router.replace(`/?${params.toString()}`)
           return
         }
         
         const newRoom = `extrajus-draft-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
         const params = new URLSearchParams(searchParams.toString())
         params.set("room", newRoom)
-        window.location.replace(`${window.location.pathname}?${params.toString()}`)
+        router.replace(`/?${params.toString()}`)
       }
     }
   }, [room, searchParams])
@@ -104,8 +104,8 @@ function EditorContent() {
   useEffect(() => {
     const checkAuth = async () => {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      setIsPublic(!user)
+      const { data: { session } } = await supabase.auth.getSession()
+      setIsPublic(!session?.user)
     }
     checkAuth()
   }, [])
