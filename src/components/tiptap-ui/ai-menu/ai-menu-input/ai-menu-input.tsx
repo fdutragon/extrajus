@@ -240,7 +240,7 @@ export function ContractTypeSelector({
           )}
         </div>
         <div className="w-full p-3 pb-4 text-center border-t border-border bg-popover/95 backdrop-blur-sm shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] z-10 shrink-0">
-          <span className="text-[11px] sm:text-[12px] font-mono font-bold tracking-widest text-primary/90 dark:text-primary/70 uppercase">⚡ + 50 Modelos Completos no acervo</span>
+          <span className="text-[11px] sm:text-[12px] font-mono font-bold tracking-widest text-primary/90 dark:text-primary/70 uppercase">⚡ + 50 Modelos Completos</span>
         </div>
       </DialogContent>
     </Dialog>
