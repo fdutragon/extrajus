@@ -17,7 +17,7 @@ export function Logo({ className, showText = true, iconSize = 32, variant = "chr
   const strokeColor = isQuartz ? "url(#quartzGradient)" : "url(#chromeGradient)"
   const fillColor = isQuartz ? "url(#frostedGradient)" : "url(#darkGradient)"
   const diamondFill = isQuartz ? "rgba(255, 255, 255, 0.05)" : "#050507"
-  const jusColor = isQuartz ? "#ffffff" : "#d1d5db"
+  const jusColor = isQuartz ? "#ffffff" : "#eab308"
   const jusShadow = isQuartz 
     ? "drop-shadow-[0_0_8px_rgba(255,255,255,0.35)]" 
     : "drop-shadow-[0_0_4px_rgba(209,213,223,0.15)]"
@@ -34,12 +34,12 @@ export function Logo({ className, showText = true, iconSize = 32, variant = "chr
         {...props}
       >
         <defs>
-          {/* Variante Chrome: Cromo Polido e Obsidiana Escura (Ideal para Sidebar/Header) */}
+          {/* Variante Gold: Ouro Imperial e Obsidiana (Ideal para Sidebar/Header) */}
           <linearGradient id="chromeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#ffffff" /> {/* Brilho de Cromo */}
-            <stop offset="30%" stopColor="#d1d5db" /> {/* Prata Polida */}
-            <stop offset="70%" stopColor="#6b7280" /> {/* Aço Escovado */}
-            <stop offset="100%" stopColor="#1f2937" /> {/* Cromo Negro */}
+            <stop offset="0%" stopColor="#fef08a" /> {/* Ouro Claro */}
+            <stop offset="30%" stopColor="#eab308" /> {/* Ouro Brilhante */}
+            <stop offset="70%" stopColor="#a16207" /> {/* Ouro Antigo */}
+            <stop offset="100%" stopColor="#422006" /> {/* Ouro Negro */}
           </linearGradient>
           <linearGradient id="darkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#141419" /> {/* Obsidian Light */}

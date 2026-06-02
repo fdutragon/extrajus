@@ -219,7 +219,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
       if (step === "success" && !open) onClose();
     }}>
     <DialogContent 
-      className="w-full max-w-[92vw] md:max-w-[48rem] lg:max-w-[52rem] bg-background border border-border text-foreground rounded-[28px] max-sm:rounded-[24px] max-sm:!top-[50%] max-sm:!left-[50%] max-sm:!-translate-x-1/2 max-sm:!-translate-y-1/2 max-sm:w-[92vw] max-h-[88vh] overflow-y-auto flex flex-col shadow-[0_0_50px_rgba(139,92,246,0.18)] p-8 md:p-10 max-sm:p-6 transition-all duration-500 [&>button:last-child]:hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+      className="w-full max-w-[92vw] md:max-w-[48rem] lg:max-w-[52rem] bg-background border border-border text-foreground rounded-[28px] max-sm:rounded-[24px] max-sm:!top-[50%] max-sm:!left-[50%] max-sm:!-translate-x-1/2 max-sm:!-translate-y-1/2 max-sm:w-[92vw] max-h-[95vh] overflow-y-auto flex flex-col shadow-[0_0_50px_rgba(234,179,8,0.18)] p-8 md:p-10 max-sm:p-6 transition-all duration-500 [&>button:last-child]:hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
     >
       {/* Invisible Focus Target to prevent auto opening keyboard on mobile */}
       <button className="sr-only opacity-0 absolute w-0 h-0" tabIndex={0} aria-hidden="true" />
@@ -232,7 +232,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 max-sm:gap-5 relative z-10 max-sm:px-0 max-sm:flex-1 max-sm:flex max-sm:flex-col max-sm:justify-start max-sm:h-auto max-sm:overflow-visible">
 
         {/* Painel Esquerdo: A Oferta Suprema (6 colunas) */}
-        <div className="md:col-span-6 flex flex-col justify-between border-b md:border-b-0 md:border-r border-border/60 pb-5 max-sm:pb-5 md:pb-0 md:pr-5 lg:pr-6 space-y-5 max-sm:space-y-5.5 shrink-0">
+        <div className="md:col-span-6 flex flex-col justify-between border-b md:border-b-0 md:border-r border-border/60 pb-5 max-sm:pb-3 md:pb-0 md:pr-5 lg:pr-6 space-y-5 max-sm:space-y-4 shrink-0">
           <div className="space-y-4 max-sm:space-y-4 max-sm:pt-0 max-sm:flex max-sm:flex-col max-sm:items-center max-sm:text-center">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 max-sm:py-1 max-sm:px-3 bg-emerald-500/10 border border-emerald-500/20 rounded-full max-sm:hidden">
               <CheckCircle2 size={14} className="text-emerald-500 animate-pulse max-sm:w-[13px] max-sm:h-[13px]" />
@@ -240,7 +240,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             </div>
 
             <h3 className="text-[1.65rem] max-sm:text-[1.6rem] font-black text-foreground leading-[1.1] tracking-tight whitespace-nowrap max-sm:mt-2">
-              Baixe Agora Seu <span className="bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">{docType === "notificacao" ? "Notificação" : "Contrato"}</span>
+              Baixe Agora Seu <span className="bg-gradient-to-r from-primary via-amber-500 to-primary dark:via-amber-400 bg-clip-text text-transparent">{docType === "notificacao" ? "Notificação" : "Contrato"}</span>
             </h3>
 
             <p className="text-[0.825rem] max-sm:text-[0.925rem] max-sm:leading-[1.5] text-muted-foreground leading-relaxed font-medium">
@@ -264,8 +264,8 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
           </div>
 
           {/* Box de Preço Único */}
-          <div className="space-y-4 pt-1 max-sm:pt-3 max-sm:flex max-sm:flex-col max-sm:items-center">
-            <div className="flex items-center justify-between w-full max-sm:justify-center max-sm:gap-3 border-t border-border/40 pt-3">
+          <div className="space-y-4 pt-1 max-sm:pt-1 max-sm:flex max-sm:flex-col max-sm:items-center">
+            <div className="flex items-center justify-between w-full max-sm:justify-center max-sm:gap-3 border-t border-border/40 pt-3 max-sm:pt-2">
               <div>
                 <div className="text-[0.625rem] max-sm:text-[0.7rem] font-black text-muted-foreground/60 uppercase tracking-widest mb-0.5">Investimento Único</div>
                 <div className="flex items-baseline gap-1.5 max-sm:gap-1.5">
@@ -278,10 +278,10 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
         </div>
 
         {/* Painel Direito: Formulário, PIX ou Sucesso (6 colunas) */}
-        <div className="md:col-span-6 flex flex-col justify-center min-h-[260px] max-sm:min-h-0 max-sm:pt-3 max-sm:flex-1 max-sm:justify-start">
+        <div className="md:col-span-6 flex flex-col justify-center min-h-[260px] max-sm:min-h-0 max-sm:pt-1 max-sm:flex-1 max-sm:justify-start">
           
           {/* Barra de Progresso Líquida (UX de 3 etapas) */}
-          <div className="w-full flex items-center justify-between gap-2 mb-5 px-1 shrink-0 select-none">
+          <div className="w-full flex items-center justify-between gap-2 mb-5 max-sm:mb-3 px-1 shrink-0 select-none">
             <div className="flex-1 flex flex-col gap-1">
               <div className="h-1 rounded-full transition-all duration-500 bg-primary" />
               <span className="text-[8px] font-black uppercase tracking-wider text-primary text-center">1. Identificação</span>
@@ -310,10 +310,10 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
 
           <DialogHeader className={cn("mb-4 max-sm:mb-4 text-center flex flex-col items-center", step === "pix" && "max-sm:mb-2 max-sm:mt-0")}>
             <DialogTitle className={cn(
-              "flex items-center justify-center gap-2 text-[1.1rem] max-sm:text-[1.15rem] font-black tracking-[0.12em] bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent",
+              "flex items-center justify-center gap-2 text-[1.1rem] max-sm:text-[1.15rem] font-black tracking-[0.12em] bg-gradient-to-r from-primary via-amber-500 to-primary dark:via-amber-400 bg-clip-text text-transparent",
               step === "pix" && "max-sm:hidden"
             )}>
-              <Lock size={18} className="text-primary animate-pulse filter drop-shadow-[0_0_6px_rgba(139,92,246,0.4)] max-sm:w-[16px] max-sm:h-[16px]" />
+              <Lock size={18} className="text-primary animate-pulse filter drop-shadow-[0_0_6px_rgba(234,179,8,0.4)] max-sm:w-[16px] max-sm:h-[16px]" />
               {step === "form" ? "Acesso ao Documento" : step === "pix" ? "Finalizar Pagamento" : "Sucesso!"}
             </DialogTitle>
             <DialogDescription className={cn(

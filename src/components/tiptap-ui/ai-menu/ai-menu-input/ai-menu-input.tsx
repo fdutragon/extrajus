@@ -401,7 +401,7 @@ export function AiPromptInputToolbar({
           className={cn(
             "h-9 rounded-full p-0 flex items-center justify-center shrink-0 transition-all duration-500 shadow-md",
             isEmpty || isRecording
-              ? "w-9 opacity-35 scale-90 bg-muted text-muted-foreground pointer-events-none"
+              ? "w-9 opacity-60 scale-90 bg-zinc-200 dark:bg-muted text-zinc-600 dark:text-muted-foreground pointer-events-none"
               : "w-12 bg-primary text-primary-foreground hover:scale-105 active:scale-95 hover:shadow-lg"
           )}
         >

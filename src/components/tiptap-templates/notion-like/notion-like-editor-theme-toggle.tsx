@@ -39,12 +39,12 @@ export function ThemeToggle() {
       aria-label={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
       variant="ghost"
       size="small"
-      className="h-8 sm:h-7 w-8 sm:w-7 max-sm:w-10 max-sm:h-10 text-muted-foreground hover:text-foreground dark:hover:bg-primary/5 rounded-full transition-all group border border-transparent hover:border-border/40 flex items-center justify-center shrink-0 p-0"
+      className="h-9 w-9 max-sm:w-10 max-sm:h-10 text-muted-foreground hover:text-foreground dark:hover:bg-primary/5 rounded-full transition-all group border border-transparent hover:border-border/40 flex items-center justify-center shrink-0 p-0"
     >
       {isDarkMode ? (
-        <MoonStarIcon className="w-3 h-3 max-sm:w-[18px] max-sm:h-[18px] transition-transform" />
+        <MoonStarIcon className="w-[18px] h-[18px] transition-transform" />
       ) : (
-        <SunIcon className="w-3 h-3 max-sm:w-[18px] max-sm:h-[18px] transition-transform" />
+        <SunIcon className="w-[18px] h-[18px] transition-transform" />
       )}
     </Button>
   )

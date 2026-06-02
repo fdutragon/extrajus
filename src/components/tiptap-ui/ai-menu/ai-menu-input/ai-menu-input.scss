@@ -6,9 +6,9 @@
   --tiptap-ai-prompt-input-placeholder-gradient: linear-gradient(
     90deg,
     #4b5563 5%,       /* Cinza Grafite */
-    #6d28d9 25%,      /* Violeta IA */
-    #4f46e5 50%,      /* Indigo Místico */
-    #2563eb 75%,      /* Azul Safira */
+    #ca8a04 25%,      /* Dourado IA */
+    #eab308 50%,      /* Ouro Brilhante */
+    #fef08a 75%,      /* Ouro Claro */
     #4b5563 95%
   );
 
@@ -29,9 +29,9 @@
   --tiptap-ai-prompt-input-placeholder-gradient: linear-gradient(
     90deg,
     var(--muted-foreground) 5%,
-    #8b5cf6 25%,
+    #a16207 25%,
     var(--primary) 50%,
-    #d946ef 75%,
+    #ca8a04 75%,
     var(--muted-foreground) 95%
   );
 
@@ -82,19 +82,35 @@
     left: -50%;
     width: 200%;
     height: 200%;
-    background: conic-gradient(
-      transparent 0%,
-      var(--primary) 20%,
-      #8b5cf6 40%,       // violeta elegante
-      #7928ca 60%,       // roxo místico profundo
-      #d946ef 80%,       // fuchsia escuro
-      transparent 100%
+    background: 
+    radial-gradient(circle at top left, 
+      #ca8a04 0%,         // dourado elegante
+      #eab308 25%,      // dourado brilhante
+      transparent 50%
+    ),
+    radial-gradient(circle at bottom right, 
+      #fef08a 0%,         // ouro claro
+      rgba(234, 179, 8, 0.1) 50%, 
+      transparent 70%
     );
     animation: border-spin-prompt 5s linear infinite;
     pointer-events: none;
     z-index: 0;
     opacity: 0.18;
     transition: opacity 0.8s ease;
+  }
+
+  // Subtle pulsing glow
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(
+      45deg,
+      transparent 20%,
+      rgba(234, 179, 8, 0.3) 50%,
+      transparent 80%
+    );
   }
 
   &[data-focused="true"]::before,
@@ -111,10 +127,10 @@
     opacity: 0.85;
     background: conic-gradient(
       transparent 0%,
-      #3b82f6 20%,       // azul neon ativo
-      var(--primary) 40%, // roxo primário
-      #8b5cf6 60%,
-      #d946ef 80%,       // fuchsia ativo
+      #eab308 20%,       // ouro brilhante
+      var(--primary) 40%, // ouro primário
+      #ca8a04 60%,
+      #fef08a 80%,       // ouro claro
       transparent 100%
     );
     animation: border-spin-prompt 1.2s linear infinite !important;

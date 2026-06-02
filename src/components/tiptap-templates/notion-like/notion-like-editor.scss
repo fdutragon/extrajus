@@ -144,8 +144,8 @@ body {
       height: 70%;
       width: 3.5px;
       border-radius: 99px;
-      background: linear-gradient(180deg, var(--primary) 0%, #a855f7 100%);
-      box-shadow: 0 0 10px rgba(139, 92, 246, 0.35);
+      background: linear-gradient(180deg, var(--primary) 0%, #ca8a04 100%);
+      box-shadow: 0 0 10px rgba(234, 179, 8, 0.35);
     }
 
     @media screen and (max-width: 768px) {
@@ -244,10 +244,10 @@ body {
 
   // AI Highlight Global Styles
   [data-ai-highlight="true"] {
-    background: rgba(139, 92, 246, 0.08); /* Violeta Lilith suave */
+    background: rgba(234, 179, 8, 0.08); /* Dourado Lilith suave */
     border-radius: 6px;
     padding: 2px 6px;
-    box-shadow: inset 2px 0 0 0 #8b5cf6;
+    box-shadow: inset 2px 0 0 0 #eab308;
     animation: ai-pulse-highlight 3s infinite ease-in-out;
     cursor: pointer;
     transition: all 0.5s ease;
