@@ -308,12 +308,18 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
             </div>
           </div>
 
-          <DialogHeader className="mb-4 max-sm:mb-4 text-center flex flex-col items-center">
-            <DialogTitle className="flex items-center justify-center gap-2 text-[1.1rem] max-sm:text-[1.15rem] font-black tracking-[0.12em] bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent">
+          <DialogHeader className={cn("mb-4 max-sm:mb-4 text-center flex flex-col items-center", step === "pix" && "max-sm:mb-2 max-sm:mt-0")}>
+            <DialogTitle className={cn(
+              "flex items-center justify-center gap-2 text-[1.1rem] max-sm:text-[1.15rem] font-black tracking-[0.12em] bg-gradient-to-r from-primary via-violet-600 to-primary dark:via-violet-400 bg-clip-text text-transparent",
+              step === "pix" && "max-sm:hidden"
+            )}>
               <Lock size={18} className="text-primary animate-pulse filter drop-shadow-[0_0_6px_rgba(139,92,246,0.4)] max-sm:w-[16px] max-sm:h-[16px]" />
               {step === "form" ? "Acesso ao Documento" : step === "pix" ? "Finalizar Pagamento" : "Sucesso!"}
             </DialogTitle>
-            <DialogDescription className="text-[0.825rem] max-sm:text-[0.85rem] max-sm:leading-[1.4] text-muted-foreground font-medium tracking-wide mt-1.5 max-sm:mt-2 leading-relaxed text-center">
+            <DialogDescription className={cn(
+              "text-[0.825rem] max-sm:text-[0.85rem] max-sm:leading-[1.4] text-muted-foreground font-medium tracking-wide mt-1.5 max-sm:mt-2 leading-relaxed text-center",
+              step === "pix" && "max-sm:mt-0"
+            )}>
               {step === "form"
                 ? "Para continuar, informe seu e-mail principal. Enviaremos o documento editável Word (.DOCX) e o recibo para ele."
                 : step === "pix"
@@ -363,17 +369,17 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
           )}
 
           {step === "pix" && pixData && (
-            <div className="flex flex-col items-center justify-center space-y-4 max-sm:space-y-4.5 mt-1 max-sm:text-center w-full">
+            <div className="flex flex-col items-center justify-center space-y-4 max-sm:space-y-2.5 mt-1 max-sm:mt-0 max-sm:text-center w-full">
               {/* Premium QR Code Container */}
-              <div className="bg-muted/40 p-3 max-sm:p-2.5 rounded-xl border border-border shadow-[0_0_20px_rgba(0,0,0,0.05)] relative overflow-hidden group hover:border-primary/20 transition-all duration-300">
+              <div className="bg-muted/40 p-3 max-sm:p-2 rounded-xl border border-border shadow-[0_0_20px_rgba(0,0,0,0.05)] relative overflow-hidden group hover:border-primary/20 transition-all duration-300">
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="p-2 max-sm:p-1.5 bg-white rounded-lg shadow-xl relative z-10">
-                  <QRCodeSVG value={pixData.qrCode} size={120} className="w-[7.5rem] h-[7.5rem] max-sm:w-[7rem] max-sm:h-[7rem] max-sm:!w-[7rem] max-sm:!h-[7rem]" style={{ display: "block" }} />
+                  <QRCodeSVG value={pixData.qrCode} size={120} className="w-[7.5rem] h-[7.5rem] max-sm:w-[6rem] max-sm:h-[6rem] max-sm:!w-[6rem] max-sm:!h-[6rem]" style={{ display: "block" }} />
                 </div>
               </div>
               
               {/* Copy & Dev Simulator Action Controls */}
-              <div className="w-full space-y-3 max-sm:space-y-3.5 flex flex-col items-center">
+              <div className="w-full space-y-3 max-sm:space-y-2 flex flex-col items-center">
                 <Button 
                   onClick={copyPix} 
                   variant="outline" 
@@ -410,7 +416,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
               </div>
 
               {/* Waiting indicator */}
-              <div className="flex items-center justify-center gap-2 text-[10px] max-sm:text-[0.75rem] font-black uppercase tracking-[0.15em] text-primary/80 animate-pulse pt-1 pb-3 w-full">
+              <div className="flex items-center justify-center gap-2 text-[10px] max-sm:text-[0.75rem] font-black uppercase tracking-[0.15em] text-primary/80 animate-pulse pt-1 max-sm:pt-0 pb-3 max-sm:pb-1 w-full">
                 <BrainCircuit size={15} className="text-primary max-sm:w-[15px] max-sm:h-[15px]" />
                 <span>Aguardando pagamento...</span>
               </div>
