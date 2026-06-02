@@ -48,12 +48,11 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
         const res = await fetch(`/api/billing/status?externalId=${pixData.externalId}`)
         if (res.ok) {
           const data = await res.json()
-          if (data.status === "COMPLETE") {
-            // Dispara o evento de conversão de compra do Google Ads no frontend
+          if (data.status === "COMPLETE") {            // Dispara o evento de conversão de compra do Google Ads no frontend
             if (typeof window !== "undefined" && (window as any).gtag) {
               (window as any).gtag('event', 'conversion', {
                 'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
-                'value': 29.00, // Valor real do download do documento
+                'value': 37.00, // Valor real do download do documento (R$ 37,00)
                 'currency': 'BRL',
                 'transaction_id': pixData.externalId
               });
@@ -154,64 +153,64 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
       if (typeof window !== "undefined" && (window as any).gtag) {
         (window as any).gtag('event', 'conversion', {
           'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
-          'value': 29.00,
+          'value': 37.00,
           'currency': 'BRL',
           'transaction_id': data.externalId
-          });
-          console.log("[Google Ads] Conversão disparada via Simulação Dev (All)!", data.externalId);
-          }
+        });
+        console.log("[Google Ads] Conversão disparada via Simulação Dev (All)!", data.externalId);
+      }
 
-          setStep("success")
+      setStep("success")
 
-          } catch (err: any) {
-          toast.error(err.message)
-          } finally {
-          setLoading(false)
-          }
-          }
+    } catch (err: any) {
+      toast.error(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
 
-          // Developer simulation: Confirms the active PIX payment
-          const handleDevSimulatePaymentOnly = async () => {
-          if (!pixData?.externalId) return
-          setLoading(true)
-          try {
-          const res = await fetch("/api/billing/status", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ externalId: pixData.externalId })
-          })
+  // Developer simulation: Confirms the active PIX payment
+  const handleDevSimulatePaymentOnly = async () => {
+    if (!pixData?.externalId) return
+    setLoading(true)
+    try {
+      const res = await fetch("/api/billing/status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ externalId: pixData.externalId })
+      })
 
-          const data = await res.json()
-          if (!res.ok) throw new Error(data.error || "Falha ao simular confirmação de pagamento")
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || "Falha ao simular confirmação de pagamento")
 
-          // Dispara o evento de conversão de compra do Google Ads na simulação dev
-          if (typeof window !== "undefined" && (window as any).gtag) {
-          (window as any).gtag('event', 'conversion', {
+      // Dispara o evento de conversão de compra do Google Ads na simulação dev
+      if (typeof window !== "undefined" && (window as any).gtag) {
+        (window as any).gtag('event', 'conversion', {
           'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
-          'value': 29.00,
+          'value': 37.00,
           'currency': 'BRL',
           'transaction_id': pixData.externalId
-          });
-          console.log("[Google Ads] Conversão disparada via Simulação Dev (PaymentOnly)!", pixData.externalId);
-          }
+        });
+        console.log("[Google Ads] Conversão disparada via Simulação Dev (PaymentOnly)!", pixData.externalId);
+      }
 
-          toast.success("Confirmação de pagamento simulada com sucesso!")
-          setStep("success")
-          } catch (err: any) {
-          toast.error(err.message)
-          } finally {
-          setLoading(false)
-          }
-          }
+      toast.success("Confirmação de pagamento simulada com sucesso!")
+      setStep("success")
+    } catch (err: any) {
+      toast.error(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
 
-          const copyPix = () => {
-          if (pixData?.code) {
-          navigator.clipboard.writeText(pixData.code)
-          setCopied(true)
-          toast.success("Código PIX copiado!")
-          setTimeout(() => setCopied(false), 2000)
-          }
-          }
+  const copyPix = () => {
+    if (pixData?.code) {
+      navigator.clipboard.writeText(pixData.code)
+      setCopied(true)
+      toast.success("Código PIX copiado!")
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
 
     return (
     <Dialog open={isOpen} onOpenChange={(open) => {

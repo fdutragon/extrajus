@@ -1,5 +1,5 @@
 "use client"
-
+import React, { useEffect, useState } from "react"
 import { BubbleMenu as TiptapBubbleMenu } from "@tiptap/react/menus"
 import { Editor } from "@tiptap/react"
 import { 
@@ -22,11 +22,26 @@ interface BubbleMenuProps {
 }
 
 export function BubbleMenu({ editor }: BubbleMenuProps) {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640)
+    checkMobile()
+    window.addEventListener("resize", checkMobile)
+    return () => window.removeEventListener("resize", checkMobile)
+  }, [])
+
   if (!editor) return null
 
   return (
     <TiptapBubbleMenu
       editor={editor}
+      // @ts-ignore: Tiptap types sometimes miss tippyOptions depending on the version
+      tippyOptions={{
+        placement: isMobile ? "bottom" : "top",
+        maxWidth: isMobile ? "calc(100vw - 32px)" : "none",
+        zIndex: 50,
+      }}
       className="flex items-center gap-1 max-sm:gap-1 p-1 max-sm:p-1 bg-card border border-border rounded-xl max-sm:rounded-xl shadow-2xl backdrop-blur-md"
     >
       <div className="flex items-center gap-0.5 border-r border-border pr-1 mr-1 max-sm:gap-0.5 max-sm:pr-1 max-sm:mr-1">

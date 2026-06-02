@@ -195,7 +195,8 @@ import {
   Type,
   Minus,
   Plus,
-  X
+  X,
+  Trash2
 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -429,6 +430,14 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
       editor.off("blur", handleBlur)
     }
   }, [editor])
+
+  const handleDiscard = () => {
+    if (confirm("Tem certeza que deseja descartar este contrato e começar do zero?")) {
+      localStorage.removeItem("extrajus_last_room")
+      document.cookie = "extrajus_last_room=; path=/; max-age=0;"
+      window.location.href = "/editor"
+    }
+  }
 
   const { room } = useCollab()
   const supabase = useMemo(() => createClient(), [])
@@ -705,8 +714,20 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
               "w-full max-w-full lg:max-w-[clamp(37.5rem,45vw,56.25rem)] mx-auto editor-glow-container max-sm:!p-0 max-sm:!rounded-none transition-all duration-700 shadow-2xl max-sm:shadow-none",
               (showEntranceGlow || editorFocused) && "glowing"
             )}>
-              <div className="w-full h-full sm:bg-card/90 sm:dark:bg-card/75 sm:backdrop-blur-xl sm:rounded-[30px] max-sm:rounded-none px-4 max-sm:px-0 py-8 max-sm:pt-8 max-sm:pb-48 sm:px-14 sm:py-12 relative min-h-[50rem] md:min-h-[74.25rem] editor-glow-content max-sm:bg-transparent max-sm:backdrop-blur-none max-sm:shadow-none">
+              <div className="w-full h-full sm:bg-card/90 sm:dark:bg-card/75 sm:backdrop-blur-xl sm:rounded-[30px] max-sm:rounded-none px-4 max-sm:px-0 py-8 max-sm:pt-16 max-sm:pb-48 sm:px-14 sm:pt-16 sm:pb-12 relative min-h-[50rem] md:min-h-[74.25rem] editor-glow-content max-sm:bg-transparent max-sm:backdrop-blur-none max-sm:shadow-none">
                 <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-[30px] max-sm:hidden" />
+
+                {!readOnly && editor && !editor.isEmpty && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleDiscard}
+                    className="absolute top-4 right-4 sm:top-6 sm:right-6 h-8 w-8 text-red-500/40 hover:text-red-500 hover:bg-red-500/10 transition-all rounded-full z-50 flex items-center justify-center bg-background/30 backdrop-blur-md border border-red-500/10 hover:border-red-500/30 shadow-sm"
+                    title="Descartar Contrato"
+                  >
+                    <Trash2 size={14} />
+                  </Button>
+                )}
 
                 <div className="relative z-10">
                   {!readOnly && (
