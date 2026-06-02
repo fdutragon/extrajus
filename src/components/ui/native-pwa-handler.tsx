@@ -60,8 +60,6 @@ export function NativePwaHandler() {
         // Removemos a dependência do evento 'appinstalled' (que falha em alguns celulares)
         // Disparamos o sucesso após 10 segundos fixos, tempo suficiente para a instalação concluir
         setTimeout(() => {
-          localStorage.setItem("pwa_assumed_installed", "true")
-          window.dispatchEvent(new CustomEvent("pwa-assumed-installed-changed"))
           window.dispatchEvent(new CustomEvent("pwa-installed-status-changed", { detail: { installed: true } }))
           
           const isMobile = typeof navigator !== "undefined" && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
