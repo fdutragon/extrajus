@@ -231,8 +231,9 @@ export function ContractTypeSelector({
                   </button>
                 )
               })}
+              <div className="h-2 shrink-0"></div>
               {!isSearching && (
-                <div className="sm:sticky sm:bottom-0 sm:z-10 p-3 text-center border-t border-border bg-popover/95 backdrop-blur-sm">
+                <div className="sm:sticky sm:bottom-0 sm:z-10 p-3 pb-4 text-center border-t border-border bg-popover/95 backdrop-blur-sm">
                   <span className="text-[10px] font-mono font-bold tracking-widest text-primary/90 dark:text-primary/70 uppercase">⚡ + 50 modelos de elite no acervo</span>
                 </div>
               )}
