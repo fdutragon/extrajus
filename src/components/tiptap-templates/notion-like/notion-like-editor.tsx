@@ -656,8 +656,8 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
         </div>
 
         {/* Persistent Centralized Branding (Restaurada e livre de colisão de ID SVG) */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none select-none z-[110] max-lg:scale-[1.25]">
-          <Logo showText={true} iconSize={36} variant="chrome" />
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none select-none z-[110]">
+          <Logo showText={true} iconSize={22} variant="chrome" />
         </div>
 
         {!readOnly && (
@@ -739,7 +739,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
                 <div className="relative z-10">
                   {!readOnly && (
                     <div className="max-sm:hidden">
-                      <BubbleMenu editor={editor} />
+                      {/* <BubbleMenu editor={editor} /> */}
                     </div>
                   )}
                   <EditorContentArea />
