@@ -685,7 +685,7 @@ export function AiMenuInputTextarea({
     if (selectedContractType) {
       const type = selectedContractType.toLowerCase()
       if (type.includes("prestação de serviços") || type.includes("empreitada") || type.includes("consultoria")) {
-        return `Qual o serviço, o valor cobrado e o prazo? Detalhe o acordo e a IA redigirá um contrato de ${selectedContractType} blindado para você...`
+        return `Qual o serviço, o valor cobrado e o prazo? Detalhe o acordo e a nossa IA redigirá o contrato perfeito para você...`
       }
       if (type.includes("compra e venda") || type.includes("permuta")) {
         return `Qual o bem (imóvel, veículo, produto), valor e condições de entrega?`
