@@ -21,40 +21,6 @@ export function NativePwaHandler() {
       setTimeout(() => {
         window.dispatchEvent(new CustomEvent("pwa-installed-status-changed", { detail: { installed: true } }))
       }, 500)
-    } else {
-      // Função para tentar redirecionar apenas UMA vez por sessão
-      const attemptRedirect = () => {
-        if (sessionStorage.getItem("pwa-redirect-attempted") === "true") return
-        sessionStorage.setItem("pwa-redirect-attempted", "true")
-
-        const isMobile = typeof navigator !== "undefined" && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-        if (isMobile) {
-          // No mobile, abrir nova aba para engatilhar o app (pode falhar/bloquear, por isso só tentamos 1x)
-          window.open(window.location.href, "_blank")
-        } else {
-          // No desktop, o protocolo customizado funciona perfeitamente
-          window.location.href = "web+extrajus://editor"
-        }
-      }
-
-      // Se não estiver rodando como PWA, mas já estiver instalado, redireciona para o PWA automaticamente
-      const isInstalledLocally = localStorage.getItem("pwa-installed") === "true"
-      
-      // Checa também pela API do Chrome
-      if (typeof navigator !== 'undefined' && 'getInstalledRelatedApps' in navigator) {
-        (navigator as any).getInstalledRelatedApps().then((apps: any[]) => {
-          if (apps.length > 0 || isInstalledLocally) {
-            localStorage.setItem("pwa-installed", "true")
-            attemptRedirect()
-          }
-        }).catch(() => {
-          if (isInstalledLocally) {
-            attemptRedirect()
-          }
-        })
-      } else if (isInstalledLocally) {
-        attemptRedirect()
-      }
     }
 
     const handleBeforeInstallPrompt = (e: Event) => {
