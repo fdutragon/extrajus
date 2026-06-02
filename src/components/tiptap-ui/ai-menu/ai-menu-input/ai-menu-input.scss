@@ -2,7 +2,7 @@
   --tiptap-ai-prompt-input-content-placeholder: var(--muted-foreground);
   --tiptap-ai-prompt-input-bg-color: var(--popover);
   --tiptap-ai-prompt-input-focused-border-color: var(--primary);
-  --tiptap-ai-prompt-input-border-color: color-mix(in srgb, var(--border), var(--foreground) 45%);
+  --tiptap-ai-prompt-input-border-color: var(--primary);
   --tiptap-ai-prompt-input-placeholder-gradient: linear-gradient(
     90deg,
     #44403c 5%,       /* Cinza Quente Escuro */
