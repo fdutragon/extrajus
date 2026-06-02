@@ -22,12 +22,6 @@ export function PwaInstallModal() {
         setIsIOS(isIOSDevice)
       }
       setIsOpen(true)
-
-      // Inicia a heurística de 10s de forma independente do modal fechar ou não
-      setTimeout(() => {
-        localStorage.setItem("pwa_assumed_installed", "true")
-        window.dispatchEvent(new CustomEvent("pwa-assumed-installed-changed"))
-      }, 10000)
     }
 
     window.addEventListener("open-pwa-modal", handleOpen)
@@ -43,6 +37,13 @@ export function PwaInstallModal() {
           'currency': 'BRL'
       });
     }
+
+    // Inicia a contagem de 10s exatamente no momento em que o usuário inicia a instalação nativa
+    setTimeout(() => {
+      localStorage.setItem("pwa_assumed_installed", "true")
+      window.dispatchEvent(new CustomEvent("pwa-assumed-installed-changed"))
+    }, 10000)
+
     // Dispara o prompt nativo via o handler existente
     window.dispatchEvent(new CustomEvent("trigger-pwa-install"))
     setIsOpen(false)
