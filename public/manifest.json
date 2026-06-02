@@ -10,6 +10,12 @@
   "theme_color": "#09090b",
   "id": "/extrajus-v23",
   "categories": ["business", "productivity", "legal"],
+  "protocol_handlers": [
+    {
+      "protocol": "web+extrajus",
+      "url": "/?open=%s"
+    }
+  ],
   "icons": [
     {
       "src": "/icon-app-v3.svg?v=29",

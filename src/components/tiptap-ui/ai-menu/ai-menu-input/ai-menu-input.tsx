@@ -152,8 +152,7 @@ export function ContractTypeSelector({
       }
 
       if (isInstalled) {
-        // Redireciona/Abre a PWA
-        window.open(window.location.href, "_blank")
+        window.location.href = "web+extrajus://editor"
         toast.success("Abrindo a ExtraJus no App...", {
           icon: <Cloud className="w-4 h-4 text-emerald-500" />,
           duration: 3000
