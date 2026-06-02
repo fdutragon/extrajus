@@ -162,7 +162,7 @@ export function ContractTypeSelector({
             "text-[8.5px] md:text-[11px] font-black tracking-[0.15em] uppercase transition-colors duration-500",
             isEditing 
               ? "text-zinc-500 dark:text-zinc-500" 
-              : "text-zinc-300 dark:text-zinc-200 drop-shadow-[0_0_10px_rgba(255,255,255,0.4)] animate-pulse"
+              : "text-zinc-800 dark:text-zinc-200 drop-shadow-[0_0_8px_rgba(0,0,0,0.3)] dark:drop-shadow-[0_0_10px_rgba(255,255,255,0.4)] animate-pulse"
           )}>
             {isEditing 
               ? (isInstalled ? "CONTRATO SALVO" : "SALVAR CONTRATO") 
