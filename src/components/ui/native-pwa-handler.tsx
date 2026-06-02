@@ -21,6 +21,40 @@ export function NativePwaHandler() {
       setTimeout(() => {
         window.dispatchEvent(new CustomEvent("pwa-installed-status-changed", { detail: { installed: true } }))
       }, 500)
+    } else {
+      // Se não estiver rodando como PWA, mas já estiver instalado, redireciona para o PWA automaticamente
+      const isInstalledLocally = localStorage.getItem("pwa-installed") === "true"
+      
+      // Checa também pela API do Chrome
+      if (typeof navigator !== 'undefined' && 'getInstalledRelatedApps' in navigator) {
+        (navigator as any).getInstalledRelatedApps().then((apps: any[]) => {
+          if (apps.length > 0 || isInstalledLocally) {
+            localStorage.setItem("pwa-installed", "true")
+            const isMobile = typeof navigator !== "undefined" && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+            if (isMobile) {
+              window.open(window.location.href, "_blank")
+            } else {
+              window.location.href = "web+extrajus://editor"
+            }
+          }
+        }).catch(() => {
+          if (isInstalledLocally) {
+            const isMobile = typeof navigator !== "undefined" && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+            if (isMobile) {
+              window.open(window.location.href, "_blank")
+            } else {
+              window.location.href = "web+extrajus://editor"
+            }
+          }
+        })
+      } else if (isInstalledLocally) {
+        const isMobile = typeof navigator !== "undefined" && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+        if (isMobile) {
+          window.open(window.location.href, "_blank")
+        } else {
+          window.location.href = "web+extrajus://editor"
+        }
+      }
     }
 
     const handleBeforeInstallPrompt = (e: Event) => {
@@ -69,11 +103,18 @@ export function NativePwaHandler() {
         // Disparamos o sucesso após 10 segundos fixos, tempo suficiente para a instalação concluir
         window.dispatchEvent(new CustomEvent("pwa-installed-status-changed", { detail: { installed: true } }))
         setTimeout(() => {
-          toast.success("ExtraJus instalada com sucesso!", {
-            description: "O ícone está na tela inicial. Abra o app para continuar.",
-            duration: 5000,
+          toast.success("ExtraJus instalada com sucesso! Redirecionando...", {
+            duration: 3000,
             className: "text-[11px]"
           })
+          setTimeout(() => {
+             const isMobile = typeof navigator !== "undefined" && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+             if (isMobile) {
+               window.open(window.location.href, "_blank")
+             } else {
+               window.location.href = "web+extrajus://editor"
+             }
+          }, 3000)
         }, 10000)
       }
       

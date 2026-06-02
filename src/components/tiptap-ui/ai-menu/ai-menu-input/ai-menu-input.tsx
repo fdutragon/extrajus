@@ -193,19 +193,17 @@ export function ContractTypeSelector({
               "w-1.5 h-1.5 md:w-2 md:h-2 rounded-full shrink-0 transition-all duration-500",
               isStandalone 
                 ? "bg-zinc-500 shadow-[0_0_8px_rgba(113,113,122,0.4)]" 
-                : isInstalled
-                  ? "bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.4)]"
-                  : "bg-zinc-600 animate-pulse shadow-[0_0_8px_rgba(113,113,122,0.4)]"
+                : "bg-zinc-600 animate-pulse shadow-[0_0_8px_rgba(113,113,122,0.4)]"
             )} />
           )}
           <span className={cn(
             "text-[8.5px] md:text-[11px] font-black tracking-[0.15em] uppercase transition-colors duration-500",
             isEditing 
-              ? (isInstalled && !isStandalone ? "text-emerald-500 animate-pulse" : "text-zinc-500 dark:text-zinc-500") 
+              ? "text-zinc-500 dark:text-zinc-500" 
               : "text-zinc-800 dark:text-zinc-200 drop-shadow-[0_0_8px_rgba(0,0,0,0.3)] dark:drop-shadow-[0_0_10px_rgba(255,255,255,0.4)] animate-pulse"
           )}>
             {isEditing 
-              ? (isStandalone ? "CONTRATO SALVO" : isInstalled ? "CONTINUAR NO APP" : "SALVAR CONTRATO") 
+              ? (isStandalone ? "CONTRATO SALVO" : "SALVAR CONTRATO") 
               : cleanContractName(selectedType).toUpperCase()
             }
           </span>
