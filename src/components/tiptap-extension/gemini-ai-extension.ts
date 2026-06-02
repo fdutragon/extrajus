@@ -139,8 +139,20 @@ function injectHighlightToParentBlock(html: string, searchText: string, replaceT
   }
 
   if (lastBlockTagIndex !== -1 && lastBlockTag) {
-    // Garante que o bloco pai receba o atributo data-ai-highlight para renderizar o fundo roxo no editor
-    if (!lastBlockTag.includes("data-ai-highlight")) {
+    // Extrai o nome da tag para verificar se ela foi fechada no leftChunk
+    const tagNameMatch = lastBlockTag.match(/^<([a-z0-9]+)/i)
+    let isClosed = false
+    if (tagNameMatch) {
+      const tagName = tagNameMatch[1]
+      const closingTag = `</${tagName}>`
+      // Se a tag foi fechada antes do texto alvo, o texto alvo NÃO está dentro dela.
+      isClosed = leftChunk.indexOf(closingTag, lastBlockTagIndex) !== -1
+    }
+
+    // Só aplica o highlight se a tag NÃO foi fechada no leftChunk.
+    // Se foi fechada, o próprio searchText provavelmente contém a tag de abertura
+    // e o replaceText já foi destacado.
+    if (!isClosed && !lastBlockTag.includes("data-ai-highlight")) {
       const spaceIdx = lastBlockTag.indexOf(" ")
       let newTag = ""
       if (spaceIdx === -1) {
