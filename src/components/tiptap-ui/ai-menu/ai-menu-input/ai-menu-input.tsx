@@ -49,7 +49,7 @@ const CONTRACT_TYPES = [
   "Consultoria", "Honorários Advocatícios", "Software (SaaS)", "Licenciamento de Marca",
   "Franquia", "Comodato", "Doação", "Arrendamento Rural", "Representação Comercial",
   "Distribuição", "Corretagem", "Fiança", "Transporte de Cargas", "Empreitada",
-  "Sociedade Limitada", "Acordo de Sócios", "Vestimento (Vesting)", "Mútuo Conversível",
+  "Sociedade Limitada", "Acordo de Sociedade", "Vestimento (Vesting)", "Mútuo Conversível",
   "Termo de Uso (Site)", "Política de Privacidade", "Cessão de Direitos", "Permuta",
   "Consignação", "Agenciamento", "Hospedagem", "Eventos", "Publicidade",
   "Patrocínio", "Terceirização", "Manutenção", "Seguro", "Arrendamento Mercantil",
@@ -656,7 +656,7 @@ export function AiMenuInputTextarea({
       if (type.includes("trabalho") || type.includes("clt")) {
         return `Qual o cargo, salário, carga horária e local de trabalho?`
       }
-      if (type.includes("sociedade") || type.includes("acordo de sócios") || type.includes("parceria")) {
+      if (type.includes("sociedade") || type.includes("acordo de sociedade") || type.includes("parceria")) {
         return `Qual o objetivo da parceria, investimento e como os lucros serão divididos?`
       }
       if (type.includes("empréstimo") || type.includes("mútuo")) {
