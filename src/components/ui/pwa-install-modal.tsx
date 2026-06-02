@@ -72,7 +72,7 @@ export function PwaInstallModal() {
               </div>
               <div>
                 <p className="text-[13px] font-black text-zinc-100 uppercase tracking-tighter mb-1">Instalação Instantânea</p>
-                <p className="text-[13px] text-zinc-400 font-medium leading-tight">{isIOS ? "Processo nativo seguro do Safari." : "Instale em segundos sem sair do site."}</p>
+                <p className="text-[13px] text-zinc-400 font-medium leading-tight">{isIOS ? "Processo nativo seguro do Safari." : "Instale sem sair do site."}</p>
               </div>
             </div>
           </div>
