@@ -5,11 +5,11 @@
   --tiptap-ai-prompt-input-border-color: color-mix(in srgb, var(--border), var(--foreground) 45%);
   --tiptap-ai-prompt-input-placeholder-gradient: linear-gradient(
     90deg,
-    #4b5563 5%,       /* Cinza Grafite */
-    #ca8a04 25%,      /* Dourado IA */
-    #eab308 50%,      /* Ouro Brilhante */
-    #fef08a 75%,      /* Ouro Claro */
-    #4b5563 95%
+    #44403c 5%,       /* Cinza Quente Escuro */
+    #b45309 25%,      /* Âmbar Escuro */
+    #d97706 50%,      /* Dourado Forte */
+    #92400e 75%,      /* Ouro Queimado */
+    #44403c 95%
   );
 
   [data-active-state="off"] {
