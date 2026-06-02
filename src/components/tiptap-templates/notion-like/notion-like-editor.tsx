@@ -657,7 +657,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
 
         {/* Persistent Centralized Branding (Restaurada e livre de colisão de ID SVG) */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none select-none z-[110]">
-          <Logo showText={true} iconSize={22} variant="chrome" />
+          <Logo showText={true} iconSize={26} variant="chrome" />
         </div>
 
         {!readOnly && (
@@ -806,9 +806,8 @@ export function EditorProvider(props: EditorProviderProps) {
         },
         contextmenu: (view, event) => {
           if (typeof window !== "undefined" && window.innerWidth < 768) {
-            // event.preventDefault() // Descomente para bloquear menu longo se necessário, mas pode quebrar a digitação nativa.
-            // Para bloquear copiar/colar de fato:
-            return false
+            event.preventDefault()
+            return true
           }
           return false
         }

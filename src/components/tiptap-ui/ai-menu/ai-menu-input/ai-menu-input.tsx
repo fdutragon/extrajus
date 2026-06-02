@@ -153,21 +153,6 @@ export function ContractTypeSelector({
         return
       }
 
-      if (isInstalled) {
-        const isMobile = typeof navigator !== "undefined" && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-        if (isMobile) {
-          window.open(window.location.href, "_blank")
-        } else {
-          window.location.href = "web+extrajus://editor"
-        }
-        
-        toast.success("Abrindo a ExtraJus no App...", {
-          icon: <Cloud className="w-4 h-4 text-emerald-500" />,
-          duration: 3000
-        })
-        return
-      }
-
       // Abre o modal personalizado de instalação (funciona em mobile e pc)
       window.dispatchEvent(new CustomEvent("open-pwa-modal"))
       return
