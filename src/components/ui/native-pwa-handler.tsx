@@ -62,42 +62,29 @@ export function NativePwaHandler() {
               'currency': 'BRL'
           });
         }
+
+        // Removemos a dependência do evento 'appinstalled' (que falha em alguns celulares)
+        // Disparamos o sucesso após 10 segundos fixos, tempo suficiente para a instalação concluir
+        window.dispatchEvent(new CustomEvent("pwa-installed-status-changed", { detail: { installed: true } }))
+        setTimeout(() => {
+          toast.success("ExtraJus instalada com sucesso!", {
+            description: "O ícone está na tela inicial. Abra o app para continuar.",
+            duration: 5000,
+            className: "text-[11px]"
+          })
+        }, 10000)
       }
       
       deferredPrompt.current = null
       hasTriggered.current = true
     }
 
-    let hasFiredAppInstalled = false
-
-    const handleAppInstalled = () => {
-      if (hasFiredAppInstalled) return
-      hasFiredAppInstalled = true
-      
-      deferredPrompt.current = null
-      hasTriggered.current = true
-      window.dispatchEvent(new CustomEvent("pwa-installed-status-changed", { detail: { installed: true } }))
-      
-      // Tenta abrir o app ou informar que já pode ser aberto com um delay de 5 segundos
-      setTimeout(() => {
-        toast.success("ExtraJus instalada com sucesso!", {
-          description: "O ícone está na tela inicial. Abra o app para continuar.",
-          duration: 5000,
-          className: "text-[11px]"
-        })
-      }, 5000)
-      
-      // Nota: Não é possível forçar o fechamento do browser e abertura do app de forma silenciosa por segurança.
-    }
-
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
     window.addEventListener("trigger-pwa-install", showNativePrompt)
-    window.addEventListener("appinstalled", handleAppInstalled)
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
       window.removeEventListener("trigger-pwa-install", showNativePrompt)
-      window.removeEventListener("appinstalled", handleAppInstalled)
     }
   }, [])
 
