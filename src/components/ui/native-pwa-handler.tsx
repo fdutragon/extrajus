@@ -68,26 +68,29 @@ export function NativePwaHandler() {
       hasTriggered.current = true
     }
 
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
-    window.addEventListener("trigger-pwa-install", showNativePrompt)
-    window.addEventListener("appinstalled", () => {
+    const handleAppInstalled = () => {
       deferredPrompt.current = null
       hasTriggered.current = true
       window.dispatchEvent(new CustomEvent("pwa-installed-status-changed", { detail: { installed: true } }))
       
       // Tenta abrir o app ou informar que já pode ser aberto
-      toast.success("ExtraJus instalada! O ícone já está na sua tela inicial.", {
-        description: "Abra o aplicativo agora para continuar editando seu contrato de onde parou.",
-        duration: 5000
+      toast.success("ExtraJus instalada com sucesso!", {
+        description: "O ícone está na tela inicial. Abra o app para continuar.",
+        duration: 5000,
+        className: "text-[11px]"
       })
       
-      // Nota: Não é possível forçar o fechamento do browser e abertura do app de forma silenciosa por segurança (restrição nativa do Android/iOS).
-      // O usuário deve abrir pelo ícone na tela inicial.
-    })
+      // Nota: Não é possível forçar o fechamento do browser e abertura do app de forma silenciosa por segurança.
+    }
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
+    window.addEventListener("trigger-pwa-install", showNativePrompt)
+    window.addEventListener("appinstalled", handleAppInstalled)
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
       window.removeEventListener("trigger-pwa-install", showNativePrompt)
+      window.removeEventListener("appinstalled", handleAppInstalled)
     }
   }, [])
 
