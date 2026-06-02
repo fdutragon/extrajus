@@ -753,9 +753,43 @@ export function EditorProvider(props: EditorProviderProps) {
     immediatelyRender: false,
     editable: !readOnly,
     editorProps: { 
-      attributes: { class: "notion-like-editor" }, 
+      attributes: { 
+        class: "notion-like-editor",
+        style: "-webkit-touch-callout: none;"
+      }, 
       scrollThreshold: { top: 80, bottom: 160, left: 0, right: 0 }, 
-      scrollMargin: { top: 80, bottom: 160, left: 0, right: 0 } 
+      scrollMargin: { top: 80, bottom: 160, left: 0, right: 0 },
+      handleDOMEvents: {
+        copy: (view, event) => {
+          if (typeof window !== "undefined" && window.innerWidth < 768) {
+            event.preventDefault()
+            return true
+          }
+          return false
+        },
+        cut: (view, event) => {
+          if (typeof window !== "undefined" && window.innerWidth < 768) {
+            event.preventDefault()
+            return true
+          }
+          return false
+        },
+        paste: (view, event) => {
+          if (typeof window !== "undefined" && window.innerWidth < 768) {
+            event.preventDefault()
+            return true
+          }
+          return false
+        },
+        contextmenu: (view, event) => {
+          if (typeof window !== "undefined" && window.innerWidth < 768) {
+            // event.preventDefault() // Descomente para bloquear menu longo se necessário, mas pode quebrar a digitação nativa.
+            // Para bloquear copiar/colar de fato:
+            return false
+          }
+          return false
+        }
+      }
     },
     extensions: [
       StarterKit.configure({ undoRedo: false, horizontalRule: false, dropcursor: { width: 2 } }),
