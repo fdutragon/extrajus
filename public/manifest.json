@@ -12,13 +12,13 @@
   "categories": ["business", "productivity", "legal"],
   "icons": [
     {
-      "src": "/icon.svg",
+      "src": "/icon-v2.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/icon.svg",
+      "src": "/icon-v2.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "maskable"

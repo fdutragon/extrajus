@@ -68,7 +68,12 @@ export function NativePwaHandler() {
       hasTriggered.current = true
     }
 
+    let hasFiredAppInstalled = false
+
     const handleAppInstalled = () => {
+      if (hasFiredAppInstalled) return
+      hasFiredAppInstalled = true
+      
       deferredPrompt.current = null
       hasTriggered.current = true
       window.dispatchEvent(new CustomEvent("pwa-installed-status-changed", { detail: { installed: true } }))
