@@ -697,7 +697,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
           {!readOnly && editor && !editor.isEmpty && !aiGenerationIsLoading && (
             <>
               <div>
-                <ExportButton isPublic={isPublic} docType={docType} title={fileName} content={editor?.getHTML() || ""} />
+                <ExportButton isPublic={isPublic} docType={docType} title={fileName} />
               </div>
               {!isPublic && (
                 <div className="flex items-center gap-1 pr-1.5 border-r border-border/50 max-sm:hidden">

@@ -73,6 +73,7 @@ export function ContractTypeSelector({
   const [search, setSearch] = useState("")
   const [isOpen, setIsOpen] = useState(false)
   const [isStandalone, setIsStandalone] = useState(false)
+  const [isPwaAssumedInstalled, setIsPwaAssumedInstalled] = useState(false)
   const [isInstalled, setIsInstalled] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const { editor } = useTiptapEditor()
@@ -115,8 +116,15 @@ export function ContractTypeSelector({
       setIsStandalone(checkStandalone())
     }
 
+    const handleAssumedStatusChange = () => {
+      setIsPwaAssumedInstalled(localStorage.getItem("pwa_assumed_installed") === "true")
+    }
+
+    setIsPwaAssumedInstalled(localStorage.getItem("pwa_assumed_installed") === "true")
+
     // Listener para mudanças dinâmicas e evento customizado
     window.addEventListener("pwa-installed-status-changed", handleStatusChange)
+    window.addEventListener("pwa-assumed-installed-changed", handleAssumedStatusChange)
     
     // Adiciona listener para mudança de display-mode
     const mediaQuery = window.matchMedia('(display-mode: standalone)')
@@ -128,6 +136,7 @@ export function ContractTypeSelector({
 
     return () => {
       window.removeEventListener("pwa-installed-status-changed", handleStatusChange)
+      window.removeEventListener("pwa-assumed-installed-changed", handleAssumedStatusChange)
       mediaQuery.removeEventListener('change', handleMediaChange)
     }
   }, [])
@@ -147,6 +156,21 @@ export function ContractTypeSelector({
       
       if (isStandalone) {
         toast.success("Seu progresso está sendo sincronizado no armazenamento local e na nuvem.", {
+          icon: <Cloud className="w-4 h-4 text-emerald-500" />,
+          duration: 3000
+        })
+        return
+      }
+
+      if (isPwaAssumedInstalled) {
+        const isMobile = typeof navigator !== "undefined" && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+        if (isMobile) {
+          window.open(window.location.href, "_blank")
+        } else {
+          window.location.href = "web+extrajus://editor"
+        }
+        
+        toast.success("Abrindo a ExtraJus no App...", {
           icon: <Cloud className="w-4 h-4 text-emerald-500" />,
           duration: 3000
         })
@@ -190,7 +214,7 @@ export function ContractTypeSelector({
               : "text-zinc-800 dark:text-zinc-200 drop-shadow-[0_0_8px_rgba(0,0,0,0.3)] dark:drop-shadow-[0_0_10px_rgba(255,255,255,0.4)] animate-pulse"
           )}>
             {isEditing 
-              ? (isStandalone ? "CONTRATO SALVO" : "SALVAR CONTRATO") 
+              ? (isStandalone ? "CONTRATO SALVO" : isPwaAssumedInstalled ? "ABRIR APP" : "SALVAR CONTRATO") 
               : cleanContractName(selectedType).toUpperCase()
             }
           </span>
