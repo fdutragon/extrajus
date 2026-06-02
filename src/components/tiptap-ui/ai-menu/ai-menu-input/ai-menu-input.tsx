@@ -162,7 +162,7 @@ export function ContractTypeSelector({
             "text-[8.5px] md:text-[11px] font-black tracking-[0.15em] uppercase transition-colors duration-500",
             isEditing 
               ? "text-zinc-500 dark:text-zinc-500" 
-              : "text-zinc-500 dark:text-zinc-500 hover:text-zinc-400"
+              : "text-zinc-300 dark:text-zinc-200 drop-shadow-[0_0_10px_rgba(255,255,255,0.4)] animate-pulse"
           )}>
             {isEditing 
               ? (isInstalled ? "CONTRATO SALVO" : "SALVAR CONTRATO") 
@@ -669,8 +669,7 @@ export function AiMenuInputTextarea({
       }
       return `Adicione os detalhes essenciais para o seu ${selectedContractType} (ex: objeto, valores, prazos)...`
     }
-    
-    return "Descreva os termos, dite o acordo por voz ou escolha um modelo pronto. Que documento vai blindar o seu negócio hoje?"
+    return "Comande a IA: Digite os termos, grave um áudio ou escolha um modelo. Qual contrato vamos blindar hoje?"
   }
 
   const dynamicPlaceholder = getPlaceholder()

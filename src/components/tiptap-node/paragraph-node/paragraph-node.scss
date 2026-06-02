@@ -275,7 +275,7 @@
 .is-empty.with-slash[data-placeholder]:has(
     > .ProseMirror-trailingBreak:only-child
   )::before {
-  content: "Escreva, ou digite '/' para comandos…";
+  content: "Pressione '/' para comandos da IA ou comece a redigir...";
   font-style: italic;
 }
 
