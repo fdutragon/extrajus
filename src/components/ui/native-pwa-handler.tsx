@@ -67,19 +67,16 @@ export function NativePwaHandler() {
 
         // Removemos a dependência do evento 'appinstalled' (que falha em alguns celulares)
         // Disparamos o sucesso após 10 segundos fixos, tempo suficiente para a instalação concluir
-        window.dispatchEvent(new CustomEvent("pwa-installed-status-changed", { detail: { installed: true } }))
         setTimeout(() => {
+          window.dispatchEvent(new CustomEvent("pwa-installed-status-changed", { detail: { installed: true } }))
+          
           const isMobile = typeof navigator !== "undefined" && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
           
           if (isMobile) {
             toast.success("ExtraJus instalada com sucesso!", {
               description: "O aplicativo já está pronto no seu celular.",
               duration: 10000,
-              className: "text-[11px]",
-              action: {
-                label: "Abrir App",
-                onClick: () => window.open(window.location.href, "_blank")
-              }
+              className: "text-[11px]"
             })
           } else {
             toast.success("ExtraJus instalada com sucesso! Redirecionando...", {
