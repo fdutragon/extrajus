@@ -58,7 +58,7 @@ const CONTRACT_TYPES = [
 ]
 
 const cleanContractName = (name: string | null) => {
-  if (!name) return "MODELOS"
+  if (!name) return "MODELOS DE CONTRATO"
   return name
     .replace(/(contrato de |minuta de |contrato |minuta )/gi, "")
     .trim()
