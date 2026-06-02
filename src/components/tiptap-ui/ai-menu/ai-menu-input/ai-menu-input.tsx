@@ -175,9 +175,9 @@ export function ContractTypeSelector({
 
       <DialogContent 
         showCloseButton={false} 
-        className="inset-x-0 mx-auto w-[calc(100vw-2rem)] max-w-sm p-0 overflow-hidden bg-zinc-950 border-zinc-800 shadow-2xl z-[100000] top-[15%] translate-y-0 sm:top-1/2 sm:-translate-y-1/2"
+        className="inset-x-0 mx-auto w-[calc(100vw-2rem)] max-w-sm p-0 overflow-hidden bg-popover border-border shadow-2xl z-[100000] top-[15%] translate-y-0 sm:top-1/2 sm:-translate-y-1/2"
       >
-        <div className="p-2.5 border-b border-zinc-800 bg-zinc-900/50">
+        <div className="p-2.5 border-b border-border bg-muted/30">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             {/* Honeypot hidden inputs to trick browser autofill */}
@@ -196,11 +196,11 @@ export function ContractTypeSelector({
               autoCapitalize="off"
               spellCheck={false}
               data-form-type="other"
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-9 pr-3 py-2.5 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden"
+              className="w-full bg-background border border-input rounded-xl pl-9 pr-3 py-2.5 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden"
             />
           </div>
         </div>
-        <div className="max-h-[280px] sm:max-h-[200px] overflow-y-auto p-0 scrollbar-minimalist">
+        <div className="max-h-[280px] sm:max-h-[360px] overflow-y-auto p-0 scrollbar-minimalist relative">
           {displayedTypes.length > 0 ? (
             <>
               {displayedTypes.map((type) => {
@@ -212,7 +212,7 @@ export function ContractTypeSelector({
                       "w-full flex items-center gap-3 px-4 py-3 sm:py-2.5 rounded-none first:pt-2 last:pb-2 cursor-pointer group transition-colors text-left [-webkit-tap-highlight-color:transparent]",
                       isSelected 
                         ? "bg-primary/10 text-primary border-l-2 border-primary" 
-                        : "hover:bg-zinc-900/40 focus:bg-zinc-900/40 hover:text-primary active:bg-transparent focus:bg-transparent"
+                        : "hover:bg-muted focus:bg-muted hover:text-primary active:bg-transparent focus:bg-transparent"
                     )}
                     onClick={() => {
                       onSelect(type)
@@ -226,14 +226,14 @@ export function ContractTypeSelector({
                     )} />
                     <span className={cn(
                       "text-[13px] sm:text-[12px] font-medium truncate uppercase tracking-tight transition-colors",
-                      isSelected ? "text-primary" : "text-zinc-300 group-hover:text-primary"
+                      isSelected ? "text-primary" : "text-foreground/80 dark:text-zinc-300 group-hover:text-primary"
                     )}>{type}</span>
                   </button>
                 )
               })}
               {!isSearching && (
-                <div className="p-3 text-center border-t border-zinc-900/50 bg-zinc-950/80">
-                  <span className="text-[10px] font-mono tracking-widest text-primary/70 uppercase">⚡ + 50 modelos de elite no acervo</span>
+                <div className="sm:sticky sm:bottom-0 sm:z-10 p-3 text-center border-t border-border bg-popover/95 backdrop-blur-sm">
+                  <span className="text-[10px] font-mono font-bold tracking-widest text-primary/90 dark:text-primary/70 uppercase">⚡ + 50 modelos de elite no acervo</span>
                 </div>
               )}
             </>
@@ -264,7 +264,7 @@ export function AiMenuInputPlaceholder({
     >
       <div className="tiptap-ai-prompt-input-placeholder-content pr-4 truncate">
         <span className="tiptap-ai-prompt-input-placeholder-text truncate block w-full">
-          {placeholder || "Digite instruções para criar seu contrato..."}
+          {placeholder || "Descreva os termos, dite o acordo usando recurso de voz ou selecione um modelo no botão abaixo. Que tipo de documento blindará o seu negócio hoje?"}
         </span>
       </div>
       <Button data-style="primary" disabled className="h-7 w-7 rounded-lg p-0 flex items-center justify-center shrink-0">
@@ -467,7 +467,7 @@ export function AiMenuInputTextarea({
   onPlaceholderClick,
   showPlaceholder = false,
   isLoading = false,
-  placeholder = "Digite instruções para criar seu contrato...",
+  placeholder = "Descreva os termos, dite o acordo usando recurso de voz ou selecione um modelo no botão abaixo. Que tipo de documento blindará o seu negócio hoje?",
   autoFocus = true,
   isEditing = false,
   ...props
@@ -669,7 +669,7 @@ export function AiMenuInputTextarea({
       return `Adicione os detalhes essenciais para o seu ${selectedContractType} (ex: objeto, valores, prazos)...`
     }
     
-    return "Qual contrato você deseja criar hoje? (ex: Prestação de Serviços, NDA)..."
+    return "Descreva os termos, dite o acordo usando recurso de voz ou selecione um modelo no botão abaixo. Que tipo de documento blindará o seu negócio hoje?"
   }
 
   const dynamicPlaceholder = getPlaceholder()

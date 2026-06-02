@@ -28,11 +28,11 @@
   --tiptap-ai-prompt-input-border-color: var(--primary);
   --tiptap-ai-prompt-input-placeholder-gradient: linear-gradient(
     90deg,
-    var(--muted-foreground) 5%,
+    #a8a29e 5%,       /* Cinza Quente (Stone 400) sem traço azul */
     #a16207 25%,
     var(--primary) 50%,
     #ca8a04 75%,
-    var(--muted-foreground) 95%
+    #a8a29e 95%       /* Cinza Quente */
   );
 
   [data-active-state="off"] {
