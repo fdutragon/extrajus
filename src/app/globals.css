@@ -200,6 +200,11 @@
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading font-medium tracking-tight;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 
   html {
@@ -207,6 +212,8 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     font-size: 15px;
     scroll-padding-top: 100px;
+    scrollbar-color: var(--border) var(--background);
+    scrollbar-width: thin;
   }
 
   @media (min-width: 768px) {
@@ -215,7 +222,7 @@
     }
   }
 
-  /* Custom Scrollbar */
+  /* Custom Scrollbar (Fallback Webkit) */
   ::-webkit-scrollbar {
     width: 8px;
   }
@@ -236,6 +243,14 @@
 }
 
 @layer utilities {
+  .app-region-drag {
+    -webkit-app-region: drag;
+  }
+
+  .app-region-no-drag {
+    -webkit-app-region: no-drag;
+  }
+
   .vertical-text {
     writing-mode: vertical-rl;
   }

@@ -140,11 +140,9 @@ export const LegalNode = Node.create<LegalNodeOptions>({
           return this.editor.commands.setParagraph()
         }
 
-        // Create a new legal node of the same level
-        return this.editor.commands.insertContent({
-          type: this.name,
-          attrs: { level: node.attrs.level },
-        })
+        // Usar splitBlock garante que o ProseMirror divida corretamente o texto
+        // e clone os atributos do nó atual (como o nível legal) para o novo nó
+        return this.editor.commands.splitBlock()
       },
     }
   },

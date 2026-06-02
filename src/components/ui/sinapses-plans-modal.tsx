@@ -27,30 +27,47 @@ export function SinapsesPlansModal() {
     return () => clearInterval(interval);
   }, [pixData, timeLeft, isPaid]);
 
-  // Polling para verificar o status do Pix em tempo real
+  // Polling para verificar o status do Pix em tempo real (Proteção contra Race Conditions e Memory Leaks)
   useEffect(() => {
     if (!pixData || !pixData.externalId || timeLeft <= 0 || isPaid) return;
 
-    const interval = setInterval(async () => {
+    const abortController = new AbortController();
+    let timeoutId: NodeJS.Timeout;
+
+    const pollStatus = async () => {
       try {
-        const response = await fetch(`/api/billing/status?externalId=${pixData.externalId}`);
+        const response = await fetch(`/api/billing/status?externalId=${pixData.externalId}`, {
+          signal: abortController.signal
+        });
         const data = await response.json();
         
         if (data.status === "COMPLETE") {
           setIsPaid(true);
-          clearInterval(interval);
           
           toast.success("💥 Pagamento Confirmado! Seus créditos de inteligência artificial já estão disponíveis em sua conta.");
           
           // Notifica outras partes do app para atualizar o saldo
           window.dispatchEvent(new Event('profile-updated'));
+          return; // Stop polling
         }
-      } catch (err) {
-        console.error("Erro ao verificar status da transação:", err);
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          console.error("Erro ao verificar status da transação:", err);
+        }
       }
-    }, 3000); // Polling a cada 3 segundos
 
-    return () => clearInterval(interval);
+      // Agenda próxima verificação apenas se não estiver cancelado e não obteve sucesso
+      if (!abortController.signal.aborted) {
+        timeoutId = setTimeout(pollStatus, 4000); // 4s backoff conservador
+      }
+    };
+
+    pollStatus(); // Start polling
+
+    return () => {
+      abortController.abort();
+      clearTimeout(timeoutId);
+    };
   }, [pixData, timeLeft, isPaid, selectedPkg]);
 
   const formatTime = (seconds: number) => {

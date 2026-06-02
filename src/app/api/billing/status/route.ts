@@ -181,19 +181,23 @@ export async function GET(request: Request) {
           emailAddress = userData.user.email;
           tempPassword = userData.user.user_metadata?.temp_pass;
           
-          // Se o documento ainda não está registrado como pago, destrava-o e envia o e-mail com a minuta
+          // Se o documento ainda não está registrado como pago, tenta fazer um UPDATE ATÔMICO.
+          // Isso previne Race Conditions se múltiplos pollings baterem juntos.
           if (!docData.is_paid) {
-            // Destrava documento
-            await supabaseAdmin
+            const { data: atomicLock } = await supabaseAdmin
               .from("documents")
               .update({ is_paid: true })
-              .eq("id", docId);
+              .eq("id", docId)
+              .eq("is_paid", false)
+              .select("id");
 
-            // Também atualiza status do contrato no dashboard
-            await supabaseAdmin
-              .from("contracts")
-              .update({ status: "draft" })
-              .eq("id", docId);
+            // Se o atomicLock retornou um array com itens, nós fomos a requisição que conseguiu destravar!
+            if (atomicLock && atomicLock.length > 0) {
+              // Também atualiza status do contrato no dashboard
+              await supabaseAdmin
+                .from("contracts")
+                .update({ status: "draft" })
+                .eq("id", docId);
 
             // Envio de e-mail via Resend
             const resendKey = getSecret("RESEND_API_KEY") || process.env.RESEND_API_KEY;
@@ -227,6 +231,7 @@ export async function GET(request: Request) {
                 console.error("[Polling Status] Falha no Resend (Dev Debug):", sendResult.error);
               } else {
                 console.log(`[Polling Status] E-mail de debug enviado com sucesso para ${devEmail}`);
+              }
               }
             }
           }

@@ -42,40 +42,58 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
     }
   }, [isOpen])
 
-  // Polling for payment status
+  // Polling for payment status (Proteção contra Race Conditions e Memory Leaks)
   useEffect(() => {
-    const isPollingEnabled = true; // Habilitado após testes de webhook bem-sucedidos
+    const isPollingEnabled = true;
     if (!isPollingEnabled || step !== "pix" || !pixData || !pixData.externalId) return;
 
-    const interval = setInterval(async () => {
+    const abortController = new AbortController();
+    let timeoutId: NodeJS.Timeout;
+
+    const pollStatus = async () => {
       try {
-        const res = await fetch(`/api/billing/status?externalId=${pixData.externalId}`)
+        const res = await fetch(`/api/billing/status?externalId=${pixData.externalId}`, {
+          signal: abortController.signal
+        });
+        
         if (res.ok) {
-          const data = await res.json()
-          if (data.status === "COMPLETE") {            
+          const data = await res.json();
+          if (data.status === "COMPLETE") {
             // Dispara o evento de conversão de compra do Google Ads no frontend
             if (typeof window !== "undefined" && (window as any).gtag && !conversionFiredRef.current) {
               conversionFiredRef.current = true;
               (window as any).gtag('event', 'conversion', {
                 'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
-                'value': 27.00, // Valor real do download do documento (R$ 27,00)
+                'value': 27.00,
                 'currency': 'BRL',
                 'transaction_id': pixData.externalId
               });
               console.log("[Google Ads] Conversão de compra de contrato disparada com sucesso!", pixData.externalId);
             }
 
-            setStep("success")
-            clearInterval(interval)
+            setStep("success");
+            return; // Stop polling
           }
         }
-      } catch (err) {
-        console.error("Polling error", err)
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          console.error("Polling error", err);
+        }
       }
-    }, 3000)
 
-    return () => clearInterval(interval)
-  }, [step, pixData])
+      // Agenda próxima verificação apenas se não estiver cancelado e não obteve sucesso
+      if (!abortController.signal.aborted) {
+        timeoutId = setTimeout(pollStatus, 4000); // 4s backoff conservador
+      }
+    };
+
+    pollStatus(); // Start polling
+
+    return () => {
+      abortController.abort();
+      clearTimeout(timeoutId);
+    };
+  }, [step, pixData]);
 
   const handleCheckout = async (e?: React.FormEvent | React.MouseEvent | React.KeyboardEvent) => {
     if (e) e.preventDefault()

@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   compress: true,
   experimental: {
+    viewTransition: true,
     optimizePackageImports: [
       "lucide-react",
       "@tiptap/react",

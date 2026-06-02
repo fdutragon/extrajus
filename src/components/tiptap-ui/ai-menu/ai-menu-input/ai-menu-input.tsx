@@ -29,7 +29,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../../../components/tiptap-ui-primitive/dropdown-menu"
-import { TextareaAutosize } from "../../../../components/tiptap-ui-primitive/textarea-autosize"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 
 import {
@@ -755,7 +754,7 @@ export function AiMenuInputTextarea({
                   autoSelect={false}
                   autoFocus={autoFocus}
                   render={
-                    <TextareaAutosize
+                    <textarea
                       onChange={(e) => setPromptValue(e.target.value)}
                       value={promptValue}
                       onKeyDown={handleKeyDown}
@@ -769,14 +768,16 @@ export function AiMenuInputTextarea({
                       name="ai_prompt_input_field"
                       id="ai_prompt_input_field"
                       className={cn(
-                        "tiptap-ai-prompt-input-content relative z-20",
+                        "tiptap-ai-prompt-input-content relative z-20 resize-none",
                         "pt-[0.55rem]"
                       )}
                       placeholder=""
                       autoFocus={autoFocus}
                       style={{
                         display: showPlaceholder ? "none" : "flex",
-                      }}
+                        fieldSizing: "content",
+                        minHeight: "1lh"
+                      } as any}
                     />
                   }
                 />

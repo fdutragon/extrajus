@@ -103,12 +103,6 @@ const AiHighlightManager = Extension.create({
   onSelectionUpdate({ editor }) {
     ;(editor.commands as any).removeHighlightAtSelection()
   },
-
-  onTransaction({ transaction, editor }) {
-    if (transaction.docChanged) {
-      ;(editor.commands as any).removeHighlightAtSelection()
-    }
-  },
 })
 
 // --- Hooks ---
@@ -513,29 +507,35 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
   useEffect(() => {
     if (!editor || readOnly) return
 
-    const handleUpdate = () => {
-      let firstH1 = ""
-      editor.state.doc.descendants((node: any) => {
-        if (node.type.name === "heading" && node.attrs.level === 1) {
-          firstH1 = node.textContent.trim()
-          return false
-        }
-        return true
-      })
+    let timeoutId: NodeJS.Timeout
 
-      if (firstH1 && firstH1.length > 2) {
-        const cleanTitle = firstH1.replace(/[\[\]]/g, "").trim()
-        if (cleanTitle && cleanTitle !== fileName) {
-          setFileName(cleanTitle)
-          if (state.selectedContractType !== cleanTitle) {
-            updateState({ selectedContractType: cleanTitle })
+    const handleUpdate = () => {
+      clearTimeout(timeoutId)
+      timeoutId = setTimeout(() => {
+        let firstH1 = ""
+        editor.state.doc.descendants((node: any) => {
+          if (node.type.name === "heading" && node.attrs.level === 1) {
+            firstH1 = node.textContent.trim()
+            return false
+          }
+          return true
+        })
+
+        if (firstH1 && firstH1.length > 2) {
+          const cleanTitle = firstH1.replace(/[\[\]]/g, "").trim()
+          if (cleanTitle && cleanTitle !== fileName) {
+            setFileName(cleanTitle)
+            if (state.selectedContractType !== cleanTitle) {
+              updateState({ selectedContractType: cleanTitle })
+            }
           }
         }
-      }
+      }, 800) // Debounce agressivo para proteger a CPU
     }
 
     editor.on("update", handleUpdate)
     return () => {
+      clearTimeout(timeoutId)
       editor.off("update", handleUpdate)
     }
   }, [editor, fileName, readOnly, state.selectedContractType, updateState])
@@ -608,8 +608,11 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
         }
       ` }} />
       
-      <header className="sticky top-0 w-full h-16 sm:h-[clamp(2.5rem,4vh,3.25rem)] border-b border-border bg-background/80 backdrop-blur-xl flex items-center justify-between px-3 z-[1000] shrink-0">
-        <div className="flex items-center gap-1.5 max-sm:gap-2">
+      <header 
+        className="sticky top-0 w-full h-16 sm:h-[clamp(2.5rem,4vh,3.25rem)] border-b border-border bg-background/80 backdrop-blur-xl flex items-center justify-between px-3 z-[1000] shrink-0 app-region-drag"
+        style={{ paddingLeft: 'calc(env(titlebar-area-x, 0px) + 0.75rem)', paddingRight: 'calc(env(titlebar-area-width, 0px) + 0.75rem)' }}
+      >
+        <div className="flex items-center gap-1.5 max-sm:gap-2 app-region-no-drag">
           {!readOnly && !isPublic && (
             <div className="flex items-center gap-1">
               <Link href="/dashboard">
@@ -652,9 +655,9 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
           )}
         </div>
 
-        {/* Persistent Centralized Branding */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-1.5 select-none whitespace-nowrap z-[110]">
-          <Logo showText={true} iconSize={typeof window !== 'undefined' && window.innerWidth < 1024 ? 24 : 36} variant="chrome" />
+        {/* Persistent Centralized Branding (Restaurada e livre de colisão de ID SVG) */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none select-none z-[110] max-lg:scale-[1.25]">
+          <Logo showText={true} iconSize={36} variant="chrome" />
         </div>
 
         {!readOnly && (
@@ -678,7 +681,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
           </div>
         )}
 
-        <div className="flex-none flex items-center gap-1.5 max-sm:gap-1">
+        <div className="flex-none flex items-center gap-1.5 max-sm:gap-1 app-region-no-drag">
           {!readOnly && !isPublic && (
             <Button
               variant="ghost"

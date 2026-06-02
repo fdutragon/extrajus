@@ -644,11 +644,8 @@ export function MobileToolbar({ editor: providedEditor }: MobileToolbarProps) {
     <Toolbar
       ref={toolbarRef}
       style={{
-        ...(isMobile
-          ? {
-              bottom: `calc(100% - ${height - rect.y}px)`,
-            }
-          : {}),
+        // A posição no mobile agora é delegada 100% ao CSS (fixed no bottom) 
+        // para não colidir com o menu nativo de Copiar/Colar do iOS/Android.
       }}
     >
       {toolbarState.isMainView ? (

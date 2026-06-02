@@ -35,5 +35,43 @@
       "type": "image/svg+xml",
       "purpose": "maskable"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "Novo Contrato",
+      "short_name": "Novo",
+      "description": "Criar um novo contrato em branco",
+      "url": "/editor",
+      "icons": [{ "src": "/icon-app-v3.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Meu Repositório",
+      "short_name": "Contratos",
+      "description": "Ver lista de contratos salvos",
+      "url": "/contracts",
+      "icons": [{ "src": "/icon-app-v3.svg", "sizes": "192x192" }]
+    }
+  ],
+  "share_target": {
+    "action": "/editor",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "screenshots": [
+    {
+      "src": "/dash.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/dash.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg"
+    }
   ]
 }

@@ -70,14 +70,20 @@
     }
 
     @media (max-width: 480px) {
-      position: absolute;
+      position: fixed;
+      bottom: var(--tt-safe-area-bottom);
+      left: 0;
       top: auto;
+      width: 100%;
       height: calc(var(--tt-toolbar-height) + var(--tt-safe-area-bottom));
       border: none !important;
-      background: transparent !important;
+      border-top: 1px solid var(--tt-toolbar-border-color) !important;
+      background: var(--tt-toolbar-bg-color) !important;
       padding: 0 0.5rem var(--tt-safe-area-bottom);
       flex-wrap: nowrap;
       justify-content: flex-start;
+      z-index: 9999;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
 
       .tiptap-toolbar-group {
         flex: 0 0 auto;

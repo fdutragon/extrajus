@@ -35,6 +35,10 @@
   border-color: var(--tt-textarea-border-focus);
 }
 
+.tiptap-textarea:user-invalid {
+  border-color: #ef4444; /* red-500 */
+}
+
 @media (min-width: 768px) {
   .tiptap-textarea {
     font-size: 0.875rem;
