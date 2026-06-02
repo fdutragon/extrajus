@@ -21,7 +21,6 @@ export function ExportButton({
 }) {
   const [isExporting, setIsExporting] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [dynamicContent, setDynamicContent] = useState("")
 
   const handleExport = useCallback(async (e?: React.MouseEvent) => {
     if (e) {
@@ -109,8 +108,6 @@ export function ExportButton({
     }
     
     if (isPublic) {
-      const editorElement = document.querySelector(".notion-like-editor-content") as HTMLElement
-      setDynamicContent(editorElement ? editorElement.innerHTML : "")
       setIsModalOpen(true)
     } else {
       handleExport()
@@ -220,7 +217,10 @@ export function ExportButton({
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSuccess={() => handleExport()}
-          documentContent={dynamicContent}
+          getDocumentContent={() => {
+            const el = document.querySelector(".notion-like-editor-content")
+            return el ? el.innerHTML : ""
+          }}
           docType={docType}
           title={title}
         />

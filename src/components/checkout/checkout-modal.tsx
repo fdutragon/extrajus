@@ -13,12 +13,12 @@ interface CheckoutModalProps {
   isOpen: boolean
   onClose: () => void
   onSuccess: () => void
-  documentContent: string
+  getDocumentContent?: () => string
   docType: string
   title: string
 }
 
-export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, docType, title }: CheckoutModalProps) {
+export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, docType, title }: CheckoutModalProps) {
   const [step, setStep] = useState<"form" | "pix" | "success">("form")
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -108,7 +108,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
         body: JSON.stringify({
           name: "Cliente",
           email,
-          content: documentContent,
+          content: getDocumentContent ? getDocumentContent() : (document.querySelector(".notion-like-editor-content")?.innerHTML || ""),
           doc_type: docType,
           title
         })
@@ -148,7 +148,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
         body: JSON.stringify({
           name: name.trim(),
           email: email.trim(),
-          content: documentContent,
+          content: getDocumentContent ? getDocumentContent() : (document.querySelector(".notion-like-editor-content")?.innerHTML || ""),
           doc_type: docType,
           title
         })
