@@ -51,7 +51,7 @@ export default function SettingsPage() {
       setAiMode(user.user_metadata?.ai_mode ?? "Inovador");
       setAiRealtime(user.user_metadata?.ai_realtime ?? true);
 
-      if (user.email === "felipedutra@outlook.com") {
+      if (user.email === "felipe.dutragon@gmail.com") {
         setIsMaster(true);
       }
 

@@ -402,7 +402,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, documentContent, doc
                   )}
                 </Button>
 
-                {(email.toLowerCase().trim() === "felipedutra@outlook.com" || email.toLowerCase().trim() === "contato@extrajus.pro") && (
+                {(email.toLowerCase().trim() === "felipe.dutragon@gmail.com" || email.toLowerCase().trim() === "contato@extrajus.pro") && (
                   <Button 
                     onClick={handleDevSimulatePaymentOnly} 
                     disabled={loading}

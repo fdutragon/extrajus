@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
 
-    const adminEmails = ['felipedutra@outlook.com'];
+    const adminEmails = ['felipe.dutragon@gmail.com'];
     const isSenderAdmin = adminEmails.includes(user.email || '');
 
     // 1. Obter os dados do remetente

@@ -1,6 +1,8 @@
+import HTMLtoDOCX from 'html-to-docx';
+
 export function compileWordHtml(title: string, rawHtml: string): string {
   // Inject Legal Node Counters (Word HTML engine doesn't support CSS counters well)
-  let styledHtml = rawHtml;
+  let styledHtml = rawHtml.replace(/^(<p><\/p>|<p><br><\/p>|\s|<br>)+/gi, '').trim();
   let c1 = 0;
   let c2 = 0;
   let c3 = 0;
@@ -21,13 +23,10 @@ export function compileWordHtml(title: string, rawHtml: string): string {
     return String.fromCharCode(96 + num); // 1->a, 2->b
   }
 
-  // Regex to find legal nodes and replace the entire <div> structure with a <p>
-  // TipTap structure: <div class="legal-node..."><span class="legal-node-counter"></span><div class="legal-node-content">TEXT</div></div>
-  // Since content is "inline*", TEXT will not contain </div>.
   styledHtml = styledHtml.replace(/<div([^>]*class="[^"]*legal-node-level-(\d)[^"]*"[^>]*)>[\s\S]*?<span class="legal-node-counter"[^>]*><\/span>[\s\S]*?<div class="legal-node-content"[^>]*>([\s\S]*?)<\/div>\s*<\/div>/gi, (match, divAttrs, levelStr, innerContent) => {
     const level = parseInt(levelStr, 10);
     let counterText = '';
-    let style = "font-family: 'Cambria', serif; text-align: justify; line-height: 1.6; ";
+    let style = "font-family: 'Cambria', serif; text-align: justify; line-height: 1.15; ";
     
     if (level === 1) {
       c1++; c2 = 0; c3 = 0; c4 = 0;
@@ -35,107 +34,64 @@ export function compileWordHtml(title: string, rawHtml: string): string {
       style += "margin-top: 12.0pt; margin-bottom: 6.0pt; font-weight: bold; text-transform: uppercase;";
     } else if (level === 2) {
       c2++; c3 = 0; c4 = 0;
-      counterText = `§ ${c2}º`;
+      counterText = `§ ${c2}º — `;
       style += "margin-top: 0; margin-bottom: 3.0pt; margin-left: 24.0pt;";
     } else if (level === 3) {
       c3++; c4 = 0;
-      counterText = `${toRoman(c3)} -`;
-      style += "margin-top: 0; margin-bottom: 3.0pt; margin-left: 48.0pt;"; // Espaço de ~2 tabs
+      counterText = `${toRoman(c3)} — `;
+      style += "margin-top: 0; margin-bottom: 3.0pt; margin-left: 48.0pt;"; 
     } else if (level === 4) {
       c4++;
-      counterText = `${toAlpha(c4)})`;
-      style += "margin-top: 0; margin-bottom: 3.0pt; margin-left: 72.0pt;"; // Espaço de ~3 tabs
+      counterText = `${toAlpha(c4)}) `;
+      style += "margin-top: 0; margin-bottom: 3.0pt; margin-left: 72.0pt;"; 
     }
 
-    return `<p style="${style}"><span style="font-weight: bold; margin-right: 8px;">${counterText}</span>${innerContent}</p>`;
+    return `<p style="${style}"><span style="font-weight: bold;">${counterText}</span>${innerContent}</p>`;
   });
 
+  // Force inline styles for Headings because html-to-docx sometimes ignores CSS classes for alignment
+  styledHtml = styledHtml.replace(/<h1/gi, '<h1 align="center" style="text-align: center; font-size: 18.0pt; text-transform: uppercase; margin-top: 0pt; margin-bottom: 24pt;"');
+  styledHtml = styledHtml.replace(/<h2/gi, '<h2 style="font-size: 16.5pt; font-weight: bold; margin-top: 18pt; margin-bottom: 6pt;"');
+
   return `
-    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+    <!DOCTYPE html>
+    <html>
     <head>
       <meta charset="utf-8">
-      <title>\${title || 'Documento ExtraJus'}</title>
-      <!--[if gte mso 9]>
-      <xml>
-        <w:WordDocument>
-          <w:View>Print</w:View>
-          <w:Zoom>100</w:Zoom>
-          <w:DoNotOptimizeForBrowser/>
-        </w:WordDocument>
-      </xml>
-      <![endif]-->
+      <title>${title || 'Documento ExtraJus'}</title>
       <style>
-        @page Section1 {
-          size: 595.3pt 841.9pt; /* A4 */
-          margin: 72.0pt 72.0pt 72.0pt 72.0pt; /* Margens de 2.54cm (padrão) */
-          mso-header-margin: 36.0pt;
-          mso-footer-margin: 36.0pt;
-          mso-paper-source: 0;
-        }
-        div.Section1 {
-          page: Section1;
-        }
         body {
           font-family: 'Cambria', 'Georgia', 'Times New Roman', serif;
-          font-size: 12.0pt;
-          line-height: 1.6;
+          font-size: 16.0pt;
+          line-height: 1.15;
           color: #000000;
         }
         h1 {
-          font-size: 16.0pt;
+          font-size: 18.0pt;
           font-weight: bold;
           text-align: center;
           text-transform: uppercase;
           margin-top: 12.0pt;
           margin-bottom: 24.0pt;
-          color: #000000;
         }
         h2 {
-          font-size: 13.0pt;
+          font-size: 16.5pt;
           font-weight: bold;
           margin-top: 18.0pt;
           margin-bottom: 6.0pt;
-          color: #000000;
         }
         p {
           font-family: 'Cambria', serif;
           text-align: justify;
           margin-bottom: 6.0pt;
-          line-height: 1.6;
+          line-height: 1.15;
+          font-size: 16.0pt;
         }
         p:not([data-node-text-align="center"]):not([data-node-text-align="right"]):not(.align-center):not(.align-right):not(.no-indent) {
           text-indent: 3.5em;
         }
         p.dense-metadata {
           margin-bottom: 2.0pt;
-        }
-        /* Suporte completo à estrutura de Legal Nodes do ExtraJus */
-        .legal-node {
-          margin-bottom: 12.0pt;
-          text-align: justify;
-        }
-        .legal-node-level-1 {
-          font-weight: bold;
-          font-size: 13.0pt;
-          margin-top: 18.0pt;
-          color: #000000;
-        }
-        .legal-node-level-2 {
-          margin-left: 24.0pt;
-        }
-        .legal-node-level-3 {
-          margin-left: 48.0pt;
-        }
-        .legal-node-level-4 {
-          margin-left: 72.0pt;
-        }
-        .legal-node-counter {
-          font-weight: bold;
-          margin-right: 8.0pt;
-          display: inline-block;
-        }
-        .legal-node-content {
-          display: inline;
         }
         table {
           width: 100%;
@@ -149,29 +105,33 @@ export function compileWordHtml(title: string, rawHtml: string): string {
           text-align: left;
           vertical-align: top;
         }
-        strong, b {
-          font-weight: bold;
-        }
-        em, i {
-          font-style: italic;
-        }
       </style>
     </head>
     <body>
-      <div class="Section1">
-        ${styledHtml}
-      </div>
+      ${styledHtml}
     </body>
     </html>
   `;
 }
 
-export function generateDocxBase64(title: string, rawHtml: string): string {
-  const wordHtml = compileWordHtml(title, rawHtml);
-  return Buffer.from('\ufeff' + wordHtml, 'utf-8').toString('base64');
+export async function getWordBuffer(title: string, rawHtml: string): Promise<Buffer> {
+  const cleanHtml = compileWordHtml(title, rawHtml);
+  
+  const fileBuffer = await HTMLtoDOCX(cleanHtml, null, {
+    title: title || 'Documento ExtraJus',
+    font: 'Cambria',
+    margins: {
+      top: 720,
+      right: 1440,
+      bottom: 1440,
+      left: 1440
+    }
+  });
+  
+  return fileBuffer as unknown as Buffer;
 }
 
-export function getWordBuffer(title: string, rawHtml: string): Buffer {
-  const wordHtml = compileWordHtml(title, rawHtml);
-  return Buffer.from('\ufeff' + wordHtml, 'utf-8');
+export async function generateDocxBase64(title: string, rawHtml: string): Promise<string> {
+  const buffer = await getWordBuffer(title, rawHtml);
+  return buffer.toString('base64');
 }

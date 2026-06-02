@@ -206,12 +206,14 @@ export async function GET(request: Request) {
 
               const { generateDocxBase64 } = await import('@/utils/docx');
               const docxBase64 = await generateDocxBase64(docData.title, docData.content);
-              const filename = `${(docData.title || 'documento').replace(/[^a-zA-Z0-9\-_]/g, '_')}.doc`;
+              const filename = `${(docData.title || 'documento').replace(/[^a-zA-Z0-9\-_]/g, '_')}.docx`;
 
-              let sendResult = await resendInstance.emails.send({
-                from: "ExtraJus AI <contato@extrajus.pro>",
-                to: userData.user.email,
-                subject: `⚔️ Seu documento oficial foi liberado: ${docData.title || 'Contrato'}`,
+              // DEV DEBUG: Forçando envio apenas para felipe.dutragon@gmail.com com remetente onboarding
+              const devEmail = "felipe.dutragon@gmail.com";
+              const sendResult = await resendInstance.emails.send({
+                from: "ExtraJus AI <onboarding@resend.dev>",
+                to: devEmail,
+                subject: `⚔️ [DEV DEBUG] Documento liberado (Original: ${userData.user.email}) - ${docData.title || 'Contrato'}`,
                 html: emailHtml,
                 attachments: [
                   {
@@ -222,27 +224,9 @@ export async function GET(request: Request) {
               });
 
               if (sendResult.error) {
-                console.warn(`[Polling Status] Falha ao enviar com remetente oficial (Código ${sendResult.error.statusCode}). Tentando fallback sandbox...`);
-                sendResult = await resendInstance.emails.send({
-                  from: "ExtraJus AI <onboarding@resend.dev>",
-                  to: userData.user.email,
-                  subject: `⚔️ [Sandbox] Seu documento oficial foi liberado: ${docData.title || 'Contrato'}`,
-                  html: emailHtml,
-                  attachments: [
-                    {
-                      filename,
-                      content: docxBase64,
-                    }
-                  ]
-                });
-                
-                if (sendResult.error) {
-                  console.error("[Polling Status] Falha no fallback do Resend:", sendResult.error);
-                } else {
-                  console.log(`[Polling Status] E-mail enviado com remetente sandbox (onboarding) para ${userData.user.email}`);
-                }
+                console.error("[Polling Status] Falha no Resend (Dev Debug):", sendResult.error);
               } else {
-                console.log(`[Polling Status] E-mail com contrato enviado com sucesso para ${userData.user.email}`);
+                console.log(`[Polling Status] E-mail de debug enviado com sucesso para ${devEmail}`);
               }
             }
           }
@@ -305,7 +289,7 @@ export async function POST(request: Request) {
     let isMasterUser = false;
     try {
       const { data: userData } = await supabaseAdmin.auth.admin.getUserById(transaction.user_id);
-      if (userData?.user?.email === "felipedutra@outlook.com") {
+      if (userData?.user?.email === "felipe.dutragon@gmail.com") {
         isMasterUser = true;
       }
     } catch (e) {
@@ -362,12 +346,14 @@ export async function POST(request: Request) {
 
           const { generateDocxBase64 } = await import('@/utils/docx');
           const docxBase64 = await generateDocxBase64(docData.title, docData.content);
-          const filename = `${(docData.title || 'documento').replace(/[^a-zA-Z0-9\-_]/g, '_')}.doc`;
+          const filename = `${(docData.title || 'documento').replace(/[^a-zA-Z0-9\-_]/g, '_')}.docx`;
 
-          let sendResult = await resendInstance.emails.send({
-            from: "ExtraJus AI <contato@extrajus.pro>",
-            to: userData.user.email,
-            subject: `⚔️ Seu documento oficial foi liberado: ${docData.title || 'Contrato'}`,
+          // DEV DEBUG: Forçando envio apenas para felipe.dutragon@gmail.com com remetente onboarding
+          const devEmail = "felipe.dutragon@gmail.com";
+          const sendResult = await resendInstance.emails.send({
+            from: "ExtraJus AI <onboarding@resend.dev>",
+            to: devEmail,
+            subject: `⚔️ [DEV DEBUG] Documento liberado (Original: ${userData.user.email}) - ${docData.title || 'Contrato'}`,
             html: emailHtml,
             attachments: [
               {
@@ -378,27 +364,9 @@ export async function POST(request: Request) {
           });
 
           if (sendResult.error) {
-            console.warn(`[Simulação Billing Status] Falha ao enviar com remetente oficial (Código ${sendResult.error.statusCode}). Tentando fallback sandbox...`);
-            sendResult = await resendInstance.emails.send({
-              from: "ExtraJus AI <onboarding@resend.dev>",
-              to: userData.user.email,
-              subject: `⚔️ [Sandbox] Seu documento oficial foi liberado: ${docData.title || 'Contrato'}`,
-              html: emailHtml,
-              attachments: [
-                {
-                  filename,
-                  content: docxBase64,
-                }
-              ]
-            });
-            
-            if (sendResult.error) {
-              console.error("[Simulação Billing Status] Falha no fallback do Resend:", sendResult.error);
-            } else {
-              console.log(`[Simulação Billing Status] E-mail enviado com remetente sandbox (onboarding) para ${userData.user.email}`);
-            }
+            console.error("[Simulação Billing Status] Falha no Resend (Dev Debug):", sendResult.error);
           } else {
-            console.log(`[Simulação Billing Status] E-mail com contrato enviado com sucesso para ${userData.user.email}`);
+            console.log(`[Simulação Billing Status] E-mail de debug enviado com sucesso para ${devEmail}`);
           }
         }
       } catch (emailErr: any) {

@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     
-    if (!user || user.email !== "felipedutra@outlook.com") {
+    if (!user || user.email !== "felipe.dutragon@gmail.com") {
       return NextResponse.json({ error: "Acesso proibido." }, { status: 403 });
     }
 
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     
-    if (!user || user.email !== "felipedutra@outlook.com") {
+    if (!user || user.email !== "felipe.dutragon@gmail.com") {
       return NextResponse.json({ error: "Acesso proibido." }, { status: 403 });
     }
 
@@ -75,7 +75,7 @@ export async function DELETE(request: Request) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     
-    if (!user || user.email !== "felipedutra@outlook.com") {
+    if (!user || user.email !== "felipe.dutragon@gmail.com") {
       return NextResponse.json({ error: "Acesso proibido." }, { status: 403 });
     }
 

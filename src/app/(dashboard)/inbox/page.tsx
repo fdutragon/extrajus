@@ -46,7 +46,7 @@ export default function InboxPage() {
   const supabase = createClient();
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  const adminEmails = ['felipedutra@outlook.com'];
+  const adminEmails = ['felipe.dutragon@gmail.com'];
 
   const handleOpenSupport = async (e: React.FormEvent) => {
     e.preventDefault();

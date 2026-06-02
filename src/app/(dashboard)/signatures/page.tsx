@@ -121,7 +121,7 @@ export default function SignaturesPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${title.toLowerCase().replace(/[^a-z0-9]/gi, '_')}.doc`;
+      a.download = `${title.toLowerCase().replace(/[^a-z0-9]/gi, '_')}.docx`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

@@ -81,7 +81,7 @@ export function ExportButton({
       const blob = await res.blob();
       const link = document.createElement('a')
       link.href = URL.createObjectURL(blob)
-      link.download = `${title.replace(/\s+/g, '-').toLowerCase() || 'documento'}.doc`
+      link.download = `${title.replace(/\s+/g, '-').toLowerCase() || 'documento'}.docx`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)

@@ -9,13 +9,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Conteúdo vazio" }, { status: 400 });
     }
 
-    const fileBuffer = getWordBuffer(title || "Documento", content);
-    const filename = `${(title || 'documento').replace(/[^a-zA-Z0-9\-_]/g, '_')}.doc`;
+    const fileBuffer = await getWordBuffer(title || "Documento", content);
+    const filename = `${(title || 'documento').replace(/[^a-zA-Z0-9\-_]/g, '_')}.docx`;
 
     return new NextResponse(fileBuffer as any, {
       status: 200,
       headers: {
-        "Content-Type": "application/msword",
+        "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "Content-Disposition": `attachment; filename="${filename}"`,
       },
     });

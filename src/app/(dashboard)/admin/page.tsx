@@ -95,7 +95,7 @@ export default function AdminDashboard() {
 
   async function checkAuth() {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user || user.email !== "felipedutra@outlook.com") {
+    if (!user || user.email !== "felipe.dutragon@gmail.com") {
       router.push("/dashboard");
       return;
     }

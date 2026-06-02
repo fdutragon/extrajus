@@ -456,7 +456,7 @@ export default function DashboardLayoutClient({
     localStorage.setItem("sidebar_collapsed", JSON.stringify(isCollapsed));
   }, [isCollapsed]);
 
-  const adminEmails = ["felipedutra@outlook.com"];
+  const adminEmails = ["felipe.dutragon@gmail.com"];
   const isAdmin = adminEmails.includes(profile?.email || '');
 
   const baseNavItems = [
