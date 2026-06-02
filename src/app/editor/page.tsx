@@ -89,14 +89,14 @@ function EditorContent() {
         if (lastRoom) {
           const params = new URLSearchParams(searchParams.toString())
           params.set("room", lastRoom)
-          window.location.replace(`${window.location.pathname}?${params.toString()}`)
+          router.replace(`${window.location.pathname}?${params.toString()}`)
           return
         }
         
         const newRoom = `extrajus-draft-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
         const params = new URLSearchParams(searchParams.toString())
         params.set("room", newRoom)
-        window.location.replace(`${window.location.pathname}?${params.toString()}`)
+        router.replace(`${window.location.pathname}?${params.toString()}`)
       }
     }
   }, [room, searchParams])
