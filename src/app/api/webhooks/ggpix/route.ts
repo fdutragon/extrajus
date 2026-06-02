@@ -187,30 +187,22 @@ export async function POST(request: Request) {
         process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
       );
 
-      // 1. Buscar a transação pendente
-      const { data: transaction, error: fetchError } = await supabase
-        .from("transactions")
-        .select("user_id, status")
-        .eq("external_id", externalId)
-        .single();
-
-      if (fetchError || !transaction) {
-        console.error("[Webhook] Transação não encontrada:", externalId);
-        return NextResponse.json({ error: "Transação não encontrada" }, { status: 404 });
-      }
-
-      // Evitar processamento duplicado
-      if (transaction.status === "COMPLETE") {
-        return NextResponse.json({ success: true, message: "Já processado" });
-      }
-
-      // 2. Atualizar status da transação
-      const { error: updateTxError } = await supabase
+      // 1 e 2. Operação Atômica: Atualizar APENAS se for PENDING e retornar a linha
+      const { data: updatedTransactions, error: updateTxError } = await supabase
         .from("transactions")
         .update({ status: "COMPLETE" })
-        .eq("external_id", externalId);
+        .eq("external_id", externalId)
+        .eq("status", "PENDING")
+        .select("user_id, status");
 
       if (updateTxError) throw updateTxError;
+
+      if (!updatedTransactions || updatedTransactions.length === 0) {
+        console.log(`[Webhook] Transação não encontrada como PENDING ou já processada: ${externalId}`);
+        return NextResponse.json({ success: true, message: "Já processado ou inexistente" });
+      }
+
+      const transaction = updatedTransactions[0];
 
       // Notificar o Cadelo via Telegram
       const formattedAmount = (amount / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });

@@ -6,8 +6,13 @@ const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_
 const genAI = new GoogleGenerativeAI(apiKey || "");
 
 export async function POST(req: Request) {
+  let supabaseClient: any = null;
+  let userId: string | null = null;
+  let deductedCost: number = 0;
+
   try {
     const supabase = await createClient();
+    supabaseClient = supabase;
     const { data: { user } } = await supabase.auth.getUser();
 
     const aiRigor = user?.user_metadata?.ai_rigor ?? 8;
@@ -39,11 +44,15 @@ export async function POST(req: Request) {
         );
       }
 
+      deductedCost = cost;
+
       // Deduzir créditos e registrar auditoria no ledger
       await supabase
         .from("profiles")
         .update({ credits: currentCredits - cost })
         .eq("id", user.id);
+        
+      userId = user.id;
 
       await supabase
         .from("credit_ledger")
@@ -149,11 +158,22 @@ REGRAS CRÍTICAS DE RETORNO (OBRIGATÓRIAS):
       const result = await model.generateContentStream(prompt);
       const stream = new ReadableStream({
         async start(controller) {
-          for await (const chunk of result.stream) {
-            const chunkText = chunk.text();
-            controller.enqueue(new TextEncoder().encode(chunkText));
+          req.signal.addEventListener("abort", () => {
+            try { controller.close() } catch (e) {}
+          });
+          try {
+            for await (const chunk of result.stream) {
+              if (req.signal.aborted) break;
+              const chunkText = chunk.text();
+              controller.enqueue(new TextEncoder().encode(chunkText));
+            }
+          } catch (e) {
+            controller.error(e);
+          } finally {
+            if (!req.signal.aborted) {
+              try { controller.close() } catch (e) {}
+            }
           }
-          controller.close();
         },
       });
 
@@ -320,11 +340,22 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
     // Converte o iterável do Gemini em um ReadableStream para o Next.js
     const stream = new ReadableStream({
       async start(controller) {
-        for await (const chunk of result.stream) {
-          const chunkText = chunk.text();
-          controller.enqueue(new TextEncoder().encode(chunkText));
+        req.signal.addEventListener("abort", () => {
+          try { controller.close() } catch (e) {}
+        });
+        try {
+          for await (const chunk of result.stream) {
+            if (req.signal.aborted) break;
+            const chunkText = chunk.text();
+            controller.enqueue(new TextEncoder().encode(chunkText));
+          }
+        } catch (e) {
+          controller.error(e);
+        } finally {
+          if (!req.signal.aborted) {
+            try { controller.close() } catch (e) {}
+          }
         }
-        controller.close();
       },
     });
 
@@ -338,6 +369,35 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
 
   } catch (error: any) {
     console.error("AI Proxy Error:", error);
+    
+    // Tenta realizar rollback dos créditos se tiver falhado
+    if (supabaseClient && userId && deductedCost > 0) {
+      try {
+        const { data: currentProfile } = await supabaseClient
+          .from("profiles")
+          .select("credits")
+          .eq("id", userId)
+          .single();
+          
+        if (currentProfile) {
+          await supabaseClient
+            .from("profiles")
+            .update({ credits: currentProfile.credits + deductedCost })
+            .eq("id", userId);
+            
+          await supabaseClient
+            .from("credit_ledger")
+            .insert({
+              user_id: userId,
+              amount: deductedCost,
+              action_type: "ai_error_refund",
+            });
+        }
+      } catch (rollbackError) {
+        console.error("Falha ao realizar rollback de créditos:", rollbackError);
+      }
+    }
+
     return NextResponse.json(
       { error: "Falha na comunicação com a inteligência central." },
       { status: 500 }

@@ -85,6 +85,8 @@ export function AiMenuContent({
 
   // Implementação Robusta de Auto-Focus via Evento Global
   useEffect(() => {
+    let interval: NodeJS.Timeout | null = null
+
     const handleStartAiFocus = () => {
       // Pequeno delay para garantir que o modal de onboarding fechou e o menu está visível
       let attempts = 0
@@ -101,16 +103,22 @@ export function AiMenuContent({
         return false
       }
 
-      const interval = setInterval(() => {
+      if (interval) clearInterval(interval)
+      
+      interval = setInterval(() => {
         if (tryFocus() || attempts >= maxAttempts) {
-          clearInterval(interval)
+          if (interval) clearInterval(interval)
         }
         attempts++
       }, 150)
     }
 
     window.addEventListener('start-ai-onboarding', handleStartAiFocus)
-    return () => window.removeEventListener('start-ai-onboarding', handleStartAiFocus)
+    
+    return () => {
+      window.removeEventListener('start-ai-onboarding', handleStartAiFocus)
+      if (interval) clearInterval(interval)
+    }
   }, [])
 
   const closeAiMenu = useCallback(() => {

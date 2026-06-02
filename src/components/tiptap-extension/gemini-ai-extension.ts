@@ -45,6 +45,7 @@ export interface GeminiStorage {
   state: "idle" | "loading" | "error"
   auditResults: AuditResult[]
   chatHistory: any[]
+  abortController: AbortController | null
 }
 
 declare module "@tiptap/core" {
@@ -185,11 +186,18 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
       state: "idle",
       auditResults: [],
       chatHistory: [],
+      abortController: null,
     }
   },
 
   addCommands(): any {
     const runGemini = async (editor: any, userPrompt: string) => {
+      // Aborta requisição anterior se houver
+      if (this.storage.abortController) {
+        this.storage.abortController.abort()
+      }
+      this.storage.abortController = new AbortController()
+
       editor.commands.aiGenerationSetIsLoading(true)
       editor.commands.aiGenerationHasMessage(false)
       this.storage.lastPrompt = userPrompt
@@ -296,7 +304,8 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
             instructionType: isDocEmpty ? "generation" : "surgical",
             docType: localDocType,
             history: this.storage.chatHistory
-          })
+          }),
+          signal: this.storage.abortController.signal
         })
 
         if (!response.ok) {
@@ -522,6 +531,10 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
           });
         }
       } catch (error: any) {
+        if (error.name === "AbortError") {
+          console.log("Gemini AI Extension: Geração abortada pelo usuário.")
+          return
+        }
         console.error("Gemini generation failed:", error)
         this.storage.state = "error"
         toast.error(error.message || "O sistema IA falhou em responder. Verifique sua conexão.")
@@ -674,6 +687,12 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
         }
 
         const runAudit = async () => {
+          // Aborta auditoria anterior se houver
+          if (this.storage.abortController) {
+            this.storage.abortController.abort()
+          }
+          this.storage.abortController = new AbortController()
+
           this.storage.state = "loading"
           this.storage.auditResults = [];
 
@@ -688,7 +707,8 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
                 prompt: text,
                 instructionType: "audit",
                 docType: localDocType
-              })
+              }),
+              signal: this.storage.abortController.signal
             })
 
             if (!response.ok) {
@@ -724,7 +744,11 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
             this.storage.state = "idle"
             editor.view.dispatch(editor.state.tr.setMeta("aiAuditCompleted", true))
             return auditResultsCleaned;
-          } catch (error) {
+          } catch (error: any) {
+            if (error.name === "AbortError") {
+              console.log("Gemini AI Extension: Auditoria abortada pelo usuário.")
+              return []
+            }
             console.error("Gemini audit failed:", error)
             this.storage.state = "error"
             this.storage.auditResults = [];

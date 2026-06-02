@@ -584,6 +584,14 @@ export function AiMenuInputTextarea({
       }
 
       setRecognition(rec)
+
+      return () => {
+        try {
+          rec.stop()
+        } catch (e) {
+          // ignore
+        }
+      }
     }
   }, [setPromptValue])
 

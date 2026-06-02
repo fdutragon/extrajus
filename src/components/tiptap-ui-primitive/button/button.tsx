@@ -72,7 +72,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           data-size={size}
           onPointerDown={(e) => {
             e.preventDefault()
-            props.onPointerDown?.(e)
+            props.onPointerDown?.(e as any)
           }}
           {...props}
         >
@@ -91,7 +91,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           data-size={size}
           onPointerDown={(e) => {
             e.preventDefault()
-            props.onPointerDown?.(e)
+            props.onPointerDown?.(e as any)
           }}
           {...props}
         >
