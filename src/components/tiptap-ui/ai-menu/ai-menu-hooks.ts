@@ -41,7 +41,7 @@ export const initialState: AiMenuState = {
   shouldShowInput: true,
   inputIsFocused: false,
   fallbackAnchor: { element: null, rect: null },
-  selectedContractType: null,
+  selectedContractType: "Prestação de Serviços",
 }
 
 export function useAiMenuState() {
