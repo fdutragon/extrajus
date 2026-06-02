@@ -38,11 +38,11 @@ export function PwaInstallModal() {
       });
     }
 
-    // Timer cego de 10s incondicional (ignorando APIs nativas instáveis)
+    // Timer cego de 15s incondicional (ignorando APIs nativas instáveis)
     setTimeout(() => {
       localStorage.setItem("pwa_assumed_installed", "true")
       window.dispatchEvent(new CustomEvent("pwa-assumed-installed-changed"))
-    }, 10000)
+    }, 15000)
 
     // Dispara o prompt nativo via o handler existente
     window.dispatchEvent(new CustomEvent("trigger-pwa-install"))

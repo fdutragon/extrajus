@@ -447,18 +447,6 @@
       ]
     },
     {
-      "type": "image",
-      "attrs": {
-        "src": "/images/tiptap-ui-placeholder-image.jpg",
-        "alt": "Screenshot 2025-02-23 at 19.22.27",
-        "title": "Screenshot 2025-02-23 at 19.22.27",
-        "width": null,
-        "height": null,
-        "data-align": null,
-        "showCaption": false
-      }
-    },
-    {
       "type": "blockquote",
       "attrs": {
         "id": "72652f50-837d-4ec8-9697-3ac7ec9c4877",
