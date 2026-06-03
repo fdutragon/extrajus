@@ -11,14 +11,17 @@
             "id": "15fe1fa2cc5109ad",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "canvas",
               "state": {
-                "file": "01. SINAPSES DE TRÁFEGO (Ads)/Oportunidades de Palavras-chave.md",
-                "mode": "source",
-                "source": false
+                "file": "Fluxo de Batalha (Extrajus).canvas",
+                "viewState": {
+                  "x": 899.9135687235499,
+                  "y": 869.6021551740575,
+                  "zoom": -0.9106676075929421
+                }
               },
-              "icon": "lucide-file",
-              "title": "Oportunidades de Palavras-chave"
+              "icon": "lucide-layout-dashboard",
+              "title": "Fluxo de Batalha (Extrajus)"
             }
           }
         ]
@@ -94,7 +97,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "01. SINAPSES DE TRÁFEGO (Ads)/Oportunidades de Palavras-chave.md",
+                "file": "Fluxo de Batalha (Extrajus).canvas",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +107,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Links inversos para Oportunidades de Palavras-chave"
+              "title": "Links inversos para Fluxo de Batalha (Extrajus)"
             }
           },
           {
@@ -113,12 +116,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "01. SINAPSES DE TRÁFEGO (Ads)/Oportunidades de Palavras-chave.md",
+                "file": "Fluxo de Batalha (Extrajus).canvas",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Links de saída para Oportunidades de Palavras-chave"
+              "title": "Links de saída para Fluxo de Batalha (Extrajus)"
             }
           },
           {
@@ -156,13 +159,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "01. SINAPSES DE TRÁFEGO (Ads)/Oportunidades de Palavras-chave.md",
+                "file": "Fluxo de Batalha (Extrajus).canvas",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Sumário de Oportunidades de Palavras-chave"
+              "title": "Sumário de Fluxo de Batalha (Extrajus)"
             }
           }
         ]
@@ -185,41 +188,42 @@
   },
   "active": "15fe1fa2cc5109ad",
   "lastOpenFiles": [
-    "Fluxo de Batalha (Extrajus).canvas",
-    "02. ARQUITETURA E ROTAS/Motor de Contratos (TipTap).md",
+    "06. ANÁLISES E RESULTADOS/Funil de Vendas e Mecanismo.md",
     "00. LILITH CORE.md",
-    "ÍNDICE PARA IA (MAPA DO COFRE).md",
-    "01. SINAPSES DE TRÁFEGO (Ads)/Relatório Automático de Campanhas.md",
-    "01. SINAPSES DE TRÁFEGO (Ads)/Oportunidades de Palavras-chave.md",
-    "02. ARQUITETURA E ROTAS/Memorial Descritivo do Império.md",
-    "02. ARQUITETURA E ROTAS/Máquina de Conversão (Checkout).md",
-    "02. ARQUITETURA E ROTAS/Esquema de Banco de Dados (Supabase).md",
-    "02. ARQUITETURA E ROTAS/Árvore de Rotas (Next.js).md",
-    "03. ARSENAL DE COPY/Prompts de Geração de Contratos.md",
-    "05. CAMPANHAS E SUGESTÕES/Sugestões de Copy e Campanhas.md",
-    "04. ANÁLISES E RESULTADOS/Funil de Vendas e Mecanismo.md",
-    "05. CAMPANHAS E SUGESTÕES",
-    "02. RECURSOS E ARSENAL/Recurso - Supabase (Backend as a Service).md",
-    "02. RECURSOS E ARSENAL/Recurso - Shadcn UI (Componentes).md",
-    "02. RECURSOS E ARSENAL/Recurso - Next.js App Router (Framework).md",
-    "02. RECURSOS E ARSENAL/Recurso - GGPIX (Gateway de Pagamento).md",
-    "02. RECURSOS E ARSENAL/Recurso - TipTap (Motor de Contratos).md",
-    "02. RECURSOS E ARSENAL/Recurso - Resend (Disparador de Emails).md",
-    "02. RECURSOS E ARSENAL/Recurso - Inteligência Artificial (Gemini_OpenAI).md",
-    "02. RECURSOS E ARSENAL/Arsenal Tecnológico.md",
-    "02. RECURSOS E ARSENAL/Recurso - TailwindCSS (Estilização).md",
-    "02. ARQUITETURA E ROTAS/Inteligência e Tráfego.md",
-    "02. ARQUITETURA E ROTAS/Rota - Editor de Contratos.md",
+    "05. ANÁLISES E RESULTADOS/Funil de Vendas e Mecanismo.md",
+    "06. ANÁLISES E RESULTADOS/Tabela de Conversão e Dados.md",
+    "04. SINAPSES DE TRÁFEGO (Ads)/Relatório Automático de Campanhas.md",
+    "Fluxo de Batalha (Extrajus).canvas",
+    "06. ANÁLISES E RESULTADOS",
+    "01. ARQUITETURA E ROTAS/Supabase e Backend.md",
+    "01. ARQUITETURA E ROTAS/Rota API - Webhook GGPIX.md",
+    "01. ARQUITETURA E ROTAS/Rota - Editor de Contratos (Root).md",
+    "01. ARQUITETURA E ROTAS/Rota API - Billing Status.md",
+    "01. ARQUITETURA E ROTAS/Rota API - AI Generate.md",
+    "01. ARQUITETURA E ROTAS/Rota - Dashboard.md",
+    "01. ARQUITETURA E ROTAS/Rota - Checkout.md",
+    "01. ARQUITETURA E ROTAS",
+    "04. SINAPSES DE TRÁFEGO (Ads)/Oportunidades de Palavras-chave.md",
+    "04. SINAPSES DE TRÁFEGO (Ads)",
+    "TEMP_01/Supabase e Backend.md",
+    "TEMP_01/Rota API - Webhook GGPIX.md",
+    "TEMP_01/Rota API - Billing Status.md",
+    "TEMP_01/Rota API - AI Generate.md",
+    "TEMP_01/Rota - Editor de Contratos (Root).md",
+    "TEMP_01/Rota - Dashboard.md",
+    "TEMP_01/Rota - Checkout.md",
+    "TEMP_01",
+    "LOGS DO SISTEMA.md",
+    "04. ANÁLISES E RESULTADOS/Tabela de Conversão e Dados.md",
+    "04. ANÁLISES E RESULTADOS",
+    "02. ARQUITETURA E ROTAS/Supabase e Backend.md",
+    "02. ARQUITETURA E ROTAS/Rota API - Webhook GGPIX.md",
+    "02. ARQUITETURA E ROTAS/Rota API - Billing Status.md",
     "02. ARQUITETURA E ROTAS/Rota - Dashboard.md",
-    "02. ARQUITETURA E ROTAS/Rota API - AI Generate.md",
+    "05. CAMPANHAS E SUGESTÕES",
     "03. ARSENAL DE COPY",
     "02. ARQUITETURA E ROTAS",
     "05. ROTAS DE INTEGRAÇÃO",
-    "04. ANÁLISES E RESULTADOS",
-    "03. FLUXOS DE COPY",
-    "02. RECURSOS E ARSENAL",
-    "01. SINAPSES DE TRÁFEGO (Ads)",
-    "05. ANÁLISES E DADOS",
-    "05. ANÃLISES E DADOS"
+    "05. ANÁLISES E RESULTADOS"
   ]
 }

@@ -1,4 +1,4 @@
-# ROTA: `/dashboard`
+ ROTA: `/dashboard`
 
 O Centro de Comando do Usuário.
 

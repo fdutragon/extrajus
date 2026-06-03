@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const vaultPath = 'd:/lilith-brain/extrajus/lilith-brain/Extrajus';
-const indexPath = path.join(vaultPath, 'ÍNDICE PARA IA (MAPA DO COFRE).md');
+const indexPath = path.join(vaultPath, '00. LILITH CORE.md');
 
 function getAllMarkdownFiles(dir, fileList = []) {
     const files = fs.readdirSync(dir);
@@ -15,7 +15,7 @@ function getAllMarkdownFiles(dir, fileList = []) {
             }
         } else if (file.endsWith('.md')) {
             // Don't index the index itself
-            if (file !== 'ÍNDICE PARA IA (MAPA DO COFRE).md') {
+            if (file !== '00. LILITH CORE.md') {
                 fileList.push(fullPath);
             }
         }
@@ -25,7 +25,7 @@ function getAllMarkdownFiles(dir, fileList = []) {
 
 const mdFiles = getAllMarkdownFiles(vaultPath);
 
-let indexContent = `# ÍNDICE PARA IA (MAPA DO COFRE)
+let indexContent = `# LILITH CORE (MAPA DO COFRE)
 
 Este arquivo é um mapa mestre desenhado especificamente para que qualquer Inteligência Artificial ou LLM compreenda instantaneamente toda a estrutura de conhecimento armazenada neste cofre.
 
