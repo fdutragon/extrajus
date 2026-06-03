@@ -538,6 +538,17 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
         console.error("Gemini generation failed:", error)
         this.storage.state = "error"
         toast.error(error.message || "O sistema IA falhou em responder. Verifique sua conexão.")
+
+        // 🔴 Notifica o Cadelo via Telegram sobre a falha do Gemini no frontend
+        fetch("/api/alerts/gemini-fail", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            error: error?.message || String(error),
+            context: "Frontend — Editor (gemini-ai-extension)",
+          }),
+        }).catch(() => {})
+
       } finally {
         editor.commands.aiGenerationSetIsLoading(false)
         if (typeof window !== "undefined") {

@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { sendTelegramAlert } from "@/lib/telegram-alert";
 
 const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey || "");
@@ -369,6 +370,14 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
 
   } catch (error: any) {
     console.error("AI Proxy Error:", error);
+
+    // 🔴 Notifica o Cadelo via Telegram sobre a falha da API Gemini
+    sendTelegramAlert(
+      `🔴 *SmartDoc — Falha na API Gemini (Servidor)*\n\n` +
+      `*Usuário:* ${userId || "anônimo"}\n` +
+      `*Erro:* \`${error?.message || String(error)}\`\n` +
+      `*Horário:* ${new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}`
+    );
     
     // Tenta realizar rollback dos créditos se tiver falhado
     if (supabaseClient && userId && deductedCost > 0) {
