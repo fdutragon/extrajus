@@ -11,10 +11,14 @@
             "id": "d6f8d93022042f25",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Visualização em gráfico"
+              "type": "markdown",
+              "state": {
+                "file": "02. ARQUITETURA E ROTAS/Motor de Contratos (TipTap).md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Motor de Contratos (TipTap)"
             }
           }
         ]
@@ -27,10 +31,14 @@
             "id": "15fe1fa2cc5109ad",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Visualização em gráfico"
+              "type": "markdown",
+              "state": {
+                "file": "00. NÚCLEO CENTRAL.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "00. NÚCLEO CENTRAL"
             }
           }
         ]
@@ -106,6 +114,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "00. NÚCLEO CENTRAL.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +124,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Links inversos"
+              "title": "Links inversos para 00. NÚCLEO CENTRAL"
             }
           },
           {
@@ -124,11 +133,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "00. NÚCLEO CENTRAL.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Links de saída"
+              "title": "Links de saída para 00. NÚCLEO CENTRAL"
             }
           },
           {
@@ -166,12 +176,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "00. NÚCLEO CENTRAL.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Sumário"
+              "title": "Sumário de 00. NÚCLEO CENTRAL"
             }
           }
         ]
@@ -192,35 +203,43 @@
       "bases:Criar nova base": false
     }
   },
-  "active": "d6f8d93022042f25",
+  "active": "15fe1fa2cc5109ad",
   "lastOpenFiles": [
-    "02. ARQUITETURA E ROTAS/Supabase e Backend.md",
-    "02. ARQUITETURA E ROTAS/Máquina de Conversão (Checkout).md",
-    "02. ARQUITETURA E ROTAS/A Estética do Caos.md",
-    "02. ARQUITETURA E ROTAS/Motor de Contratos (TipTap).md",
-    "02. ARQUITETURA E ROTAS/Memorial Descritivo do Império.md",
-    "02. ARQUITETURA E ROTAS/Inteligência e Tráfego.md",
-    "02. ARQUITETURA E ROTAS",
+    "ÍNDICE PARA IA (MAPA DO COFRE).md",
     "00. NÚCLEO CENTRAL.md",
-    "01. SINAPSES DE TRÁFEGO (Ads)/Oportunidades de Palavras-chave.md",
+    "02. ARQUITETURA E ROTAS/Memorial Descritivo do Império.md",
+    "02. ARQUITETURA E ROTAS/Máquina de Conversão (Checkout).md",
+    "02. ARQUITETURA E ROTAS/Esquema de Banco de Dados (Supabase).md",
+    "02. ARQUITETURA E ROTAS/Árvore de Rotas (Next.js).md",
     "01. SINAPSES DE TRÁFEGO (Ads)/Relatório Automático de Campanhas.md",
+    "03. ARSENAL DE COPY/Prompts de Geração de Contratos.md",
+    "01. SINAPSES DE TRÁFEGO (Ads)/Oportunidades de Palavras-chave.md",
+    "05. CAMPANHAS E SUGESTÕES/Sugestões de Copy e Campanhas.md",
+    "04. ANÁLISES E RESULTADOS/Funil de Vendas e Mecanismo.md",
+    "05. CAMPANHAS E SUGESTÕES",
+    "02. RECURSOS E ARSENAL/Recurso - Supabase (Backend as a Service).md",
+    "02. RECURSOS E ARSENAL/Recurso - Shadcn UI (Componentes).md",
+    "02. RECURSOS E ARSENAL/Recurso - Next.js App Router (Framework).md",
+    "02. RECURSOS E ARSENAL/Recurso - GGPIX (Gateway de Pagamento).md",
+    "02. ARQUITETURA E ROTAS/Motor de Contratos (TipTap).md",
+    "02. RECURSOS E ARSENAL/Recurso - TipTap (Motor de Contratos).md",
+    "02. RECURSOS E ARSENAL/Recurso - Resend (Disparador de Emails).md",
+    "02. RECURSOS E ARSENAL/Recurso - Inteligência Artificial (Gemini_OpenAI).md",
+    "02. RECURSOS E ARSENAL/Arsenal Tecnológico.md",
+    "02. RECURSOS E ARSENAL/Recurso - TailwindCSS (Estilização).md",
+    "02. ARQUITETURA E ROTAS/Inteligência e Tráfego.md",
+    "02. ARQUITETURA E ROTAS/Rota - Editor de Contratos.md",
+    "02. ARQUITETURA E ROTAS/Rota - Dashboard.md",
+    "02. ARQUITETURA E ROTAS/Rota API - AI Generate.md",
+    "02. ARQUITETURA E ROTAS/Rota API - Billing Status.md",
+    "03. ARSENAL DE COPY",
+    "02. ARQUITETURA E ROTAS",
     "05. ROTAS DE INTEGRAÇÃO",
     "04. ANÁLISES E RESULTADOS",
     "03. FLUXOS DE COPY",
     "02. RECURSOS E ARSENAL",
     "01. SINAPSES DE TRÁFEGO (Ads)",
-    "05. ANÁLISES E DADOS/LaboratÃ³rio de AnÃ¡lises.md",
-    "Bem-vindo.md",
-    "03. ARSENAL DE COPY/Biblioteca de Ã‚ngulos (Copy).md",
-    "02. ARQUITETURA E ROTAS/Mapa de Rotas e Webhooks.md",
-    "01. SINAPSES DE TRÁFEGO (Ads)/Tabela de Resultados - Google Ads.md",
-    "01. SINAPSES DE TRÁFEGO (Ads)/Palavras-Chave e Oportunidades.md",
     "05. ANÁLISES E DADOS",
-    "01. SINAPSES DE TRÃFEGO (Ads)/Palavras-Chave e Oportunidades.md",
-    "05. ANÃLISES E DADOS/LaboratÃ³rio de AnÃ¡lises.md",
-    "05. ANÃLISES E DADOS",
-    "04. COFRE DE RECURSOS",
-    "03. ARSENAL DE COPY",
-    "01. SINAPSES DE TRÃFEGO (Ads)/Tabela de Resultados - Google Ads.md"
+    "05. ANÃLISES E DADOS"
   ]
 }

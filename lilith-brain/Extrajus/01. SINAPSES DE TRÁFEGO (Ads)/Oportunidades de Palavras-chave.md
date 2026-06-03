@@ -1,6 +1,6 @@
 ---
 tags: [ads, keywords, pesquisa]
-gerado_em: 2026-06-03T03:12:58.341Z
+gerado_em: 2026-06-03T03:22:09.137Z
 ---
 # 🔑 Oportunidades de Palavras-Chave
 > *Extraído da API do Google Ads pela Lilith*
