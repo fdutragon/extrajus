@@ -48,7 +48,7 @@ export function OnboardingModal({ isOpen, onSelectTemplate, onClose }: Onboardin
         <div className="relative p-0 flex flex-col h-full">
           {/* Fundo Místico */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(168,85,247,0.1),transparent_70%)] pointer-events-none" />
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay pointer-events-none" />
+          <div className="absolute inset-0  opacity-[0.03] mix-blend-overlay pointer-events-none" />
 
           <div className="p-10 pb-8 flex flex-col gap-10 relative z-10 text-center">
             <DialogHeader className="space-y-4">

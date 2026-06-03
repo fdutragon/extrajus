@@ -118,7 +118,7 @@ export function GoogleAdsOnboarding({ onComplete }: GoogleAdsOnboardingProps) {
         <div className="relative px-6 sm:px-4 pt-10 pb-9 sm:pt-12 sm:pb-9 max-sm:pt-10 max-sm:pb-7 max-sm:min-h-0 sm:min-h-[390px] flex flex-col items-center text-center gap-6 max-sm:gap-3.5 justify-center overflow-hidden">
           {/* Background FX */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(var(--primary-rgb),0.08),transparent_70%)] dark:bg-[radial-gradient(circle_at_50%_0%,rgba(var(--primary-rgb),0.15),transparent_70%)]" />
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] mix-blend-overlay" />
+          <div className="absolute inset-0  opacity-[0.05] mix-blend-overlay" />
 
           {/* Progress Bars (Stories Style) */}
           <div className="absolute top-6 sm:top-8 max-sm:top-4 left-6 sm:left-4 right-6 sm:right-4 flex gap-1.5 z-20">

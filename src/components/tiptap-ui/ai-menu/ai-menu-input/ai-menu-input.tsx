@@ -41,6 +41,8 @@ import type { AiMenuInputTextareaProps } from "../../../../components/tiptap-ui/
 
 // Styles
 import "../../../../components/tiptap-ui/ai-menu/ai-menu-input/ai-menu-input.scss"
+import { track } from "@/lib/tracker"
+import { useCopy } from "@/contexts/copies-context"
 
 const CONTRACT_TYPES = [
   "Prestação de Serviços", "Compra e Venda", "Aluguel Residencial", "Aluguel Comercial",
@@ -303,19 +305,34 @@ export function AiMenuInputPlaceholder({
   onPlaceholderClick?: () => void
   placeholder?: string
 }) {
+  const { text: dynamicText, variant } = useCopy('cta-ai-panel-placeholder', "Descreva os termos, dite o acordo por voz ou escolha um modelo pronto. Que documento vai blindar o seu negÃ³cio hoje?")
+  const displayText = placeholder || dynamicText
+
   return (
     <div
       className="tiptap-ai-prompt-input-placeholder"
       role="button"
       tabIndex={0}
-      onClick={onPlaceholderClick}
+      onClick={() => {
+        // Track: usuÃ¡rio clicou no placeholder para abrir o input da IA
+        track("ai_panel_opened", {
+          category: "engagement",
+          elementId: "ai-input-placeholder",
+          properties: {
+            trigger: "placeholder_click",
+            placeholder_text: displayText,
+            copy_variant: variant,
+          },
+        })
+        onPlaceholderClick?.()
+      }}
     >
       <div className="tiptap-ai-prompt-input-placeholder-content pr-4 truncate">
         <span className="tiptap-ai-prompt-input-placeholder-text truncate block w-full">
-          {placeholder || "Descreva os termos, dite o acordo por voz ou escolha um modelo pronto. Que documento vai blindar o seu negócio hoje?"}
+          {displayText}
         </span>
       </div>
-      <Button data-style="primary" disabled className="h-7 w-7 rounded-lg p-0 flex items-center justify-center shrink-0">
+      <Button data-style="primary" disabled className="h-7 w-7 rounded-lg p-0 flex items-center justify-center shrink-0">      
         <ArrowUpIcon className="tiptap-button-icon w-3.5 h-3.5" />
       </Button>
     </div>
@@ -515,12 +532,13 @@ export function AiMenuInputTextarea({
   onPlaceholderClick,
   showPlaceholder = false,
   isLoading = false,
-  placeholder = "Descreva os termos, dite o acordo por voz ou escolha um modelo pronto. Que documento vai blindar o seu negócio hoje?",
+  placeholder,
   autoFocus = true,
   isEditing = false,
   ...props
 }: AiMenuInputTextareaProps) {
   const [promptValue, setPromptValue] = useComboboxValueState()
+  const { text: dynamicText } = useCopy('cta-ai-panel-placeholder', "Descreva os termos, dite o acordo por voz ou escolha um modelo pronto. Que documento vai blindar o seu negócio hoje?")
   const { state, updateState } = useAiMenuState()
   const selectedContractType = state.selectedContractType
   
@@ -634,20 +652,29 @@ export function AiMenuInputTextarea({
       let finalPrompt = ""
 
       if (isEditorEmpty && selectedContractType) {
-        // Modo Criação Inicial: O documento está vazio e um modelo foi selecionado.
         finalPrompt = `Crie um ${selectedContractType} profissional com todas as cláusulas essenciais, considerando os seguintes detalhes adicionais: ${cleanedPrompt || 'Sem detalhes adicionais.'}`
       } else {
-        // Modo Edição Cirúrgica: O documento já tem conteúdo (o usuário está editando um bloco ou adicionando texto).
-        // Aqui nós ignoramos o selectedContractType para não recriar o contrato do zero.
         finalPrompt = cleanedPrompt || ""
       }
         
       if (finalPrompt) {
+        // Track: prompt submetido — dados ricos para análise de copy
+        track("ai_prompt_submitted", {
+          category: "engagement",
+          elementId: "ai-submit-btn",
+          properties: {
+            prompt_length: finalPrompt.length,
+            has_contract_type: !!selectedContractType,
+            contract_type: selectedContractType ?? null,
+            mode: isEditorEmpty ? "creation" : "editing",
+            used_voice: isRecording,
+          },
+        })
         onInputSubmit(finalPrompt)
         setPromptValue("")
       }
     }
-  }, [onInputSubmit, promptValue, setPromptValue, selectedContractType, editor])
+  }, [onInputSubmit, promptValue, setPromptValue, selectedContractType, editor, isRecording])
 
   const handleKeyDown = useKeyboardHandlers(promptValue, onClose, handleSubmit)
 
@@ -668,6 +695,11 @@ export function AiMenuInputTextarea({
     if (onInputFocus) {
       onInputFocus()
     }
+    // Track: usuário focou no input da IA (placeholder capturado no momento do clique)
+    track("ai_input_focused", {
+      category: "engagement",
+      elementId: "ai_prompt_input_field",
+    })
   }, [onInputFocus])
 
   const handleTextareaBlur = useCallback(
@@ -724,7 +756,9 @@ export function AiMenuInputTextarea({
       }
       return `Adicione os detalhes essenciais para o seu ${selectedContractType} (ex: objeto, valores, prazos)...`
     }
-    return "Comande a IA: Digite os termos, grave um áudio ou escolha um modelo. Qual contrato vamos blindar hoje?"
+
+    // Se não houver tipo selecionado, usamos a copy dinâmica da Lilith (Teste A/B)
+    return placeholder || dynamicText
   }
 
   const dynamicPlaceholder = getPlaceholder()

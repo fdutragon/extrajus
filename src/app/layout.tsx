@@ -46,12 +46,21 @@ import { Toaster } from "sonner";
 import { SinapsesPlansModal } from "@/components/ui/sinapses-plans-modal";
 import { PwaInstallModal } from "@/components/ui/pwa-install-modal";
 import { NativePwaHandler } from "@/components/ui/native-pwa-handler";
+import { TrackerInit } from "@/components/ui/tracker-init";
+import { CopiesProvider } from "@/contexts/copies-context";
+import { getCopies } from "@/lib/copies";
+import { cookies } from "next/headers";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Busca copies ativas com cache ISR e seed do cookie (A/B testing)
+  const cookieStore = await cookies();
+  const seed = cookieStore.get('ex_variant_seed')?.value;
+  const copies = await getCopies(seed);
+
   return (
     <html
       lang="pt-BR"
@@ -101,31 +110,34 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <TooltipProvider>
-            {children}
-            <Toaster richColors closeButton theme="dark" position="bottom-right" />
-            <SinapsesPlansModal />
-            <PwaInstallModal />
-            <NativePwaHandler />
-            <Analytics />
-            <SpeedInsights />
+            <CopiesProvider initialCopies={copies}>
+              {children}
+              <Toaster richColors closeButton theme="dark" position="bottom-right" />
+              <SinapsesPlansModal />
+              <PwaInstallModal />
+              <NativePwaHandler />
+              <TrackerInit />
+              <Analytics />
+              <SpeedInsights />
 
-            {/* PWA Service Worker Registration */}
-            <Script id="pwa-init" strategy="lazyOnload">
-              {`
-                if ('serviceWorker' in navigator) {
-                  window.addEventListener('load', function() {
-                    navigator.serviceWorker.register('/sw.js').then(
-                      function(registration) {
-                        console.log('Service Worker registration successful');
-                      },
-                      function(err) {
-                        console.log('Service Worker registration failed: ', err);
-                      }
-                    );
-                  });
-                }
-              `}
-            </Script>
+              {/* PWA Service Worker Registration */}
+              <Script id="pwa-init" strategy="lazyOnload">
+                {`
+                  if ('serviceWorker' in navigator) {
+                    window.addEventListener('load', function() {
+                      navigator.serviceWorker.register('/sw.js').then(
+                        function(registration) {
+                          console.log('Service Worker registration successful');
+                        },
+                        function(err) {
+                          console.log('Service Worker registration failed: ', err);
+                        }
+                      );
+                    });
+                  }
+                `}
+              </Script>
+            </CopiesProvider>
           </TooltipProvider>
         </ThemeProvider>
       </body>

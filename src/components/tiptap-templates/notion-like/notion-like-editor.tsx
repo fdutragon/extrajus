@@ -497,6 +497,9 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
 
   useEffect(() => {
     if (!room || readOnly || fileName === "MINUTA-DE-CONTRATO") return
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(room)
+    if (!isUuid) return
+
     const delayDebounceFn = setTimeout(async () => {
       await supabase.from('contracts').update({ title: fileName }).eq('id', room)
     }, 1000)
@@ -727,7 +730,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
               (showEntranceGlow || editorFocused) && "glowing"
             )}>
               <div className="w-full h-full sm:bg-card/90 sm:dark:bg-card/75 sm:backdrop-blur-xl sm:rounded-[30px] max-sm:rounded-none px-4 max-sm:px-0 py-8 max-sm:pt-16 max-sm:pb-48 sm:px-14 sm:pt-16 sm:pb-12 relative min-h-[50rem] md:min-h-[74.25rem] editor-glow-content max-sm:bg-transparent max-sm:backdrop-blur-none max-sm:shadow-none">
-                <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay rounded-[30px] max-sm:hidden" />
+                <div className="absolute inset-0 pointer-events-none opacity-[0.03]  mix-blend-overlay rounded-[30px] max-sm:hidden" />
 
                 {!readOnly && editor && !editor.isEmpty && (
                   <Button
@@ -922,6 +925,9 @@ export function NotionEditorContent({ placeholder = "Pressione '/' para adiciona
 
   useEffect(() => {
     if (!room) return
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(room)
+    if (!isUuid) return
+    
     const fetchStatus = async () => {
       const supabase = createClient()
       const { data } = await supabase.from('contracts').select('status').eq('id', room).single()

@@ -204,7 +204,7 @@ export default function SettingsPage() {
             <div className="animate-in slide-in-from-bottom-2 duration-500 text-left">
               <Card className="bg-card/40 backdrop-blur-md border border-border/50 rounded-[24px] overflow-hidden text-left shadow-[0_0_40px_rgba(0,0,0,0.08)]">
                 <div className="h-20 w-full bg-gradient-to-r from-primary/10 via-card to-background pt-3 pr-4 flex justify-end items-start relative">
-                  <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay" />
+                  <div className="absolute inset-0  opacity-10 mix-blend-overlay" />
                   <Badge className="bg-primary/20 text-primary border-primary/30 font-bold text-[10px] uppercase tracking-widest">Sessão Ativa</Badge>
                 </div>
                 <div className="px-6 pb-6 -mt-10 relative z-10 text-left">

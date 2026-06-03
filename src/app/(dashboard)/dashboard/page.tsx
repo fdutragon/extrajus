@@ -106,7 +106,7 @@ export default async function DashboardPage() {
         {stats.map((stat, i) => (
           <Card key={i} className="bg-card/40 backdrop-blur-md border-border/50 rounded-3xl overflow-hidden relative group transition-all duration-500 hover:border-primary/40 hover:shadow-[0_0_40px_rgba(var(--primary),0.05)]">
             <div className="absolute -bottom-16 -right-16 w-48 h-48 bg-primary/5 blur-[60px] rounded-full group-hover:bg-primary/15 transition-colors duration-700 pointer-events-none" />
-            <div className="absolute inset-0 pointer-events-none opacity-[0.02] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
+            <div className="absolute inset-0 pointer-events-none opacity-[0.02]  mix-blend-overlay" />
 
             <CardContent className="p-6 relative z-10">
               <div className="flex items-center justify-between mb-6">
@@ -146,7 +146,7 @@ export default async function DashboardPage() {
           </div>
 
           <div className="bg-card/40 backdrop-blur-md border border-border/50 rounded-[32px] overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.1)] relative">
-            <div className="absolute inset-0 pointer-events-none opacity-[0.02] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
+            <div className="absolute inset-0 pointer-events-none opacity-[0.02]  mix-blend-overlay" />
             
             {!recentContracts || recentContracts.length === 0 ? (
               <div className="p-24 flex flex-col items-center justify-center text-center space-y-5 relative z-10">
@@ -216,7 +216,7 @@ export default async function DashboardPage() {
             <div className="bg-card/60 backdrop-blur-xl border border-border/60 rounded-[32px] p-8 relative overflow-hidden group transition-all duration-500 hover:border-primary/40 hover:shadow-[0_0_40px_rgba(var(--primary),0.05)]">
               {/* Ambient Glow */}
               <div className="absolute top-0 right-0 w-72 h-72 bg-primary/5 blur-[100px] rounded-full -mr-20 -mt-20 group-hover:bg-primary/15 transition-all duration-1000 pointer-events-none" />
-              <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
+              <div className="absolute inset-0 pointer-events-none opacity-[0.03]  mix-blend-overlay" />
 
               <div className="relative z-10 space-y-8">
                 <div className="flex items-center gap-4">

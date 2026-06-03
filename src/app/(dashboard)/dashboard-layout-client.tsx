@@ -497,7 +497,7 @@ export default function DashboardLayoutClient({
         isCollapsed ? "lg:w-12" : "lg:w-64"
       )}>
         {/* Subtle texture overlay */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
+        <div className="absolute inset-0 pointer-events-none opacity-[0.03] dark:opacity-[0.05]  mix-blend-overlay" />
 
         {/* Organization Switcher / Logo Area */}
         <div className="h-12 px-3 flex items-center overflow-hidden shrink-0 border-b border-border relative z-10">

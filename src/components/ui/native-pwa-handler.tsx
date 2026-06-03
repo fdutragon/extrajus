@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react"
 import { toast } from "sonner"
+import { track } from "@/lib/tracker"
 
 /**
  * Componente silencioso que gerencia o prompt nativo de instalação do PWA.
@@ -21,6 +22,11 @@ export function NativePwaHandler() {
       setTimeout(() => {
         window.dispatchEvent(new CustomEvent("pwa-installed-status-changed", { detail: { installed: true } }))
       }, 500)
+      // Track: abriu como PWA instalado
+      track("pwa_launched", {
+        category: "pwa",
+        properties: { platform: /iPhone|iPad|iPod/.test(navigator.userAgent) ? "ios" : /Android/.test(navigator.userAgent) ? "android" : "desktop" },
+      })
     }
 
     const handleBeforeInstallPrompt = (e: Event) => {
@@ -28,6 +34,11 @@ export function NativePwaHandler() {
       e.preventDefault()
       // Guarda o evento para disparar no momento certo
       deferredPrompt.current = e
+      // Track: browser emitiu o prompt de instalação
+      track("pwa_install_prompted", {
+        category: "pwa",
+        properties: { platform: /iPhone|iPad|iPod/.test(navigator.userAgent) ? "ios" : /Android/.test(navigator.userAgent) ? "android" : "desktop" },
+      })
     }
 
     const handleUserEdit = async () => {
@@ -56,11 +67,17 @@ export function NativePwaHandler() {
       
       if (outcome === 'accepted') {
         localStorage.setItem("pwa-installed", "true")
+        // Track: usuário aceitou instalar o PWA
+        track("pwa_install_accepted", { category: "pwa" })
 
         // Removemos a dependência do evento 'appinstalled' (que falha em alguns celulares)
         // Disparamos o sucesso após 10 segundos fixos, tempo suficiente para a instalação concluir
         setTimeout(() => {
           window.dispatchEvent(new CustomEvent("pwa-installed-status-changed", { detail: { installed: true } }))
+          track("pwa_install_completed", {
+            category: "pwa",
+            properties: { platform: /iPhone|iPad|iPod/.test(navigator.userAgent) ? "ios" : /Android/.test(navigator.userAgent) ? "android" : "desktop" },
+          })
           
           const isMobile = typeof navigator !== "undefined" && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
           
@@ -80,6 +97,9 @@ export function NativePwaHandler() {
             }, 3000)
           }
         }, 10000)
+      } else {
+        // Track: usuário recusou o prompt de instalação
+        track("pwa_install_dismissed", { category: "pwa" })
       }
       
       deferredPrompt.current = null

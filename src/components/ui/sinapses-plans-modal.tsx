@@ -8,6 +8,7 @@ import { Brain, ShieldCheck, Copy, Check, Sparkles, Loader2, Landmark, Coins, Ar
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
+import { track } from "@/lib/tracker";
 
 export function SinapsesPlansModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,7 +19,14 @@ export function SinapsesPlansModal() {
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutos em segundos
   const [isPaid, setIsPaid] = useState(false);
 
-  // Contador de expiração do Pix
+  // Track modal open
+  useEffect(() => {
+    if (isOpen) {
+      track("plans_modal_opened", { category: "monetization" });
+    }
+  }, [isOpen]);
+
+  // Contador de expiraÃ§Ã£o do Pix
   useEffect(() => {
     if (!pixData || timeLeft <= 0 || isPaid) return;
     const interval = setInterval(() => {
@@ -27,7 +35,7 @@ export function SinapsesPlansModal() {
     return () => clearInterval(interval);
   }, [pixData, timeLeft, isPaid]);
 
-  // Polling para verificar o status do Pix em tempo real (Proteção contra Race Conditions e Memory Leaks)
+  // Polling para verificar o status do Pix em tempo real (ProteÃ§Ã£o contra Race Conditions e Memory Leaks)
   useEffect(() => {
     if (!pixData || !pixData.externalId || timeLeft <= 0 || isPaid) return;
 
@@ -40,23 +48,32 @@ export function SinapsesPlansModal() {
           signal: abortController.signal
         });
         const data = await response.json();
-        
+
         if (data.status === "COMPLETE") {
           setIsPaid(true);
+
+          toast.success("ðŸ’¥ Pagamento Confirmado! Seus crÃ©ditos de inteligÃªncia artificial jÃ¡ estÃ£o disponÃ­veis em sua conta.");
           
-          toast.success("💥 Pagamento Confirmado! Seus créditos de inteligência artificial já estão disponíveis em sua conta.");
-          
+          track("credits_purchase_paid", {
+            category: "monetization",
+            properties: {
+              credits: selectedPkg?.credits,
+              price: selectedPkg?.price,
+              transaction_id: pixData.externalId
+            }
+          });
+
           // Notifica outras partes do app para atualizar o saldo
           window.dispatchEvent(new Event('profile-updated'));
           return; // Stop polling
         }
       } catch (err: any) {
         if (err.name !== 'AbortError') {
-          console.error("Erro ao verificar status da transação:", err);
+          console.error("Erro ao verificar status da transaÃ§Ã£o:", err);
         }
       }
 
-      // Agenda próxima verificação apenas se não estiver cancelado e não obteve sucesso
+      // Agenda prÃ³xima verificaÃ§Ã£o apenas se nÃ£o estiver cancelado e nÃ£o obteve sucesso
       if (!abortController.signal.aborted) {
         timeoutId = setTimeout(pollStatus, 4000); // 4s backoff conservador
       }
@@ -81,20 +98,32 @@ export function SinapsesPlansModal() {
     setIsGeneratingPix(true);
     setPixData(null);
     setIsPaid(false);
+    
+    track("plan_selected", {
+      category: "monetization",
+      properties: { credits: pkg.credits, price: pkg.price }
+    });
+
     try {
       const response = await fetch("/api/billing/pix", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          amountCents: pkg.price * 100, 
-          description: `ExtraJus: ${pkg.credits} Créditos` 
+        body: JSON.stringify({
+          amountCents: pkg.price * 100,
+          description: `ExtraJus: ${pkg.credits} CrÃ©ditos`
         })
       });
       const data = await response.json();
       if (data.error) throw new Error(data.error);
       setPixData(data);
       setTimeLeft(600);
-      toast.success("💥 Pedido de Crédito Ativo! Efetue o Pix para adicionar seus créditos.");
+      
+      track("credits_purchase_pix_viewed", {
+        category: "monetization",
+        properties: { credits: pkg.credits, price: pkg.price }
+      });
+
+      toast.success("ðŸ’¥ Pedido de CrÃ©dito Ativo! Efetue o Pix para adicionar seus crÃ©ditos.");
     } catch (error: any) {
       toast.error(error.message || "Erro ao gerar Pix.");
     } finally {
@@ -115,7 +144,7 @@ export function SinapsesPlansModal() {
       setIsPaid(false);
 
       if (pkg) {
-        // Se um pacote específico foi enviado, dispara a geração do Pix direto!
+        // Se um pacote especÃ­fico foi enviado, dispara a geraÃ§Ã£o do Pix direto!
         handleBuyCredits(pkg);
       }
     };
@@ -130,93 +159,98 @@ export function SinapsesPlansModal() {
     if (pixData?.pixCode) {
       navigator.clipboard.writeText(pixData.pixCode);
       setCopied(true);
-      toast.success("Código Copia e Cola copiado com sucesso!");
+      toast.success("CÃ³digo Copia e Cola copiado com sucesso!");
       setTimeout(() => setCopied(false), 2000);
+      
+      track("credits_purchase_pix_copied", {
+        category: "monetization",
+        properties: { credits: selectedPkg?.credits, price: selectedPkg?.price }
+      });
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="w-full max-w-[46rem] bg-background border border-border rounded-3xl p-5 overflow-hidden md:p-6 shadow-[0_0_50px_rgba(var(--primary),0.06)] backdrop-blur-2xl text-left">
-        
-        {/* Glow de Fundo e Partículas Integradas */}
-        <div className="absolute -top-32 -right-32 w-80 h-80 bg-primary/5 rounded-full blur-[80px] pointer-events-none" />
-        <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-primary/5 rounded-full blur-[80px] pointer-events-none" />
 
-        {/* Linha Metálica Decorativa Baseada no Tema */}
-        <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+        {/* Glow de Fundo e PartÃ­culas Integradas */}
+        <div className="absolute -top-32 -right-32 w-80 h-80 bg-primary/5 rounded-full blur-[80px] pointer-events-none" />     
+        <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-primary/5 rounded-full blur-[80px] pointer-events-none" />   
+
+        {/* Linha MetÃ¡lica Decorativa Baseada no Tema */}
+        <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />   
 
         <DialogHeader className="text-left space-y-3 relative z-10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="text-[0.5625rem] uppercase tracking-widest font-black border-primary/30 text-primary bg-primary/5 px-2.5 py-0.5 rounded-full">
-                {isPaid ? "Pagamento Confirmado" : "Créditos Esgotados"}
+                {isPaid ? "Pagamento Confirmado" : "CrÃ©ditos Esgotados"}
               </Badge>
               <span className="text-[0.5625rem] text-muted-foreground font-mono tracking-widest uppercase italic">
-                {isPaid ? "Transação Concluída" : "Aguardando Pagamento"}
+                {isPaid ? "TransaÃ§Ã£o ConcluÃ­da" : "Aguardando Pagamento"}
               </span>
             </div>
             {pixData && !isPaid && (
               <Badge variant="outline" className="text-[0.5625rem] font-mono border-emerald-500/30 text-emerald-500 bg-emerald-500/5 px-2.5 py-0.5 animate-pulse">
-                🕒 Expira em {formatTime(timeLeft)}
+                ðŸ•’ Expira em {formatTime(timeLeft)}
               </Badge>
             )}
           </div>
-          
+
           <DialogTitle className="text-2xl font-black tracking-tight text-foreground flex items-center gap-2.5">
             <Brain className="text-primary animate-pulse shrink-0 w-7 h-7 filter drop-shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
             {isPaid ? (
-              <span>Créditos <span className="bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-400 bg-clip-text text-transparent">Adicionados com Sucesso</span></span>
+              <span>CrÃ©ditos <span className="bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-400 bg-clip-text text-transparent">Adicionados com Sucesso</span></span>
             ) : (
-              <span>Adquirir <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">Créditos de IA</span></span>
+              <span>Adquirir <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">CrÃ©ditos de IA</span></span>
             )}
           </DialogTitle>
-          
+
           <DialogDescription className="text-[0.78125rem] text-muted-foreground leading-relaxed font-medium">
-            {isPaid 
-              ? "Sua transação de alta performance foi confirmada. Seus novos créditos de IA já estão ativos para uso."
-              : "Seu saldo de créditos de IA terminou. Escolha um dos pacotes abaixo para adquirir novos créditos via Pix e continuar gerando seus documentos jurídicos."}
+            {isPaid
+              ? "Sua transaÃ§Ã£o de alta performance foi confirmada. Seus novos crÃ©ditos de IA jÃ¡ estÃ£o ativos para uso."   
+              : "Seu saldo de crÃ©ditos de IA terminou. Escolha um dos pacotes abaixo para adquirir novos crÃ©ditos via Pix e continuar gerando seus documentos jurÃ­dicos."}
           </DialogDescription>
         </DialogHeader>
- 
+
         <div className="mt-4.5 space-y-4.5 relative z-10 text-left">
-          
-          {/* PACOTES DISPONÍVEIS */}
+
+          {/* PACOTES DISPONÃVEIS */}
           {!pixData && !isGeneratingPix && !isPaid && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
-                { 
-                  credits: 150, 
-                  price: 19.90, 
-                  label: "Pacote Operacional", 
-                  desc: "Ideal para testes, com volume seguro de créditos.", 
+                {
+                  credits: 150,
+                  price: 19.90,
+                  label: "Pacote Operacional",
+                  desc: "Ideal para testes, com volume seguro de crÃ©ditos.",
                   estimate: "Elabora ~1 contrato completo",
                   popular: false,
                   text: "text-foreground",
                   border: "border-border hover:border-primary/30 hover:scale-[1.01]"
                 },
-                { 
-                  credits: 500, 
-                  price: 49.90, 
-                  label: "Biblioteca Avançada", 
-                  desc: "O preferido. Bônus de créditos e alta performance.", 
+                {
+                  credits: 500,
+                  price: 49.90,
+                  label: "Biblioteca AvanÃ§ada",
+                  desc: "O preferido. BÃ´nus de crÃ©ditos e alta performance.",
                   estimate: "Elabora ~5 contratos completos",
                   popular: true,
                   text: "text-primary",
-                  border: "border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.06)] hover:border-primary scale-[1.02]"
+                  border: "border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.06)] hover:border-primary scale-[1.02]"    
                 },
-                { 
-                  credits: 1200, 
-                  price: 99.90, 
-                  label: "Biblioteca Suprema", 
-                  desc: "Alto volume de créditos para demandas complexas.", 
+                {
+                  credits: 1200,
+                  price: 99.90,
+                  label: "Biblioteca Suprema",
+                  desc: "Alto volume de crÃ©ditos para demandas complexas.",
                   estimate: "Elabora ~12 contratos completos",
                   popular: false,
                   text: "text-primary/90",
                   border: "border-border hover:border-primary/30 hover:scale-[1.01]"
                 },
               ].map((pkg) => (
-                <div 
+                <div
                   key={pkg.credits}
                   className={cn(
                     "p-4.5 rounded-2xl border transition-all duration-300 cursor-pointer group relative overflow-hidden flex flex-col h-full bg-card text-card-foreground text-left",
@@ -229,14 +263,14 @@ export function SinapsesPlansModal() {
                       <Sparkles size={8} /> Popular
                     </div>
                   )}
-                  
+
                   <span className="text-[0.5625rem] font-black text-muted-foreground uppercase tracking-widest block mb-2">{pkg.label}</span>
-                  
+
                   <div className="flex items-baseline gap-1 mb-2 text-left">
-                    <span className={cn("text-3xl font-black font-mono tracking-tight", pkg.text)}>{pkg.credits}</span>
-                    <span className="text-[0.625rem] font-bold text-muted-foreground">Créditos</span>
+                    <span className={cn("text-3xl font-black font-mono tracking-tight", pkg.text)}>{pkg.credits}</span>        
+                    <span className="text-[0.625rem] font-bold text-muted-foreground">CrÃ©ditos</span>
                   </div>
-                  
+
                   <p className="text-[0.6875rem] text-muted-foreground leading-relaxed font-medium mb-3">
                     {pkg.desc}
                   </p>
@@ -251,9 +285,9 @@ export function SinapsesPlansModal() {
                       <span className="text-[0.5rem] font-bold text-muted-foreground uppercase tracking-widest">Investimento</span>
                       <span className="text-sm font-black text-foreground font-mono">R$ {pkg.price.toFixed(2).replace('.', ',')}</span>
                     </div>
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
+                    <Button
+                      size="sm"
+                      variant="ghost"
                       className={cn(
                         "h-8 px-3 text-[0.5625rem] font-black uppercase tracking-widest rounded-lg border transition-all duration-300",
                         pkg.popular
@@ -274,8 +308,8 @@ export function SinapsesPlansModal() {
             <div className="p-16 text-center border border-dashed border-primary/20 rounded-3xl bg-primary/[0.01] animate-pulse flex flex-col items-center justify-center space-y-4">
               <Loader2 className="text-primary animate-spin w-10 h-10" />
               <div className="space-y-1">
-                <p className="text-xs font-black uppercase tracking-widest text-primary">Gerando Protocolo de Pagamento...</p>
-                <p className="text-[0.6875rem] text-muted-foreground font-medium">Conectando-se ao Banco Central com segurança máxima</p>
+                <p className="text-xs font-black uppercase tracking-widest text-primary">Gerando Protocolo de Pagamento...</p> 
+                <p className="text-[0.6875rem] text-muted-foreground font-medium">Conectando-se ao Banco Central com seguranÃ§a mÃ¡xima</p>
               </div>
             </div>
           )}
@@ -283,53 +317,53 @@ export function SinapsesPlansModal() {
           {/* TELA DE CHECKOUT PIX PREMIUM */}
           {pixData && selectedPkg && !isPaid && (
             <div className="p-6 bg-muted/20 border border-border rounded-3xl animate-in zoom-in-95 duration-300 text-left relative overflow-hidden">
-              
+
               {/* Efeito bioluminescente interno */}
-              <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl pointer-events-none" />      
 
               <div className="flex flex-col md:flex-row gap-6 items-center text-left">
-                
+
                 {/* QR Code Container Luxo */}
                 <div className="p-3 bg-white rounded-2xl shadow-[0_0_30px_rgba(255,255,255,0.03)] flex flex-col items-center justify-center shrink-0 border border-zinc-200">
-                  <QRCodeSVG 
+                  <QRCodeSVG
                     value={pixData.pixQrCode}
                     size={140}
                     level="Q"
                     includeMargin={false}
                   />
-                  <div className="mt-2 text-[0.5rem] font-black text-black uppercase tracking-widest flex items-center gap-1">
+                  <div className="mt-2 text-[0.5rem] font-black text-black uppercase tracking-widest flex items-center gap-1"> 
                     <Landmark size={10} /> Pix Oficial Banco Central
                   </div>
                 </div>
 
                 <div className="flex-1 space-y-4 text-left w-full">
                   <div className="space-y-1.5 text-left">
-                    <h4 className="text-xs font-black uppercase tracking-widest text-emerald-500 flex items-center gap-1.5">
+                    <h4 className="text-xs font-black uppercase tracking-widest text-emerald-500 flex items-center gap-1.5">   
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                      Aguardando Confirmação de Pagamento
+                      Aguardando ConfirmaÃ§Ã£o de Pagamento
                     </h4>
                     <p className="text-[0.71875rem] text-muted-foreground leading-relaxed font-medium">
-                      Escaneie o QR Code com o aplicativo de qualquer banco. O saldo de **{selectedPkg.credits} Créditos** será creditado instantaneamente na sua conta após o pagamento!
+                      Escaneie o QR Code com o aplicativo de qualquer banco. O saldo de **{selectedPkg.credits} CrÃ©ditos** serÃ¡ creditado instantaneamente na sua conta apÃ³s o pagamento!
                     </p>
                   </div>
-                  
+
                   {/* Pacote Resumido */}
                   <div className="bg-muted/80 border border-border rounded-xl p-3 flex justify-between items-center">
                     <span className="text-[0.625rem] text-muted-foreground font-bold uppercase tracking-wide">Pacote Selecionado</span>
-                    <span className="text-xs font-black text-foreground font-mono">{selectedPkg.credits} Créditos / R$ {selectedPkg.price}</span>
+                    <span className="text-xs font-black text-foreground font-mono">{selectedPkg.credits} CrÃ©ditos / R$ {selectedPkg.price}</span>
                   </div>
 
-                  {/* Campo Copia e Cola Metálico */}
+                  {/* Campo Copia e Cola MetÃ¡lico */}
                   <div className="space-y-1.5 text-left">
-                    <span className="text-[0.5rem] font-black text-muted-foreground uppercase tracking-widest ml-1">Código Pix Copia e Cola</span>
+                    <span className="text-[0.5rem] font-black text-muted-foreground uppercase tracking-widest ml-1">CÃ³digo Pix Copia e Cola</span>
                     <div className="flex gap-2">
-                      <input 
-                        readOnly 
-                        value={pixData.pixCode} 
+                      <input
+                        readOnly
+                        value={pixData.pixCode}
                         className="flex-1 bg-muted border border-border rounded-xl px-4 py-2 text-[0.625rem] font-mono text-foreground truncate text-left outline-none focus:border-primary/40"
                       />
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         className="rounded-xl font-black text-[0.5625rem] uppercase tracking-widest h-9 bg-primary text-primary-foreground hover:!bg-primary/90 hover:!text-primary-foreground px-4 shrink-0"
                         onClick={handleCopy}
                       >
@@ -343,13 +377,13 @@ export function SinapsesPlansModal() {
             </div>
           )}
 
-          {/* TELA DE PACTO CONCLUÍDO (SUCESSO) */}
+          {/* TELA DE PACTO CONCLUÃDO (SUCESSO) */}
           {isPaid && selectedPkg && (
             <div className="p-8 text-center border border-emerald-500/20 rounded-3xl bg-emerald-500/[0.02] space-y-6 animate-in zoom-in-95 duration-500 relative overflow-hidden">
-              {/* Efeito bioluminescente verde esmeralda místico */}
+              {/* Efeito bioluminescente verde esmeralda mÃ­stico */}
               <div className="absolute -top-16 -right-16 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
               <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
-              
+
               <div className="flex justify-center">
                 <div className="relative">
                   <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)] animate-pulse">
@@ -363,10 +397,10 @@ export function SinapsesPlansModal() {
 
               <div className="space-y-2">
                 <h3 className="text-xl font-black uppercase tracking-widest text-emerald-500 bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-400 bg-clip-text text-transparent animate-pulse">
-                  Créditos Adicionados!
+                  CrÃ©ditos Adicionados!
                 </h3>
                 <p className="text-[0.75rem] text-muted-foreground max-w-[28rem] mx-auto leading-relaxed font-medium">
-                  A recarga de créditos foi efetuada com sucesso. Seus novos **{selectedPkg.credits} créditos de IA** já estão disponíveis em sua conta para a elaboração de documentos.
+                  A recarga de crÃ©ditos foi efetuada com sucesso. Seus novos **{selectedPkg.credits} crÃ©ditos de IA** jÃ¡ estÃ£o disponÃ­veis em sua conta para a elaboraÃ§Ã£o de documentos.
                 </p>
               </div>
 
@@ -376,19 +410,19 @@ export function SinapsesPlansModal() {
                   <span className="font-bold text-foreground">{selectedPkg.label}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Créditos Adquiridos:</span>
-                  <span className="font-bold text-emerald-500">{selectedPkg.credits} Créditos</span>
+                  <span className="text-muted-foreground">CrÃ©ditos Adquiridos:</span>
+                  <span className="font-bold text-emerald-500">{selectedPkg.credits} CrÃ©ditos</span>
                 </div>
                 <div className="flex justify-between border-t border-border/60 pt-2 mt-2">
-                  <span className="text-muted-foreground">ID da Transação:</span>
+                  <span className="text-muted-foreground">ID da TransaÃ§Ã£o:</span>
                   <span className="font-bold text-foreground/85 text-[0.5625rem] truncate w-32 text-right">{pixData?.externalId}</span>
                 </div>
               </div>
 
               <div className="pt-2">
-                <Button 
+                <Button
                   onClick={() => setIsOpen(false)}
-                  className="bg-emerald-600 text-white hover:bg-emerald-500 border border-emerald-500/30 rounded-2xl px-8 py-3 text-[0.625rem] font-black uppercase tracking-widest transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.15)]"
+                  className="bg-emerald-600 text-white hover:bg-emerald-500 border border-emerald-500/30 rounded-2xl px-8 py-3 text-[0.625rem] font-black uppercase tracking-widest transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.15)]"      
                 >
                   Confirmar e Fechar
                 </Button>
@@ -396,14 +430,14 @@ export function SinapsesPlansModal() {
             </div>
           )}
 
-          {/* RODA PÉ DO MODAL */}
+          {/* RODA PÃ‰ DO MODAL */}
           <div className="flex items-center justify-between pt-5 border-t border-border mt-5">
             <span className="text-[0.625rem] text-muted-foreground font-bold italic flex items-center gap-1.5">
-              <ShieldCheck size={13} className="text-primary" /> 
-              Ambiente Seguro • ExtraJus S/A Realtime Payment Gateway
+              <ShieldCheck size={13} className="text-primary" />
+              Ambiente Seguro â€¢ ExtraJus S/A Realtime Payment Gateway
             </span>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setIsOpen(false)}
               className="font-black text-[0.5625rem] uppercase tracking-widest rounded-xl h-9 border-border text-muted-foreground hover:bg-muted hover:text-foreground"
             >

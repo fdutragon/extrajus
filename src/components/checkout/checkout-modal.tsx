@@ -8,6 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/utils/supabase/client"
 import { cn } from "@/lib/utils"
+import { track, trackClick } from "@/lib/tracker"
+import { useCopy } from "@/contexts/copies-context"
 
 interface CheckoutModalProps {
   isOpen: boolean
@@ -19,6 +21,10 @@ interface CheckoutModalProps {
 }
 
 export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, docType, title }: CheckoutModalProps) {
+  const { text: headlineText, variant: headlineVariant } = useCopy('cta-checkout-headline', `Baixe Agora Seu ${docType === "notificacao" ? "Notificação" : "Contrato"}`)
+  const { text: generatePixText, variant: generatePixVariant } = useCopy('cta-checkout-generate-pix', "Gerar PIX de R$ 27,00")
+  const { text: copyPixText, variant: copyPixVariant } = useCopy('cta-checkout-copy-pix', "Copiar Código Pix")
+
   const [step, setStep] = useState<"form" | "pix" | "success">("form")
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -39,8 +45,18 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
       setName("Cliente")
       conversionFiredRef.current = false
       isProcessingRef.current = false
+      // Track: checkout aberto
+      track("checkout_triggered", {
+        category: "conversion",
+        elementId: "checkout-modal",
+        properties: { 
+          doc_type: docType, 
+          title,
+          copy_variant: headlineVariant 
+        },
+      })
     }
-  }, [isOpen])
+  }, [isOpen, docType, title, headlineVariant])
 
   // Polling for payment status (Proteção contra Race Conditions e Memory Leaks)
   useEffect(() => {
@@ -69,6 +85,18 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
                 'transaction_id': pixData.externalId
               });
               console.log("[Google Ads] Conversão de compra de contrato disparada com sucesso!", pixData.externalId);
+              // Track: PIX pago — evento de conversão crítico
+              track("checkout_paid", {
+                category: "conversion",
+                elementId: "checkout-pix-confirmed",
+                properties: {
+                  price: 27.00,
+                  currency: "BRL",
+                  transaction_id: pixData.externalId,
+                  doc_type: docType,
+                  copy_variant: headlineVariant
+                },
+              })
             }
 
             setStep("success");
@@ -93,7 +121,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
       abortController.abort();
       clearTimeout(timeoutId);
     };
-  }, [step, pixData]);
+  }, [step, pixData, docType, headlineVariant]);
 
   const handleCheckout = async (e?: React.FormEvent | React.MouseEvent | React.KeyboardEvent) => {
     if (e) e.preventDefault()
@@ -123,6 +151,16 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
         externalId: data.externalId
       })
       setStep("pix")
+      // Track: QR Code exibido
+      track("checkout_viewed", {
+        category: "conversion",
+        elementId: "checkout-qr",
+        properties: { 
+          price: 27.00, 
+          doc_type: docType,
+          copy_variant: generatePixVariant
+        },
+      })
     } catch (err: any) {
       toast.error(err.message)
     } finally {
@@ -241,6 +279,17 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
       setCopied(true)
       toast.success("Código PIX copiado!")
       setTimeout(() => setCopied(false), 2000)
+      // Track: código PIX copiado
+      track("checkout_qr_copied", {
+        category: "conversion",
+        elementId: "btn-copy-pix",
+        elementText: copyPixText,
+        properties: { 
+          price: 27.00, 
+          doc_type: docType,
+          copy_variant: copyPixVariant
+        },
+      })
     }
   }
 
@@ -271,7 +320,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
             </div>
 
             <h3 className="text-[1.65rem] max-sm:text-[1.6rem] font-black text-foreground leading-[1.1] tracking-tight whitespace-nowrap max-sm:mt-2">
-              Baixe Agora Seu <span className="bg-gradient-to-r from-primary via-amber-500 to-primary dark:via-amber-400 bg-clip-text text-transparent">{docType === "notificacao" ? "Notificação" : "Contrato"}</span>
+              {headlineText}
             </h3>
 
             <p className="text-[0.825rem] max-sm:text-[0.925rem] max-sm:leading-[1.5] text-muted-foreground leading-relaxed font-medium">
@@ -390,7 +439,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
                   ) : (
                     <>
                       <Zap size={18} />
-                      Gerar PIX de R$ 27,00
+                      {generatePixText}
                     </>
                   )}
                 </Button>
@@ -435,7 +484,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
                   ) : (
                     <>
                       <Copy size={18} className="max-sm:w-[16px] max-sm:h-[16px]" />
-                      Copiar Código Pix
+                      {copyPixText}
                     </>
                   )}
                 </Button>
