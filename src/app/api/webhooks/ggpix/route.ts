@@ -258,7 +258,7 @@ export async function POST(request: Request) {
 
             const isDev = process.env.NODE_ENV === "development" || (process.env.NEXT_PUBLIC_SITE_URL && process.env.NEXT_PUBLIC_SITE_URL.includes("localhost"));
             const toEmail = userData.user.email;
-            const fromEmail = "SmartDoc AI <contato@smartdoc.pro>"; 
+            const fromEmail = "SmartDoc AI <contato@smartdoc.work>"; 
             const emailSubject = isDev 
               ? `⚔️ [DEV DEBUG] Documento liberado (Original: ${userData.user.email}) - ${docData.title || 'Contrato'}`
               : `Seu documento SmartDoc está liberado: ${docData.title || 'Contrato'}`;

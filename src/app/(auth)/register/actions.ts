@@ -51,7 +51,7 @@ export async function signup(formData: FormData) {
         const { Resend } = await import('resend')
         const resendInstance = new Resend(resendKey)
         resendInstance.emails.send({
-          from: 'SmartDoc <boasvindas@smartdoc.pro>',
+          from: 'SmartDoc <boasvindas@smartdoc.work>',
           to: email,
           subject: '⚡ Bem-vindo à SmartDoc: Sua Plataforma de Inteligência Jurídica',
           html: `

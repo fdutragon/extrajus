@@ -167,7 +167,7 @@ export default function InboxPage() {
         const userIds = Array.from(new Set(data.map(n => n.user_id)));
         const { data: profiles } = await supabase.from('profiles').select('id, email, full_name').in('id', userIds);
         const profileMap = (profiles || []).reduce((acc: any, p: any) => { acc[p.id] = p; return acc; }, {});
-        setNotifications(data.map(n => ({ ...n, userProfile: profileMap[n.user_id] || { email: 'sistema@smartdoc.com', full_name: 'Usuário Externo' } })));
+        setNotifications(data.map(n => ({ ...n, userProfile: profileMap[n.user_id] || { email: 'sistema@smartdoc.work', full_name: 'Usuário Externo' } })));
       } else {
         setNotifications(data || []);
       }

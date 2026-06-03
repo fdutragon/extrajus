@@ -128,7 +128,7 @@ export async function POST(request: Request) {
         const resendInstance = new Resend(resendKey);
         const emailPromises = updatedSigners.map((signer: any) => 
           resendInstance.emails.send({
-            from: 'SmartDoc <assinaturas@smartdoc.pro>',
+            from: 'SmartDoc <assinaturas@smartdoc.work>',
             to: signer.email,
             subject: `Assinatura Concluída: Certificado de Assinatura Digital de ${contractTitle}`,
             html: `
