@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useId } from "react"
 import { cn } from "@/lib/utils"
 
 interface LogoProps extends React.SVGProps<SVGSVGElement> {
@@ -13,9 +13,15 @@ export function Logo({ className, showText = true, iconSize = 32, variant = "chr
   const isMedium = iconSize >= 36
   const isQuartz = variant === "quartz"
 
+  const uid = useId().replace(/:/g, '')
+  const chromeId = `chromeGradient-${uid}`
+  const darkId = `darkGradient-${uid}`
+  const quartzId = `quartzGradient-${uid}`
+  const frostedId = `frostedGradient-${uid}`
+
   // Seletores dinâmicos de cor para suportar variantes do design
-  const strokeColor = isQuartz ? "url(#quartzGradient)" : "url(#chromeGradient)"
-  const fillColor = isQuartz ? "url(#frostedGradient)" : "url(#darkGradient)"
+  const strokeColor = isQuartz ? `url(#${quartzId})` : `url(#${chromeId})`
+  const fillColor = isQuartz ? `url(#${frostedId})` : `url(#${darkId})`
   const diamondFill = isQuartz ? "rgba(255, 255, 255, 0.05)" : "#050507"
   const jusColor = isQuartz ? "#ffffff" : "#facc15"
   const jusShadow = isQuartz 
@@ -36,24 +42,24 @@ export function Logo({ className, showText = true, iconSize = 32, variant = "chr
       >
         <defs>
           {/* Variante Gold: Ouro Imperial e Obsidiana */}
-          <linearGradient id="chromeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id={chromeId} x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#fefce8" />
             <stop offset="40%" stopColor="#fde047" />
             <stop offset="80%" stopColor="#eab308" />
             <stop offset="100%" stopColor="#ca8a04" />
           </linearGradient>
-          <linearGradient id="darkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id={darkId} x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#141419" />
             <stop offset="100%" stopColor="#050507" />
           </linearGradient>
 
           {/* Variante Quartz: Platina Ultra Clara e Cristal de Quartzo */}
-          <linearGradient id="quartzGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id={quartzId} x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#ffffff" />
             <stop offset="50%" stopColor="#f3f4f6" />
             <stop offset="100%" stopColor="#e5e7eb" />
           </linearGradient>
-          <linearGradient id="frostedGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id={frostedId} x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="rgba(255, 255, 255, 0.08)" />
             <stop offset="100%" stopColor="rgba(255, 255, 255, 0.02)" /> 
           </linearGradient>

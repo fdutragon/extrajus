@@ -11,17 +11,14 @@
             "id": "15fe1fa2cc5109ad",
             "type": "leaf",
             "state": {
-              "type": "canvas",
+              "type": "markdown",
               "state": {
-                "file": "Fluxo de Batalha (Extrajus).canvas",
-                "viewState": {
-                  "x": 871.5133596220384,
-                  "y": 517.3295897787086,
-                  "zoom": -0.8500000000000003
-                }
+                "file": "01. SINAPSES DE TRÁFEGO (Ads)/Oportunidades de Palavras-chave.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "lucide-layout-dashboard",
-              "title": "Fluxo de Batalha (Extrajus)"
+              "icon": "lucide-file",
+              "title": "Oportunidades de Palavras-chave"
             }
           }
         ]
@@ -97,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Fluxo de Batalha (Extrajus).canvas",
+                "file": "01. SINAPSES DE TRÁFEGO (Ads)/Oportunidades de Palavras-chave.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -107,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Links inversos para Fluxo de Batalha (Extrajus)"
+              "title": "Links inversos para Oportunidades de Palavras-chave"
             }
           },
           {
@@ -116,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Fluxo de Batalha (Extrajus).canvas",
+                "file": "01. SINAPSES DE TRÁFEGO (Ads)/Oportunidades de Palavras-chave.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Links de saída para Fluxo de Batalha (Extrajus)"
+              "title": "Links de saída para Oportunidades de Palavras-chave"
             }
           },
           {
@@ -159,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Fluxo de Batalha (Extrajus).canvas",
+                "file": "01. SINAPSES DE TRÁFEGO (Ads)/Oportunidades de Palavras-chave.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Sumário de Fluxo de Batalha (Extrajus)"
+              "title": "Sumário de Oportunidades de Palavras-chave"
             }
           }
         ]
@@ -188,8 +185,8 @@
   },
   "active": "15fe1fa2cc5109ad",
   "lastOpenFiles": [
-    "02. ARQUITETURA E ROTAS/Motor de Contratos (TipTap).md",
     "Fluxo de Batalha (Extrajus).canvas",
+    "02. ARQUITETURA E ROTAS/Motor de Contratos (TipTap).md",
     "00. LILITH CORE.md",
     "ÍNDICE PARA IA (MAPA DO COFRE).md",
     "01. SINAPSES DE TRÁFEGO (Ads)/Relatório Automático de Campanhas.md",
