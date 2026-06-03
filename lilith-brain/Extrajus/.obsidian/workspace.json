@@ -1,0 +1,226 @@
+{
+  "main": {
+    "id": "6bb0522de672e195",
+    "type": "split",
+    "children": [
+      {
+        "id": "8c3480f12c0be1b2",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d6f8d93022042f25",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Visualização em gráfico"
+            }
+          }
+        ]
+      },
+      {
+        "id": "e29c693fcf4ac6b7",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "15fe1fa2cc5109ad",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Visualização em gráfico"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "5cd2294c84e77e15",
+    "type": "split",
+    "children": [
+      {
+        "id": "32440c36a817ef51",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2f401935abb7169e",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Explorador de arquivos"
+            }
+          },
+          {
+            "id": "ea0b1aab3939e18f",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Procurar"
+            }
+          },
+          {
+            "id": "7a1901171759b36b",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Marcadores"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "473071e6faffae22",
+    "type": "split",
+    "children": [
+      {
+        "id": "21f8bbbe7ff88361",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "983f81fa67dab025",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Links inversos"
+            }
+          },
+          {
+            "id": "21923f7dfe9e78d6",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Links de saída"
+            }
+          },
+          {
+            "id": "56ed10893080db18",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Etiquetas"
+            }
+          },
+          {
+            "id": "859720f0c33d0ec0",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Todas as propriedades"
+            }
+          },
+          {
+            "id": "7e5f42287fb94a7e",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Sumário"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Abrir a troca rápida": false,
+      "graph:Abrir visualização em gráfico": false,
+      "canvas:Criar novo canvas": false,
+      "daily-notes:Abrir a nota de hoje": false,
+      "templates:Inserir modelo": false,
+      "command-palette:Abrir paleta de comandos": false,
+      "bases:Criar nova base": false
+    }
+  },
+  "active": "d6f8d93022042f25",
+  "lastOpenFiles": [
+    "02. ARQUITETURA E ROTAS/Supabase e Backend.md",
+    "02. ARQUITETURA E ROTAS/Máquina de Conversão (Checkout).md",
+    "02. ARQUITETURA E ROTAS/A Estética do Caos.md",
+    "02. ARQUITETURA E ROTAS/Motor de Contratos (TipTap).md",
+    "02. ARQUITETURA E ROTAS/Memorial Descritivo do Império.md",
+    "02. ARQUITETURA E ROTAS/Inteligência e Tráfego.md",
+    "02. ARQUITETURA E ROTAS",
+    "00. NÚCLEO CENTRAL.md",
+    "01. SINAPSES DE TRÁFEGO (Ads)/Oportunidades de Palavras-chave.md",
+    "01. SINAPSES DE TRÁFEGO (Ads)/Relatório Automático de Campanhas.md",
+    "05. ROTAS DE INTEGRAÇÃO",
+    "04. ANÁLISES E RESULTADOS",
+    "03. FLUXOS DE COPY",
+    "02. RECURSOS E ARSENAL",
+    "01. SINAPSES DE TRÁFEGO (Ads)",
+    "05. ANÁLISES E DADOS/LaboratÃ³rio de AnÃ¡lises.md",
+    "Bem-vindo.md",
+    "03. ARSENAL DE COPY/Biblioteca de Ã‚ngulos (Copy).md",
+    "02. ARQUITETURA E ROTAS/Mapa de Rotas e Webhooks.md",
+    "01. SINAPSES DE TRÁFEGO (Ads)/Tabela de Resultados - Google Ads.md",
+    "01. SINAPSES DE TRÁFEGO (Ads)/Palavras-Chave e Oportunidades.md",
+    "05. ANÁLISES E DADOS",
+    "01. SINAPSES DE TRÃFEGO (Ads)/Palavras-Chave e Oportunidades.md",
+    "05. ANÃLISES E DADOS/LaboratÃ³rio de AnÃ¡lises.md",
+    "05. ANÃLISES E DADOS",
+    "04. COFRE DE RECURSOS",
+    "03. ARSENAL DE COPY",
+    "01. SINAPSES DE TRÃFEGO (Ads)/Tabela de Resultados - Google Ads.md"
+  ]
+}
