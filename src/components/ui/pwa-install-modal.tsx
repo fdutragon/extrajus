@@ -63,7 +63,7 @@ export function PwaInstallModal() {
               Salvamento Automático
             </DialogTitle>
             <DialogDescription className="text-muted-foreground text-sm leading-relaxed mt-2 max-w-md mx-auto font-medium">
-              Garanta que suas minutas nunca sejam perdidas. Tenha a ExtraJus como um aplicativo dedicado que ajuda a fechar bons contratos no seu dia a dia.
+              Garanta que suas minutas nunca sejam perdidas. Tenha a SmartDoc como um aplicativo dedicado que ajuda a fechar bons contratos no seu dia a dia.
             </DialogDescription>
           </DialogHeader>
 

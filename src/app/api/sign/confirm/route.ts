@@ -128,7 +128,7 @@ export async function POST(request: Request) {
         const resendInstance = new Resend(resendKey);
         const emailPromises = updatedSigners.map((signer: any) => 
           resendInstance.emails.send({
-            from: 'ExtraJus <assinaturas@extrajus.pro>',
+            from: 'SmartDoc <assinaturas@smartdoc.pro>',
             to: signer.email,
             subject: `Assinatura Concluída: Certificado de Assinatura Digital de ${contractTitle}`,
             html: `
@@ -345,7 +345,7 @@ export async function POST(request: Request) {
                     </div>
 
                     <div class="footer">
-                      © 2026 ExtraJus S/A. Blindagem e Inteligência Corporativa.<br>
+                      © 2026 SmartDoc S/A. Blindagem e Inteligência Corporativa.<br>
                       Assinatura digital em conformidade com a MP nº 2.200-2/2001.
                     </div>
                   </div>

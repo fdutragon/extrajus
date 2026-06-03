@@ -134,7 +134,7 @@ export function compileWordHtml(title: string, rawHtml: string): string {
     <html>
     <head>
       <meta charset="utf-8">
-      <title>${title || 'Documento ExtraJus'}</title>
+      <title>${title || 'Documento SmartDoc'}</title>
       <style>
         body {
           font-family: 'Cambria', 'Georgia', 'Times New Roman', serif;
@@ -194,7 +194,7 @@ export async function getWordBuffer(title: string, rawHtml: string): Promise<Buf
   const cleanHtml = compileWordHtml(title, rawHtml);
   
   const fileBuffer = await HTMLtoDOCX(cleanHtml, null, {
-    title: title || 'Documento ExtraJus',
+    title: title || 'Documento SmartDoc',
     font: 'Cambria',
     margins: {
       top: 720,

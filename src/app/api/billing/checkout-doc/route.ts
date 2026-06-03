@@ -120,7 +120,7 @@ export async function POST(request: Request) {
         },
         body: JSON.stringify({
           amountCents,
-          description: "Desbloqueio de Documento ExtraJus",
+          description: "Desbloqueio de Documento SmartDoc",
           payerName: finalName,
           payerDocument,
           externalId,

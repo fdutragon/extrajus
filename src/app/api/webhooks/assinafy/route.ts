@@ -43,7 +43,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing document ID' }, { status: 400 })
     }
 
-    // Map Assinafy status to ExtraJus status
+    // Map Assinafy status to SmartDoc status
     // Assuming: 'signed' -> 'signed', 'rejected' -> 'rejected', etc.
     const mappedStatus = status === 'completed' || status === 'signed' ? 'signed' : status
 

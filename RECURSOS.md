@@ -1,6 +1,6 @@
-# 🏛️ ARSENAL EXTRAJUS V2: MAPEAMENTO DE RECURSOS
+# 🏛️ ARSENAL SMARTDOC V2: MAPEAMENTO DE RECURSOS
 
-Este documento cataloga todos os módulos, ferramentas e inteligências disponíveis na infraestrutura do **ExtraJus v2**, o sistema operacional definitivo para dominação jurídica.
+Este documento cataloga todos os módulos, ferramentas e inteligências disponíveis na infraestrutura do **SmartDoc v2**, o sistema operacional definitivo para dominação jurídica.
 
 ---
 

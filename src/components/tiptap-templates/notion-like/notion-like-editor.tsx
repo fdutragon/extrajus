@@ -283,7 +283,7 @@ export function LoadingSpinner({ text = "Estabelecendo Conexão..." }: { text?: 
         {/* Loading Text */}
         <div className="flex flex-col items-center gap-2 max-w-xs text-center px-4 relative z-10">
           <span className="font-sans font-black tracking-[0.25em] text-zinc-100 uppercase text-xs select-none">
-            Extra<span className="text-primary drop-shadow-[0_0_8px_rgba(234,179,8,0.4)]">Jus</span>
+            Smart<span className="text-primary drop-shadow-[0_0_8px_rgba(234,179,8,0.4)]">Doc</span>
           </span>
           <p className="text-[8px] text-zinc-500 font-mono tracking-[0.3em] uppercase italic animate-pulse select-none mt-0.5">
             {text}
@@ -431,8 +431,8 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
 
   const handleDiscard = () => {
     if (confirm("Tem certeza que deseja descartar este contrato e começar do zero?")) {
-      localStorage.removeItem("extrajus_last_room")
-      document.cookie = "extrajus_last_room=; path=/; max-age=0;"
+      localStorage.removeItem("smartdoc_last_room")
+      document.cookie = "smartdoc_last_room=; path=/; max-age=0;"
       window.location.href = "/editor"
     }
   }

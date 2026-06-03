@@ -51,16 +51,16 @@ export async function signup(formData: FormData) {
         const { Resend } = await import('resend')
         const resendInstance = new Resend(resendKey)
         resendInstance.emails.send({
-          from: 'ExtraJus <boasvindas@extrajus.pro>',
+          from: 'SmartDoc <boasvindas@smartdoc.pro>',
           to: email,
-          subject: '⚡ Bem-vindo à ExtraJus: Sua Plataforma de Inteligência Jurídica',
+          subject: '⚡ Bem-vindo à SmartDoc: Sua Plataforma de Inteligência Jurídica',
           html: `
             <!DOCTYPE html>
             <html>
             <head>
               <meta charset="utf-8">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Bem-vindo à ExtraJus</title>
+              <title>Bem-vindo à SmartDoc</title>
               <style>
                 body {
                   background-color: #050505;
@@ -189,13 +189,13 @@ export async function signup(formData: FormData) {
               <div class="wrapper">
                 <div class="container">
                   <div class="logo">
-                    EXTRA<span>JUS</span>
+                    SMART<span>DOC</span>
                   </div>
                   <div class="divider"></div>
-                  <h1>Bem-vindo à ExtraJus.</h1>
+                  <h1>Bem-vindo à SmartDoc.</h1>
                   <div class="subheadline">Sua Plataforma de Inteligência Jurídica</div>
                   <p>
-                    Seu acesso à <strong>ExtraJus</strong> foi ativado com sucesso. Você acaba de se conectar à inteligência cirúrgica mais eficiente do mercado corporativo para geração, revisão e assinatura eletrônica de contratos.
+                    Seu acesso à <strong>SmartDoc</strong> foi ativado com sucesso. Você acaba de se conectar à inteligência cirúrgica mais eficiente do mercado corporativo para geração, revisão e assinatura eletrônica de contratos.
                   </p>
                   
                   <p style="text-align: center; font-weight: bold; color: #c5a880; font-size: 13px;">
@@ -217,10 +217,10 @@ export async function signup(formData: FormData) {
                     </div>
                   </div>
                   <div class="btn-container">
-                    <a href="https://extrajus-v2.vercel.app/dashboard" class="btn">Entrar no Dashboard</a>
+                    <a href="https://smartdoc-v2.vercel.app/dashboard" class="btn">Entrar no Dashboard</a>
                   </div>
                   <div class="footer">
-                    © 2026 ExtraJus S/A. Blindagem e Inteligência Corporativa.<br>
+                    © 2026 SmartDoc S/A. Blindagem e Inteligência Corporativa.<br>
                     Esta é uma mensagem automática de boas-vindas do sistema.
                   </div>
                 </div>

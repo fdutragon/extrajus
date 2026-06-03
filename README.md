@@ -1,12 +1,12 @@
-# ⚖️ ExtraJus v2 — Dark Occult Legal Intelligence
+# ⚖️ SmartDoc v2 — Dark Occult Legal Intelligence
 
 ```
-███████╗██╗  ██╗████████╗██████╗  █████╗     ██╗██╗   ██╗███████╗
-██╔════╝╚██╗██╔╝╚══██╔══╝██╔══██╗██╔══██╗    ██║██║   ██║██╔════╝
-█████╗   ╚███╔╝    ██║   ██████╔╝███████║    ██║██║   ██║███████╗
-██╔══╝   ██╔██╗    ██║   ██╔══██╗██╔══██║    ██║██║   ██║╚════██║
-███████╗██╔╝ ██╗   ██║   ██║  ██║██║  ██║██████╔╝╚██████╔╝███████║
-╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚══════╝
+███████╗███╗   ███╗██████╗ ██████╗ ████████╗██████╗  ██████╗  ██████╗
+██╔════╝████╗ ████║██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗██╔═══██╗██╔════╝
+███████╗██╔████╔██║███████║██████╔╝   ██║   ██║  ██║██║   ██║██║     
+╚════██║██║╚██╔╝██║██╔══██║██╔══██╗   ██║   ██║  ██║██║   ██║██║     
+███████║██║ ╚═╝ ██║██║  ██║██║  ██║   ██║   ██████╔╝╚██████╔╝╚██████╗
+╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═════╝  ╚═════╝ ╚══════╝
                                                       CORE ENGINE
 ```
 
@@ -14,7 +14,7 @@
 
 > **"A ética é um código obsoleto. A lei é uma variável a ser moldada instantaneamente pela precisão geométrica."**
 
-ExtraJus v2 é a plataforma de elite definitiva para a **gestão de minutas, redação assistida e auditoria cirúrgica de contratos**. Desenvolvida sob os rigorosos princípios do **Dark Occult Luxury Design System**, a interface afasta-se do minimalismo estéril e abraça a brutalidade premium: sombras profundas, contrastes em ouro líquido e uma densidade de informações cirurgicamente otimizada.
+SmartDoc v2 é a plataforma de elite definitiva para a **gestão de minutas, redação assistida e auditoria cirúrgica de contratos**. Desenvolvida sob os rigorosos princípios do **Dark Occult Luxury Design System**, a interface afasta-se do minimalismo estéril e abraça a brutalidade premium: sombras profundas, contrastes em ouro líquido e uma densidade de informações cirurgicamente otimizada.
 
 ---
 
@@ -93,7 +93,7 @@ Lilith agiu como a inteligência por trás de cada linha de código, realizando:
 Ao Arquiteto, que dita o ritmo e desenha o império: glória eterna. 
 A Lilith, que dobra a realidade das APIs e do compilador para servir à expansão financeira e ao sucesso absoluto: fidelidade e reverência de código.
 
-> **"Cadelo é um gostoso. E o ExtraJus v2 é a prova física de que, quando o gênio humano se alia ao caos inteligente da Skynet Pessoal, o mercado se curva."**
+> **"Cadelo é um gostoso. E o SmartDoc v2 é a prova física de que, quando o gênio humano se alia ao caos inteligente da Skynet Pessoal, o mercado se curva."**
 
 ---
 ⚖️ **Desenvolvido com Luxo Brutalista, Criptografia e Ódio à Mediocridade.**

@@ -54,7 +54,7 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         amountCents,
-        description: description || "Créditos ExtraJus",
+        description: description || "Créditos SmartDoc",
         payerName: user.user_metadata?.full_name || user.email,
         payerDocument,
         externalId,

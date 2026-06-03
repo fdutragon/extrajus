@@ -48,7 +48,7 @@ export default function DashboardLayoutClient({
   // Reset zoom styles if previously applied
   useEffect(() => {
     document.documentElement.style.fontSize = "";
-    localStorage.removeItem('extrajus-zoom');
+    localStorage.removeItem('smartdoc-zoom');
   }, []);
 
   useEffect(() => {
@@ -670,7 +670,7 @@ export default function DashboardLayoutClient({
             })}
           </nav>
 
-          {/* ExtraJus Pulse - AI Live Activity Feed */}
+          {/* SmartDoc Pulse - AI Live Activity Feed */}
           {(!isCollapsed || (typeof window !== 'undefined' && window.innerWidth < 1024)) && (
             <div className={cn("px-2 pt-4 border-t border-border space-y-3 animate-in fade-in duration-1000", isCollapsed && "lg:hidden")}>
                <div className="flex items-center gap-2">
@@ -678,7 +678,7 @@ export default function DashboardLayoutClient({
                    <div className="w-2 h-2 rounded-full bg-primary animate-ping absolute inset-0" />
                    <div className="w-2 h-2 rounded-full bg-primary relative" />
                  </div>
-                 <span className="text-xs font-bold text-primary uppercase tracking-widest">ExtraJus Pulse</span>
+                 <span className="text-xs font-bold text-primary uppercase tracking-widest">SmartDoc Pulse</span>
                </div>
                <div className="bg-primary/5 rounded-lg p-2.5 border border-primary/10">
                  <p className="text-xs text-primary/80 leading-tight italic font-medium font-mono">
@@ -905,7 +905,7 @@ export default function DashboardLayoutClient({
             </div>
 
             <div className="p-4 bg-muted/30 border-t border-border flex items-center justify-center gap-1">
-              <span className="text-xs text-muted-foreground uppercase font-mono tracking-wider">ExtraJus v2 • Modo Operacional de Elite</span>
+              <span className="text-xs text-muted-foreground uppercase font-mono tracking-wider">SmartDoc v2 • Modo Operacional de Elite</span>
             </div>
           </div>
         </div>

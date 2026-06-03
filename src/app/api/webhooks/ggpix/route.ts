@@ -11,7 +11,7 @@ function compileWordHtml(title: string, content: string): string {
     <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
     <head>
       <meta charset="utf-8">
-      <title>${title || 'Documento ExtraJus'}</title>
+      <title>${title || 'Documento SmartDoc'}</title>
       <!--[if gte mso 9]>
       <xml>
         <w:WordDocument>
@@ -65,7 +65,7 @@ function compileWordHtml(title: string, content: string): string {
         p.dense-metadata {
           margin-bottom: 2.0pt;
         }
-        /* Suporte completo à estrutura de Legal Nodes do ExtraJus */
+        /* Suporte completo à estrutura de Legal Nodes do SmartDoc */
         .legal-node {
           margin-bottom: 12.0pt;
           text-align: justify;
@@ -258,10 +258,10 @@ export async function POST(request: Request) {
 
             const isDev = process.env.NODE_ENV === "development" || (process.env.NEXT_PUBLIC_SITE_URL && process.env.NEXT_PUBLIC_SITE_URL.includes("localhost"));
             const toEmail = userData.user.email;
-            const fromEmail = "ExtraJus AI <contato@extrajus.pro>"; 
+            const fromEmail = "SmartDoc AI <contato@smartdoc.pro>"; 
             const emailSubject = isDev 
               ? `⚔️ [DEV DEBUG] Documento liberado (Original: ${userData.user.email}) - ${docData.title || 'Contrato'}`
-              : `Seu documento ExtraJus está liberado: ${docData.title || 'Contrato'}`;
+              : `Seu documento SmartDoc está liberado: ${docData.title || 'Contrato'}`;
 
             console.log(`[Webhook Email Debug] Disparando para a API da Resend... De: ${fromEmail} Para: ${toEmail}`);
             const sendResult = await resendInstance.emails.send({

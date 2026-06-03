@@ -85,5 +85,5 @@ export async function POST(req: NextRequest) {
 
 // GET para health check
 export async function GET() {
-  return NextResponse.json({ ok: true, service: "extrajus-tracker" })
+  return NextResponse.json({ ok: true, service: "smartdoc-tracker" })
 }

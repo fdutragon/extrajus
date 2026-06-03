@@ -109,7 +109,7 @@ export function SignModal({ title = "Documento Digital" }: { title?: string }) {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <DialogTitle className="text-xl font-bold tracking-tight flex items-center gap-2">
-                    <span className="text-primary">Protocolo</span> ExtraJus
+                    <span className="text-primary">Protocolo</span> SmartDoc
                   </DialogTitle>
                 </div>
                 <div className="px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 flex items-center gap-2 self-start sm:self-center shrink-0">
@@ -215,7 +215,7 @@ export function SignModal({ title = "Documento Digital" }: { title?: string }) {
               </div>
               
               <p className="text-[8px] text-center text-muted-foreground/60 uppercase tracking-[0.2em] font-medium">
-                Ao prosseguir, você valida o documento sob as normas da ExtraJus S/A
+                Ao prosseguir, você valida o documento sob as normas da SmartDoc S/A
               </p>
             </div>
           </DialogFooter>

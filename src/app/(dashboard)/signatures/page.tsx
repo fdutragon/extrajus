@@ -155,7 +155,7 @@ export default function SignaturesPage() {
       pdf.setLineWidth(0.15);
       pdf.rect(10.5, 10.5, pageWidth - 21, pageHeight - 21);
 
-      // 3. Draw ExtraJus Brutalist Gold Logo (Vectorial - High Def via Triangle Decomposition)
+      // 3. Draw SmartDoc Brutalist Gold Logo (Vectorial - High Def via Triangle Decomposition)
       const drawLogo = (pdf: jsPDF, x: number, y: number, size: number) => {
         const scale = size / 100;
         const goldR = 212, goldG = 175, goldB = 55;
@@ -248,7 +248,7 @@ export default function SignaturesPage() {
       pdf.setTextColor(160, 160, 165); // Neutral Muted Light
       pdf.setFont("helvetica", "normal");
       pdf.setFontSize(7.5);
-      pdf.text("PROTOCOLO DE SEGURANÇA E REGISTRO DIGITAL EXTRAJUS S/A", pageWidth / 2, 50, { align: "center" });
+      pdf.text("PROTOCOLO DE SEGURANÇA E REGISTRO DIGITAL SMARTDOC S/A", pageWidth / 2, 50, { align: "center" });
       
       // Elegant Divider (Gold Accent Line)
       pdf.setDrawColor(197, 168, 128); // Gold
@@ -280,7 +280,7 @@ export default function SignaturesPage() {
       pdf.setTextColor(215, 215, 220); // Warm White
       pdf.setFontSize(8.5);
       pdf.setFont("helvetica", "normal");
-      const declaration = "Certificamos que o presente instrumento jurídico-digital foi analisado, validado e assinado eletronicamente através da plataforma ExtraJus. A integridade do documento, a identidade dos signatários e as evidências digitais de consentimento foram registradas e vinculadas de forma permanente e imutável ao protocolo abaixo descrito.";
+      const declaration = "Certificamos que o presente instrumento jurídico-digital foi analisado, validado e assinado eletronicamente através da plataforma SmartDoc. A integridade do documento, a identidade dos signatários e as evidências digitais de consentimento foram registradas e vinculadas de forma permanente e imutável ao protocolo abaixo descrito.";
       const splitDeclaration = pdf.splitTextToSize(declaration, pageWidth - 52);
       pdf.text(splitDeclaration, 26, 91);
       
@@ -310,7 +310,7 @@ export default function SignaturesPage() {
       pdf.setTextColor(212, 175, 55);
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(6.5);
-      pdf.text("EXTRAJUS", pageWidth - 32, 140, { align: "center" });
+      pdf.text("SMARTDOC", pageWidth - 32, 140, { align: "center" });
       pdf.setFontSize(4.5);
       pdf.text("SECURE SIGN", pageWidth - 32, 143, { align: "center" });
       
@@ -363,7 +363,7 @@ export default function SignaturesPage() {
         const isEvidenceHolder = evidence.authorized_email?.toLowerCase().trim() === s.email?.toLowerCase().trim();
         let ip = isEvidenceHolder ? (evidence.ip_address || "REGISTRADO") : "PROTEGIDO";
         if (ip === "::1") ip = "127.0.0.1 (Local)";
-        const ua = isEvidenceHolder ? (evidence.user_agent?.slice(0, 55) + "...") : "ExtraJus Secure Agent";
+        const ua = isEvidenceHolder ? (evidence.user_agent?.slice(0, 55) + "...") : "SmartDoc Secure Agent";
         
         pdf.setTextColor(130, 120, 105); // Elegant Muted Gold Monospace
         pdf.setFont("courier", "normal");
@@ -378,7 +378,7 @@ export default function SignaturesPage() {
       pdf.setFontSize(6.5);
       pdf.setFont("helvetica", "normal");
       pdf.text("ESTE DOCUMENTO FOI ASSINADO ELETRONICAMENTE NOS TERMOS DA LEGISLAÇÃO VIGENTE.", pageWidth / 2, pageHeight - 20, { align: "center" });
-      pdf.text("VALIDADO PELA AUTORIDADE DE REGISTRO DIGITAL EXTRAJUS S/A", pageWidth / 2, pageHeight - 16, { align: "center" });
+      pdf.text("VALIDADO PELA AUTORIDADE DE REGISTRO DIGITAL SMARTDOC S/A", pageWidth / 2, pageHeight - 16, { align: "center" });
       
       pdf.save(`certificado-assinatura-${doc.protocolo}.pdf`);
       toast.success("Certificado baixado com sucesso!");

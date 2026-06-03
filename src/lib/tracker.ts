@@ -1,5 +1,5 @@
 /**
- * Extrajus Analytics Tracker
+ * SmartDoc Analytics Tracker
  * Zero-delay, async, batched event tracking com buffer local.
  * Envia lotes de 10 eventos para /api/track — sem bloquear a UI.
  */

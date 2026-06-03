@@ -167,7 +167,7 @@ export default function InboxPage() {
         const userIds = Array.from(new Set(data.map(n => n.user_id)));
         const { data: profiles } = await supabase.from('profiles').select('id, email, full_name').in('id', userIds);
         const profileMap = (profiles || []).reduce((acc: any, p: any) => { acc[p.id] = p; return acc; }, {});
-        setNotifications(data.map(n => ({ ...n, userProfile: profileMap[n.user_id] || { email: 'sistema@extrajus.com', full_name: 'Usuário Externo' } })));
+        setNotifications(data.map(n => ({ ...n, userProfile: profileMap[n.user_id] || { email: 'sistema@smartdoc.com', full_name: 'Usuário Externo' } })));
       } else {
         setNotifications(data || []);
       }
@@ -253,7 +253,7 @@ export default function InboxPage() {
     let text = "";
     if (suggestionType === "polite") text = "Olá. Analisamos sua solicitação e confirmamos que nossa equipe técnica já está auditando os parâmetros do documento. Fique tranquilo, o acompanhamento é feito em tempo real por aqui.";
     else if (suggestionType === "technical") text = "PROTOCOLO DE SEGURANÇA: Conexão segura estabelecida. A análise técnica do seu documento indica compatibilidade de 99.8% com nossos modelos de conformidade. Solicitação aceita e em fila de processamento.";
-    else if (suggestionType === "professional") text = "Sua solicitação de suporte já está em análise pelos nossos especialistas da ExtraJus. Estamos processando as informações e retornaremos com uma solução em breve. Acompanhe o status por este canal.";
+    else if (suggestionType === "professional") text = "Sua solicitação de suporte já está em análise pelos nossos especialistas da SmartDoc. Estamos processando as informações e retornaram com uma solução em breve. Acompanhe o status por este canal.";
     setIsAiTyping(true);
     setReplyText("");
     let index = 0;
@@ -398,7 +398,7 @@ export default function InboxPage() {
                   <div className="flex items-center gap-1.5 pr-4 min-w-0">
                     <TypeIcon size={10} className={cn(typeColor, "shrink-0")} />
                     <span className={cn(
-                      "text-xs truncate leading-snug flex-1",
+                       "text-xs truncate leading-snug flex-1",
                       !n.read && !isSelected ? "text-foreground font-black" : "text-foreground/90 font-semibold"
                     )}>
                       {n.title}
@@ -471,7 +471,7 @@ export default function InboxPage() {
                     <User size={8} className="text-primary/70 shrink-0" />
                     {isAdminView && selectedNotification.userProfile
                       ? <>{selectedNotification.userProfile.full_name} · {selectedNotification.userProfile.email}</>
-                      : <>From: ExtraJus Support</>}
+                      : <>From: SmartDoc Support</>}
                     <span className="opacity-60 font-black">·</span>
                     <Clock size={7} className="opacity-60" />
                     <span className="opacity-60 font-semibold">{new Date(selectedNotification.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>

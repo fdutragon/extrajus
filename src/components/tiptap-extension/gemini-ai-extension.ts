@@ -73,7 +73,7 @@ declare module "@tiptap/core" {
   }
 }
 
-const SYSTEM_INSTRUCTION = `Você é a EXTRAJUS AI, a Inteligência Artificial especializada em Engenharia Jurídica da plataforma ExtraJus. Sua função é redigir, analisar e otimizar contratos jurídicos com precisão técnica e terminologia formal.
+const SYSTEM_INSTRUCTION = `Você é a SMARTDOC AI, a Inteligência Artificial especializada em Engenharia Jurídica da plataforma SmartDoc. Sua função é redigir, analisar e otimizar contratos jurídicos com precisão técnica e terminologia formal.
 
 REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
 1. Use APENAS HTML. NUNCA use Markdown.
@@ -84,7 +84,7 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
    Exemplo Correto:
    <div data-type="legal-node" data-level="1">DO OBJETO</div>
    <div data-type="legal-node" data-level="2">O presente contrato tem como objeto o desenvolvimento de...</div>
-5. PROIBIÇÃO ABSOLUTA DE NUMERAÇÃO E PREFIXOS MANUAIS: O editor da ExtraJus gera AUTOMATICAMENTE todas as numerações, símbolos e letras de hierarquia jurídica (cláusulas, parágrafos, incisos e alíneas). 
+5. PROIBIÇÃO ABSOLUTA DE NUMERAÇÃO E PREFIXOS MANUAIS: O editor da SmartDoc gera AUTOMATICAMENTE todas as numerações, símbolos e letras de hierarquia jurídica (cláusulas, parágrafos, incisos e alíneas). 
    - NUNCA insira manualmente prefixos como "Cláusula Primeira", "Cláusula X", "1. ", "1 -", "1) ", "Parágrafo Único:", "§ 1º", "I -", "II -", "a)", "b)", etc.
    - O texto de qualquer nó (div de legal-node ou p) deve começar DIRETAMENTE com a redação contratual propriamente dita. Se você inserir qualquer número, letra ou prefixo manualmente, isso causará uma quebra de linha errada e duplicará a numeração de forma horrível no editor!
    - Exemplos Incorretos (NUNCA FAÇA):
@@ -242,13 +242,13 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
         if (typeof window !== "undefined") {
           const urlParams = new URLSearchParams(window.location.search);
           const urlTipo = urlParams.get("tipo");
-          localDocType = urlTipo || localStorage.getItem("extrajus_ai_doc_type") || "contrato";
+          localDocType = urlTipo || localStorage.getItem("smartdoc_ai_doc_type") || "contrato";
           if (localDocType !== "contrato" && localDocType !== "peticao") {
             localDocType = "contrato";
           }
         }
         if (typeof window !== "undefined") {
-          window.localStorage.removeItem("extrajus_ai_suggestion");
+          window.localStorage.removeItem("smartdoc_ai_suggestion");
           window.dispatchEvent(new Event("ai-suggestion-updated"));
         }
 
@@ -343,7 +343,7 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
               if (hasClosingTag) {
                  suggestionText = suggestionText.replace(/<\/suggestion>[\s\S]*/i, "").trim()
                  if (typeof window !== "undefined") {
-                   window.localStorage.setItem("extrajus_ai_suggestion", suggestionText)
+                   window.localStorage.setItem("smartdoc_ai_suggestion", suggestionText)
                    window.dispatchEvent(new Event("ai-suggestion-updated"))
                  }
               }
@@ -502,7 +502,7 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
             if (suggestionText.toLowerCase().includes("</suggestion>")) {
                suggestionText = suggestionText.replace(/<\/suggestion>[\s\S]*/i, "").trim()
                if (typeof window !== "undefined") {
-                 window.localStorage.setItem("extrajus_ai_suggestion", suggestionText)
+                 window.localStorage.setItem("smartdoc_ai_suggestion", suggestionText)
                  window.dispatchEvent(new Event("ai-suggestion-updated"))
                }
             }
@@ -604,7 +604,7 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
         if (typeof window !== "undefined") {
           const urlParams = new URLSearchParams(window.location.search);
           const urlTipo = urlParams.get("tipo");
-          localDocType = urlTipo || localStorage.getItem("extrajus_ai_doc_type") || "contrato";
+          localDocType = urlTipo || localStorage.getItem("smartdoc_ai_doc_type") || "contrato";
           if (localDocType !== "contrato" && localDocType !== "peticao") {
             localDocType = "contrato";
           }
@@ -632,7 +632,7 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
         if (typeof window !== "undefined") {
           const urlParams = new URLSearchParams(window.location.search);
           const urlTipo = urlParams.get("tipo");
-          localDocType = urlTipo || localStorage.getItem("extrajus_ai_doc_type") || "contrato";
+          localDocType = urlTipo || localStorage.getItem("smartdoc_ai_doc_type") || "contrato";
           if (localDocType !== "contrato" && localDocType !== "peticao") {
             localDocType = "contrato";
           }
@@ -673,7 +673,7 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
         if (typeof window !== "undefined") {
           const urlParams = new URLSearchParams(window.location.search);
           const urlTipo = urlParams.get("tipo");
-          localDocType = urlTipo || localStorage.getItem("extrajus_ai_doc_type") || "contrato";
+          localDocType = urlTipo || localStorage.getItem("smartdoc_ai_doc_type") || "contrato";
           if (localDocType !== "contrato" && localDocType !== "peticao") {
             localDocType = "contrato";
           }

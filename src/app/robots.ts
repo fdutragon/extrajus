@@ -15,6 +15,6 @@ export default function robots(): MetadataRoute.Robots {
         '/editor/'
       ],
     },
-    sitemap: 'https://extrajus.com.br/sitemap.xml',
+    sitemap: 'https://smartdoc.com.br/sitemap.xml',
   }
 }

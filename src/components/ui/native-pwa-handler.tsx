@@ -82,18 +82,18 @@ export function NativePwaHandler() {
           const isMobile = typeof navigator !== "undefined" && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
           
           if (isMobile) {
-            toast.success("ExtraJus instalada com sucesso!", {
+            toast.success("SmartDoc instalada com sucesso!", {
               description: "O aplicativo já está pronto no seu celular.",
               duration: 10000,
               className: "text-[11px]"
             })
           } else {
-            toast.success("ExtraJus instalada com sucesso! Redirecionando...", {
+            toast.success("SmartDoc instalada com sucesso! Redirecionando...", {
               duration: 3000,
               className: "text-[11px]"
             })
             setTimeout(() => {
-               window.location.href = "web+extrajus://editor"
+               window.location.href = "web+smartdoc://editor"
             }, 3000)
           }
         }, 10000)

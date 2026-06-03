@@ -110,7 +110,7 @@ export function SinapsesPlansModal() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amountCents: pkg.price * 100,
-          description: `ExtraJus: ${pkg.credits} CrÃ©ditos`
+          description: `SmartDoc: ${pkg.credits} CrÃ©ditos`
         })
       });
       const data = await response.json();
@@ -434,7 +434,7 @@ export function SinapsesPlansModal() {
           <div className="flex items-center justify-between pt-5 border-t border-border mt-5">
             <span className="text-[0.625rem] text-muted-foreground font-bold italic flex items-center gap-1.5">
               <ShieldCheck size={13} className="text-primary" />
-              Ambiente Seguro â€¢ ExtraJus S/A Realtime Payment Gateway
+              Ambiente Seguro â€¢ SmartDoc S/A Realtime Payment Gateway
             </span>
             <Button
               variant="outline"

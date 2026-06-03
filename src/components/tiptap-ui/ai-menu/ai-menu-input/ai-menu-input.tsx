@@ -169,10 +169,10 @@ export function ContractTypeSelector({
         if (isMobile) {
           window.open(window.location.href, "_blank")
         } else {
-          window.location.href = "web+extrajus://editor"
+          window.location.href = "web+smartdoc://editor"
         }
         
-        toast.success("Abrindo a ExtraJus no App...", {
+        toast.success("Abrindo a SmartDoc no App...", {
           icon: <Cloud className="w-4 h-4 text-emerald-500" />,
           duration: 3000
         })

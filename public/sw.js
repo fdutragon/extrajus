@@ -1,4 +1,4 @@
-const CACHE_NAME = 'extrajus-cache-v2';
+const CACHE_NAME = 'smartdoc-cache-v2';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

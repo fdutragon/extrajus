@@ -184,7 +184,7 @@ export default function Home() {
                   </div>
                   <div className="flex items-center gap-4 pt-2">
                     <div className="px-3 py-1 bg-primary/10 border border-primary/25 rounded-lg text-[9px] font-black text-primary uppercase tracking-widest">
-                      IA ExtraJus // Análise em Tempo Real
+                      IA SmartDoc // Análise em Tempo Real
                     </div>
                   </div>
                   <div className="space-y-3 pt-2">
@@ -567,23 +567,23 @@ export default function Home() {
           <div className="space-y-4 text-left">
             <FAQItem
               question="Preciso ser advogado ou possuir formação jurídica para usar?"
-              answer="De forma alguma! A ExtraJus foi desenvolvida especificamente para que empresários e prestadores de serviços criem contratos impecáveis. Nossa IA traduz a linguagem técnica burocrática (juridiquês) para parâmetros objetivos de negócios e garante que as salvaguardas essenciais de multas e obrigações estejam lá."
+              answer="De forma alguma! A SmartDoc foi desenvolvida especificamente para que empresários e prestadores de serviços criem contratos impecáveis. Nossa IA traduz a linguagem técnica burocrática (juridiquês) para parâmetros objetivos de negócios e garante que as salvaguardas essenciais de multas e obrigações estejam lá."
             />
             <FAQItem
               question="Como a IA garante que a formatação não será desconfigurada?"
-              answer="Ao contrário de outras inteligências artificiais como o ChatGPT, a IA cirúrgica da ExtraJus edita apenas as linhas ou cláusulas exatas que você selecionar. O restante do contrato, fontes, cabeçalhos, rodapés e regras de recuos permanecem 100% intactos e padronizados."
+              answer="Ao contrário de outras inteligências artificiais como o ChatGPT, a IA cirúrgica da SmartDoc edita apenas as linhas ou cláusulas exatas que você selecionar. O restante do contrato, fontes, cabeçalhos, rodapés e regras de recuos permanecem 100% intactos e padronizados."
             />
             <FAQItem
               question="A assinatura gerada na plataforma possui plena validade jurídica?"
               answer="Sim! Nossas assinaturas eletrônicas estão plenamente em conformidade com a MP 2.200-2/2001 e a Lei 14.063/2020. Nós coletamos múltiplos pontos de autenticidade (IP, logs de geolocalização, e-mail/telefone e hashes SHA-256) garantindo total legitimidade legal frente a tribunais."
             />
             <FAQItem
-              question="Qual a vantagem de usar a ExtraJus em vez de baixar um modelo pronto do Google?"
-              answer="Modelos baixados da internet são estáticos, desatualizados e costumam conter termos que não se aplicam ao seu cenário real, gerando brechas fatais de rescisão. A ExtraJus gera contratos dinâmicos, analisa o texto em busca de contradições de datas/valores e melhora o contrato conforme as suas respostas."
+              question="Qual a vantagem de usar a SmartDoc em vez de baixar um modelo pronto do Google?"
+              answer="Modelos baixados da internet são estáticos, desatualizados e costumam conter termos que não se aplicam ao seu cenário real, gerando brechas fatais de rescisão. A SmartDoc gera contratos dinâmicos, analisa o texto em busca de contradições de datas/valores e melhora o contrato conforme as suas respostas."
             />
             <FAQItem
               question="Posso fazer o upload de contratos antigos que eu já costumo utilizar?"
-              answer="Com certeza. Você pode alimentar o editor da ExtraJus com as suas minutas padrão. A inteligência artificial aprende a estrutura do seu documento e passa a sugerir automações inteligentes e revisões com base na sua escrita anterior."
+              answer="Com certeza. Você pode alimentar o editor da SmartDoc com as suas minutas padrão. A inteligência artificial aprende a estrutura do seu documento e passa a sugerir automações inteligentes e revisões com base na sua escrita anterior."
             />
           </div>
         </div>
@@ -619,7 +619,7 @@ export default function Home() {
             </div>
           </div>
           <div className="pt-12 border-t border-border/40 flex flex-col md:flex-row justify-between items-center gap-8 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
-            <span>© 2026 ExtraJus S/A — Todos os direitos reservados.</span>
+            <span>© 2026 SmartDoc S/A — Todos os direitos reservados.</span>
             <span className="text-muted-foreground/60 italic font-medium normal-case">Blindagem e Inteligência Corporativa</span>
           </div>
         </div>

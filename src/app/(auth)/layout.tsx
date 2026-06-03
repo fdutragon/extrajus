@@ -21,13 +21,13 @@ export default function AuthLayout({
               &quot;A melhor forma de prever o futuro é redigir o contrato que o dita.&quot;
             </p>
             <footer className="text-sm font-mono text-primary dark:text-primary uppercase tracking-widest">
-              — ExtraJus Engine // Inteligência Jurídica
+              — SmartDoc Engine // Inteligência Jurídica
             </footer>
           </blockquote>
         </div>
 
         <div className="text-xs font-mono text-muted-foreground dark:text-muted-foreground relative z-10">
-          © 2026 EXTRAJUS — TODOS OS DIREITOS RESERVADOS
+          © 2026 SMARTDOC — TODOS OS DIREITOS RESERVADOS
         </div>
       </div>
 

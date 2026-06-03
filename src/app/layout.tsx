@@ -17,7 +17,7 @@ const sansFont = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "ExtraJus IA - Gerador de Contratos",
+  title: "SmartDoc IA - Gerador de Contratos",
   description: "Ecossistema de alta tecnologia e inteligência artificial para redação, auditoria e blindagem contratual definitiva.",
   icons: {
     icon: [
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "ExtraJus",
+    title: "SmartDoc",
   },
 };
 

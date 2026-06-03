@@ -490,7 +490,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
                 </Button>
 
 
-                {(process.env.NODE_ENV === "development" || typeof window !== "undefined" && window.location.hostname === "localhost" || email.toLowerCase().trim() === "felipe.dutragon@gmail.com" || email.toLowerCase().trim() === "contato@extrajus.pro") && (
+                {(process.env.NODE_ENV === "development" || typeof window !== "undefined" && window.location.hostname === "localhost" || email.toLowerCase().trim() === "felipe.dutragon@gmail.com" || email.toLowerCase().trim() === "contato@smartdoc.pro") && (
                   <Button 
                     onClick={handleDevSimulatePaymentOnly} 
                     disabled={loading}

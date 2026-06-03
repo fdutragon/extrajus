@@ -35,7 +35,7 @@ export async function POST(request: Request) {
       .single();
 
     const senderName = isSenderAdmin ? "Felipe (Admin)" : (profile?.full_name || "Usuário");
-    const senderEmail = profile?.email || user.email || "recruta@extrajus.com";
+    const senderEmail = profile?.email || user.email || "recruta@smartdoc.com";
 
     // 2. Buscar dados da notificação original para saber quem é o destinatário
     const { data: originalNotif, error: notifFetchError } = await supabaseAdmin

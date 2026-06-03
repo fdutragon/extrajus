@@ -1,6 +1,6 @@
 {
-  "name": "ExtraJus",
-  "short_name": "ExtraJus",
+  "name": "SmartDoc",
+  "short_name": "SmartDoc",
   "description": "Engenharia Jurídica & IA",
   "start_url": "/",
   "display": "standalone",
@@ -8,11 +8,11 @@
   "orientation": "portrait-primary",
   "background_color": "#09090b",
   "theme_color": "#09090b",
-  "id": "/extrajus-v23",
+  "id": "/smartdoc-v23",
   "categories": ["business", "productivity", "legal"],
   "protocol_handlers": [
     {
-      "protocol": "web+extrajus",
+      "protocol": "web+smartdoc",
       "url": "/?open=%s"
     }
   ],

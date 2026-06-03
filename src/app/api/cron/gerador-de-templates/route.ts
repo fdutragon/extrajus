@@ -365,7 +365,7 @@ REGRAS DE FORMATAÇÃO ESTRITAS (OBRIGATÓRIAS):
      (Nota: NUNCA coloque textos explicativos ou misture conteúdo na mesma linha ou div do nível 1!)
    - O CONTEÚDO descritivo ou parágrafo da cláusula deve vir OBRIGATORIAMENTE na linha de baixo (um bloco separado) como nível 2:
      <div data-type="legal-node" data-level="2">O presente contrato tem como objeto...</div>
-5. PROIBIÇÃO ABSOLUTA DE NUMERAÇÃO MANUAL: O editor da ExtraJus calcula e gera de forma dinâmica todas as numerações jurídicas (como 'Cláusula Primeira', '§ 1º', 'I -', 'a)', etc.).
+5. PROIBIÇÃO ABSOLUTA DE NUMERAÇÃO MANUAL: O editor da SmartDoc calcula e gera de forma dinâmica todas as numerações jurídicas (como 'Cláusula Primeira', '§ 1º', 'I -', 'a)', etc.).
    - NUNCA insira manualmente qualquer prefixo numérico ou literal no início das tags div ou p!
    - O texto deve começar DIRETAMENTE com a redação jurídica pura.
    - Exemplo Incorreto (NUNCA FAÇA): <div data-type="legal-node" data-level="2">Cláusula 1ª. O objeto...</div>

@@ -118,7 +118,7 @@ export async function POST(request: Request) {
       const resendInstance = new Resend(resendKey);
       const emailPromises = finalSigners.map(signer => 
         resendInstance.emails.send({
-          from: 'ExtraJus <assinaturas@extrajus.pro>',
+          from: 'SmartDoc <assinaturas@smartdoc.pro>',
           to: signer.email,
           subject: `📜 Convocação para Assinatura: ${title || 'Novo Contrato'}`,
           html: `
@@ -273,7 +273,7 @@ export async function POST(request: Request) {
                   </div>
 
                   <div class="footer">
-                    © 2026 ExtraJus S/A. Blindagem e Inteligência Corporativa.<br>
+                    © 2026 SmartDoc S/A. Blindagem e Inteligência Corporativa.<br>
                     Secure Signature Protocol // Evidências Criptográficas ICP-Brasil.
                   </div>
                 </div>
@@ -291,7 +291,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, message: "Convites enviados e contrato em estado pendente." });
 
   } catch (error: any) {
-    console.error("ExtraJus Signature API Failure:", error);
+    console.error("SmartDoc Signature API Failure:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

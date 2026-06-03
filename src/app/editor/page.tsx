@@ -78,12 +78,12 @@ function EditorContent() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       if (room) {
-        localStorage.setItem("extrajus_last_room", room)
-        document.cookie = `extrajus_last_room=${room}; path=/; max-age=31536000;`
+        localStorage.setItem("smartdoc_last_room", room)
+        document.cookie = `smartdoc_last_room=${room}; path=/; max-age=31536000;`
       } else {
-        let lastRoom = localStorage.getItem("extrajus_last_room")
+        let lastRoom = localStorage.getItem("smartdoc_last_room")
         if (!lastRoom) {
-          const match = document.cookie.match(new RegExp('(^| )extrajus_last_room=([^;]+)'))
+          const match = document.cookie.match(new RegExp('(^| )smartdoc_last_room=([^;]+)'))
           if (match) lastRoom = match[2]
         }
         if (lastRoom) {
@@ -93,7 +93,7 @@ function EditorContent() {
           return
         }
         
-        const newRoom = `extrajus-draft-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+        const newRoom = `smartdoc-draft-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
         const params = new URLSearchParams(searchParams.toString())
         params.set("room", newRoom)
         router.replace(`${window.location.pathname}?${params.toString()}`)

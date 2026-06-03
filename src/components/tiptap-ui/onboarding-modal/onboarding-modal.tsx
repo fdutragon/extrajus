@@ -59,7 +59,7 @@ export function OnboardingModal({ isOpen, onSelectTemplate, onClose }: Onboardin
                 Qual <span className="text-primary">Contrato</span> você precisa criar?
               </DialogTitle>
               <p className="text-xs text-muted-foreground font-medium uppercase tracking-[0.2em] max-w-lg mx-auto">
-                A Inteligência Artificial da ExtraJus está pronta. Selecione um modelo rápido de contrato abaixo ou digite seu próprio comando no editor.
+                A Inteligência Artificial da SmartDoc está pronta. Selecione um modelo rápido de contrato abaixo ou digite seu próprio comando no editor.
               </p>
             </DialogHeader>
 

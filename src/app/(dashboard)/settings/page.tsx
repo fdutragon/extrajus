@@ -216,7 +216,7 @@ export default function SettingsPage() {
                       </Avatar>
                       <div className="mb-1 text-left">
                         <h2 className="text-xl font-black tracking-tight text-foreground">{fullName || 'Usuário'}</h2>
-                        <p className="text-xs text-muted-foreground font-medium italic">Perfil Profissional ExtraJus</p>
+                        <p className="text-xs text-muted-foreground font-medium italic">Perfil Profissional SmartDoc</p>
                       </div>
                     </div>
                   </div>
