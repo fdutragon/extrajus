@@ -214,7 +214,7 @@ export async function GET(request: Request) {
 
               const isDev = process.env.NODE_ENV === "development" || (process.env.NEXT_PUBLIC_SITE_URL && process.env.NEXT_PUBLIC_SITE_URL.includes("localhost"));
               const toEmail = userData.user.email;
-              const fromEmail = isDev ? "ExtraJus AI <onboarding@resend.dev>" : "ExtraJus AI <contato@extrajus.com.br>"; 
+              const fromEmail = "ExtraJus AI <contato@extrajus.pro>"; 
               const emailSubject = isDev 
                 ? `⚔️ [DEV DEBUG] Documento liberado (Original: ${userData.user.email}) - ${docData.title || 'Contrato'}`
                 : `Seu documento ExtraJus está liberado: ${docData.title || 'Contrato'}`;
@@ -360,7 +360,7 @@ export async function POST(request: Request) {
 
           const isDev = process.env.NODE_ENV === "development" || (process.env.NEXT_PUBLIC_SITE_URL && process.env.NEXT_PUBLIC_SITE_URL.includes("localhost"));
           const toEmail = userData.user.email;
-          const fromEmail = isDev ? "ExtraJus AI <onboarding@resend.dev>" : "ExtraJus AI <contato@extrajus.com.br>"; 
+          const fromEmail = "ExtraJus AI <contato@extrajus.pro>"; 
           const emailSubject = isDev 
             ? `⚔️ [DEV DEBUG] Documento liberado (Original: ${userData.user.email}) - ${docData.title || 'Contrato'}`
             : `Seu documento ExtraJus está liberado: ${docData.title || 'Contrato'}`;

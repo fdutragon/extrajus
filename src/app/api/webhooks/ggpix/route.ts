@@ -230,6 +230,7 @@ export async function POST(request: Request) {
 
         // Buscar dados do documento para o envio do e-mail via Resend
         try {
+          console.log(`\n\n--- [Webhook Email Debug] Iniciando fluxo para docId: ${docId}, userId: ${transaction.user_id} ---`);
           const { data: docData } = await supabase
             .from("documents")
             .select("title, content")
@@ -238,24 +239,31 @@ export async function POST(request: Request) {
 
           const { data: userData } = await supabase.auth.admin.getUserById(transaction.user_id);
           
+          console.log(`[Webhook Email Debug] docData encontrado: ${!!docData}, userData encontrado: ${!!userData}, email: ${userData?.user?.email}`);
+          
           const resendKey = getSecret("RESEND_API_KEY") || process.env.RESEND_API_KEY;
+          console.log(`[Webhook Email Debug] resendKey configurada: ${!!resendKey}`);
           
           if (resendKey && userData?.user?.email && docData?.content) {
+            console.log(`[Webhook Email Debug] Condições atendidas. Gerando DOCX e HTML...`);
             const resendInstance = new Resend(resendKey);
             const { generateEmailTemplate } = await import('@/utils/email-template');
             const emailHtml = generateEmailTemplate(userData.user.user_metadata?.full_name, docData.title);
 
             const { generateDocxBase64 } = await import('@/utils/docx');
+            console.log(`[Webhook Email Debug] Utilitário docx importado, gerando base64...`);
             const docxBase64 = await generateDocxBase64(docData.title, docData.content);
             const filename = `${(docData.title || 'documento').replace(/[^a-zA-Z0-9\-_]/g, '_')}.docx`;
+            console.log(`[Webhook Email Debug] DOCX gerado com sucesso. Tamanho: ${docxBase64.length} caracteres.`);
 
             const isDev = process.env.NODE_ENV === "development" || (process.env.NEXT_PUBLIC_SITE_URL && process.env.NEXT_PUBLIC_SITE_URL.includes("localhost"));
             const toEmail = userData.user.email;
-            const fromEmail = isDev ? "ExtraJus AI <onboarding@resend.dev>" : "ExtraJus AI <contato@extrajus.com.br>"; 
+            const fromEmail = "ExtraJus AI <contato@extrajus.pro>"; 
             const emailSubject = isDev 
               ? `⚔️ [DEV DEBUG] Documento liberado (Original: ${userData.user.email}) - ${docData.title || 'Contrato'}`
               : `Seu documento ExtraJus está liberado: ${docData.title || 'Contrato'}`;
 
+            console.log(`[Webhook Email Debug] Disparando para a API da Resend... De: ${fromEmail} Para: ${toEmail}`);
             const sendResult = await resendInstance.emails.send({
               from: fromEmail,
               to: toEmail,
@@ -270,13 +278,20 @@ export async function POST(request: Request) {
             });
 
             if (sendResult.error) {
-              console.error("[Webhook] Falha no envio de e-mail:", sendResult.error);
+              console.error("[Webhook Email Debug] Falha retoranda pela Resend:", sendResult.error);
             } else {
-              console.log(`[Webhook] E-mail enviado com sucesso para ${toEmail}`);
+              console.log(`[Webhook Email Debug] E-mail ACEITO pela Resend! ID: ${sendResult.data?.id}`);
             }
+          } else {
+            console.warn(`[Webhook Email Debug] ABORTADO. Faltou alguma coisa:`, {
+               hasResendKey: !!resendKey, 
+               hasEmail: !!userData?.user?.email, 
+               hasContent: !!docData?.content 
+            });
           }
+          console.log(`--- [Webhook Email Debug] Fim do bloco ---\n\n`);
         } catch (emailErr: any) {
-          console.error("[Webhook] Erro no envio de e-mail com contrato:", emailErr.message);
+          console.error("[Webhook Email Debug] Crash total no bloco de e-mail:", emailErr.message, emailErr.stack);
         }
 
         console.log(`[Webhook] Documento e Contrato ${docId} destravados com sucesso para o usuário ${transaction.user_id}`);
