@@ -79,7 +79,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
             if (typeof window !== "undefined" && (window as any).gtag && !conversionFiredRef.current) {
               conversionFiredRef.current = true;
               (window as any).gtag('event', 'conversion', {
-                'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
+                'send_to': 'AW-18209711344/AxU4CNvcqrgcEPDJiOtD',
                 'value': 27.00,
                 'currency': 'BRL',
                 'transaction_id': pixData.externalId
@@ -218,7 +218,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
       if (typeof window !== "undefined" && (window as any).gtag && !conversionFiredRef.current) {
         conversionFiredRef.current = true;
         (window as any).gtag('event', 'conversion', {
-          'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
+          'send_to': 'AW-18209711344/AxU4CNvcqrgcEPDJiOtD',
           'value': 27.00,
           'currency': 'BRL',
           'transaction_id': data.externalId
@@ -255,7 +255,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
       if (typeof window !== "undefined" && (window as any).gtag && !conversionFiredRef.current) {
         conversionFiredRef.current = true;
         (window as any).gtag('event', 'conversion', {
-          'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
+          'send_to': 'AW-18209711344/AxU4CNvcqrgcEPDJiOtD',
           'value': 27.00,
           'currency': 'BRL',
           'transaction_id': pixData.externalId
