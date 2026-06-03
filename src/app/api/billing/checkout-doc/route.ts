@@ -99,99 +99,64 @@ export async function POST(request: Request) {
 
     if (docError) throw docError;
 
-    // 2.5 Insert matching record into contracts table so it appears in the user's dashboard!
-    const { error: contractInsertError } = await supabaseAdmin
-      .from("contracts")
-      .insert({
+
+
+    // (Removido verificação inútil de duplicados, pois doc.id é sempre novo)
+
+    const externalId = `paydoc_${doc.id}`;
+    const isDev = process.env.NODE_ENV === "development" || (process.env.NEXT_PUBLIC_SITE_URL && process.env.NEXT_PUBLIC_SITE_URL.includes("localhost"));
+    const amountCents = isDev ? 100 : 2700; // R$ 1,00 em dev, R$ 27,00 em prod
+
+    // 3. Paralelizar a chamada GG Pix e a inserção em Contracts
+    const API_KEY = getSecret("GGPIX_API_KEY");
+    const payerDocument = generateRandomCPF();
+
+    const [ggPixResponse] = await Promise.all([
+      fetch(GGPIX_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-Key": API_KEY || "",
+        },
+        body: JSON.stringify({
+          amountCents,
+          description: "Desbloqueio de Documento ExtraJus",
+          payerName: finalName,
+          payerDocument,
+          externalId,
+          webhookUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/ggpix`,
+        }),
+      }).then(res => res.json()),
+      
+      supabaseAdmin.from("contracts").insert({
         id: doc.id,
         user_id: userId,
         title: title || "Novo Documento",
         status: "draft"
-      });
+      })
+    ]);
 
-    if (contractInsertError) {
-      console.error("Erro ao registrar contrato no dashboard:", contractInsertError.message);
+    const data = ggPixResponse;
+
+    if (!data.pixCopyPaste) {
+      console.error("Erro GG Pix Checkout:", data);
+      return NextResponse.json({ error: "Falha ao gerar Pix para o documento" }, { status: 500 });
     }
 
-    // --- BLOQUEIO DE DUPLICADOS NO BACKEND ---
-    // Verificar se já existe uma transação PENDING para este documento
-    const { data: existingTx } = await supabaseAdmin
-      .from("transactions")
-      .select("external_id, pix_code")
-      .eq("user_id", userId)
-      .eq("status", "PENDING")
-      .eq("amount_cents", 2700)
-      .like("external_id", `paydoc_${doc.id}%`)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (existingTx && existingTx.pix_code) {
-      console.log(`[Checkout] Recuperando transação pendente existente: ${existingTx.external_id}`);
-      
-      // Notificar o Cadelo via Telegram sobre a tentativa de re-geração (reentrada)
-      await sendTelegramNotification(`#SISTEMA_ORDEM 🔄 <b>REENTRADA NO CHECKOUT</b>\n\n📄 Documento: <b>${title || 'Sem título'}</b>\n👤 Cliente: <b>${finalName}</b>\n🆔 ID: <code>${existingTx.external_id}</code>\nℹ️ O cliente voltou para ver o QR Code existente.`);
-
-      // Precisamos do QR Code formatado (data.pixCode da GG Pix)
-      // Como não salvamos o raw QR code (SVG/Base64) mas sim o copia e cola, 
-      // para simplificar e garantir 100% de funcionamento, vamos apenas prosseguir se não houver.
-      // Mas aqui vamos apenas gerar um novo externalId se quisermos ser puristas, 
-      // ou apenas deixar o fluxo seguir se for um novo doc. 
-      // Como o doc.id é novo (criado acima), tecnicamente cada chamada gera um novo DOC.
-      // O verdadeiro problema é o LOOP gerando centenas de DOCS. 
-    }
-
-    const externalId = `paydoc_${doc.id}`;
-    const amountCents = 2700; // R$ 27,00
-
-    // 3. Register transaction
-    const { error: dbError } = await supabaseAdmin
+    // 4. Inserir a transação já com o pix_code preenchido
+    await supabaseAdmin
       .from("transactions")
       .insert({
         user_id: userId,
         amount_cents: amountCents,
         external_id: externalId,
-        status: "PENDING"
+        status: "PENDING",
+        pix_code: data.pixCopyPaste
       });
 
-    if (dbError) throw dbError;
-
-    // 4. Generate PIX
-    const API_KEY = getSecret("GGPIX_API_KEY");
-    const payerDocument = generateRandomCPF();
-
-    const response = await fetch(GGPIX_API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": API_KEY || "",
-      },
-      body: JSON.stringify({
-        amountCents,
-        description: "Desbloqueio de Documento ExtraJus",
-        payerName: finalName,
-        payerDocument,
-        externalId,
-        webhookUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/ggpix`,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error("Erro GG Pix Checkout:", data);
-      return NextResponse.json({ error: "Falha ao gerar Pix para o documento" }, { status: 500 });
-    }
-
-    // Update transaction with pix_code
-    await supabaseAdmin
-      .from("transactions")
-      .update({ pix_code: data.pixCopyPaste })
-      .eq("external_id", externalId);
-
-    // Notificar o Cadelo via Telegram sobre o interesse no documento
+    // 5. Notificar o Cadelo via Telegram de forma assíncrona (não dar await para não travar a UI)
     const formattedAmount = (amountCents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    await sendTelegramNotification(`#SISTEMA_ORDEM ⚡ <b>PIX GERADO (DOCUMENTO)</b>\n\n💵 Valor: <b>${formattedAmount}</b>\n📄 Documento: <b>${title || 'Sem título'}</b>\n👤 Cliente: <b>${finalName}</b> (${email})\n🆔 ID: <code>${externalId}</code>\n⏳ Só falta pagar para o lucro entrar!`);
+    sendTelegramNotification(`#SISTEMA_ORDEM ⚡ <b>PIX GERADO (DOCUMENTO)</b>\n\n💵 Valor: <b>${formattedAmount}</b>\n📄 Documento: <b>${title || 'Sem título'}</b>\n👤 Cliente: <b>${finalName}</b> (${email})\n🆔 ID: <code>${externalId}</code>\n⏳ Só falta pagar para o lucro entrar!`).catch(console.error);
 
     return NextResponse.json({ 
       pixCode: data.pixCopyPaste, 

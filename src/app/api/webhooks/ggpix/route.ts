@@ -249,12 +249,17 @@ export async function POST(request: Request) {
             const docxBase64 = await generateDocxBase64(docData.title, docData.content);
             const filename = `${(docData.title || 'documento').replace(/[^a-zA-Z0-9\-_]/g, '_')}.docx`;
 
-            // DEV DEBUG: Forçando envio apenas para felipe.dutragon@gmail.com com remetente onboarding
-            const devEmail = "felipe.dutragon@gmail.com";
+            const isDev = process.env.NODE_ENV === "development" || (process.env.NEXT_PUBLIC_SITE_URL && process.env.NEXT_PUBLIC_SITE_URL.includes("localhost"));
+            const toEmail = userData.user.email;
+            const fromEmail = isDev ? "ExtraJus AI <onboarding@resend.dev>" : "ExtraJus AI <contato@extrajus.com.br>"; 
+            const emailSubject = isDev 
+              ? `⚔️ [DEV DEBUG] Documento liberado (Original: ${userData.user.email}) - ${docData.title || 'Contrato'}`
+              : `Seu documento ExtraJus está liberado: ${docData.title || 'Contrato'}`;
+
             const sendResult = await resendInstance.emails.send({
-              from: "ExtraJus AI <onboarding@resend.dev>",
-              to: devEmail,
-              subject: `⚔️ [DEV DEBUG] Documento liberado (Original: ${userData.user.email}) - ${docData.title || 'Contrato'}`,
+              from: fromEmail,
+              to: toEmail,
+              subject: emailSubject,
               html: emailHtml,
               attachments: [
                 {
@@ -265,9 +270,9 @@ export async function POST(request: Request) {
             });
 
             if (sendResult.error) {
-              console.error("[Webhook] Falha no Resend (Dev Debug):", sendResult.error);
+              console.error("[Webhook] Falha no envio de e-mail:", sendResult.error);
             } else {
-              console.log(`[Webhook] E-mail de debug enviado com sucesso para ${devEmail}`);
+              console.log(`[Webhook] E-mail enviado com sucesso para ${toEmail}`);
             }
           }
         } catch (emailErr: any) {

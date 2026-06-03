@@ -23,8 +23,68 @@ export function compileWordHtml(title: string, rawHtml: string): string {
     return String.fromCharCode(96 + num); // 1->a, 2->b
   }
 
-  styledHtml = styledHtml.replace(/<div([^>]*class="[^"]*legal-node-level-(\d)[^"]*"[^>]*)>[\s\S]*?<span class="legal-node-counter"[^>]*><\/span>[\s\S]*?<div class="legal-node-content"[^>]*>([\s\S]*?)<\/div>\s*<\/div>/gi, (match, divAttrs, levelStr, innerContent) => {
-    const level = parseInt(levelStr, 10);
+  // Parse the HTML safely without catastrophic backtracking regex
+  let result = '';
+  let currentIndex = 0;
+  
+  const startRegex = /<div([^>]*class="[^"]*legal-node-level-(\d)[^"]*"[^>]*)>([\s\S]*?)<span class="legal-node-counter"[^>]*><\/span>([\s\S]*?)<div class="legal-node-content"[^>]*>/i;
+
+  while (currentIndex < styledHtml.length) {
+    const remaining = styledHtml.slice(currentIndex);
+    const match = startRegex.exec(remaining);
+    
+    if (!match) {
+      result += remaining;
+      break;
+    }
+
+    const startIndex = match.index;
+    const level = parseInt(match[2], 10);
+    const fullMatchLength = match[0].length;
+    
+    result += remaining.slice(0, startIndex);
+    
+    // Find the matching closing </div></div> pair manually to avoid ReDoS
+    let contentStart = startIndex + fullMatchLength;
+    let contentEnd = contentStart;
+    let openDivs = 1; // We are inside <div class="legal-node-content">
+    
+    while (contentEnd < remaining.length && openDivs > 0) {
+      const nextOpen = remaining.indexOf('<div', contentEnd);
+      const nextClose = remaining.indexOf('</div', contentEnd);
+      
+      if (nextClose === -1) break; // Invalid HTML
+      
+      if (nextOpen !== -1 && nextOpen < nextClose) {
+        openDivs++;
+        contentEnd = nextOpen + 4;
+      } else {
+        openDivs--;
+        if (openDivs === 0) {
+          // We found the end of legal-node-content
+          contentEnd = nextClose;
+          break;
+        }
+        contentEnd = nextClose + 6;
+      }
+    }
+    
+    const innerContent = remaining.slice(contentStart, contentEnd);
+    
+    // The outer div also needs to be closed. So we skip the next </div>
+    let endOfOuterDiv = contentEnd;
+    if (openDivs === 0) {
+       const finalClose = remaining.indexOf('</div', contentEnd + 6);
+       if (finalClose !== -1) {
+           endOfOuterDiv = finalClose + 6; // include > (usually </div>)
+           // handle potential trailing >
+           const trailingClose = remaining.indexOf('>', endOfOuterDiv);
+           if (trailingClose !== -1 && trailingClose - endOfOuterDiv < 5) {
+               endOfOuterDiv = trailingClose + 1;
+           }
+       }
+    }
+
     let counterText = '';
     let style = "font-family: 'Cambria', serif; text-align: justify; line-height: 1.15; ";
     
@@ -46,12 +106,28 @@ export function compileWordHtml(title: string, rawHtml: string): string {
       style += "margin-top: 0; margin-bottom: 3.0pt; margin-left: 72.0pt;"; 
     }
 
-    return `<p style="${style}"><span style="font-weight: bold;">${counterText}</span>${innerContent}</p>`;
-  });
+    result += `<p style="${style}"><span style="font-weight: bold;">${counterText}</span>${innerContent}</p>`;
+    currentIndex += endOfOuterDiv;
+  }
+  
+  styledHtml = result;
 
   // Force inline styles for Headings because html-to-docx sometimes ignores CSS classes for alignment
   styledHtml = styledHtml.replace(/<h1/gi, '<h1 align="center" style="text-align: center; font-size: 18.0pt; text-transform: uppercase; margin-top: 0pt; margin-bottom: 24pt;"');
   styledHtml = styledHtml.replace(/<h2/gi, '<h2 style="font-size: 16.5pt; font-weight: bold; margin-top: 18pt; margin-bottom: 6pt;"');
+
+  // Forçar alinhamento justificado em TODO o documento (parágrafos e listas)
+  styledHtml = styledHtml.replace(/<(p|li)([^>]*)>/gi, (match, tag, attrs) => {
+    // Se o parágrafo tiver alinhamento explícito centralizado ou à direita, preserva.
+    if (attrs.includes('text-align: center') || attrs.includes('text-align: right') || attrs.includes('align="center"') || attrs.includes('align="right"')) {
+      return match;
+    }
+    // Caso contrário, injeta text-align: justify inline para forçar o Word a respeitar.
+    if (attrs.includes('style="')) {
+      return `<${tag}${attrs.replace('style="', 'align="justify" style="text-align: justify; ')}>`;
+    }
+    return `<${tag}${attrs} align="justify" style="text-align: justify;">`;
+  });
 
   return `
     <!DOCTYPE html>
