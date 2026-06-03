@@ -657,7 +657,12 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
 
         {/* Persistent Centralized Branding (Restaurada e livre de colisão de ID SVG) */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none select-none z-[110]">
-          <Logo showText={true} iconSize={26} variant="chrome" />
+          <div className="max-sm:hidden">
+            <Logo showText={true} iconSize={34} variant="chrome" />
+          </div>
+          <div className="sm:hidden">
+            <Logo showText={true} iconSize={26} variant="chrome" />
+          </div>
         </div>
 
         {!readOnly && (

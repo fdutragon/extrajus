@@ -116,7 +116,7 @@ export function Logo({ className, showText = true, iconSize = 32, variant = "chr
       {showText && (
         <span className={cn(
           "font-sans font-black uppercase tracking-[0.35em] text-black dark:text-white leading-none flex items-center",
-          isLarge ? "text-[10px] md:text-[12px]" : isMedium ? "text-[9px] md:text-[10px]" : "text-[8px] sm:text-[8.5px]"
+          isLarge ? "text-[12px] md:text-[14px]" : isMedium ? "text-[11px] md:text-[12px]" : "text-[9.5px] sm:text-[10.5px]"
         )}>
           EXTRA<span style={{ filter: jusShadow }} className={cn("transition-all duration-500", isQuartz ? "text-white" : "text-yellow-600 dark:text-yellow-400")}>JUS</span>
         </span>
