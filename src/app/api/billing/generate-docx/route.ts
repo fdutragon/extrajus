@@ -3,7 +3,19 @@ import { getWordBuffer } from "@/utils/docx";
 
 export async function POST(request: Request) {
   try {
-    const { title, content } = await request.json();
+    let title = "";
+    let content = "";
+    
+    const contentType = request.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      const body = await request.json();
+      title = body.title;
+      content = body.content;
+    } else {
+      const formData = await request.formData();
+      title = formData.get("title") as string;
+      content = formData.get("content") as string;
+    }
 
     if (!content) {
       return NextResponse.json({ error: "Conteúdo vazio" }, { status: 400 });

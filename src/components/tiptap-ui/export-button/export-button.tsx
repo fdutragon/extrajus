@@ -68,21 +68,30 @@ export function ExportButton({
       const rawHtml = editorElement.innerHTML
 
       // 3. Gerar o DOCX de forma 100% segura e limpa pelo servidor
-      const res = await fetch("/api/billing/generate-docx", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, content: rawHtml })
-      });
+      // Usamos um form nativo para evitar o bug de Blob UUID do iOS/Safari
+      // e forçar o navegador a respeitar o header Content-Disposition
+      const form = document.createElement('form')
+      form.method = 'POST'
+      form.action = '/api/billing/generate-docx'
+      form.style.display = 'none'
 
-      if (!res.ok) throw new Error("Falha na formatação do documento.");
+      const titleInput = document.createElement('input')
+      titleInput.type = 'hidden'
+      titleInput.name = 'title'
+      titleInput.value = title || 'documento'
 
-      const blob = await res.blob();
-      const link = document.createElement('a')
-      link.href = URL.createObjectURL(blob)
-      link.download = `${title.replace(/\s+/g, '-').toLowerCase() || 'documento'}.docx`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      const contentInput = document.createElement('input')
+      contentInput.type = 'hidden'
+      contentInput.name = 'content'
+      contentInput.value = rawHtml
+
+      form.appendChild(titleInput)
+      form.appendChild(contentInput)
+      document.body.appendChild(form)
+      form.submit()
+      
+      // Cleanup
+      setTimeout(() => document.body.removeChild(form), 1000)
 
       toast.success("Documento exportado com sucesso!", { id: exportToast })
 
