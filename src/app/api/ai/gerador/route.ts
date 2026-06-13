@@ -3,8 +3,16 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { sendTelegramAlert } from "@/lib/telegram-alert";
 
-const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-const genAI = new GoogleGenerativeAI(apiKey || "");
+function getGeminiKeys(): string[] {
+  return [
+    process.env.GEMINI_API_KEY,
+    process.env.NEXT_PUBLIC_GEMINI_API_KEY,
+    process.env.GEMINI_API_KEY_FALLBACK_2,
+    process.env.NEXT_PUBLIC_GEMINI_API_KEY_FALLBACK_2,
+    process.env.GEMINI_API_KEY_FALLBACK_3,
+    process.env.NEXT_PUBLIC_GEMINI_API_KEY_FALLBACK_3,
+  ].filter(Boolean) as string[];
+}
 
 export async function POST(req: Request) {
   let supabaseClient: any = null;
@@ -108,21 +116,27 @@ DIRETRIZES ESPECÍFICAS DE SUGESTÃO:
         : "Diretriz crítica: Sugira apenas cláusulas essenciais e amplamente comuns de grande impacto estrutural."
         }`;
 
-      // ANÁLISE COM MODELO CUSTOMIZADO
-      try {
-        const auditModel = genAI.getGenerativeModel({
-          model: "gemini-2.5-flash",
-          systemInstruction: systemInstruction,
-        }, { apiVersion: "v1beta" });
+      // ANÁLISE COM MODELO CUSTOMIZADO — tenta todas as chaves com fallback
+      const auditKeys = getGeminiKeys();
+      let auditLastError: any = null;
+      for (const key of auditKeys) {
+        try {
+          const auditGenAI = new GoogleGenerativeAI(key);
+          const auditModel = auditGenAI.getGenerativeModel({
+            model: "gemini-2.5-flash",
+            systemInstruction: systemInstruction,
+          }, { apiVersion: "v1beta" });
 
-        const result = await auditModel.generateContent(`Analise este documento e sugira cláusulas protetoras complementares fundamentais de acordo com as diretrizes:\n\n${prompt}`);
-        const responseText = result.response.text();
-
-        return NextResponse.json({ text: responseText });
-      } catch (err: any) {
-        console.error("Análise de cláusulas falhou:", err);
-        return NextResponse.json({ error: "Falha ao processar sugestões de cláusulas." }, { status: 500 });
+          const result = await auditModel.generateContent(`Analise este documento e sugira cláusulas protetoras complementares fundamentais de acordo com as diretrizes:\n\n${prompt}`);
+          const responseText = result.response.text();
+          return NextResponse.json({ text: responseText });
+        } catch (err: any) {
+          console.warn(`[Gemini Fallback/Audit] Falha com chave ${key.substring(0, 10)}... Tentando próxima. Erro:`, err);
+          auditLastError = err;
+        }
       }
+      console.error("Análise de cláusulas falhou em todas as chaves:", auditLastError);
+      return NextResponse.json({ error: "Falha ao processar sugestões de cláusulas." }, { status: 500 });
     }
 
     // 2. Fluxo de Edição Cirúrgica (Diff Engine)
@@ -151,12 +165,28 @@ REGRAS CRÍTICAS DE RETORNO (OBRIGATÓRIAS):
 4. Para adicionar texto, o <search> deve ser o trecho imediatamente ANTES da inserção, e o <replace> deve conter o trecho original inteiro + a nova adição.
 5. Para deletar, o <replace> deve ser vazio.`;
 
-      const model = genAI.getGenerativeModel({
-        model: modelName,
-        systemInstruction: surgicalSystemInstruction,
-      }, { apiVersion: "v1beta" });
-
-      const result = await model.generateContentStream(prompt);
+      // Modo cirúrgico — tenta todas as chaves com fallback
+      const surgicalKeys = getGeminiKeys();
+      let surgicalResult: any = null;
+      let surgicalLastError: any = null;
+      for (const key of surgicalKeys) {
+        try {
+          const surgicalGenAI = new GoogleGenerativeAI(key);
+          const model = surgicalGenAI.getGenerativeModel({
+            model: modelName,
+            systemInstruction: surgicalSystemInstruction,
+          }, { apiVersion: "v1beta" });
+          surgicalResult = await model.generateContentStream(prompt);
+          break; // Sucesso
+        } catch (err: any) {
+          console.warn(`[Gemini Fallback/Surgical] Falha com chave ${key.substring(0, 10)}... Tentando próxima. Erro:`, err);
+          surgicalLastError = err;
+        }
+      }
+      if (!surgicalResult) {
+        throw surgicalLastError || new Error("Todas as chaves do Gemini falharam no modo cirúrgico.");
+      }
+      const result = surgicalResult;
       const stream = new ReadableStream({
         async start(controller) {
           req.signal.addEventListener("abort", () => {
