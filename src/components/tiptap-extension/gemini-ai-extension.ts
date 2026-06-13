@@ -527,7 +527,9 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
         // Disparar evento de conversão do Google Ads para Visualização de Página (Geração do Documento/Contrato)
         if (typeof window !== "undefined" && (window as any).gtag) {
           (window as any).gtag('event', 'conversion', {
-            'send_to': 'AW-18191879169/c5HRCNe1ubUcEIGYyOJD'
+            'send_to': 'AW-18209824209/m7rgCLyakL4cENG7j-tD',
+            'value': 1.0,
+            'currency': 'BRL'
           });
         }
       } catch (error: any) {

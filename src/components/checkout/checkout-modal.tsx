@@ -55,6 +55,16 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
           copy_variant: headlineVariant 
         },
       })
+
+      // Dispara conversão de Início de Checkout no Google Ads
+      if (typeof window !== "undefined" && (window as any).gtag) {
+        (window as any).gtag('event', 'conversion', {
+          'send_to': 'AW-18209824209/nddQCLXglL4cENG7j-tD',
+          'value': 1.0,
+          'currency': 'BRL'
+        });
+        console.log("[Google Ads] Conversão de início de checkout disparada!");
+      }
     }
   }, [isOpen, docType, title, headlineVariant])
 
@@ -79,7 +89,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
             if (typeof window !== "undefined" && (window as any).gtag && !conversionFiredRef.current) {
               conversionFiredRef.current = true;
               (window as any).gtag('event', 'conversion', {
-                'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
+                'send_to': 'AW-18209824209/RmfqCL7e-b0cENG7j-tD',
                 'value': 27.00,
                 'currency': 'BRL',
                 'transaction_id': pixData.externalId
@@ -218,7 +228,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
       if (typeof window !== "undefined" && (window as any).gtag && !conversionFiredRef.current) {
         conversionFiredRef.current = true;
         (window as any).gtag('event', 'conversion', {
-          'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
+          'send_to': 'AW-18209824209/RmfqCL7e-b0cENG7j-tD',
           'value': 27.00,
           'currency': 'BRL',
           'transaction_id': data.externalId
@@ -255,7 +265,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
       if (typeof window !== "undefined" && (window as any).gtag && !conversionFiredRef.current) {
         conversionFiredRef.current = true;
         (window as any).gtag('event', 'conversion', {
-          'send_to': 'AW-18191879169/eKl1CM-bnrQcEIGYyOJD',
+          'send_to': 'AW-18209824209/RmfqCL7e-b0cENG7j-tD',
           'value': 27.00,
           'currency': 'BRL',
           'transaction_id': pixData.externalId

@@ -185,6 +185,10 @@ export function ContractTypeSelector({
     }
   }
 
+  if (isEditing) {
+    return null;
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !isEditing && setIsOpen(open)}>
       <DialogTrigger 
