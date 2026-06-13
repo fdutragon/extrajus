@@ -468,16 +468,20 @@ export function AiPromptInputToolbar({
           data-style={isEmpty || isRecording ? "disabled" : "primary"}
           aria-label="Submit prompt"
           className={cn(
-            "h-9 rounded-full p-0 flex items-center justify-center shrink-0 transition-all duration-500 shadow-md",
+            "h-9 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 shadow-md",
             isEmpty || isRecording
-              ? "w-9 opacity-60 scale-90 bg-zinc-200 dark:bg-muted text-zinc-600 dark:text-muted-foreground pointer-events-none"
-              : "w-12 bg-primary text-primary-foreground hover:scale-105 active:scale-95 hover:shadow-lg"
+              ? "w-9 p-0 opacity-60 scale-90 bg-zinc-200 dark:bg-muted text-zinc-600 dark:text-muted-foreground pointer-events-none"
+              : "w-auto px-3.5 gap-1.5 bg-primary text-primary-foreground hover:scale-105 active:scale-95 hover:shadow-lg font-black text-[10px] uppercase tracking-widest"
           )}
         >
-          <ArrowUpIcon className={cn(
-            "tiptap-button-icon transition-all duration-500",
-            isEmpty || isRecording ? "w-3.5 h-3.5 stroke-[2]" : "w-4.5 h-4.5 stroke-[2.5]"
-          )} />
+          {isEmpty || isRecording ? (
+            <ArrowUpIcon className="tiptap-button-icon w-3.5 h-3.5 stroke-[2] transition-all duration-500" />
+          ) : (
+            <>
+              <BrainCircuit className="w-3.5 h-3.5 animate-pulse text-primary-foreground/90" />
+              <span>Gerar</span>
+            </>
+          )}
         </Button>
       </ToolbarGroup>
     </Toolbar>
@@ -553,7 +557,26 @@ export function AiMenuInputTextarea({
   // Prefill inteligente do input de IA com base no tipo de contrato selecionado dinamicamente
   useEffect(() => {
     if (selectedContractType && !promptValue) {
-      setPromptValue(`Crie um ${selectedContractType.toLowerCase()} profissional completo e com termos seguros.`);
+      const typeLower = selectedContractType.toLowerCase();
+      let detailString = `Crie um ${selectedContractType.toLowerCase()} profissional completo e com termos seguros.`;
+      
+      // Se for um contrato comercial ou documento que costuma envolver valores/objeto/partes
+      if (
+        typeLower.includes("contrato") || 
+        typeLower.includes("locacao") || 
+        typeLower.includes("aluguel") ||
+        typeLower.includes("servico") || 
+        typeLower.includes("compra") || 
+        typeLower.includes("venda") ||
+        typeLower.includes("parceria") ||
+        typeLower.includes("socio")
+      ) {
+        detailString = `Crie um ${selectedContractType.toLowerCase()} profissional completo, robusto e com termos seguros.\n\nPreencha com seus dados abaixo:\n- Objeto do Contrato: [descrever o serviço ou produto]\n- Valor do Contrato: [preencher valor]\n- Forma de Pagamento: [preencher forma de pagamento]\n- Foro: [preencher cidade]`;
+      } else {
+        detailString = `Crie um ${selectedContractType.toLowerCase()} profissional completo e com termos seguros.\n\nPreencha com seus dados:\n- Finalidade: [descrever o objetivo]\n- Partes envolvidas: [preencher contratante e contratado]`;
+      }
+      
+      setPromptValue(detailString);
     }
   }, [selectedContractType, promptValue, setPromptValue])
 
