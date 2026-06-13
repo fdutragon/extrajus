@@ -27,7 +27,8 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
 
   const [step, setStep] = useState<"form" | "pix" | "success">("form")
   const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
+  const [showDev, setShowDev] = useState(false)
+  const emailRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
   const [pixData, setPixData] = useState<{ qrCode: string, code: string, externalId: string } | null>(null)
   const [copied, setCopied] = useState(false)
@@ -41,7 +42,8 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
       setStep("form")
       setPixData(null)
       setLoading(false)
-      setEmail("")
+      setShowDev(false)
+      if (emailRef.current) emailRef.current.value = ""
       setName("Cliente")
       conversionFiredRef.current = false
       isProcessingRef.current = false
@@ -135,6 +137,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
 
   const handleCheckout = async (e?: React.FormEvent | React.MouseEvent | React.KeyboardEvent) => {
     if (e) e.preventDefault()
+    const email = emailRef.current?.value || ""
     if (!name.trim() || !email.trim() || isProcessingRef.current) return
 
     isProcessingRef.current = true
@@ -181,6 +184,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
 
   // Developer simulation: Creates account and completes payment instantly
   const handleDevSimulateAll = async () => {
+    const email = emailRef.current?.value || ""
     if (!name.trim() || !email.trim() || isProcessingRef.current) {
       if (!isProcessingRef.current) toast.error("Por favor, preencha o Nome e o E-mail no formulário antes de clicar em simular!")
       return
@@ -430,8 +434,14 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
                 <input 
                   id="email"
                   type="email" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  ref={emailRef}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    const isDev = val.toLowerCase().trim() === "felipe.dutragon@gmail.com" || val.toLowerCase().trim() === "contato@smartdoc.work";
+                    if (isDev !== showDev) {
+                      setShowDev(isDev);
+                    }
+                  }}
                   placeholder="exemplo@email.com" 
                   className="flex h-11 max-sm:h-12 w-full rounded-xl border border-input bg-background/50 px-4 py-2 text-sm max-sm:text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)]"
                 />
@@ -448,7 +458,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
                     </>
                   ) : (
                     <>
-                      <Zap size={18} />
+                       <Zap size={18} />
                       {generatePixText}
                     </>
                   )}
@@ -500,7 +510,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
                 </Button>
 
 
-                {(process.env.NODE_ENV === "development" || typeof window !== "undefined" && window.location.hostname === "localhost" || email.toLowerCase().trim() === "felipe.dutragon@gmail.com" || email.toLowerCase().trim() === "contato@smartdoc.work") && (
+                {(process.env.NODE_ENV === "development" || typeof window !== "undefined" && window.location.hostname === "localhost" || showDev) && (
                   <Button 
                     onClick={handleDevSimulatePaymentOnly} 
                     disabled={loading}
