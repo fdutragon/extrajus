@@ -22,7 +22,7 @@ interface CheckoutModalProps {
 
 export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, docType, title }: CheckoutModalProps) {
   const { text: headlineText, variant: headlineVariant } = useCopy('cta-checkout-headline', `Baixe Agora Seu ${docType === "notificacao" ? "Notificação" : "Contrato"}`)
-  const { text: generatePixText, variant: generatePixVariant } = useCopy('cta-checkout-generate-pix', "Gerar PIX de R$ 27,00")
+  const { text: generatePixText, variant: generatePixVariant } = useCopy('cta-checkout-generate-pix', "Gerar PIX de R$ 29,00")
   const { text: copyPixText, variant: copyPixVariant } = useCopy('cta-checkout-copy-pix', "Copiar Código Pix")
 
   const [step, setStep] = useState<"form" | "pix" | "success">("form")
@@ -92,7 +92,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
               conversionFiredRef.current = true;
               (window as any).gtag('event', 'conversion', {
                 'send_to': 'AW-18209824209/RmfqCL7e-b0cENG7j-tD',
-                'value': 27.00,
+                'value': 29.00,
                 'currency': 'BRL',
                 'transaction_id': pixData.externalId
               });
@@ -102,7 +102,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
                 category: "conversion",
                 elementId: "checkout-pix-confirmed",
                 properties: {
-                  price: 27.00,
+                  price: 29.00,
                   currency: "BRL",
                   transaction_id: pixData.externalId,
                   doc_type: docType,
@@ -169,7 +169,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
         category: "conversion",
         elementId: "checkout-qr",
         properties: { 
-          price: 27.00, 
+          price: 29.00, 
           doc_type: docType,
           copy_variant: generatePixVariant
         },
@@ -233,7 +233,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
         conversionFiredRef.current = true;
         (window as any).gtag('event', 'conversion', {
           'send_to': 'AW-18209824209/RmfqCL7e-b0cENG7j-tD',
-          'value': 27.00,
+          'value': 29.00,
           'currency': 'BRL',
           'transaction_id': data.externalId
         });
@@ -270,7 +270,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
         conversionFiredRef.current = true;
         (window as any).gtag('event', 'conversion', {
           'send_to': 'AW-18209824209/RmfqCL7e-b0cENG7j-tD',
-          'value': 27.00,
+          'value': 29.00,
           'currency': 'BRL',
           'transaction_id': pixData.externalId
         });
@@ -299,7 +299,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
         elementId: "btn-copy-pix",
         elementText: copyPixText,
         properties: { 
-          price: 27.00, 
+          price: 29.00, 
           doc_type: docType,
           copy_variant: copyPixVariant
         },
@@ -363,7 +363,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
               <div>
                 <div className="text-[0.625rem] max-sm:text-[0.7rem] font-black text-muted-foreground/60 uppercase tracking-widest mb-0.5">Investimento Único</div>
                 <div className="flex items-baseline gap-1.5 max-sm:gap-1.5">
-                  <span className="text-[1.75rem] max-sm:text-[1.8rem] font-black text-foreground">R$ 27,00</span>
+                  <span className="text-[1.75rem] max-sm:text-[1.8rem] font-black text-foreground">R$ 29,00</span>
                   <span className="text-[0.625rem] max-sm:text-[0.75rem] font-bold text-muted-foreground uppercase">/ download</span>
                 </div>
               </div>

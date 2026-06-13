@@ -94,7 +94,7 @@ export async function POST(request: Request) {
 
     const externalId = `paydoc_${doc.id}`;
     const isDev = process.env.NODE_ENV === "development" || (process.env.NEXT_PUBLIC_SITE_URL && process.env.NEXT_PUBLIC_SITE_URL.includes("localhost"));
-    const amountCents = isDev ? 100 : 2700; // R$ 1,00 em dev, R$ 27,00 em prod
+    const amountCents = isDev ? 100 : 2900; // R$ 1,00 em dev, R$ 29,00 em prod
 
     // 3. Paralelizar a chamada GG Pix e a inserção em Contracts
     const API_KEY = getSecret("GGPIX_API_KEY");
