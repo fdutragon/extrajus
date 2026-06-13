@@ -44,10 +44,11 @@ export function AiMenuActions({
   }, [editor, onAccept])
  
   return (
-    <div className="tiptap-ai-menu-actions mt-2 px-3 sm:px-4 py-2 border border-border/60 bg-card/50 sm:backdrop-blur-md rounded-xl flex items-center justify-end shadow-sm animate-in fade-in duration-300">
+    <div className="tiptap-ai-menu-actions flex items-center justify-between pt-1.5 px-1 border-t border-border/40 animate-in fade-in duration-200">
+      <span className="text-[9.5px] text-muted-foreground/50 leading-none pl-1 select-none">IA aplicou alterações</span>
       <Button
         variant="ghost"
-        className="ai-btn-discard h-7 px-3 text-muted-foreground hover:text-red-500 text-[10px] font-semibold flex items-center justify-center transition-all duration-200 rounded-lg"
+        className="ai-btn-discard h-6 px-2.5 text-muted-foreground/60 hover:text-red-500 hover:bg-transparent text-[9.5px] font-medium flex items-center justify-center transition-colors duration-150 rounded-md"
         onClick={handleDiscard}
       >
         <span className="whitespace-nowrap leading-none">Desfazer</span>
