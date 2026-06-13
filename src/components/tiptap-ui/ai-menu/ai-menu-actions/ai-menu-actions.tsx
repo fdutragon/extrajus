@@ -48,7 +48,7 @@ export function AiMenuActions({
       <span className="text-[9.5px] text-muted-foreground/50 leading-none pl-1 select-none">IA aplicou alterações</span>
       <Button
         variant="ghost"
-        className="ai-btn-discard h-6 px-2.5 text-muted-foreground/60 hover:text-red-500 hover:bg-transparent text-[9.5px] font-medium flex items-center justify-center transition-colors duration-150 rounded-md"
+        className="ai-btn-discard h-6 px-2.5 text-red-500 dark:text-red-400 hover:text-red-600 hover:bg-transparent text-[9.5px] font-semibold flex items-center justify-center transition-colors duration-150 rounded-md"
         onClick={handleDiscard}
       >
         <span className="whitespace-nowrap leading-none">Desfazer</span>
