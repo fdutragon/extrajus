@@ -554,9 +554,11 @@ export function AiMenuInputTextarea({
     updateState({ selectedContractType: type })
   }, [updateState])
 
+  const isPrefillLoadedRef = useRef(false)
+
   // Prefill inteligente do input de IA com base no tipo de contrato selecionado dinamicamente
   useEffect(() => {
-    if (selectedContractType && !promptValue) {
+    if (selectedContractType && !promptValue && !isPrefillLoadedRef.current) {
       const typeLower = selectedContractType.toLowerCase();
       let detailString = `Crie um ${selectedContractType.toLowerCase()} profissional completo e com termos seguros.`;
       
@@ -576,7 +578,29 @@ export function AiMenuInputTextarea({
         detailString = `Crie um ${selectedContractType.toLowerCase()} profissional completo e com termos seguros.\n\nPreencha com seus dados:\n- Finalidade: [descrever o objetivo]\n- Partes envolvidas: [preencher contratante e contratado]`;
       }
       
+      // Define o template básico instantâneo para não prejudicar a UX
       setPromptValue(detailString);
+      isPrefillLoadedRef.current = true;
+
+      // Executa o refinamento inteligente via IA em background usando o Gemini Flash
+      fetch("/api/ai/prefill", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ keyword: selectedContractType })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.prompt) {
+          // Só atualiza o prefill se o usuário ainda não tiver editado o texto
+          setPromptValue((currentVal) => {
+            if (currentVal === detailString) {
+              return data.prompt;
+            }
+            return currentVal;
+          });
+        }
+      })
+      .catch(err => console.error("Erro ao refinar prefill dinamicamente:", err));
     }
   }, [selectedContractType, promptValue, setPromptValue])
 
