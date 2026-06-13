@@ -600,33 +600,41 @@ export function AiMenuInputTextarea({
       .then(data => {
         if (data.prompt) {
           // Só atualiza o prefill se o usuário ainda não tiver editado o texto
-          setPromptValue((currentVal) => {
-            if (currentVal === detailString) {
-              // Limpa qualquer efeito de digitação anterior ativo
-              if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
+          const currentVal = promptRef.current;
+          if (currentVal === detailString) {
+            // Limpa qualquer efeito de digitação anterior ativo
+            if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
+            
+            let index = 0;
+            const textToType = data.prompt;
+            
+            // Efeito máquina de escrever de alta velocidade (10ms por caractere)
+            typingIntervalRef.current = setInterval(() => {
+              // Se o usuário já mexeu em algo e mudou a digitação automática de alguma forma, cancelamos
+              const currentInputText = promptRef.current;
+              const expectedText = textToType.slice(0, index);
               
-              let index = 0;
-              const textToType = data.prompt;
-              
-              // Efeito máquina de escrever de alta velocidade (10ms por caractere)
-              typingIntervalRef.current = setInterval(() => {
-                setPromptValue((currentText) => {
-                  if (index < textToType.length) {
-                    const nextText = textToType.slice(0, index + 1);
-                    index++;
-                    return nextText;
-                  } else {
-                    if (typingIntervalRef.current) {
-                      clearInterval(typingIntervalRef.current);
-                      typingIntervalRef.current = null;
-                    }
-                    return currentText;
-                  }
-                });
-              }, 10);
-            }
-            return currentVal;
-          });
+              // Se o usuário digitou algo diferente do progresso da digitação automática, paramos
+              if (index > 0 && currentInputText !== expectedText) {
+                if (typingIntervalRef.current) {
+                  clearInterval(typingIntervalRef.current);
+                  typingIntervalRef.current = null;
+                }
+                return;
+              }
+
+              if (index < textToType.length) {
+                const nextText = textToType.slice(0, index + 1);
+                setPromptValue(nextText);
+                index++;
+              } else {
+                if (typingIntervalRef.current) {
+                  clearInterval(typingIntervalRef.current);
+                  typingIntervalRef.current = null;
+                }
+              }
+            }, 10);
+          }
         }
       })
       .catch(err => console.error("Erro ao refinar prefill dinamicamente:", err));
