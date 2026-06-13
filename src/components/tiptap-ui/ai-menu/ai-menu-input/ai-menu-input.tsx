@@ -11,7 +11,7 @@ import type { Tone } from "../../../../components/tiptap-extension/gemini-ai-ext
 // Icons
 import { MicAiIcon } from "../../../../components/tiptap-icons/mic-ai-icon"
 import { AiSparklesIcon } from "../../../../components/tiptap-icons/ai-sparkles-icon"
-import { BrainCircuit, StopCircle as StopCircle2Icon, ArrowUp as ArrowUpIcon, Mic, MicOff, Search, FileText, ChevronDown, X, Cloud } from "lucide-react"
+import { BrainCircuit, StopCircle as StopCircle2Icon, ArrowUp as ArrowUpIcon, Mic, MicOff, Search, FileText, ChevronDown, X, Cloud, ArrowRight } from "lucide-react"
 
 // UI Components
 import { SUPPORTED_TONES } from "../../../../components/tiptap-ui/ai-menu"
@@ -468,18 +468,18 @@ export function AiPromptInputToolbar({
           data-style={isEmpty || isRecording ? "disabled" : "primary"}
           aria-label="Submit prompt"
           className={cn(
-            "h-9 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 shadow-md",
+            "h-9 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 shadow-md group",
             isEmpty || isRecording
               ? "w-9 p-0 opacity-60 scale-90 bg-zinc-200 dark:bg-muted text-zinc-600 dark:text-muted-foreground pointer-events-none"
-              : "w-auto px-3.5 gap-1.5 bg-primary text-primary-foreground hover:scale-105 active:scale-95 hover:shadow-lg font-black text-[10px] uppercase tracking-widest"
+              : "w-auto px-4 gap-1.5 bg-primary text-primary-foreground hover:scale-105 active:scale-95 hover:shadow-lg font-bold text-xs tracking-wide"
           )}
         >
           {isEmpty || isRecording ? (
             <ArrowUpIcon className="tiptap-button-icon w-3.5 h-3.5 stroke-[2] transition-all duration-500" />
           ) : (
             <>
-              <BrainCircuit className="w-3.5 h-3.5 animate-pulse text-primary-foreground/90" />
-              <span>Gerar</span>
+              <span className="font-semibold text-xs text-primary-foreground">Gerar</span>
+              <ArrowRight className="w-3.5 h-3.5 stroke-[2.5] text-primary-foreground/90 transition-transform duration-300 group-hover:translate-x-0.5" />
             </>
           )}
         </Button>
