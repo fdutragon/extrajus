@@ -676,7 +676,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
           </div>
 
           {!readOnly && (
-            <div className="flex items-center gap-0.5 md:gap-0 max-sm:gap-0 h-9">
+            <div className="flex items-center gap-0.5 md:gap-0 max-sm:gap-0 h-9 max-sm:hidden">
               <Button 
                 variant="ghost" 
                 size="icon" 

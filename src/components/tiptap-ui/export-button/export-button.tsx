@@ -215,7 +215,14 @@ export function ExportButton({
             <Download className="!w-3 !h-3 max-sm:!w-[14px] max-sm:!h-[14px] transition-transform" />
           )}
           <span className="text-[8px] sm:text-[8px] md:text-[9px] max-sm:text-[10px] font-black uppercase tracking-[0.2em] leading-none">
-            {isExporting ? "Exportando" : "Baixar"}
+            {isExporting ? (
+              "Exportando"
+            ) : (
+              <>
+                <span className="hidden sm:inline">Baixar por R$ 29,00</span>
+                <span className="sm:hidden">Baixar - R$ 29</span>
+              </>
+            )}
           </span>
         </Button>
       )}
