@@ -550,6 +550,13 @@ export function AiMenuInputTextarea({
     updateState({ selectedContractType: type })
   }, [updateState])
 
+  // Prefill inteligente do input de IA com base no tipo de contrato selecionado dinamicamente
+  useEffect(() => {
+    if (selectedContractType && !promptValue) {
+      setPromptValue(`Crie um ${selectedContractType.toLowerCase()} profissional completo e com termos seguros.`);
+    }
+  }, [selectedContractType, promptValue, setPromptValue])
+
   const [isFocused, setIsFocused] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
   const [recordingFlash, setRecordingFlash] = useState(false)
