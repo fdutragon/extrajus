@@ -524,10 +524,10 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
           this.storage.chatHistory.push({ role: "user", parts: [{ text: userPrompt }] })
           this.storage.chatHistory.push({ role: "model", parts: [{ text: accumulatedText }] })
         }
-        // Disparar evento de conversão do Google Ads para Visualização de Página (Geração do Documento/Contrato)
+        // Disparar evento de conversão do Google Ads para Enviar Formulário de Lead (Geração do Documento/Contrato)
         if (typeof window !== "undefined" && (window as any).gtag) {
           (window as any).gtag('event', 'conversion', {
-            'send_to': 'AW-18209824209/m7rgCLyakL4cENG7j-tD',
+            'send_to': 'AW-18209824209/fWteCKHhpL4cENG7j-tD',
             'value': 1.0,
             'currency': 'BRL'
           });

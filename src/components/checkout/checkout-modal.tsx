@@ -62,10 +62,10 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
       if (typeof window !== "undefined" && (window as any).gtag) {
         (window as any).gtag('event', 'conversion', {
           'send_to': 'AW-18209824209/nddQCLXglL4cENG7j-tD',
-          'value': 1.0,
+          'value': 3.0,
           'currency': 'BRL'
         });
-        console.log("[Google Ads] Conversão de início de checkout disparada!");
+        console.log("[Google Ads] Conversão de início de checkout disparada com valor R$ 3.00!");
       }
     }
   }, [isOpen, docType, title, headlineVariant])
