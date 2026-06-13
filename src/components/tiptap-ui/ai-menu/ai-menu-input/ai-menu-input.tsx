@@ -519,7 +519,7 @@ export function AiPromptInputToolbar({
             "h-9 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 shadow-md group",
             isEmpty || isRecording
               ? "w-9 p-0 opacity-60 scale-90 bg-zinc-200 dark:bg-muted text-zinc-600 dark:text-muted-foreground pointer-events-none"
-              : "w-auto px-4 gap-1.5 bg-primary text-primary-foreground hover:scale-105 active:scale-95 hover:shadow-lg font-bold text-xs tracking-wide"
+              : "w-auto px-4 gap-1.5 bg-primary text-primary-foreground hover:scale-105 active:scale-95 hover:shadow-lg font-bold text-xs tracking-wide opacity-100"
           )}
         >
           {isEmpty || isRecording ? (
@@ -532,7 +532,7 @@ export function AiPromptInputToolbar({
           ) : (
             <>
               <span className="font-semibold text-xs text-primary-foreground">Editar</span>
-              <ArrowRight className="w-3.5 h-3.5 stroke-[2.5] text-primary-foreground/90 transition-transform duration-300 group-hover:translate-x-0.5" />
+              <ArrowRight className="w-3.5 h-3.5 stroke-[2.5] text-primary-foreground transition-transform duration-300 group-hover:translate-x-0.5" />
             </>
           )}
         </Button>
