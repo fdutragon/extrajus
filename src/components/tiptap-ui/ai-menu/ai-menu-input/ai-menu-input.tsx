@@ -554,72 +554,6 @@ export function AiMenuInputTextarea({
     updateState({ selectedContractType: type })
   }, [updateState])
 
-  const isPrefillLoadedRef = useRef(false)
-  const typingIntervalRef = useRef<NodeJS.Timeout | null>(null)
-
-  // Limpa o intervalo de digitação ao desmontar o componente para evitar vazamento de memória
-  useEffect(() => {
-    return () => {
-      if (typingIntervalRef.current) clearInterval(typingIntervalRef.current)
-    }
-  }, [])
- 
-  // Prefill inteligente do input de IA com base no tipo de contrato selecionado dinamicamente
-  useEffect(() => {
-    if (selectedContractType && !promptValue && !isPrefillLoadedRef.current) {
-      isPrefillLoadedRef.current = true;
- 
-      // Executa o refinamento inteligente via IA em background usando o Gemini Flash
-      fetch("/api/ai/prefill", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ keyword: selectedContractType })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.prompt) {
-          // Só atualiza o prefill se o usuário ainda não tiver editado ou digitado nada no input (mantendo vazio)
-          const currentVal = promptRef.current;
-          if (!currentVal || currentVal.trim() === "") {
-            // Limpa qualquer efeito de digitação anterior ativo
-            if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
-            
-            let index = 0;
-            const textToType = data.prompt;
-            
-            // Efeito máquina de escrever de alta velocidade (10ms por caractere)
-            typingIntervalRef.current = setInterval(() => {
-              // Se o usuário já mexeu em algo e mudou a digitação automática de alguma forma, cancelamos
-              const currentInputText = promptRef.current;
-              const expectedText = textToType.slice(0, index);
-              
-              // Se o usuário digitou algo diferente do progresso da digitação automática, paramos
-              if (index > 0 && currentInputText !== expectedText) {
-                if (typingIntervalRef.current) {
-                  clearInterval(typingIntervalRef.current);
-                  typingIntervalRef.current = null;
-                }
-                return;
-              }
-
-              if (index < textToType.length) {
-                const nextText = textToType.slice(0, index + 1);
-                setPromptValue(nextText);
-                index++;
-              } else {
-                if (typingIntervalRef.current) {
-                  clearInterval(typingIntervalRef.current);
-                  typingIntervalRef.current = null;
-                }
-              }
-            }, 10);
-          }
-        }
-      })
-      .catch(err => console.error("Erro ao refinar prefill dinamicamente:", err));
-    }
-  }, [selectedContractType, promptValue, setPromptValue])
-
   const [isFocused, setIsFocused] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
   const [recordingFlash, setRecordingFlash] = useState(false)
@@ -897,13 +831,7 @@ export function AiMenuInputTextarea({
                   autoFocus={autoFocus}
                   render={
                     <textarea
-                      onChange={(e) => {
-                        if (typingIntervalRef.current) {
-                          clearInterval(typingIntervalRef.current);
-                          typingIntervalRef.current = null;
-                        }
-                        setPromptValue(e.target.value);
-                      }}
+                      onChange={(e) => setPromptValue(e.target.value)}
                       value={promptValue}
                       onClick={handleTextareaClick}
                       onKeyDown={handleKeyDown}
