@@ -25,9 +25,15 @@ Preencha com seus dados abaixo:
 - Objeto do Contrato: [descrever brevemente o objeto ou serviço]
 - [Campo específico 1]: [preencher campo específico 1]
 - [Campo específico 2]: [preencher campo específico 2]
-- Foro: [preencher cidade]
+- Cidade para assinatura: [preencher cidade]
 
-IMPORTANTE: Substitua "[nome do contrato]" pelo nome correto e formatado do documento. Substitua "[Campo específico 1]" e "[Campo específico 2]" por dois tópicos críticos e específicos que façam sentido apenas para este tipo de contrato (ex: se for aluguel, data de vigência e valor da caução; se for prestação de serviços, prazo de entrega e direitos autorais). Mantenha o texto de preenchimento entre colchetes exatamente como [preencher ...] para o sistema reconhecer.`;
+IMPORTANTE: Substitua "[nome do contrato]" pelo nome correto e formatado do documento. 
+Substitua "[Campo específico 1]" e "[Campo específico 2]" por dois tópicos críticos e específicos que façam sentido apenas para este tipo de contrato (ex: se for aluguel, data de início e garantia; se for prestação de serviços, prazo e obrigações).
+
+PROIBIÇÃO ABSOLUTA:
+1. NUNCA use termos jurídicos formais complicados que leigos não entendem. Por exemplo: NUNCA use as palavras "Foro", "Foro de eleição", "Vigência", "Aditivo", etc. Use "Cidade para assinatura" no lugar de Foro.
+2. NUNCA use menções às palavras "IA", "Inteligência Artificial", "sistema", "robô" nos campos entre colchetes. Foque apenas no negócio real.
+Mantenha o texto de preenchimento entre colchetes exatamente como [preencher ...] ou sugestões curtas de exemplo para o sistema de clique reconhecer.`;
 
     const result = await model.generateContent(prompt);
     const text = result.response.text().trim();

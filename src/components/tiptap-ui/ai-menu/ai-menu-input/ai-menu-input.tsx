@@ -567,27 +567,6 @@ export function AiMenuInputTextarea({
   // Prefill inteligente do input de IA com base no tipo de contrato selecionado dinamicamente
   useEffect(() => {
     if (selectedContractType && !promptValue && !isPrefillLoadedRef.current) {
-      const typeLower = selectedContractType.toLowerCase();
-      let detailString = `Crie um ${selectedContractType.toLowerCase()} profissional completo e com termos seguros.`;
-      
-      // Se for um contrato comercial ou documento que costuma envolver valores/objeto/partes
-      if (
-        typeLower.includes("contrato") || 
-        typeLower.includes("locacao") || 
-        typeLower.includes("aluguel") ||
-        typeLower.includes("servico") || 
-        typeLower.includes("compra") || 
-        typeLower.includes("venda") ||
-        typeLower.includes("parceria") ||
-        typeLower.includes("socio")
-      ) {
-        detailString = `Crie um ${selectedContractType.toLowerCase()} profissional completo, robusto e com termos seguros.\n\nPreencha com seus dados abaixo:\n- Objeto do Contrato: [descrever o serviço ou produto]\n- Valor do Contrato: [preencher valor]\n- Forma de Pagamento: [preencher forma de pagamento]\n- Foro: [preencher cidade]`;
-      } else {
-        detailString = `Crie um ${selectedContractType.toLowerCase()} profissional completo e com termos seguros.\n\nPreencha com seus dados:\n- Finalidade: [descrever o objetivo]\n- Partes envolvidas: [preencher contratante e contratado]`;
-      }
-      
-      // Define o template básico instantâneo para não prejudicar a UX
-      setPromptValue(detailString);
       isPrefillLoadedRef.current = true;
  
       // Executa o refinamento inteligente via IA em background usando o Gemini Flash
@@ -599,9 +578,9 @@ export function AiMenuInputTextarea({
       .then(res => res.json())
       .then(data => {
         if (data.prompt) {
-          // Só atualiza o prefill se o usuário ainda não tiver editado o texto
+          // Só atualiza o prefill se o usuário ainda não tiver editado ou digitado nada no input (mantendo vazio)
           const currentVal = promptRef.current;
-          if (currentVal === detailString) {
+          if (!currentVal || currentVal.trim() === "") {
             // Limpa qualquer efeito de digitação anterior ativo
             if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
             
