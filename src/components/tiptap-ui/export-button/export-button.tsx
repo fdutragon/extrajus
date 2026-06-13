@@ -205,22 +205,25 @@ export function ExportButton({
         <Button
           variant="ghost"
           size="sm"
-          className="h-8 sm:h-7 gap-2 sm:gap-1.5 px-3 text-muted-foreground hover:text-foreground md:bg-primary md:text-primary-foreground md:hover:bg-primary/90 dark:md:bg-primary/10 dark:md:text-primary dark:md:hover:bg-primary/20 rounded-lg transition-all group border border-transparent md:border-primary/20 flex items-center justify-center shrink-0 md:shadow-md dark:md:shadow-none"
+          className="h-8 sm:h-7 gap-1 px-2.5 max-sm:px-2 text-muted-foreground hover:text-foreground md:bg-primary md:text-primary-foreground md:hover:bg-primary/90 dark:md:bg-primary/10 dark:md:text-primary dark:md:hover:bg-primary/20 rounded-lg transition-all group border border-transparent md:border-primary/20 flex items-center justify-center shrink-0 md:shadow-md dark:md:shadow-none bg-zinc-500/5 dark:bg-zinc-500/10"
           onClick={handleExportClick}
           disabled={isExporting}
         >
           {isExporting ? (
-            <Loader2 className="!w-3 !h-3 max-sm:!w-[14px] max-sm:!h-[14px] animate-spin text-primary" />
+            <Loader2 className="!w-3 !h-3 max-sm:!w-[12px] max-sm:!h-[12px] animate-spin text-primary" />
           ) : (
-            <Download className="!w-3 !h-3 max-sm:!w-[14px] max-sm:!h-[14px] transition-transform" />
+            <Download className="!w-3 !h-3 max-sm:!w-[12px] max-sm:!h-[12px] transition-transform text-foreground/80" />
           )}
-          <span className="text-[8px] sm:text-[8px] md:text-[9px] max-sm:text-[10px] font-black uppercase tracking-[0.2em] leading-none">
+          <span className="text-[8px] sm:text-[8px] md:text-[9px] max-sm:text-[8px] font-black uppercase tracking-[0.15em] leading-none flex items-center gap-1.5">
             {isExporting ? (
               "Exportando"
             ) : (
               <>
                 <span className="hidden sm:inline">Baixar por R$ 29,00</span>
-                <span className="sm:hidden">Baixar - R$ 29</span>
+                <span className="sm:hidden text-foreground/90">Baixar</span>
+                <span className="sm:hidden bg-primary/20 dark:bg-primary/20 text-primary border border-primary/30 px-1 py-0.5 rounded text-[7px] font-extrabold tracking-normal">
+                  R$ 29
+                </span>
               </>
             )}
           </span>
