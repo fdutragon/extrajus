@@ -552,7 +552,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, 
                     className="w-full h-11 max-sm:h-12 max-sm:text-sm bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black tracking-[0.12em] uppercase rounded-xl transition-all shadow-[0_3px_15px_rgba(16,185,129,0.2)] hover:shadow-[0_3px_25px_rgba(16,185,129,0.35)] flex items-center justify-center gap-2 duration-300 transform hover:-translate-y-0.5 border border-emerald-500/20"
                   >
                     <Download className="w-4 h-4 max-sm:w-[16px] max-sm:h-[16px]" />
-                    Baixar {docType === "notificacao" ? "Notificação" : "Contrato"} (.DOCX)
+                    Baixar {docType === "notificacao" ? "Notificação" : "Contrato"} por R$ 29,00
                   </Button>
                
                   <Button 
