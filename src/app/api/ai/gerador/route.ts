@@ -327,7 +327,9 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
       process.env.GEMINI_API_KEY,
       process.env.NEXT_PUBLIC_GEMINI_API_KEY,
       process.env.GEMINI_API_KEY_FALLBACK_2,
-      process.env.NEXT_PUBLIC_GEMINI_API_KEY_FALLBACK_2
+      process.env.NEXT_PUBLIC_GEMINI_API_KEY_FALLBACK_2,
+      process.env.GEMINI_API_KEY_FALLBACK_3,
+      process.env.NEXT_PUBLIC_GEMINI_API_KEY_FALLBACK_3
     ].filter(Boolean) as string[];
 
     let result: any = null;
