@@ -323,19 +323,41 @@ REGRAS DE FORMATAÇÃO (OBRIGATÓRIAS):
           : "Diretriz de estilo crítica: Adote um tom técnico equilibrado, harmonizando a blindagem de riscos e garantias contratuais com a viabilidade e flexibilidade de negociação comercial moderna."
     );
 
-    const model = genAI.getGenerativeModel({
-      model: modelName,
-      systemInstruction: systemInstruction,
-    }, { apiVersion: "v1beta" });
+    const keys = [
+      process.env.GEMINI_API_KEY,
+      process.env.NEXT_PUBLIC_GEMINI_API_KEY,
+      process.env.GEMINI_API_KEY_FALLBACK_2,
+      process.env.NEXT_PUBLIC_GEMINI_API_KEY_FALLBACK_2
+    ].filter(Boolean) as string[];
 
-    let result;
-    if (instructionType === "surgical" && history && Array.isArray(history) && history.length > 0) {
-      // Inicia a sessão de chat com a memória do usuário para edições sucessivas
-      const chat = model.startChat({ history: history });
-      result = await chat.sendMessageStream(prompt);
-    } else {
-      // Gera o stream de conteúdo one-shot (geração do zero ou primeira edição)
-      result = await model.generateContentStream(prompt);
+    let result: any = null;
+    let lastError: any = null;
+
+    for (const key of keys) {
+      try {
+        const clientGenAI = new GoogleGenerativeAI(key);
+        const model = clientGenAI.getGenerativeModel({
+          model: modelName,
+          systemInstruction: systemInstruction,
+        }, { apiVersion: "v1beta" });
+
+        if (instructionType === "surgical" && history && Array.isArray(history) && history.length > 0) {
+          // Inicia a sessão de chat com a memória do usuário para edições sucessivas
+          const chat = model.startChat({ history: history });
+          result = await chat.sendMessageStream(prompt);
+        } else {
+          // Gera o stream de conteúdo one-shot (geração do zero ou primeira edição)
+          result = await model.generateContentStream(prompt);
+        }
+        break; // Sucesso
+      } catch (err: any) {
+        console.warn(`[Gemini Fallback] Falha com a chave iniciada em ${key.substring(0, 10)}... Tentando próxima. Erro:`, err);
+        lastError = err;
+      }
+    }
+
+    if (!result) {
+      throw lastError || new Error("Todas as chaves do Gemini configuradas falharam.");
     }
 
     // Converte o iterável do Gemini em um ReadableStream para o Next.js
