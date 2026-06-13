@@ -519,7 +519,7 @@ export function AiPromptInputToolbar({
             "h-9 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 shadow-md group",
             isEmpty || isRecording
               ? "w-9 p-0 opacity-60 scale-90 bg-zinc-200 dark:bg-muted text-zinc-600 dark:text-muted-foreground pointer-events-none"
-              : "w-auto px-4 gap-1.5 bg-primary text-primary-foreground hover:scale-105 active:scale-95 hover:shadow-lg font-bold text-xs tracking-wide opacity-100"
+              : "w-auto px-4 gap-1.5 bg-primary text-primary-foreground font-bold text-xs tracking-wide opacity-100"
           )}
         >
           {isEmpty || isRecording ? (
