@@ -685,8 +685,8 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
               >
                 <Minus className="w-4 h-4" />
               </Button>
-              <div className="flex items-center px-1 md:px-0.5 max-sm:px-0.5 justify-center select-none min-w-[24px] md:min-w-[18px] max-sm:min-w-[16px]">
-                <span className="text-[12px] font-black text-foreground/80">{fontSize}</span>
+              <div className="flex items-center px-1 md:px-0.5 max-sm:px-0.5 justify-center select-none min-w-[24px] md:min-w-[18px] max-sm:min-w-[14px]">
+                <span className="text-[12px] max-sm:text-[10.5px] font-black text-foreground/80">{fontSize}</span>
               </div>
               <Button 
                 variant="ghost" 
