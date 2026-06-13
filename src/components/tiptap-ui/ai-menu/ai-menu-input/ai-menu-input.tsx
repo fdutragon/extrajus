@@ -60,9 +60,57 @@ const CONTRACT_TYPES = [
 
 const cleanContractName = (name: string | null) => {
   if (!name) return "MODELOS DE CONTRATO"
-  return name
+  
+  const replacements: { [key: string]: string } = {
+    "prestacao": "Prestação",
+    "servicos": "Serviços",
+    "locacao": "Locação",
+    "aluguel": "Aluguel",
+    "socios": "Sócios",
+    "transacao": "Transação",
+    "doacao": "Doação",
+    "cessao": "Cessão",
+    "rescisao": "Rescisão",
+    "comercio": "Comércio",
+    "distribuicao": "Distribuição",
+    "procuracao": "Procuração",
+    "declaracao": "Declaração",
+    "quitacao": "Quitação",
+    "veiculo": "Veículo",
+    "imovel": "Imóvel",
+    "imoveis": "Imóveis",
+    "moveis": "Móveis",
+    "peticao": "Petição",
+    "notificacao": "Notificação",
+    "ti": "TI",
+    "nda": "NDA",
+    "sha": "SHA",
+    "clt": "CLT"
+  }
+
+  let cleaned = name
     .replace(/(contrato de |minuta de |contrato |minuta )/gi, "")
-    .trim()
+    .trim();
+
+  // Aplica capitalização e acentuação de termos comuns do dicionário
+  cleaned = cleaned
+    .split(/\s+/)
+    .map(word => {
+      const lowerWord = word.toLowerCase();
+      if (replacements[lowerWord]) {
+        return replacements[lowerWord];
+      }
+      // Se não estiver na lista de substituições, faz a capitalização padrão
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join(" ");
+
+  // Limita o tamanho do texto para não estourar o layout do botão do PWA/UI
+  if (cleaned.length > 25) {
+    return cleaned.slice(0, 22) + "...";
+  }
+
+  return cleaned;
 }
 
 export function ContractTypeSelector({
