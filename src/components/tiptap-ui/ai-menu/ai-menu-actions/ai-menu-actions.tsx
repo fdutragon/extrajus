@@ -5,7 +5,7 @@ import type { Editor } from "@tiptap/react"
 import { Button } from "../../../../components/tiptap-ui-primitive/button"
 import type { TextOptions } from "../../../../components/tiptap-extension/gemini-ai-extension"
 import { useUiEditorState } from "../../../../hooks/use-ui-editor-state"
-import { Trash2, Sparkles } from "lucide-react"
+import { Sparkles } from "lucide-react"
  
 import "../../../../components/tiptap-ui/ai-menu/ai-menu-actions/ai-menu-actions.scss"
  
@@ -45,22 +45,14 @@ export function AiMenuActions({
   }, [editor, onAccept])
  
   return (
-    <div className="tiptap-ai-menu-actions mt-2 px-4 sm:px-6 py-2.5 sm:py-3 border border-border/80 bg-card sm:bg-card/65 sm:backdrop-blur-md rounded-2xl flex items-center justify-between gap-2 sm:gap-4 shadow-sm animate-in fade-in duration-300 max-sm:shadow-none">
-      <div className="flex items-center gap-1.5 shrink-0 max-sm:hidden">
-        <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-        <span className="text-[10px] sm:text-[10.5px] font-medium text-muted-foreground whitespace-nowrap">
-          Sugestão pronta
-        </span>
-      </div>
-
+    <div className="tiptap-ai-menu-actions mt-2 px-4 sm:px-6 py-2.5 sm:py-3 border border-border/80 bg-card sm:bg-card/65 sm:backdrop-blur-md rounded-2xl flex items-center justify-end gap-2 sm:gap-4 shadow-sm animate-in fade-in duration-300 max-sm:shadow-none">
       <div className="flex items-center gap-2.5 sm:gap-3 flex-nowrap w-full sm:w-auto">
         <Button
           variant="ghost"
           className="ai-btn-discard h-9 sm:h-8 text-red-600 dark:text-red-400/90 hover:text-red-500 text-[11px] sm:text-[10px] font-semibold flex items-center justify-center gap-2.5 group/discard flex-1 sm:flex-none transition-all duration-300 rounded-full"
           onClick={handleDiscard}
         >
-          <Trash2 size={12} className="sm:size-[13.5px] shrink-0 transition-transform group-hover/discard:scale-110 self-center" />
-          <span className="whitespace-nowrap leading-none">Descartar</span>
+          <span className="whitespace-nowrap leading-none">Desfazer</span>
         </Button>
 
         <Button
