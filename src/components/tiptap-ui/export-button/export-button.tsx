@@ -209,10 +209,8 @@ export function ExportButton({
           onClick={handleExportClick}
           disabled={isExporting}
         >
-          {isExporting ? (
-            <Loader2 className="!w-3 !h-3 max-sm:!w-[12px] max-sm:!h-[12px] animate-spin text-primary" />
-          ) : (
-            <Download className="!w-3 !h-3 max-sm:!w-[12px] max-sm:!h-[12px] transition-transform text-foreground/80" />
+          {isExporting && (
+            <Loader2 className="!w-3 !h-3 max-sm:!w-[12px] max-sm:!h-[12px] animate-spin text-primary mr-1" />
           )}
           <span className="text-[8px] sm:text-[8px] md:text-[9px] max-sm:text-[8px] font-black uppercase tracking-[0.15em] leading-none flex items-center gap-1.5">
             {isExporting ? (
