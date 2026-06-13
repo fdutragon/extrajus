@@ -744,6 +744,25 @@ export function AiMenuInputTextarea({
     [handleBlur]
   )
 
+  const handleTextareaClick = useCallback((e: React.MouseEvent<HTMLTextAreaElement>) => {
+    const textarea = e.currentTarget;
+    const value = textarea.value;
+    const cursor = textarea.selectionStart;
+
+    // Acha o colchete de abertura '[' para trás do cursor e o colchete de fechamento ']' para frente
+    const startBracket = value.lastIndexOf('[', cursor);
+    const endBracket = value.indexOf(']', cursor);
+
+    if (startBracket !== -1 && endBracket !== -1 && startBracket < endBracket) {
+      // O cursor precisa estar entre os colchetes para acionar a seleção automática
+      if (cursor >= startBracket && cursor <= endBracket + 1) {
+        setTimeout(() => {
+          textarea.setSelectionRange(startBracket, endBracket + 1);
+        }, 0);
+      }
+    }
+  }, [])
+
   const { provider } = useCollab()
   const [isSynced, setIsSynced] = useState(provider?.isSynced ?? false)
 
@@ -840,6 +859,7 @@ export function AiMenuInputTextarea({
                     <textarea
                       onChange={(e) => setPromptValue(e.target.value)}
                       value={promptValue}
+                      onClick={handleTextareaClick}
                       onKeyDown={handleKeyDown}
                       onFocus={handleFocus}
                       onBlur={handleTextareaBlur}
