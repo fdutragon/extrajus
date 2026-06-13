@@ -22,7 +22,8 @@ interface CheckoutModalProps {
 
 export function CheckoutModal({ isOpen, onClose, onSuccess, getDocumentContent, docType, title }: CheckoutModalProps) {
   const { text: headlineText, variant: headlineVariant } = useCopy('cta-checkout-headline', `Baixe Agora Seu ${docType === "notificacao" ? "Notificação" : "Contrato"}`)
-  const { text: generatePixText, variant: generatePixVariant } = useCopy('cta-checkout-generate-pix', "Gerar Código Pix")
+  const generatePixText = "Gerar Código Pix"
+  const generatePixVariant = "default"
   const { text: copyPixText, variant: copyPixVariant } = useCopy('cta-checkout-copy-pix', "Copiar Código Pix")
 
   const [step, setStep] = useState<"form" | "pix" | "success">("form")

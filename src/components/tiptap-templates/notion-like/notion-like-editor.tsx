@@ -676,7 +676,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
           </div>
 
           {!readOnly && (
-            <div className="flex items-center gap-0.5 md:gap-0 max-sm:gap-0 h-9 max-sm:hidden">
+            <div className="flex items-center gap-0.5 md:gap-0 max-sm:gap-0 h-9">
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -709,7 +709,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
             <Logo showText={true} iconSize={34} variant="chrome" />
           </div>
           <div className="sm:hidden">
-            <Logo showText={true} iconSize={26} variant="chrome" />
+            <Logo showText={true} iconSize={20} variant="chrome" />
           </div>
         </div>
 
