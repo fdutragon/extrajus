@@ -709,7 +709,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
             <Logo showText={true} iconSize={34} variant="chrome" />
           </div>
           <div className="sm:hidden">
-            <Logo showText={true} iconSize={20} variant="chrome" />
+            <Logo showText={true} iconSize={26} variant="chrome" />
           </div>
         </div>
 
