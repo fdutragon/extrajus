@@ -555,7 +555,15 @@ export function AiMenuInputTextarea({
   }, [updateState])
 
   const isPrefillLoadedRef = useRef(false)
+  const typingIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
+  // Limpa o intervalo de digitação ao desmontar o componente para evitar vazamento de memória
+  useEffect(() => {
+    return () => {
+      if (typingIntervalRef.current) clearInterval(typingIntervalRef.current)
+    }
+  }, [])
+ 
   // Prefill inteligente do input de IA com base no tipo de contrato selecionado dinamicamente
   useEffect(() => {
     if (selectedContractType && !promptValue && !isPrefillLoadedRef.current) {
@@ -581,7 +589,7 @@ export function AiMenuInputTextarea({
       // Define o template básico instantâneo para não prejudicar a UX
       setPromptValue(detailString);
       isPrefillLoadedRef.current = true;
-
+ 
       // Executa o refinamento inteligente via IA em background usando o Gemini Flash
       fetch("/api/ai/prefill", {
         method: "POST",
@@ -594,7 +602,28 @@ export function AiMenuInputTextarea({
           // Só atualiza o prefill se o usuário ainda não tiver editado o texto
           setPromptValue((currentVal) => {
             if (currentVal === detailString) {
-              return data.prompt;
+              // Limpa qualquer efeito de digitação anterior ativo
+              if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
+              
+              let index = 0;
+              const textToType = data.prompt;
+              
+              // Efeito máquina de escrever de alta velocidade (10ms por caractere)
+              typingIntervalRef.current = setInterval(() => {
+                setPromptValue((currentText) => {
+                  if (index < textToType.length) {
+                    const nextText = textToType.slice(0, index + 1);
+                    index++;
+                    return nextText;
+                  } else {
+                    if (typingIntervalRef.current) {
+                      clearInterval(typingIntervalRef.current);
+                      typingIntervalRef.current = null;
+                    }
+                    return currentText;
+                  }
+                });
+              }, 10);
             }
             return currentVal;
           });
@@ -881,7 +910,13 @@ export function AiMenuInputTextarea({
                   autoFocus={autoFocus}
                   render={
                     <textarea
-                      onChange={(e) => setPromptValue(e.target.value)}
+                      onChange={(e) => {
+                        if (typingIntervalRef.current) {
+                          clearInterval(typingIntervalRef.current);
+                          typingIntervalRef.current = null;
+                        }
+                        setPromptValue(e.target.value);
+                      }}
                       value={promptValue}
                       onClick={handleTextareaClick}
                       onKeyDown={handleKeyDown}
