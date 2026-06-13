@@ -385,15 +385,31 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
     }
   }, [state.selectedContractType])
 
-  // Mapeamento inicial de Template Slug para Tipo de Contrato
+  // Mapeamento inicial de Template Slug ou Keyword do Google Ads para Tipo de Contrato
   useEffect(() => {
-    if (templateSlug && !state.selectedContractType) {
-      const formattedName = templateSlug
-        .split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ')
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const keyword = urlParams.get("keyword") || urlParams.get("kw");
       
-      updateState({ selectedContractType: formattedName })
+      if (keyword && !state.selectedContractType) {
+        // Formata a palavra-chave (ex: "contrato de aluguel" -> "Contrato De Aluguel")
+        const formattedKeyword = keyword
+          .split(/[\s+_\-]+/)
+          .filter(Boolean)
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+          .join(' ');
+        
+        if (formattedKeyword) {
+          updateState({ selectedContractType: formattedKeyword });
+        }
+      } else if (templateSlug && !state.selectedContractType) {
+        const formattedName = templateSlug
+          .split('-')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+        
+        updateState({ selectedContractType: formattedName });
+      }
     }
   }, [templateSlug, state.selectedContractType, updateState])
 
