@@ -5,7 +5,6 @@ import type { Editor } from "@tiptap/react"
 import { Button } from "../../../../components/tiptap-ui-primitive/button"
 import type { TextOptions } from "../../../../components/tiptap-extension/gemini-ai-extension"
 import { useUiEditorState } from "../../../../hooks/use-ui-editor-state"
-import { Sparkles } from "lucide-react"
  
 import "../../../../components/tiptap-ui/ai-menu/ai-menu-actions/ai-menu-actions.scss"
  
@@ -45,26 +44,14 @@ export function AiMenuActions({
   }, [editor, onAccept])
  
   return (
-    <div className="tiptap-ai-menu-actions mt-2 px-4 sm:px-6 py-2.5 sm:py-3 border border-border/80 bg-card sm:bg-card/65 sm:backdrop-blur-md rounded-2xl flex items-center justify-end gap-2 sm:gap-4 shadow-sm animate-in fade-in duration-300 max-sm:shadow-none">
-      <div className="flex items-center gap-2.5 sm:gap-3 flex-nowrap w-full sm:w-auto">
-        <Button
-          variant="ghost"
-          className="ai-btn-discard h-9 sm:h-8 text-red-600 dark:text-red-400/90 hover:text-red-500 text-[11px] sm:text-[10px] font-semibold flex items-center justify-center gap-2.5 group/discard flex-1 sm:flex-none transition-all duration-300 rounded-full"
-          onClick={handleDiscard}
-        >
-          <span className="whitespace-nowrap leading-none">Desfazer</span>
-        </Button>
-
-        <Button
-          variant="ghost"
-          className="ai-btn-apply h-9 sm:h-8 text-emerald-600 dark:text-emerald-400 text-[11px] sm:text-[10px] font-bold transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-3 group/apply flex-1 sm:flex-none rounded-full"
-          onClick={handleApply}
-          disabled={aiGenerationIsLoading}
-        >
-          <Sparkles size={12} className="sm:size-[13.5px] transition-transform group-hover/apply:scale-110 shrink-0 self-center" />
-          <span className="whitespace-nowrap leading-none">Aplicar</span>
-        </Button>
-      </div>
+    <div className="tiptap-ai-menu-actions mt-2 px-3 sm:px-4 py-2 border border-border/60 bg-card/50 sm:backdrop-blur-md rounded-xl flex items-center justify-end shadow-sm animate-in fade-in duration-300">
+      <Button
+        variant="ghost"
+        className="ai-btn-discard h-7 px-3 text-muted-foreground hover:text-red-500 text-[10px] font-semibold flex items-center justify-center transition-all duration-200 rounded-lg"
+        onClick={handleDiscard}
+      >
+        <span className="whitespace-nowrap leading-none">Desfazer</span>
+      </Button>
     </div>
   )
 }
