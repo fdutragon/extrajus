@@ -52,17 +52,6 @@ export async function POST(request: Request) {
 
     if (profileData?.id) {
       userId = profileData.id;
-      // Recuperar metadados do usuário para preservar
-      const { data: userData } = await supabaseAdmin.auth.admin.getUserById(userId);
-      const userMetadata = userData?.user?.user_metadata || {};
-      
-      // Atualizar a senha e metadados para login automático e imediato após pagamento
-      const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(userId, {
-        password: tempPassword,
-        email_confirm: true,
-        user_metadata: { ...userMetadata, temp_pass: tempPassword }
-      });
-      if (updateError) console.error("Erro ao atualizar senha temporária do usuário existente:", updateError);
     } else {
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email,
