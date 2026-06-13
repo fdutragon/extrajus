@@ -91,14 +91,14 @@ export default async function RootLayout({
       </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-background text-foreground">
         {/* Google tag (gtag.js) */}
-        <Script async src="https://www.googletagmanager.com/gtag/js?id=AW-18191879169" strategy="lazyOnload" />
+        <Script async src="https://www.googletagmanager.com/gtag/js?id=AW-18209824209" strategy="lazyOnload" />
         <Script id="google-analytics" strategy="lazyOnload">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             if (!window.gtagInitialized) {
               gtag('js', new Date());
-              gtag('config', 'AW-18191879169');
+              gtag('config', 'AW-18209824209');
               window.gtagInitialized = true;
             }
           `}
