@@ -391,23 +391,52 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
       const urlParams = new URLSearchParams(window.location.search);
       const keyword = urlParams.get("keyword") || urlParams.get("kw");
       
-      if (keyword && !state.selectedContractType) {
-        // Formata a palavra-chave (ex: "contrato de aluguel" -> "Contrato De Aluguel")
-        const formattedKeyword = keyword
+      const replacements: { [key: string]: string } = {
+        "prestacao": "Prestação",
+        "servicos": "Serviços",
+        "locacao": "Locação",
+        "aluguel": "Aluguel",
+        "socios": "Sócios",
+        "transacao": "Transação",
+        "doacao": "Doação",
+        "cessao": "Cessão",
+        "rescisao": "Rescisão",
+        "comercio": "Comércio",
+        "distribuicao": "Distribuição",
+        "procuracao": "Procuração",
+        "declaracao": "Declaração",
+        "quitacao": "Quitação",
+        "veiculo": "Veículo",
+        "imovel": "Imóvel",
+        "imoveis": "Imóveis",
+        "moveis": "Móveis",
+        "peticao": "Petição",
+        "notificacao": "Notificação",
+        "ti": "TI",
+        "nda": "NDA",
+        "sha": "SHA",
+        "clt": "CLT"
+      };
+
+      const formatString = (str: string) => {
+        return str
           .split(/[\s+_\-]+/)
           .filter(Boolean)
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+          .map(word => {
+            const lower = word.toLowerCase();
+            if (replacements[lower]) return replacements[lower];
+            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+          })
           .join(' ');
-        
+      };
+
+      if (keyword && !state.selectedContractType) {
+        const formattedKeyword = formatString(keyword);
         if (formattedKeyword) {
           updateState({ selectedContractType: formattedKeyword });
         }
       } else if (templateSlug && !state.selectedContractType) {
-        const formattedName = templateSlug
-          .split('-')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' ');
-        
+        const formattedName = formatString(templateSlug);
         updateState({ selectedContractType: formattedName });
       }
     }
