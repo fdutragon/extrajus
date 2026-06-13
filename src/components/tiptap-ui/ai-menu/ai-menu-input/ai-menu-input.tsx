@@ -11,7 +11,7 @@ import type { Tone } from "../../../../components/tiptap-extension/gemini-ai-ext
 // Icons
 import { MicAiIcon } from "../../../../components/tiptap-icons/mic-ai-icon"
 import { AiSparklesIcon } from "../../../../components/tiptap-icons/ai-sparkles-icon"
-import { BrainCircuit, StopCircle as StopCircle2Icon, ArrowUp as ArrowUpIcon, Mic, MicOff, Search, FileText, ChevronDown, X, Cloud, ArrowRight, Pencil } from "lucide-react"
+import { BrainCircuit, StopCircle as StopCircle2Icon, ArrowUp as ArrowUpIcon, Mic, MicOff, Search, FileText, ChevronDown, X, Cloud, ArrowRight } from "lucide-react"
 
 // UI Components
 import { SUPPORTED_TONES } from "../../../../components/tiptap-ui/ai-menu"
@@ -531,8 +531,8 @@ export function AiPromptInputToolbar({
             </>
           ) : (
             <>
-              <Pencil className="w-3.5 h-3.5 stroke-[2.5] text-primary-foreground/90" />
               <span className="font-semibold text-xs text-primary-foreground">Editar</span>
+              <ArrowRight className="w-3.5 h-3.5 stroke-[2.5] text-primary-foreground/90 transition-transform duration-300 group-hover:translate-x-0.5" />
             </>
           )}
         </Button>
