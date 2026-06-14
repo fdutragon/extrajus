@@ -49,7 +49,7 @@ function NotificationEditorContent() {
         <NotionEditor 
           room={room} 
           templateSlug="Notificação Extrajudicial" 
-          readOnly={true} 
+          readOnly={false} 
           isPublic={isPublic} 
         />
       </div>
