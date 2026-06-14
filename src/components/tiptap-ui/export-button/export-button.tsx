@@ -213,17 +213,7 @@ export function ExportButton({
             <Loader2 className="!w-3 !h-3 max-sm:!w-[12px] max-sm:!h-[12px] animate-spin text-primary mr-1" />
           )}
           <span className="text-[8px] sm:text-[8px] md:text-[9px] max-sm:text-[8.8px] font-black uppercase tracking-[0.12em] leading-none flex items-center gap-1">
-            {isExporting ? (
-              "Exportando"
-            ) : (
-              <>
-                <span className="hidden sm:inline">Baixar por R$ 29,00</span>
-                <span className="sm:hidden text-foreground/95">Baixar</span>
-                <span className="sm:hidden bg-primary/25 dark:bg-primary/20 text-primary border border-primary/30 px-1 py-0.5 rounded text-[8px] font-extrabold tracking-normal">
-                  R$ 29
-                </span>
-              </>
-            )}
+            {isExporting ? "Exportando" : "Baixar"}
           </span>
         </Button>
       )}
