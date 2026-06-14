@@ -298,10 +298,11 @@ export function useVoiceAgent() {
                 if(args && args.contexto_geral) {
                   localStorage.setItem(`draft_context_${sessionId}`, args.contexto_geral);
                 }
-                router.push(`/notificacao/editor?session=${sessionId}`);
-                
-                // Encerra a chamada de voz conforme solicitado pelo Arquiteto
-                setTimeout(() => stopLiveDialog(), 100);
+                 // Dá um tempo de 3.5 segundos para a Lilith falar o aviso antes de redirecionar a rota
+                 setTimeout(() => {
+                   router.push(`/notificacao/editor?session=${sessionId}`);
+                   setTimeout(() => stopLiveDialog(), 100);
+                 }, 3500);
                 
                 return {
                   name,
