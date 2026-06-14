@@ -71,42 +71,37 @@ export default function Home() {
     <div className="min-h-screen bg-background text-muted-foreground selection:bg-primary/30 font-sans overflow-x-hidden">
       {/* Background Patterns */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,var(--primary),transparent_50%)] opacity-[0.05]" />
-        <div className="absolute inset-0  opacity-[0.02] mix-blend-overlay" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-[0.1]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(250,204,21,0.08),transparent_50%)] opacity-100" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] opacity-[0.4] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
       </div>
 
       {/* Navigation */}
       <nav className={cn(
         "fixed top-0 w-full z-50 transition-all duration-300 px-6 py-4",
-        scrolled ? "translate-y-0" : "translate-y-2"
+        scrolled ? "translate-y-0" : "translate-y-1"
       )}>
         <div className={cn(
           "max-w-5xl mx-auto flex justify-between items-center transition-all duration-300 p-2 rounded-2xl border",
           scrolled
-            ? "bg-background/60 backdrop-blur-xl border-border shadow-lg"
+            ? "bg-background/80 backdrop-blur-xl border-border/85 shadow-2xl shadow-black/20"
             : "bg-transparent border-transparent"
         )}>
           <div className="flex items-center gap-6 pl-4">
             <Link href="/" className="flex items-center group">
-              <Logo iconSize={36} showText={true} />
+              <Logo iconSize={34} showText={true} variant="chrome" />
             </Link>
-            <div className="hidden md:flex items-center gap-6 text-[11px] font-bold uppercase tracking-wider">
-              <a href="#como-funciona" className="relative py-1 text-muted-foreground hover:text-foreground transition-colors group">
+            <div className="hidden md:flex items-center gap-6 text-[10px] font-black uppercase tracking-[0.2em]">
+              <a href="#como-funciona" className="relative py-1 text-muted-foreground/80 hover:text-foreground transition-colors group">
                 Como funciona
-                <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
               </a>
-              <a href="#modelos" className="relative py-1 text-muted-foreground hover:text-foreground transition-colors group">
+              <a href="#modelos" className="relative py-1 text-muted-foreground/80 hover:text-foreground transition-colors group">
                 Tipos de Notificações
-                <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
               </a>
-              <a href="#assinaturas" className="relative py-1 text-muted-foreground hover:text-foreground transition-colors group">
+              <a href="#assinaturas" className="relative py-1 text-muted-foreground/80 hover:text-foreground transition-colors group">
                 Assinatura Digital
-                <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
               </a>
-              <a href="#faq" className="relative py-1 text-muted-foreground hover:text-foreground transition-colors group">
+              <a href="#faq" className="relative py-1 text-muted-foreground/80 hover:text-foreground transition-colors group">
                 Dúvidas
-                <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
               </a>
             </div>
           </div>
@@ -117,115 +112,112 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-40 pb-24 px-6">
+      <section className="relative pt-36 pb-20 px-6">
         <div className="max-w-4xl mx-auto text-center relative z-10 space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary/5 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest animate-in fade-in slide-in-from-bottom-4 duration-1000">
-            <Sparkles size={11} className="animate-pulse" /> Inteligência Artificial para Criação e Análise Legal
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-400/5 border border-yellow-400/20 text-yellow-500 dark:text-yellow-400 text-[9px] font-black uppercase tracking-[0.25em] animate-in fade-in duration-700">
+            <Sparkles size={10} className="animate-pulse text-yellow-500 dark:text-yellow-400" /> Inteligência Artificial Legal
           </div>
           {/* Headline Reduzida & Consistente */}
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.1] text-foreground animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+          <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-[1.1] text-foreground animate-in fade-in duration-700">
             A Notificação Extrajudicial Definitiva. <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/90 to-purple-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-yellow-400 to-amber-500 filter drop-shadow-[0_0_15px_rgba(234,179,8,0.1)]">
               Gerada, Blindada e Enviada por IA.
             </span>
-          </h1>          {/* Subheadline Reduzida & Focada em Google Ads "Modelo de Contrato" */}
-          <p className="text-[13px] md:text-base text-muted-foreground/90 max-w-2xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
-            Resolva calotes e exija seus direitos sem precisar de advogados caros. Use nossa inteligência cirúrgica para <span className="text-foreground font-bold">criar e enviar</span> notificações letais e profissionais sob medida em segundos.
+          </h1>
+          {/* Subheadline */}
+          <p className="text-[13px] md:text-sm text-muted-foreground/90 max-w-xl mx-auto leading-relaxed animate-in fade-in duration-700">
+            Resolva pendências de forma implacável e exija seus direitos sem burocracias. Use inteligência jurídica especializada para <span className="text-foreground font-bold">criar e analisar</span> notificações profissionais sob medida em segundos.
           </p>
 
-          {/* Botões do Hero Melhores & Premium */}
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-700">
+          {/* Botões do Hero */}
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-3.5 pt-3 animate-in fade-in duration-700">
             <Link href="#modelos">
-              <Button size="lg" className="h-14 px-8 rounded-xl bg-primary text-primary-foreground font-black text-[11px] uppercase tracking-widest shadow-[0_0_25px_rgba(var(--primary),0.25)] hover:shadow-[0_0_35px_rgba(var(--primary),0.4)] hover:bg-primary/90 transition-all duration-300 group overflow-hidden border border-primary/30 active:scale-98">
-                <span className="relative z-10 flex items-center gap-2">
-                  Gerar Contrato Agora <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+              <Button size="lg" className="h-11 px-7 rounded-xl bg-yellow-500 hover:bg-yellow-400 text-black font-black text-[10px] uppercase tracking-widest shadow-[0_4px_20px_rgba(234,179,8,0.2)] transition-all duration-200 group border border-yellow-500/25 active:scale-95">
+                <span className="flex items-center gap-1.5">
+                  Gerar Contrato Agora <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
                 </span>
               </Button>
             </Link>
             <Link href="#como-funciona">
-              <Button variant="outline" size="lg" className="h-14 px-8 rounded-xl border-border bg-background/40 hover:bg-muted text-foreground font-black text-[10px] uppercase tracking-widest transition-all duration-300 backdrop-blur-sm active:scale-98">
+              <Button variant="outline" size="lg" className="h-11 px-7 rounded-xl border-border/80 bg-background/50 hover:bg-muted/80 text-foreground font-black text-[9px] uppercase tracking-widest transition-all duration-200 active:scale-95">
                 Ver Como Funciona
               </Button>
             </Link>
           </div>
 
           {/* Product Showcase */}
-          <div className="relative max-w-4xl mx-auto pt-16 animate-in fade-in zoom-in-95 duration-1000 delay-1000">
-            <div className="absolute -inset-1 bg-gradient-to-b from-primary/20 to-transparent rounded-[2rem] blur-2xl opacity-40" />
-            <div className="relative bg-card/60 border border-border rounded-3xl shadow-2xl overflow-hidden aspect-[16/9] flex backdrop-blur-md">
+          <div className="relative max-w-4xl mx-auto pt-14 animate-in fade-in duration-1000">
+            <div className="absolute -inset-1 bg-gradient-to-b from-yellow-500/10 to-transparent rounded-[2rem] blur-3xl opacity-30" />
+            <div className="relative bg-card border border-border/80 rounded-2xl shadow-2xl overflow-hidden aspect-[16/9] flex backdrop-blur-md">
               {/* Left Sidebar Mockup */}
-              <div className="w-56 border-r border-border hidden md:block bg-muted/30 p-6 text-left space-y-6">
-                <div className="flex items-center gap-2 opacity-60">
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
+              <div className="w-48 border-r border-border/60 hidden md:block bg-muted/20 p-5 text-left space-y-5">
+                <div className="flex items-center gap-1.5 opacity-60">
+                  <div className="w-2 h-2 rounded-full bg-red-500/60" />
+                  <div className="w-2 h-2 rounded-full bg-yellow-500/60" />
+                  <div className="w-2 h-2 rounded-full bg-green-500/60" />
                 </div>
                 <div className="space-y-4">
-                  <div className="space-y-2">
-                    <div className="h-2 w-1/3 bg-foreground/20 rounded" />
-                    <div className="h-8 w-full bg-primary/10 border border-primary/20 rounded-xl flex items-center justify-between px-3 text-[9px] font-black text-primary uppercase tracking-wider">
+                  <div className="space-y-1.5">
+                    <div className="h-1.5 w-1/3 bg-foreground/15 rounded" />
+                    <div className="h-7 w-full bg-yellow-500/5 border border-yellow-500/20 rounded-lg flex items-center justify-between px-2.5 text-[8.5px] font-black text-yellow-600 dark:text-yellow-400 uppercase tracking-wider">
                       <span>Notificação Ativa</span>
-                      <Zap size={10} className="animate-pulse" />
+                      <Zap size={9} className="animate-pulse" />
                     </div>
-                    <div className="h-8 w-full bg-transparent border border-foreground/5 rounded-xl" />
-                    <div className="h-8 w-full bg-transparent border border-foreground/5 rounded-xl" />
+                    <div className="h-7 w-full bg-transparent border border-border/40 rounded-lg" />
+                    <div className="h-7 w-full bg-transparent border border-border/40 rounded-lg" />
                   </div>
                 </div>
               </div>
 
               {/* Editor Mockup */}
-              <div className="flex-1 p-10 text-left relative overflow-hidden bg-muted/10 flex">
-                <div className="flex-1 space-y-6 pr-6">
-                  <div className="space-y-3">
-                    <div className="h-8 w-3/4 bg-foreground/15 rounded-lg" />
-                    <div className="h-3 w-full bg-foreground/10 rounded-full" />
-                    <div className="h-3 w-full bg-foreground/10 rounded-full" />
-                    <div className="h-3 w-2/3 bg-foreground/10 rounded-full" />
+              <div className="flex-1 p-8 text-left relative overflow-hidden bg-muted/5 flex">
+                <div className="flex-1 space-y-5 pr-4">
+                  <div className="space-y-2.5">
+                    <div className="h-6 w-2/3 bg-foreground/10 rounded" />
+                    <div className="h-2.5 w-full bg-foreground/5 rounded-full" />
+                    <div className="h-2.5 w-full bg-foreground/5 rounded-full" />
+                    <div className="h-2.5 w-4/5 bg-foreground/5 rounded-full" />
                   </div>
-                  <div className="flex items-center gap-4 pt-2">
-                    <div className="px-3 py-1 bg-primary/10 border border-primary/25 rounded-lg text-[9px] font-black text-primary uppercase tracking-widest">
-                      IA SmartDoc // Análise em Tempo Real
+                  <div className="flex items-center gap-3 pt-1">
+                    <div className="px-2.5 py-1 bg-yellow-500/5 border border-yellow-500/15 rounded-md text-[8.5px] font-black text-yellow-600 dark:text-yellow-400 uppercase tracking-widest">
+                      IA SmartDoc // Análise de Risco
                     </div>
                   </div>
-                  <div className="space-y-3 pt-2">
-                    <div className="h-5 w-1/2 bg-foreground/15 rounded-lg" />
-                    <div className="h-3 w-full bg-foreground/10 rounded-full" />
+                  <div className="space-y-2.5 pt-1">
+                    <div className="h-4.5 w-1/2 bg-foreground/10 rounded" />
+                    <div className="h-2.5 w-full bg-foreground/5 rounded-full" />
                   </div>
                 </div>
 
                 {/* Right Sidebar Mockup (Mapa do Instrumento & Auditoria) */}
-                <div className="w-48 border-l border-border bg-card/45 p-4 text-left space-y-4 hidden lg:block">
-                  <div className="flex items-center justify-between border-b border-border/40 pb-2">
-                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Poder de Coerção</span>
-                    <span className="text-[8px] font-black text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">98%</span>
+                <div className="w-40 border-l border-border/60 bg-card/45 p-3.5 text-left space-y-3.5 hidden lg:block">
+                  <div className="flex items-center justify-between border-b border-border/40 pb-1.5">
+                    <span className="text-[7.5px] font-black text-muted-foreground uppercase tracking-wider">Força Legal</span>
+                    <span className="text-[7.5px] font-black text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">98%</span>
                   </div>
-                  <div className="space-y-3">
-                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Estrutura Legal</span>
-                    <div className="relative pl-3 space-y-3 before:absolute before:left-[3px] before:top-1 before:bottom-1 before:w-[1px] before:bg-border">
-                      <div className="text-[9px] font-bold text-foreground/80 flex items-center justify-between">
+                  <div className="space-y-2">
+                    <span className="text-[7.5px] font-black text-muted-foreground uppercase tracking-wider">Estrutura</span>
+                    <div className="relative pl-2.5 space-y-2.5 before:absolute before:left-[2px] before:top-1 before:bottom-1 before:w-[1px] before:bg-border/60">
+                      <div className="text-[8.5px] font-bold text-foreground/80 flex items-center justify-between">
                         <span>Objeto</span>
-                        <span className="text-[8px] text-emerald-500 font-bold uppercase tracking-wider">✅ Regular</span>
+                        <span className="text-[7.5px] text-emerald-500 font-bold uppercase tracking-wider">✅ Ok</span>
                       </div>
-                      <div className="pl-2 space-y-1">
-                        <div className="h-1 w-full bg-foreground/10 rounded-full" />
-                      </div>
-                      <div className="text-[9px] font-bold text-foreground/80 flex items-center justify-between">
-                        <span>Rescisão</span>
-                        <span className="text-[8px] text-emerald-500 font-bold uppercase tracking-wider">✅ Seguro</span>
+                      <div className="text-[8.5px] font-bold text-foreground/80 flex items-center justify-between">
+                        <span>Prazo</span>
+                        <span className="text-[7.5px] text-emerald-500 font-bold uppercase tracking-wider">✅ Seguro</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Floating Elements */}
-                <div className="absolute top-1/3 left-1/3 bg-card/90 border border-border p-3 rounded-2xl shadow-2xl animate-float backdrop-blur-sm">
-                  <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
-                      <MousePointer2 size={12} />
+                <div className="absolute top-1/4 left-1/4 bg-card border border-border/80 p-2.5 rounded-xl shadow-xl animate-float backdrop-blur-md">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-lg bg-yellow-500/10 flex items-center justify-center text-yellow-500">
+                      <MousePointer2 size={10} />
                     </div>
                     <div>
-                      <p className="text-[9px] font-black text-foreground uppercase tracking-wide">Sugestão de Ajuste</p>
-                      <p className="text-[8px] text-muted-foreground tracking-tight">Cláusula otimizada com sucesso</p>
+                      <p className="text-[8px] font-black text-foreground uppercase tracking-wide">Cláusula Ajustada</p>
                     </div>
                   </div>
                 </div>
@@ -258,7 +250,7 @@ export default function Home() {
             >
               <div className="mt-4 relative h-full w-full overflow-hidden rounded-2xl bg-muted/40 border border-border p-5 font-mono text-[9px] text-muted-foreground text-left">
                 <div className="flex items-center gap-2 mb-4">
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse" />
                   <span className="font-sans font-bold text-[8px] uppercase tracking-widest text-muted-foreground/60">Analisando contexto contratual...</span>
                 </div>
                 <div className="space-y-3 opacity-80">
@@ -266,10 +258,10 @@ export default function Home() {
                   <p className="text-emerald-500 bg-emerald-500/5 px-2.5 py-1.5 rounded-xl border border-emerald-500/20 italic">
                     + [Sugestão Otimizada]: Qualquer uma das partes poderá rescindir o presente instrumento mediante aviso prévio por escrito com antecedência mínima de 30 dias...
                   </p>
-                  <div className="h-4 w-3/4 bg-primary/5 rounded border border-primary/10" />
+                  <div className="h-4 w-3/4 bg-yellow-500/5 rounded border border-yellow-500/10" />
                 </div>
                 <div className="absolute bottom-5 left-5 right-5 h-11 bg-background border border-border rounded-xl shadow-sm flex items-center px-4 gap-2">
-                  <span className="text-primary animate-pulse">✨</span>
+                  <span className="text-yellow-500 animate-pulse">✨</span>
                   <span className="text-muted-foreground font-sans font-bold text-[8.5px] uppercase tracking-wider">Ajustando garantias financeiras no objeto...</span>
                 </div>
               </div>
@@ -282,14 +274,14 @@ export default function Home() {
               description="Esqueça a insegurança. A plataforma analisa cada linha em tempo real, verificando se há termos ambíguos, brechas de multa ou cláusulas essenciais em falta."
             >
               <div className="mt-4 space-y-4">
-                <div className="p-5 rounded-2xl bg-primary/5 border border-primary/25 transition-all duration-300 hover:border-primary/50 group/stat">
-                  <p className="text-[9px] font-black text-primary uppercase tracking-widest mb-1.5 font-sans">Conformidade Legal</p>
+                <div className="p-5 rounded-2xl bg-yellow-500/5 border border-yellow-500/25 transition-all duration-300 hover:border-yellow-500/50 group/stat">
+                  <p className="text-[9px] font-black text-yellow-600 dark:text-yellow-400 uppercase tracking-widest mb-1.5 font-sans">Conformidade Legal</p>
                   <div className="flex items-baseline gap-2">
                     <p className="text-3xl font-black text-foreground tracking-tight font-sans">98%</p>
-                    <span className="text-[8px] font-black px-2 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/20 uppercase tracking-wider">Seguro</span>
+                    <span className="text-[8px] font-black px-2 py-0.5 rounded-full bg-yellow-500/15 text-yellow-600 dark:text-yellow-400 border border-yellow-500/20 uppercase tracking-wider">Seguro</span>
                   </div>
                 </div>
-                <div className="p-5 rounded-2xl bg-muted/50 border border-border transition-all duration-300 hover:border-primary/20 group/stat">
+                <div className="p-5 rounded-2xl bg-muted/50 border border-border transition-all duration-300 hover:border-yellow-500/20 group/stat">
                   <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1.5 font-sans">Vulnerabilidades</p>
                   <div className="flex items-baseline gap-2">
                     <p className="text-3xl font-black text-foreground tracking-tight font-sans">00</p>
@@ -306,7 +298,7 @@ export default function Home() {
               subtitle="Resumo estruturado da notificação"
               description="Visualize a anatomia jurídica do seu documento por meio de um sumário interativo. Acesse e edite qualquer parágrafo em um piscar de olhos."
             >
-              <div className="mt-6 pl-4 space-y-3 border-l-2 border-primary/20">
+              <div className="mt-6 pl-4 space-y-3 border-l-2 border-yellow-500/20">
                 <div className="text-[9.5px] font-black uppercase tracking-wider text-foreground flex items-center justify-between">
                   <span>1. Escopo de Serviços</span>
                   <span className="text-[7.5px] font-black text-emerald-500">Regular</span>
@@ -332,7 +324,7 @@ export default function Home() {
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                    <div className="h-2 w-32 bg-primary/20 rounded" />
+                    <div className="h-2 w-32 bg-yellow-500/20 rounded" />
                     <span className="text-[8px] text-emerald-500 font-black uppercase tracking-wider ml-auto">Ativo</span>
                   </div>
                   <div className="flex items-center gap-3 opacity-60">
@@ -341,7 +333,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="absolute top-1/2 right-0 -translate-y-1/2 rotate-12">
-                  <div className="bg-primary/20 border border-primary/30 text-primary px-3 py-1 text-[8px] font-black rounded-lg shadow-lg uppercase tracking-widest">Criptografado</div>
+                  <div className="bg-yellow-500/20 border border-yellow-500/30 text-yellow-600 dark:text-yellow-400 px-3 py-1 text-[8px] font-black rounded-lg shadow-lg uppercase tracking-widest">Criptografado</div>
                 </div>
               </div>
             </BentoCard>
@@ -354,12 +346,12 @@ export default function Home() {
               description="Não obrigue seu cliente a imprimir e escanear. Envie um link criptografado para assinatura na própria tela do celular dele, com validade jurídica assegurada."
             >
               <div className="mt-6 grid grid-cols-2 gap-2 text-left">
-                <div className="p-4 bg-muted/60 border border-border rounded-xl flex flex-col items-center justify-center gap-2 group-hover:bg-primary/5 transition-all">
-                  <Zap size={18} className="text-muted-foreground group-hover:text-primary transition-colors" />
+                <div className="p-4 bg-muted/60 border border-border rounded-xl flex flex-col items-center justify-center gap-2 hover:bg-yellow-500/5 transition-all group/subcard">
+                  <Zap size={18} className="text-muted-foreground group-hover/subcard:text-yellow-500 transition-colors" />
                   <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Instantâneo</span>
                 </div>
-                <div className="p-4 bg-muted/60 border border-border rounded-xl flex flex-col items-center justify-center gap-2 group-hover:bg-primary/5 transition-all">
-                  <ShieldCheck size={18} className="text-muted-foreground group-hover:text-primary transition-colors" />
+                <div className="p-4 bg-muted/60 border border-border rounded-xl flex flex-col items-center justify-center gap-2 hover:bg-yellow-500/5 transition-all group/subcard">
+                  <ShieldCheck size={18} className="text-muted-foreground group-hover/subcard:text-yellow-500 transition-colors" />
                   <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Legítimo</span>
                 </div>
               </div>
@@ -414,16 +406,16 @@ export default function Home() {
                 desc: "Ordene a remoção imediata de fotos, vídeos ou marca da internet sob pena de responsabilização civil e criminal."
               }
             ].map((model, i) => (
-              <div key={i} className="group p-8 bg-card border border-border rounded-3xl hover:border-primary/50 hover:shadow-[0_0_30px_rgba(var(--primary),0.03)] transition-all duration-300 flex flex-col justify-between h-full text-left">
+              <div key={i} className="group p-8 bg-card border border-border/70 rounded-2xl hover:border-yellow-500/50 hover:shadow-[0_0_30px_rgba(234,179,8,0.03)] transition-all duration-300 flex flex-col justify-between h-full text-left">
                 <div>
-                  <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+                  <div className="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center text-yellow-600 dark:text-yellow-400 mb-6 group-hover:bg-yellow-500 group-hover:text-black transition-all duration-300">
                     {model.icon}
                   </div>
                   <h3 className="text-sm font-black text-foreground uppercase tracking-wider mb-2">{model.title}</h3>
-                  <p className="text-[11.5px] text-muted-foreground leading-relaxed font-medium mb-6">{model.desc}</p>
+                  <p className="text-[11.5px] text-muted-foreground/80 leading-relaxed font-medium mb-6">{model.desc}</p>
                 </div>
                 <Link href="#faq">
-                  <Button variant="link" className="p-0 h-auto text-primary font-black text-[9px] uppercase tracking-widest group-hover:translate-x-1 transition-all flex items-center gap-1.5 justify-start">
+                  <Button variant="link" className="p-0 h-auto text-yellow-600 dark:text-yellow-400 font-black text-[9px] uppercase tracking-widest group-hover:translate-x-1 transition-all flex items-center gap-1.5 justify-start">
                     Saber Mais <ChevronRight size={12} />
                   </Button>
                 </Link>
@@ -433,7 +425,7 @@ export default function Home() {
 
           <div className="text-center">
             <Link href="#faq">
-              <Button variant="outline" className="rounded-xl px-8 h-12 border-primary/20 hover:border-primary/50 text-primary font-black text-[10px] uppercase tracking-widest backdrop-blur-sm transition-all duration-300 active:scale-98">
+              <Button variant="outline" className="rounded-xl px-8 h-12 border-yellow-500/20 hover:border-yellow-500/50 text-yellow-600 dark:text-yellow-400 font-black text-[10px] uppercase tracking-widest backdrop-blur-sm transition-all duration-300 active:scale-98">
                 Tirar Dúvidas no FAQ
               </Button>
             </Link>
@@ -447,7 +439,7 @@ export default function Home() {
 
           {/* Titulo e Descricao Padronizados com Espaçamento Reduzido */}
           <div className="space-y-3.5 text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/5 border border-yellow-500/20 text-yellow-600 dark:text-yellow-400 text-[10px] font-black uppercase tracking-widest">
               Validade Jurídica Assegurada
             </div>
 
@@ -460,15 +452,15 @@ export default function Home() {
             </p>
 
             <Link href="/signatures">
-              <Button variant="link" className="text-primary p-0 h-auto font-black text-[10px] uppercase tracking-widest group flex items-center gap-1.5">
+              <Button variant="link" className="text-yellow-600 dark:text-yellow-400 p-0 h-auto font-black text-[10px] uppercase tracking-widest group flex items-center gap-1.5">
                 Ver Detalhes do Protocolo <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
           </div>
 
           <div className="relative aspect-square">
-            <div className="absolute inset-0 bg-primary/5 rounded-full blur-[100px]" />
-            <div className="relative h-full w-full bg-card border border-border rounded-3xl overflow-hidden shadow-xl flex items-center justify-center">
+            <div className="absolute inset-0 bg-yellow-500/5 rounded-full blur-[100px]" />
+            <div className="relative h-full w-full bg-card border border-border/80 rounded-2xl overflow-hidden shadow-xl flex items-center justify-center">
               <ForceGraph2D
                 graphData={graphData}
                 width={500}
@@ -481,8 +473,8 @@ export default function Home() {
                 linkDirectionalParticles={4}
                 linkDirectionalParticleSpeed={0.005}
                 linkDirectionalParticleWidth={2}
-                linkDirectionalParticleColor={() => "hsl(var(--primary))"}
-                linkColor={() => "rgba(168, 85, 247, 0.2)"}
+                linkDirectionalParticleColor={() => "hsl(var(--yellow-500, 47 95% 55%))"}
+                linkColor={() => "rgba(250, 204, 21, 0.15)"}
                 nodeCanvasObject={(node: any, ctx: CanvasRenderingContext2D, globalScale) => {
                   const label = node.name;
                   const fontSize = 12 / globalScale;
@@ -509,7 +501,7 @@ export default function Home() {
                 }}
               />
               <div className="absolute top-6 left-6 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_10px_var(--primary)]" />
+                <div className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse shadow-[0_0_10px_var(--yellow-500)]" />
                 <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/80">Criptografia Ativa ICP-Brasil</span>
               </div>
             </div>
@@ -537,12 +529,12 @@ export default function Home() {
               { title: "Sincronização Nuvem", icon: <Database size={18} />, desc: "Hospedagem segura em servidores AWS resilientes e velozes." },
               { title: "Organização IA", icon: <Layers size={18} />, desc: "Gerenciamento dinâmico de todos os seus modelos no acervo." }
             ].map((tech, i) => (
-              <div key={i} className="p-8 bg-card border border-border rounded-3xl hover:border-primary/20 transition-all group text-left">
-                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+              <div key={i} className="p-8 bg-card border border-border/70 rounded-2xl hover:border-yellow-500/25 transition-all group text-left">
+                <div className="w-9 h-9 rounded-xl bg-yellow-500/10 flex items-center justify-center text-yellow-600 dark:text-yellow-400 mb-6 group-hover:bg-yellow-500 group-hover:text-black transition-all duration-300">
                   {tech.icon}
                 </div>
                 <h3 className="text-[11.5px] font-black text-foreground uppercase tracking-widest mb-2">{tech.title}</h3>
-                <p className="text-[11px] text-muted-foreground font-medium leading-relaxed">{tech.desc}</p>
+                <p className="text-[11px] text-muted-foreground/80 font-medium leading-relaxed">{tech.desc}</p>
               </div>
             ))}
           </div>
@@ -551,7 +543,7 @@ export default function Home() {
 
       {/* FAQ Section */}
       <section id="faq" className="py-24 px-6 border-t border-border bg-background relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full pointer-events-none opacity-50" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-yellow-500/5 blur-[120px] rounded-full pointer-events-none opacity-40" />
 
         <div className="max-w-3xl mx-auto relative z-10 space-y-16">
 
@@ -595,26 +587,26 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 pb-16">
             <div className="md:col-span-2 space-y-6 text-left">
               <div className="flex items-center">
-                <Logo iconSize={48} showText={true} />
+                <Logo iconSize={44} showText={true} variant="chrome" />
               </div>
-              <p className="text-xs text-muted-foreground max-w-sm font-medium leading-relaxed">
+              <p className="text-xs text-muted-foreground/80 max-w-sm font-medium leading-relaxed">
                 A evolução na geração, auditoria e assinatura eletrônica de contratos empresariais. Tecnologia e alta performance para o seu ecossistema corporativo.
               </p>
             </div>
             <div className="space-y-4 text-left">
               <h4 className="text-[9px] font-black uppercase tracking-widest text-foreground">Recursos</h4>
               <ul className="space-y-3 text-[11px] font-medium text-muted-foreground">
-                <li><a href="#como-funciona" className="hover:text-primary transition-colors">Editor de Contratos</a></li>
-                <li><a href="#modelos" className="hover:text-primary transition-colors">Catálogo de Modelos</a></li>
-                <li><a href="#assinaturas" className="hover:text-primary transition-colors">Assinatura Digital</a></li>
+                <li><a href="#como-funciona" className="hover:text-yellow-500 transition-colors">Editor de Contratos</a></li>
+                <li><a href="#modelos" className="hover:text-yellow-500 transition-colors">Catálogo de Modelos</a></li>
+                <li><a href="#assinaturas" className="hover:text-yellow-500 transition-colors">Assinatura Digital</a></li>
               </ul>
             </div>
             <div className="space-y-4 text-left">
               <h4 className="text-[9px] font-black uppercase tracking-widest text-foreground">Termos</h4>
               <ul className="space-y-3 text-[11px] font-medium text-muted-foreground">
-                <li><a href="#" className="hover:text-primary transition-colors">Central de Ajuda</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Termos de Serviço</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Política de Privacidade</a></li>
+                <li><a href="#" className="hover:text-yellow-500 transition-colors">Central de Ajuda</a></li>
+                <li><a href="#" className="hover:text-yellow-500 transition-colors">Termos de Serviço</a></li>
+                <li><a href="#" className="hover:text-yellow-500 transition-colors">Política de Privacidade</a></li>
               </ul>
             </div>
           </div>
@@ -643,7 +635,7 @@ function BentoCard({
 }) {
   return (
     <div className={cn(
-      "group relative bg-card border border-border rounded-3xl p-8 flex flex-col overflow-hidden hover:bg-muted/50 hover:border-primary/20 transition-all duration-500",
+      "group relative bg-card border border-border/80 rounded-2xl p-8 flex flex-col overflow-hidden hover:bg-muted/50 hover:border-yellow-500/20 transition-all duration-500",
       className
     )}>
       <div className="relative z-10 flex flex-col h-full">
@@ -662,7 +654,7 @@ function BentoCard({
       </div>
 
       {/* Background Glow */}
-      <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-primary/5 blur-[80px] rounded-full group-hover:bg-primary/10 transition-colors duration-500" />
+      <div className="absolute -bottom-12 -right-12 w-48 h-48 bg-yellow-500/5 blur-[80px] rounded-full group-hover:bg-yellow-500/10 transition-colors duration-500" />
     </div>
   );
 }
@@ -672,17 +664,17 @@ function FAQItem({ question, answer }: { question: string, answer: string }) {
 
   return (
     <div className={cn(
-      "border border-border/60 bg-card/40 backdrop-blur-sm rounded-2xl overflow-hidden transition-all duration-300",
-      isOpen ? "border-primary/30 bg-card/60" : "hover:border-border"
+      "border border-border/60 bg-card/45 backdrop-blur-sm rounded-xl overflow-hidden transition-all duration-300",
+      isOpen ? "border-yellow-500/30 bg-card/60" : "hover:border-border"
     )}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full p-6 flex items-center justify-between text-left group"
       >
-        <span className="text-sm font-bold text-foreground tracking-tight group-hover:text-primary transition-colors">{question}</span>
+        <span className="text-sm font-bold text-foreground tracking-tight group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors">{question}</span>
         <div className={cn(
           "w-8 h-8 rounded-full border border-border flex items-center justify-center transition-all duration-300",
-          isOpen ? "bg-primary border-primary text-primary-foreground rotate-180" : "text-muted-foreground group-hover:border-primary/50 group-hover:text-primary"
+          isOpen ? "bg-yellow-500 border-yellow-500 text-black rotate-180" : "text-muted-foreground group-hover:border-yellow-500/50 group-hover:text-yellow-500"
         )}>
           <ChevronDown size={14} />
         </div>

@@ -525,7 +525,7 @@ export function EditorLayout({ isPublic = false, readOnly: propReadOnly, templat
   const readOnly = propReadOnly || searchParams?.get("mode") === "preview" || searchParams?.get("readOnly") === "true" || !editor
   const docType = searchParams?.get("tipo") || "contrato"
 
-  const aiPromptOpen = true // Sempre visível
+  const aiPromptOpen = false // Oculto temporariamente a pedido do Arquiteto
   const [fontSize, setFontSize] = useState<number>(14)
   const [fontFamily, setFontFamily] = useState<string>("Cambria")
 
@@ -937,7 +937,27 @@ export function EditorProvider(props: EditorProviderProps) {
     loadPurchasedContent()
   }, [editor, room])
 
-  const contextValue = useMemo(() => (editor ? { editor } : null), [editor])
+    // Dispara a geração de IA se vier redirecionado com contexto gravado no localStorage
+    useEffect(() => {
+      if (typeof window !== "undefined" && editor) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionToken = urlParams.get("session");
+        if (sessionToken) {
+          const draftContext = localStorage.getItem(`draft_context_${sessionToken}`);
+          if (draftContext) {
+            const prompt = `Crie uma notificação extrajudicial detalhada com base neste contexto:\n\n${draftContext}`;
+            setTimeout(() => {
+              // Limpa o documento para evitar duplicação ou lixo, foca e insere o stream
+              editor.chain().focus().clearContent().run();
+              ;(editor.commands as any).aiTextPrompt(prompt);
+              localStorage.removeItem(`draft_context_${sessionToken}`);
+            }, 1000);
+          }
+        }
+      }
+    }, [editor]);
+
+    const contextValue = useMemo(() => (editor ? { editor } : null), [editor])
   if (!editor || !contextValue || !isSynced) return <LoadingSpinner text="Sincronizando ambiente da inteligência artificial..." />
 
   return (

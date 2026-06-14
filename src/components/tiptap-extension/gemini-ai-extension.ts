@@ -168,6 +168,50 @@ function injectHighlightToParentBlock(html: string, searchText: string, replaceT
   return { success: true, result: updatedHtml }
 }
 
+// ─── Chat History Persistence (localStorage) ─────────────────────────────────
+// O histórico é atrelado ao documentId presente na URL (?id=...) para que
+// cada documento tenha sua própria memória conversacional.
+
+function getHistoryKey(): string {
+  if (typeof window === "undefined") return "smartdoc_chat_history_default"
+  const params = new URLSearchParams(window.location.search)
+  const docId = params.get("id") || params.get("doc") || "default"
+  return `smartdoc_chat_history_${docId}`
+}
+
+const MAX_HISTORY_TURNS = 40 // 20 pares user/model
+
+function loadChatHistory(): any[] {
+  try {
+    if (typeof window === "undefined") return []
+    const raw = window.localStorage.getItem(getHistoryKey())
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return []
+    // Mantém apenas os últimos MAX_HISTORY_TURNS turnos
+    return parsed.slice(-MAX_HISTORY_TURNS)
+  } catch {
+    return []
+  }
+}
+
+function saveChatHistory(history: any[]): void {
+  try {
+    if (typeof window === "undefined") return
+    const trimmed = history.slice(-MAX_HISTORY_TURNS)
+    window.localStorage.setItem(getHistoryKey(), JSON.stringify(trimmed))
+  } catch {
+    // localStorage pode estar cheio (QuotaExceededError) — falha silenciosa
+  }
+}
+
+function clearChatHistory(): void {
+  try {
+    if (typeof window === "undefined") return
+    window.localStorage.removeItem(getHistoryKey())
+  } catch {}
+}
+
 export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
   name: "ai",
 
@@ -185,7 +229,7 @@ export const Gemini = Extension.create<GeminiOptions, GeminiStorage>({
       response: "",
       state: "idle",
       auditResults: [],
-      chatHistory: [],
+      chatHistory: loadChatHistory(), // Carrega histórico persistido do localStorage
       abortController: null,
     }
   },
@@ -523,6 +567,12 @@ Lembre-se de retornar EXCLUSIVAMENTE as tags <search> e <replace> com a modifica
         if (!isDocEmpty && userPrompt) {
           this.storage.chatHistory.push({ role: "user", parts: [{ text: userPrompt }] })
           this.storage.chatHistory.push({ role: "model", parts: [{ text: accumulatedText }] })
+          // Persiste no localStorage para sobreviver a reloads
+          saveChatHistory(this.storage.chatHistory)
+        } else if (isDocEmpty) {
+          // Nova geração do zero: reseta o histórico para começar limpo
+          this.storage.chatHistory = []
+          clearChatHistory()
         }
         // Disparar evento de conversão do Google Ads para Enviar Formulário de Lead (Geração do Documento/Contrato)
         if (typeof window !== "undefined" && (window as any).gtag) {

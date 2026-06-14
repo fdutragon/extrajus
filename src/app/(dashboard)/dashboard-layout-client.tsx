@@ -29,6 +29,30 @@ import { createClient } from "@/utils/supabase/client";
 import { createContractAction } from "@/app/actions";
 import { Logo } from "@/components/ui/logo";
 import { toast } from "sonner";
+import { useVoiceAgent } from "@/hooks/use-voice-agent";
+
+function LilithLogo({ className }: { className?: string }) {
+  return (
+    <div className="relative flex items-center justify-center cursor-pointer w-11 h-11 group transition-all duration-700 shrink-0">
+      {/* Visual representation of Lilith Logo */}
+      <svg width="34" height="34" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" className={`transition-all duration-700 group-hover:scale-110 drop-shadow-[0_0_12px_rgba(239,68,68,0.95)] ${className || ''}`}>
+        
+        {/* Outter Diamond / Ritual Boundary (Rounded) */}
+        <rect x="4.5" y="4.5" width="11" height="11" rx="2.5" transform="rotate(45 10 10)" stroke="#000000" strokeWidth="1.2" />
+        <line x1="2.2" y1="10" x2="17.8" y2="10" stroke="#000000" strokeWidth="1.2" />
+        
+        {/* Glowing Center Core Elements */}
+        <g filter="url(#globalRedRitualGlow)">
+          {/* Inner Circle / Focal Point */}
+          <circle cx="10" cy="10" r="2.2" stroke="#ff1111" strokeWidth="0.9" className="animate-pulse" />
+          {/* Center Core Glyph */}
+          <path d="M10 8.5V11.5M8.5 10H11.5" stroke="#ff0000" strokeWidth="1.2" strokeLinecap="square" className="animate-pulse" />
+        </g>
+      </svg>
+    </div>
+  )
+}
+
 export default function DashboardLayoutClient({
   children,
 }: {
@@ -44,6 +68,9 @@ export default function DashboardLayoutClient({
   const supabase = createClient();
   const [isPending, startTransition] = useTransition();
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+
+  // Integração com Lilith Voice Agent
+  const { isRecordingVoice, isSpeaking, toggleVoiceRecording, error } = useVoiceAgent();
 
   // Reset zoom styles if previously applied
   useEffect(() => {
@@ -670,21 +697,58 @@ export default function DashboardLayoutClient({
             })}
           </nav>
 
-          {/* SmartDoc Pulse - AI Live Activity Feed */}
+          {/* Lilith Core Voice Agent */}
           {(!isCollapsed || (typeof window !== 'undefined' && window.innerWidth < 1024)) && (
-            <div className={cn("px-2 pt-4 border-t border-border space-y-3 animate-in fade-in duration-1000", isCollapsed && "lg:hidden")}>
-               <div className="flex items-center gap-2">
-                 <div className="relative">
-                   <div className="w-2 h-2 rounded-full bg-primary animate-ping absolute inset-0" />
-                   <div className="w-2 h-2 rounded-full bg-primary relative" />
-                 </div>
-                 <span className="text-xs font-bold text-primary uppercase tracking-widest">SmartDoc Pulse</span>
-               </div>
-               <div className="bg-primary/5 rounded-lg p-2.5 border border-primary/10">
-                 <p className="text-xs text-primary/80 leading-tight italic font-medium font-mono">
-                   "Análise de cláusulas ativa em todos os contratos."
-                 </p>
-               </div>
+            <div className={cn("px-2 pt-4 border-t border-border animate-in fade-in duration-1000", isCollapsed && "lg:hidden")}>
+              <div 
+                onClick={toggleVoiceRecording}
+                className={`group relative overflow-hidden select-none cursor-pointer p-3.5 rounded-xl border transition-all duration-500 flex flex-col gap-3 ${
+                  isRecordingVoice 
+                    ? 'border-red-500/50 bg-gradient-to-b from-red-950/20 via-zinc-950 to-zinc-950 shadow-[0_0_20px_rgba(239,68,68,0.15)]' 
+                    : 'border-zinc-850 bg-gradient-to-b from-zinc-900/40 via-zinc-950 to-zinc-950/80 hover:border-zinc-800 hover:shadow-[0_0_15px_rgba(0,0,0,0.7)]'
+                }`}
+              >
+                <div className="flex items-center justify-between z-10">
+                  <div className="flex items-center gap-3">
+                    <div className="relative flex items-center justify-center">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 ${
+                        isRecordingVoice 
+                          ? 'bg-gradient-to-tr from-red-950/70 via-red-900/50 to-zinc-900 border border-red-500/80 shadow-[0_0_15px_rgba(239,68,68,0.55)]' 
+                          : 'bg-gradient-to-tr from-zinc-950 via-zinc-900 to-zinc-850 border border-zinc-800/80 shadow-inner group-hover:border-zinc-700'
+                      }`}>
+                        <LilithLogo className={`w-5.5 h-5.5 transition-all duration-500 ${isRecordingVoice ? 'text-red-500 scale-105' : 'text-zinc-400 group-hover:text-zinc-300 group-hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.4)]'}`} />
+                      </div>
+                      {isRecordingVoice && (
+                        <>
+                          <span className="absolute inset-0 rounded-full border border-red-500/30 animate-ping opacity-70" />
+                          <span className="absolute -inset-1.5 rounded-full border border-red-500/10 animate-pulse opacity-40" />
+                        </>
+                      )}
+                    </div>
+                    
+                    <div className="flex flex-col text-left">
+                      <span className="text-[11.5px] font-sans font-bold text-zinc-100 tracking-wide uppercase group-hover:text-red-500/90 transition-colors duration-300">
+                        Lilith Core
+                      </span>
+                      <span className="text-[8.5px] font-mono tracking-wider text-zinc-500 mt-0.5 uppercase">
+                        {isRecordingVoice ? (isSpeaking ? 'FALANDO...' : 'ESCUTANDO...') : 'STANDBY'}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {isRecordingVoice ? (
+                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                  ) : (
+                    <div className="w-1.5 h-1.5 rounded-full bg-zinc-600 group-hover:bg-zinc-500 transition-colors" />
+                  )}
+                </div>
+
+                {error && (
+                  <div className="text-red-500 text-[10px] uppercase font-bold mt-1 text-center">
+                    {error}
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>

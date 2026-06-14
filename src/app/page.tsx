@@ -1,126 +1,64 @@
-"use client"
+import { VoiceButton } from "@/components/voice-interaction/voice-button"
+import { ShieldCheck, BrainCircuit, FileText } from "lucide-react"
+import { Logo } from "@/components/ui/logo"
 
-import {
-  ChevronLeft,
-  Share2,
-  Download,
-  MoreVertical,
-  LayoutGrid,
-  Library,
-  BookOpen,
-  History,
-  FileText,
-  Search,
-  Settings2,
-  Zap,
-  ShieldCheck,
-  BrainCircuit,
-  PanelLeft,
-  PanelRight
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import Link from "next/link"
-import { useSearchParams, useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
-import { UserPlus, Check } from "lucide-react"
-import { createClient } from "@/utils/supabase/client"
-import { NotionEditor, LoadingSpinner } from "@/components/tiptap-templates/notion-like/notion-like-editor"
-import { SignModal } from "@/components/tiptap-ui/sign-modal/sign-modal"
-import { CollaborationUsers } from "@/components/tiptap-templates/notion-like/notion-like-editor-collaboration-users"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { NotionToolbar } from "@/components/tiptap-templates/notion-like/notion-like-editor-toolbar"
-import { cn } from "@/lib/utils"
-
-function InviteButton({ room }: { room: string }) {
-  const [copied, setCopied] = useState(false)
-
-  const handleInvite = () => {
-    if (typeof window === "undefined") return
-    const url = new URL(window.location.href)
-    url.searchParams.set("room", room)
-    navigator.clipboard.writeText(url.toString())
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
+export default function Home() {
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      className={cn(
-        "h-6 gap-2 px-3 rounded-lg transition-all font-bold text-[9px] uppercase tracking-widest",
-        copied ? "text-primary bg-primary/10" : "text-primary hover:bg-primary/10"
-      )}
-      onClick={handleInvite}
-    >
-      {copied ? <Check size={12} /> : <UserPlus size={12} />}
-      {copied ? "Link Copiado" : "Convidar"}
-    </Button>
-  )
-}
+    <div className="min-h-screen bg-[#050507] text-muted-foreground flex flex-col items-center justify-center relative overflow-hidden font-sans selection:bg-yellow-500/20">
+      {/* Background aesthetics */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(250,204,21,0.06),transparent_65%)] z-0 pointer-events-none" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px] opacity-[0.3] pointer-events-none z-0" />
 
-import { Suspense } from "react"
-
-function EditorContent() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const room = searchParams.get("room")
-  const templateSlug = searchParams.get("template")
-  const mode = searchParams.get("mode")
-  const readOnly = mode === "preview" || searchParams.get("readOnly") === "true"
-  const [isPublic, setIsPublic] = useState<boolean | null>(null)
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (room) {
-        localStorage.setItem("smartdoc_last_room", room)
-        document.cookie = `smartdoc_last_room=${room}; path=/; max-age=31536000;`
-      } else {
-        let lastRoom = localStorage.getItem("smartdoc_last_room")
-        if (!lastRoom) {
-          const match = document.cookie.match(new RegExp('(^| )smartdoc_last_room=([^;]+)'))
-          if (match) lastRoom = match[2]
-        }
-        if (lastRoom) {
-          const params = new URLSearchParams(searchParams.toString())
-          params.set("room", lastRoom)
-          router.replace(`/?${params.toString()}`)
-          return
-        }
+      {/* Main Content */}
+      <main className="relative z-10 flex flex-col items-center justify-center text-center px-4 w-full max-w-4xl mx-auto space-y-12">
         
-        const newRoom = `smartdoc-draft-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
-        const params = new URLSearchParams(searchParams.toString())
-        params.set("room", newRoom)
-        router.replace(`/?${params.toString()}`)
-      }
-    }
-  }, [room, searchParams])
+        {/* Header Section */}
+        <div className="space-y-6 flex flex-col items-center">
+          <Logo iconSize={48} showText={true} variant="chrome" className="mb-2" />
+          
+          <h1 className="text-4xl md:text-6xl font-black tracking-tight text-foreground leading-none">
+            Notificação Extrajudicial <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-yellow-400 to-amber-500 filter drop-shadow-[0_0_15px_rgba(234,179,8,0.1)]">
+              Imediata
+            </span>
+          </h1>
+          
+          <p className="text-xs md:text-[13px] text-muted-foreground/80 max-w-xl mx-auto leading-relaxed">
+            Acione nossa inteligência jurídica por voz. Explique a situação e obtenha uma notificação extrajudicial com poder legal absoluto, formatada e pronta em segundos.
+          </p>
+        </div>
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession()
-      setIsPublic(!session?.user)
-    }
-    checkAuth()
-  }, [])
+        {/* Voice Interaction Section */}
+        <div className="py-2">
+          <VoiceButton />
+        </div>
 
-  if (isPublic === null || !room) {
-    return <LoadingSpinner text="Iniciando Motor..." />
-  }
+        {/* Features / Benefits */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-2xl pt-10 border-t border-border/40">
+          <div className="flex flex-col items-center space-y-2 text-center">
+            <div className="p-2.5 bg-yellow-500/5 rounded-xl border border-yellow-500/15 text-yellow-600 dark:text-yellow-400">
+              <BrainCircuit className="w-5 h-5 stroke-[2]" />
+            </div>
+            <h3 className="font-bold text-[11.5px] uppercase tracking-wider text-foreground">Inteligência Brutal</h3>
+            <p className="text-[11px] text-muted-foreground/80 leading-relaxed max-w-[200px]">Minuta jurídica agressiva e precisa gerada por IA.</p>
+          </div>
+          <div className="flex flex-col items-center space-y-2 text-center">
+            <div className="p-2.5 bg-yellow-500/5 rounded-xl border border-yellow-500/15 text-yellow-600 dark:text-yellow-400">
+              <FileText className="w-5 h-5 stroke-[2]" />
+            </div>
+            <h3 className="font-bold text-[11.5px] uppercase tracking-wider text-foreground">Formato Estrito</h3>
+            <p className="text-[11px] text-muted-foreground/80 leading-relaxed max-w-[200px]">Diagramação profissional idêntica à do editor.</p>
+          </div>
+          <div className="flex flex-col items-center space-y-2 text-center">
+            <div className="p-2.5 bg-yellow-500/5 rounded-xl border border-yellow-500/15 text-yellow-600 dark:text-yellow-400">
+              <ShieldCheck className="w-5 h-5 stroke-[2]" />
+            </div>
+            <h3 className="font-bold text-[11.5px] uppercase tracking-wider text-foreground">Execução Imediata</h3>
+            <p className="text-[11px] text-muted-foreground/80 leading-relaxed max-w-[200px]">Sem intermediários. Documento liberado na hora.</p>
+          </div>
+        </div>
 
-  return <NotionEditor room={room} templateSlug={templateSlug} readOnly={readOnly} isPublic={isPublic} />
-}
-
-export default function EditorPage() {
-  return (
-    <Suspense fallback={<LoadingSpinner text="Carregando..." />}>
-      <EditorContent />
-    </Suspense>
+      </main>
+    </div>
   )
 }
