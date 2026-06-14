@@ -298,7 +298,7 @@ export function useVoiceAgent() {
                 if(args && args.contexto_geral) {
                   localStorage.setItem(`draft_context_${sessionId}`, args.contexto_geral);
                 }
-                router.push(`/editor-contratos?session=${sessionId}`);
+                router.push(`/notificacao/editor?session=${sessionId}`);
                 
                 // Encerra a chamada de voz conforme solicitado pelo Arquiteto
                 setTimeout(() => stopLiveDialog(), 100);
