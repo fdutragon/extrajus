@@ -136,16 +136,7 @@ export class SupabaseYjsProvider extends Observable<string> {
 
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(this.contractId || "")
     if (!isUuid) {
-      if (typeof window !== "undefined") {
-        try {
-          const stateUpdate = Y.encodeStateAsUpdate(this.doc)
-          const base64 = toBase64(stateUpdate)
-          localStorage.setItem(`yjs-doc:${this.contractId}`, base64)
-          console.log(`[SupabaseYjsProvider] Draft state saved to LocalStorage for ${this.contractId}`)
-        } catch (e) {
-          console.error("[SupabaseYjsProvider] LocalStorage save failed:", e)
-        }
-      }
+      console.log(`[SupabaseYjsProvider] Draft autosave ignored (persistence disabled) for ${this.contractId}`);
       return
     }
 
@@ -191,20 +182,9 @@ export class SupabaseYjsProvider extends Observable<string> {
 
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(this.contractId || "")
     if (!isUuid) {
-      if (typeof window !== "undefined") {
-        try {
-          const stateUpdate = Y.encodeStateAsUpdate(this.doc)
-          const base64 = toBase64(stateUpdate)
-          localStorage.setItem(`yjs-doc:${this.contractId}`, base64)
-          this.pendingUpdate = null
-          console.log(`[SupabaseYjsProvider] Draft state saved manually to LocalStorage for ${this.contractId}`)
-          return { saved: true, message: "Rascunho salvo localmente com sucesso!" }
-        } catch (e: any) {
-          console.error("[SupabaseYjsProvider] LocalStorage manual save failed:", e)
-          return { saved: false, message: `Falha ao salvar rascunho local: ${e.message || e}` }
-        }
-      }
-      return { saved: false, message: "Erro: Armazenamento local não disponível." }
+      this.pendingUpdate = null
+      console.log(`[SupabaseYjsProvider] Draft forceSave ignored (persistence disabled) for ${this.contractId}`)
+      return { saved: true, message: "Modo temporário ativo: conteúdo não persistido localmente." }
     }
 
     if (!this.pendingUpdate) {
@@ -291,22 +271,7 @@ export class SupabaseYjsProvider extends Observable<string> {
         console.error("[SupabaseYjsProvider] Error loading initial data:", e.message || e)
       }
     } else if (this.contractId && !isUuid) {
-      // LocalStorage persistence fallback for draft MVP rooms
-      if (typeof window !== "undefined") {
-        try {
-          console.log(`[SupabaseYjsProvider] Loading draft data from LocalStorage for ${this.contractId}`)
-          const stored = localStorage.getItem(`yjs-doc:${this.contractId}`)
-          if (stored) {
-            const updateData = fromBase64(stored)
-            Y.applyUpdate(this.doc, updateData, this)
-            console.log(`[SupabaseYjsProvider] Initialization from LocalStorage complete for draft ${this.contractId}`)
-          } else {
-            console.log(`[SupabaseYjsProvider] No LocalStorage data found for draft ${this.contractId}. Starting fresh.`)
-          }
-        } catch (e) {
-          console.error("[SupabaseYjsProvider] Error loading draft from LocalStorage:", e)
-        }
-      }
+      console.log(`[SupabaseYjsProvider] Temporary draft detected (${this.contractId}), starting fresh without local caching.`);
     } else {
       console.warn(`[SupabaseYjsProvider] Persistence disabled: ${this.contractId || 'No ID'} is not a valid UUID.`)
     }
